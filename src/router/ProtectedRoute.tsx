@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Card, Grid, Theme } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const ProtectedRoute = () => {
+const ProtectedRoute: React.FC = () => {
   const classes = useStyles();
 
   return (
@@ -48,3 +48,5 @@ export const ProtectedRoute = () => {
     </div>
   );
 };
+
+export default ProtectedRoute;
