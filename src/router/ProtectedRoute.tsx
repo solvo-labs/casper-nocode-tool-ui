@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Card, Grid, Theme } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
-import GoogleFontLoader from "react-google-font-loader";
 import SideBar from "../components/SideBar";
 
 const useStyles = makeStyles((theme: Theme) => ({
