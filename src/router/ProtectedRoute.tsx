@@ -38,7 +38,6 @@ export const ProtectedRoute = () => {
                   borderRadius: "40px",
                 }}
               >
-                <GoogleFontLoader fonts={[{ font: "Inter", weights: [700, "700i", 500, "500i"] }]} subsets={["cyrillic-ext", "sans-serif", "greek"]} />
                 <div>
                   <Outlet />
                 </div>
