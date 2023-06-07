@@ -20,7 +20,7 @@ const ProtectedRoute: React.FC = () => {
   return (
     <div
       style={{
-        backgroundColor: "#E7EBF1",
+        backgroundColor: "#0F1429",
       }}
       className={classes.container}
     >
@@ -30,7 +30,7 @@ const ProtectedRoute: React.FC = () => {
         </Grid>
         <Grid item lg={10} md={9} xs={12}>
           <Grid container direction={"column"} spacing={2}>
-            <Grid item>{/* <DrawerAppBar /> */}</Grid>
+            {/* <Grid item><DrawerAppBar /></Grid> */}
             <Grid item sx={{ width: "100%" }}>
               <Card
                 sx={{
