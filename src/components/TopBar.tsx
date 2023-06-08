@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
 import { APP_NAME, PAGES_NAME } from "../utils/enum";
-import { AppBar, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
+import { AppBar, Avatar, Box, Button, Container, Grid, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -12,6 +12,26 @@ const useStyles = makeStyles((theme: Theme) => ({
   nested: {
     paddingLeft: theme.spacing(4),
   },
+  appName: {
+    mr: 2,
+    display: "flex",
+    flexGrow: 1,
+    fontWeight: "700 !important",
+    letterSpacing: ".3rem !important",
+    color: "#FFFFFF",
+    "&:hover": {
+      color: "#FF0011",
+    },
+  },
+  menuTitle: {
+    my: 2,
+    color: "white !important",
+    display: "block",
+    fontWeight: "500 !important",
+    borderBottom: "1px solid #FF0011 !important",
+    marginRight: "0.5rem !important",
+  },
+  menu: {},
 }));
 
 const TopBar: React.FC = () => {
@@ -36,55 +56,43 @@ const TopBar: React.FC = () => {
           <Toolbar disableGutters>
             {/* ICON */}
             {/* <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} /> */}
-            <Typography
-              variant="h5"
-              noWrap
-              component="a"
-              href=""
-              sx={{
-                mr: 2,
-                display: "flex",
-                flexGrow: 1,
-                fontWeight: 700,
-                letterSpacing: ".3rem",
-                color: "#FFFFFF",
-                textDecoration: "none",
-              }}
-            >
+            <Typography variant="h5" noWrap component="a" href="" className={classes.appName} onClick={() => navigate("/")}>
               {APP_NAME.CASPER}
             </Typography>
-            <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-              <Button onClick={() => {}} sx={{ my: 2, color: "white", display: "block" }}>
-                {PAGES_NAME.STAKING}
+            <Box sx={{ flexGrow: 1, display: "flex" }}>
+              <Button onClick={() => {}}>
+                <Typography className={classes.menuTitle}>{PAGES_NAME.STAKING}</Typography>
               </Button>
-              <Button onClick={() => {}} sx={{ my: 2, color: "white", display: "block" }}>
-                {PAGES_NAME.DAO}
+              <Button onClick={() => {}}>
+                <Typography className={classes.menuTitle}>{PAGES_NAME.DAO}</Typography>
               </Button>
-              <Button onClick={() => {}} sx={{ my: 2, color: "white", display: "block" }}>
-                {PAGES_NAME.NFT}
+              <Button onClick={() => {}}>
+                <Typography className={classes.menuTitle}>{PAGES_NAME.NFT}</Typography>
               </Button>
-              <Container>
-                <Button onClick={handleClick} sx={{ my: 2, color: "white", display: "block" }}>
-                  {PAGES_NAME.TOKEN}
-                </Button>
-                <Menu
-                  id="demo-positioned-menu"
-                  aria-labelledby="demo-positioned-button"
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={handleClose}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left",
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "left",
-                  }}
-                >
-                  <MenuItem onClick={handleClose}>{PAGES_NAME.TOKEN_MINT}</MenuItem>
-                </Menu>
-              </Container>
+              <Button onClick={handleClick} onMouseOver={handleClick}>
+                <Typography className={classes.menuTitle}>{PAGES_NAME.TOKEN}</Typography>
+              </Button>
+              <Menu
+                id="demo-positioned-menu"
+                aria-labelledby="demo-positioned-button"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+                className={classes.menu}
+                sx={{
+                  "& .MuiPaper-root": { background: "#0F1429", color: "#FFFFFF", border: "1px solid #FF0011" },
+                }}
+              >
+                <MenuItem onClick={handleClose}>{PAGES_NAME.TOKEN_MINT}</MenuItem>
+              </Menu>
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
