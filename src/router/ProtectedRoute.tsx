@@ -1,6 +1,6 @@
-import React from "react";
-import { Grid, Theme } from "@mui/material";
-import { Outlet } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Grid, Theme, LinearProgress } from "@mui/material";
+import { Outlet, Navigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import TopBar from "../components/TopBar";
 
@@ -18,8 +18,39 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const ProtectedRoute: React.FC = () => {
   const classes = useStyles();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [connected, setConnected] = useState<boolean>(false);
 
-  return (
+  useEffect(() => {
+    const init = async () => {
+      const CasperWalletProvider = window.CasperWalletProvider;
+
+      const provider = CasperWalletProvider();
+      const currentState = await provider.isConnected();
+
+      setConnected(currentState);
+      setLoading(false);
+    };
+
+    init();
+  }, []);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <LinearProgress color="inherit" style={{ width: "80%" }} />
+      </div>
+    );
+  }
+
+  return connected ? (
     <div className={classes.main}>
       <Grid container spacing={2} className={classes.container}>
         <TopBar />
@@ -31,6 +62,8 @@ const ProtectedRoute: React.FC = () => {
         </Grid>
       </Grid>
     </div>
+  ) : (
+    <Navigate to="/login" />
   );
 };
 
