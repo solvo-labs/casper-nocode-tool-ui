@@ -7,7 +7,7 @@ import SideBar from "../components/SideBar";
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
     padding: "2rem",
-    overflow: "scrool",
+    backgroundColor: "#0F1429",
     [theme.breakpoints.down("md")]: {
       padding: "1rem",
     },
@@ -18,12 +18,7 @@ const ProtectedRoute: React.FC = () => {
   const classes = useStyles();
 
   return (
-    <div
-      style={{
-        backgroundColor: "#0F1429",
-      }}
-      className={classes.container}
-    >
+    <div className={classes.container}>
       <Grid container spacing={2}>
         <Grid item lg={2} md={3}>
           <SideBar />
