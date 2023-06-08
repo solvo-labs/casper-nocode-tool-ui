@@ -1,132 +1,103 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
-import ViewHeadlineIcon from "@mui/icons-material/ViewHeadline";
 import { APP_NAME, PAGES_NAME } from "../utils/enum";
-import { Card, Divider, Grid, List, ListItemButton, Stack, Theme, Typography } from "@mui/material";
+import { AppBar, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
-  card: {
+  appBar: {
     backgroundColor: "#0F1429 !important",
-    boxShadow: "0 0 10px 0 rgba(0,0,0,0.1)",
-    height: "92vh",
-    color: "white",
-    padding: "10px",
-    borderRadius: "1rem !important",
-    width: "100%",
-    [theme.breakpoints.down("md")]: {
-      visible: "none",
-      display: "none",
-    },
+    padding: "2rem",
   },
-  divider: {
-    backgroundColor: "white",
-    color: "white",
-    margin: "0.5rem !important",
-  },
-  title: {
-    color: "white ",
-    marginBottom: "0.5rem",
-    marginLeft: "0.5rem",
-    fontSize: "14px",
-  },
-  item: {
-    color: "white",
-    textDecoration: "none",
-    fontFamily: "Signika Negative",
-    paddingLeft: "0.5rem !important",
-    paddingTop: "0.25rem !important",
-    paddingBottom: "0.25rem !important",
-    "&:hover": {
-      backgroundColor: "#91b1cc !important",
-      cursor: "pointer",
-    },
-  },
-  selectedItem: {
-    color: "white",
-    textDecoration: "none",
-    fontFamily: "Signika Negative",
-    paddingLeft: "0.5rem !important",
-    backgroundColor: "#A2C5E3 !important",
-    paddingTop: "0.25rem !important",
-    paddingBottom: "0.25rem !important",
-    "&:hover": {
-      cursor: "pointer",
-    },
-  },
-  icon: {
-    position: "relative",
-    top: "0.2rem",
-    marginRight: "0.8rem",
-    color: "white",
-  },
-  titleStack: {
-    color: "white",
-    justifyContent: "center",
-    alignItems: "center",
-    display: "flex",
-  },
-  menuStack: {
-    color: "white",
-  },
-  link: {
-    textDecoration: "none",
-    color: "white",
+  nested: {
+    paddingLeft: theme.spacing(4),
   },
 }));
 
 const Sidebar: React.FC = () => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
   const classes = useStyles();
   const navigate = useNavigate();
 
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    navigate("/token");
+    setAnchorEl(null);
+  };
+
   return (
-    <Card className={classes.card}>
-      <Stack className={classes.titleStack}>
-        <Typography
-          style={{
-            fontWeight: "bold",
-            fontSize: "2rem",
-            marginBottom: "1rem",
-          }}
-        >
-          {APP_NAME.CASPER}
-        </Typography>
-      </Stack>
-      <Stack className={classes.menuStack}>
-        <List>
-          <Divider className={classes.divider}></Divider>
-          <Stack className={classes.title}>
-            <Typography> {PAGES_NAME.STAKING} </Typography>
-          </Stack>
-          <Divider className={classes.divider}></Divider>
-          <Stack className={classes.title}>
-            <Typography> {PAGES_NAME.DAO} </Typography>
-          </Stack>
-          <Divider className={classes.divider}></Divider>
-          <Stack className={classes.title}>
-            <Typography> {PAGES_NAME.TOKEN} </Typography>
-          </Stack>
+    <div>
+      <AppBar className={classes.appBar}>
+        <Container maxWidth="xl">
+          <Toolbar disableGutters>
+            {/* ICON */}
+            {/* <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} /> */}
+            <Typography
+              variant="h5"
+              noWrap
+              component="a"
+              href=""
+              sx={{
+                mr: 2,
+                display: "flex",
+                flexGrow: 1,
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "#FFFFFF",
+                textDecoration: "none",
+              }}
+            >
+              {APP_NAME.CASPER}
+            </Typography>
+            <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+              <Button onClick={() => {}} sx={{ my: 2, color: "white", display: "block" }}>
+                {PAGES_NAME.STAKING}
+              </Button>
+              <Button onClick={() => {}} sx={{ my: 2, color: "white", display: "block" }}>
+                {PAGES_NAME.DAO}
+              </Button>
+              <Button onClick={() => {}} sx={{ my: 2, color: "white", display: "block" }}>
+                {PAGES_NAME.NFT}
+              </Button>
+              <Container>
+                <Button onClick={handleClick} sx={{ my: 2, color: "white", display: "block" }}>
+                  {PAGES_NAME.TOKEN}
+                </Button>
+                <Menu
+                  id="demo-positioned-menu"
+                  aria-labelledby="demo-positioned-button"
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                >
+                  <MenuItem onClick={handleClose}>{PAGES_NAME.TOKEN_MINT}</MenuItem>
+                </Menu>
+              </Container>
+            </Box>
 
-          <ListItemButton
-            key={PAGES_NAME.TOKEN_MINT}
-            onClick={() => {
-              navigate("/token");
-            }}
-          >
-            <Grid item>
-              <ViewHeadlineIcon className={classes.icon} />
-            </Grid>
-            <Typography textAlign="center">{PAGES_NAME.TOKEN_MINT}</Typography>
-          </ListItemButton>
-
-          <Divider className={classes.divider}></Divider>
-          <Stack className={classes.title}>
-            <Typography> {PAGES_NAME.NFT} </Typography>
-          </Stack>
-        </List>
-        <Stack sx={{ margin: "0.5rem" }}>{/* <Logout /> */}</Stack>
-      </Stack>
-    </Card>
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Profile">
+                <IconButton onClick={() => {}} sx={{ p: 0 }}>
+                  <Avatar alt="alt" src="" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
+    </div>
   );
 };
 
