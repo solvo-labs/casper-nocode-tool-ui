@@ -1,15 +1,18 @@
 import React from "react";
-import { Card, Grid, Theme } from "@mui/material";
+import { Grid, Theme } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import TopBar from "../components/TopBar";
 
 const useStyles = makeStyles((theme: Theme) => ({
-  container: {
-    padding: "2rem",
+  main: {
     [theme.breakpoints.down("md")]: {
       padding: "1rem",
     },
+  },
+  container: {
+    color: "#FFFFFF",
+    justifyContent: "center",
   },
 }));
 
@@ -17,13 +20,11 @@ const ProtectedRoute: React.FC = () => {
   const classes = useStyles();
 
   return (
-    <div className={classes.container}>
-      <Grid container spacing={2}>
-        <Grid item lg={2} md={3}>
-          <TopBar />
-        </Grid>
+    <div className={classes.main}>
+      <Grid container spacing={2} className={classes.container}>
+        <TopBar />
         <Grid item lg={10} md={9} xs={12}>
-          <Grid container direction={"column"} spacing={2} sx={{ color: "white" }}>
+          <Grid container direction={"column"} spacing={2}>
             {/* <Grid item><DrawerAppBar /></Grid> */}
             <Outlet />
           </Grid>

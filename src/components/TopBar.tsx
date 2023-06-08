@@ -31,7 +31,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderBottom: "1px solid #FF0011 !important",
     marginRight: "0.5rem !important",
   },
-  menu: {},
 }));
 
 const TopBar: React.FC = () => {
@@ -86,7 +85,6 @@ const TopBar: React.FC = () => {
                   vertical: "top",
                   horizontal: "left",
                 }}
-                className={classes.menu}
                 sx={{
                   "& .MuiPaper-root": { background: "#0F1429", color: "#FFFFFF", border: "1px solid #FF0011" },
                 }}
