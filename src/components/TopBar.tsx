@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const Sidebar: React.FC = () => {
+const TopBar: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -101,4 +101,4 @@ const Sidebar: React.FC = () => {
   );
 };
 
-export default Sidebar;
+export default TopBar;

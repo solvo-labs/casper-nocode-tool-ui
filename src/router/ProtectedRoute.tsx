@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Grid, Theme } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
-import SideBar from "../components/SideBar";
+import TopBar from "../components/TopBar";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -21,7 +21,7 @@ const ProtectedRoute: React.FC = () => {
     <div className={classes.container}>
       <Grid container spacing={2}>
         <Grid item lg={2} md={3}>
-          <SideBar />
+          <TopBar />
         </Grid>
         <Grid item lg={10} md={9} xs={12}>
           <Grid container direction={"column"} spacing={2}>
