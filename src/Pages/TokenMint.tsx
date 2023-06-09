@@ -1,9 +1,11 @@
 import { Grid, Stack, Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CustomInput } from "../components/CustomInput";
 import { Token } from "../utils/types";
 import { CustomButton } from "../components/CustomButton";
+import { ERC20Client } from "casper-erc20-js-client-test";
+import { CasperClient, CLPublicKey, DeployUtil } from "casper-js-sdk";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -59,16 +61,120 @@ const TokenMint: React.FC = () => {
 
   const classes = useStyles();
 
-  const mintToken = () => {
-    setData({
-      name: "",
-      symbol: "",
-      decimal: 9,
-      supply: 0,
-      description: "",
-    });
-    console.log(data);
+  const fetchContract = async () => {
+    try {
+      const wasmUrl = new URL("../assets/erc20_token.wasm", import.meta.url).href;
+      const response = await fetch(wasmUrl);
+      const buffer = await response.arrayBuffer();
+
+      return buffer;
+    } catch (error) {
+      console.error("WebAssembly load error:", error);
+    }
   };
+
+  const mintToken = async () => {
+    const casperClient = new CasperClient("https://rpc.testnet.casperlabs.io/rpc");
+
+    const erc20 = new ERC20Client(
+      casperClient, // CasperClient
+      "", // Contract Hash optional
+      "" // Contract Package Hash optional
+    );
+
+    const contract = await fetchContract();
+    const pubkey = "02023e4cd902b76b2a8c8becd120440d122fb406a3918e681e2f1c6282fdd2af915a";
+
+    const ownerPublicKey = CLPublicKey.fromHex(pubkey);
+
+    const deploy = await erc20.installERC20(
+      new Uint8Array(contract!), // Contract wasm
+      {
+        name: "AFC",
+        symbol: "AFC",
+        decimals: 9,
+        totalSupply: 10000,
+      },
+      60_000_000_000, // Payment Amount
+      ownerPublicKey,
+      "casper-test"
+    );
+
+    const CasperWalletProvider = window.CasperWalletProvider;
+
+    const provider = CasperWalletProvider();
+
+    const deployJson = DeployUtil.deployToJson(deploy);
+
+    console.log(deployJson);
+
+    provider
+      .sign(JSON.stringify(deployJson), pubkey)
+      .then((res: any) => {
+        if (res.cancelled) {
+          alert("Sign cancelled");
+        } else {
+          const signedDeploy = DeployUtil.setSignature(deploy, res.signature, CLPublicKey.fromHex(pubkey));
+          // alert("Sign successful: " + JSON.stringify(signedDeploy, null, 2));
+        }
+      })
+      .catch((err: any) => {
+        alert("Error: " + err);
+      });
+  };
+
+  // const mintToken = () => {
+  //   setData({
+  //     name: "",
+  //     symbol: "",
+  //     decimal: 9,
+  //     supply: 0,
+  //     description: "",
+  //   });
+
+  //   const CasperWalletProvider = window.CasperWalletProvider;
+
+  //   const provider = CasperWalletProvider();
+
+  //   const casperClient = new casper.CasperClient("https://rpc.testnet.casperlabs.io/rpc");
+
+  //   const pubkey = "02023e4cd902b76b2a8c8becd120440d122fb406a3918e681e2f1c6282fdd2af915a";
+  //   // console.log(pubkey);
+  //   const hash = new casper.CLPublicKey.fromHex(pubkey);
+
+  //   console.log(hash);
+
+  //   // const accounthash = new casper.CLAccountHash(hash);
+  //   // const keyPairOfContract = new casper.CLKey(accounthash);
+
+  //   // let deploy = casper.DeployUtil.makeDeploy(
+  //   //   new casper.DeployUtil.DeployParams(new casper.CLPublicKey.fromHex(pubkey), "casper-test", 1, 1800000),
+  //   //   casper.DeployUtil.ExecutableDeployItem.newModuleBytes(
+  //   //     getBinary(),
+  //   //     casper.RuntimeArgs.fromMap({
+  //   //       decimals: casper.CLValueBuilder.u8(TOKEN_DECIMALS),
+  //   //       name: casper.CLValueBuilder.string(TOKEN_NAME),
+  //   //       symbol: casper.CLValueBuilder.string(TOKEN_SYMBOL),
+  //   //       total_supply: casper.CLValueBuilder.u256(TOKEN_SUPPLY),
+  //   //     })
+  //   //   ),
+  //   //   casper.DeployUtil.standardPayment(200000000000)
+  //   // );
+
+  //   // provider
+  //   //   .sign(JSON.stringify(deployJson), accountPublicKey)
+  //   //   .then((res: any) => {
+  //   //     if (res.cancelled) {
+  //   //       alert("Sign cancelled");
+  //   //     } else {
+  //   //       const signedDeploy = DeployUtil.setSignature(deploy, res.signature, CLPublicKey.fromHex(accountPublicKey));
+  //   //       alert("Sign successful: " + JSON.stringify(signedDeploy, null, 2));
+  //   //     }
+  //   //   })
+  //   //   .catch((err) => {
+  //   //     alert("Error: " + err);
+  //   //   });
+  // };
 
   const disable = !(data.name && data.symbol && data.supply && data.decimal && data.description);
 
@@ -157,7 +263,7 @@ const TokenMint: React.FC = () => {
                 }
               />
               <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton onClick={mintToken} disabled={disable} label="Mint Token" />
+                <CustomButton onClick={mintToken} disabled={false} label="Mint Token" />
               </Grid>
             </Stack>
           </Grid>
