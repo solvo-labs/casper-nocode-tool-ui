@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
 import { APP_NAME, PAGES_NAME } from "../utils/enum";
-import { AppBar, Avatar, Box, Button, Container, Grid, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
+import { AppBar, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -31,6 +31,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderBottom: "1px solid #FF0011 !important",
     marginRight: "0.5rem !important",
   },
+  menuItem: {
+    "&:hover": {
+      color: "#FF0011 !important",
+      backgroundColor: "#131933 !important",
+    },
+  },
 }));
 
 const TopBar: React.FC = () => {
@@ -43,7 +49,8 @@ const TopBar: React.FC = () => {
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
+
+  const tokenMint = () => {
     navigate("/token");
     setAnchorEl(null);
   };
@@ -76,7 +83,7 @@ const TopBar: React.FC = () => {
                 aria-labelledby="demo-positioned-button"
                 anchorEl={anchorEl}
                 open={open}
-                onClose={handleClose}
+                onClose={() => setAnchorEl(null)}
                 anchorOrigin={{
                   vertical: "bottom",
                   horizontal: "left",
@@ -89,7 +96,9 @@ const TopBar: React.FC = () => {
                   "& .MuiPaper-root": { background: "#0F1429", color: "#FFFFFF", border: "1px solid #FF0011" },
                 }}
               >
-                <MenuItem onClick={handleClose}>{PAGES_NAME.TOKEN_MINT}</MenuItem>
+                <MenuItem onClick={tokenMint} className={classes.menuItem}>
+                  {PAGES_NAME.TOKEN_MINT}
+                </MenuItem>
               </Menu>
             </Box>
 
