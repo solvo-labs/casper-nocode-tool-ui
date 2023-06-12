@@ -43,7 +43,7 @@ const Login: React.FC = () => {
           </svg>
         </Icon>
       </Grid>
-      <CustomButton onClick={connect} label="CONNECT" disabled={false} />
+      <CustomButton onClick={connect} label="SIGN IN" disabled={false} />
     </Grid>
   );
 };
