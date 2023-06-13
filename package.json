@@ -16,6 +16,7 @@
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.13.4",
     "@mui/styles": "^5.13.2",
+    "axios": "^1.4.0",
     "blakejs": "^1.2.1",
     "casper-erc20-js-client-test": "^0.0.2",
     "casper-js-sdk": "^2.13.1",
