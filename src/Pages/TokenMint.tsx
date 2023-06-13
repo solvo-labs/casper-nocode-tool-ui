@@ -1,10 +1,9 @@
 import { Grid, Stack, Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { CustomInput } from "../components/CustomInput";
 import { Token } from "../utils/types";
 import { CustomButton } from "../components/CustomButton";
-import { ERC20Client } from "casper-erc20-js-client-test";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -59,18 +58,6 @@ const TokenMint: React.FC = () => {
   });
 
   const classes = useStyles();
-
-  const fetchContract = async () => {
-    try {
-      const wasmUrl = new URL("../assets/erc20_token.wasm", import.meta.url).href;
-      const response = await fetch(wasmUrl);
-      const buffer = await response.arrayBuffer();
-
-      return buffer;
-    } catch (error) {
-      console.error("WebAssembly load error:", error);
-    }
-  };
 
   // const mintToken = async () => {
   //   const casperClient = new CasperClient("https://rpc.testnet.casperlabs.io/rpc");
