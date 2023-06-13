@@ -5,7 +5,6 @@ import { CustomInput } from "../components/CustomInput";
 import { Token } from "../utils/types";
 import { CustomButton } from "../components/CustomButton";
 import { ERC20Client } from "casper-erc20-js-client-test";
-import { CasperClient, CLPublicKey, DeployUtil } from "casper-js-sdk";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -73,55 +72,55 @@ const TokenMint: React.FC = () => {
     }
   };
 
-  const mintToken = async () => {
-    const casperClient = new CasperClient("https://rpc.testnet.casperlabs.io/rpc");
+  // const mintToken = async () => {
+  //   const casperClient = new CasperClient("https://rpc.testnet.casperlabs.io/rpc");
 
-    const erc20 = new ERC20Client(
-      casperClient, // CasperClient
-      "", // Contract Hash optional
-      "" // Contract Package Hash optional
-    );
+  //   const erc20 = new ERC20Client(
+  //     casperClient, // CasperClient
+  //     "", // Contract Hash optional
+  //     "" // Contract Package Hash optional
+  //   );
 
-    const contract = await fetchContract();
-    const pubkey = "02023e4cd902b76b2a8c8becd120440d122fb406a3918e681e2f1c6282fdd2af915a";
+  //   const contract = await fetchContract();
+  //   const pubkey = "02023e4cd902b76b2a8c8becd120440d122fb406a3918e681e2f1c6282fdd2af915a";
 
-    const ownerPublicKey = CLPublicKey.fromHex(pubkey);
+  //   const ownerPublicKey = CLPublicKey.fromHex(pubkey);
 
-    const deploy = await erc20.installERC20(
-      new Uint8Array(contract!), // Contract wasm
-      {
-        name: "AFC",
-        symbol: "AFC",
-        decimals: 9,
-        totalSupply: 10000,
-      },
-      60_000_000_000, // Payment Amount
-      ownerPublicKey,
-      "casper-test"
-    );
+  //   const deploy = await erc20.installERC20(
+  //     new Uint8Array(contract!), // Contract wasm
+  //     {
+  //       name: "AFC",
+  //       symbol: "AFC",
+  //       decimals: 9,
+  //       totalSupply: 10000,
+  //     },
+  //     60_000_000_000, // Payment Amount
+  //     ownerPublicKey,
+  //     "casper-test"
+  //   );
 
-    const CasperWalletProvider = window.CasperWalletProvider;
+  //   const CasperWalletProvider = window.CasperWalletProvider;
 
-    const provider = CasperWalletProvider();
+  //   const provider = CasperWalletProvider();
 
-    const deployJson = DeployUtil.deployToJson(deploy);
+  //   const deployJson = DeployUtil.deployToJson(deploy);
 
-    console.log(deployJson);
+  //   console.log(deployJson);
 
-    provider
-      .sign(JSON.stringify(deployJson), pubkey)
-      .then((res: any) => {
-        if (res.cancelled) {
-          alert("Sign cancelled");
-        } else {
-          const signedDeploy = DeployUtil.setSignature(deploy, res.signature, CLPublicKey.fromHex(pubkey));
-          // alert("Sign successful: " + JSON.stringify(signedDeploy, null, 2));
-        }
-      })
-      .catch((err: any) => {
-        alert("Error: " + err);
-      });
-  };
+  //   provider
+  //     .sign(JSON.stringify(deployJson), pubkey)
+  //     .then((res: any) => {
+  //       if (res.cancelled) {
+  //         alert("Sign cancelled");
+  //       } else {
+  //         const signedDeploy = DeployUtil.setSignature(deploy, res.signature, CLPublicKey.fromHex(pubkey));
+  //         // alert("Sign successful: " + JSON.stringify(signedDeploy, null, 2));
+  //       }
+  //     })
+  //     .catch((err: any) => {
+  //       alert("Error: " + err);
+  //     });
+  // };
 
   // const mintToken = () => {
   //   setData({
@@ -263,7 +262,7 @@ const TokenMint: React.FC = () => {
                 }
               />
               <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton onClick={mintToken} disabled={false} label="Mint Token" />
+                <CustomButton onClick={() => {}} disabled={false} label="Mint Token" />
               </Grid>
             </Stack>
           </Grid>
