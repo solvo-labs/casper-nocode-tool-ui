@@ -77,10 +77,10 @@ const TokenMint: React.FC = () => {
 
     // parameters
     const args = RuntimeArgs.fromMap({
-      name: CLValueBuilder.string("test"),
-      symbol: CLValueBuilder.string("123"),
-      decimals: CLValueBuilder.u8(8),
-      total_supply: CLValueBuilder.u256(100000000000),
+      name: CLValueBuilder.string(data.name),
+      symbol: CLValueBuilder.string(data.symbol),
+      decimals: CLValueBuilder.u8(data.decimal),
+      total_supply: CLValueBuilder.u256(data.supply),
     });
 
     const deploy = contract.install(new Uint8Array(wasm!), args, "110000000000", ownerPublicKey, "casper-test");
