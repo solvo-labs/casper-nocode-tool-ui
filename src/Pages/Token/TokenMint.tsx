@@ -1,9 +1,9 @@
 import { Grid, Stack, Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
-import { CustomInput } from "../components/CustomInput";
-import { Token } from "../utils/types";
-import { CustomButton } from "../components/CustomButton";
+import { CustomInput } from "../../components/CustomInput";
+import { Token } from "../../utils/types";
+import { CustomButton } from "../../components/CustomButton";
 import { ERC20Client } from "casper-erc20-js-client-test";
 import { CasperClient, CLPublicKey, DeployUtil } from "casper-js-sdk";
 
@@ -188,7 +188,7 @@ const TokenMint: React.FC = () => {
     >
       <Grid container className={classes.container}>
         <Grid container className={classes.center}>
-          <h5 className={classes.title}>Generate Token</h5>
+          <h5 className={classes.title}>Mint Token</h5>
 
           <Grid container className={classes.gridContainer}>
             <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>
