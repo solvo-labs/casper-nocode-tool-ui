@@ -10,3 +10,8 @@ export type TransferValue = {
   receipentPubkey: string;
   amount: number;
 };
+
+export type ApproveValue = {
+  spenderPubkey: string;
+  amount: number;
+};
