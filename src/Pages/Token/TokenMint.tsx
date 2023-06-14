@@ -2,10 +2,12 @@ import { Grid, Stack, Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
 import { Signer, Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { fetchContract } from "../utils";
+
 import axios from "axios";
 import { ERC20Token } from "../../utils/types";
 import { CustomInput } from "../../components/CustomInput";
+import { fetchContract } from "../../utils";
+import { CustomButton } from "../../components/CustomButton";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {

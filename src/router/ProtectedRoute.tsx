@@ -3,6 +3,7 @@ import { Grid, Theme, LinearProgress } from "@mui/material";
 import { Outlet, Navigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import TopBar from "../components/TopBar";
+import { Signer } from "casper-js-sdk";
 
 const useStyles = makeStyles((theme: Theme) => ({
   main: {
@@ -23,12 +24,9 @@ const ProtectedRoute: React.FC = () => {
 
   useEffect(() => {
     const init = async () => {
-      const CasperWalletProvider = window.CasperWalletProvider;
+      const isConnected = await Signer.isConnected();
 
-      const provider = CasperWalletProvider();
-      const currentState = await provider.isConnected();
-
-      setConnected(currentState);
+      setConnected(isConnected);
       setLoading(false);
     };
 

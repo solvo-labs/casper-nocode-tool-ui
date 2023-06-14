@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Grid, Theme, Typography } from "@mui/material";
 import { WALLETS_NAME } from "../utils/enum";
 import { CustomButton } from "../components/CustomButton";
 import { makeStyles } from "@mui/styles";
+import { Signer } from "casper-js-sdk";
 
 const useStyles = makeStyles((theme: Theme) => ({
   outerContainer: { padding: "1rem", border: "1px solid #BF000C", borderRadius: "0.5rem", justifyContent: "center", alignItems: "center" },
@@ -16,8 +17,28 @@ const Login: React.FC = () => {
   const classes = useStyles();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const init = async () => {
+      const isConnected = await Signer.isConnected();
+
+      if (isConnected) {
+        navigate("/");
+      }
+    };
+
+    init();
+  }, []);
+
   const connect = () => {
     //CASPER SIGNER
+    Signer.sendConnectionRequest()
+      .then(() => {
+        console.log("here");
+        navigate("/token");
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
   };
 
   return (
