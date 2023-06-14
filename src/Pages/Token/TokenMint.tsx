@@ -1,12 +1,11 @@
 import { Grid, Stack, Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
-import { CustomInput } from "../components/CustomInput";
-import { ERC20Token } from "../utils/types";
-import { CustomButton } from "../components/CustomButton";
 import { Signer, Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 import { fetchContract } from "../utils";
 import axios from "axios";
+import { ERC20Token } from "../../utils/types";
+import { CustomInput } from "../../components/CustomInput";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -126,7 +125,7 @@ const TokenMint: React.FC = () => {
     >
       <Grid container className={classes.container}>
         <Grid container className={classes.center}>
-          <h5 className={classes.title}>Generate Token</h5>
+          <h5 className={classes.title}>Mint Token</h5>
 
           <Grid container className={classes.gridContainer}>
             <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>

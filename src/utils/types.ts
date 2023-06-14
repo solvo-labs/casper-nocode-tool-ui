@@ -4,3 +4,13 @@ export type ERC20Token = {
   decimal: number;
   supply: number;
 };
+
+export type TokenTransfer = {
+  receipentPubkey: string;
+  amount: number;
+};
+
+export type TokenApprove = {
+  spenderPubkey: string;
+  amount: number;
+};
