@@ -5,6 +5,7 @@ import Login from "../Pages/Login";
 import TokenMint from "../Pages/TokenMint";
 import Main from "../Pages/Main";
 import Transfer from "../Pages/Transfer";
+import Approve from "../Pages/Approve";
 
 const Router: React.FC = () => {
   return (
@@ -15,6 +16,7 @@ const Router: React.FC = () => {
             <Route path="/" index element={<Main />} />
             <Route path="/token" index element={<TokenMint />} />
             <Route path="/transfer" index element={<Transfer />} />
+            <Route path="/approve" element={<Approve />} />
           </Route>
           <Route path="/login" index element={<Login />} />
         </Routes>
