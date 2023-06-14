@@ -63,11 +63,8 @@ const TokenMint: React.FC = () => {
 
   const mintToken = async () => {
     // wallet
-    const CasperWalletProvider = window.CasperWalletProvider;
-    const provider = CasperWalletProvider();
 
-    const publicKey = await provider.getActivePublicKey();
-
+    const publicKey = await Signer.getActivePublicKey();
     const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
     // contract
