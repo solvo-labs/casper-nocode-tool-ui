@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
-import { APP_NAME, PAGES_NAME } from "../utils/enum";
+import { APP_NAME, PAGES_NAME, TOKEN_PAGE } from "../utils/enum";
 import { AppBar, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -55,6 +55,16 @@ const TopBar: React.FC = () => {
     setAnchorEl(null);
   };
 
+  const transfer = () => {
+    navigate("/transfer");
+    setAnchorEl(null);
+  };
+
+  const approve = () => {
+    navigate("/approve");
+    setAnchorEl(null);
+  };
+
   return (
     <div>
       <AppBar className={classes.appBar}>
@@ -97,7 +107,13 @@ const TopBar: React.FC = () => {
                 }}
               >
                 <MenuItem onClick={tokenMint} className={classes.menuItem}>
-                  {PAGES_NAME.TOKEN_MINT}
+                  {TOKEN_PAGE.TOKEN_MINT}
+                </MenuItem>
+                <MenuItem onClick={transfer} className={classes.menuItem}>
+                  {TOKEN_PAGE.TRANSFER}
+                </MenuItem>
+                <MenuItem onClick={approve} className={classes.menuItem}>
+                  {TOKEN_PAGE.APPROVE}
                 </MenuItem>
               </Menu>
             </Box>
