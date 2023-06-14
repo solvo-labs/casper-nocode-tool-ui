@@ -16,5 +16,5 @@ export enum TOKEN_PAGE {
 }
 
 export enum WALLETS_NAME {
-  CASPER_WALLET = "CASPER WALLET",
+  CASPER_SIGNER = "CASPER SIGNER",
 }
