@@ -5,3 +5,8 @@ export type Token = {
   supply: number;
   description: string;
 };
+
+export type TransferValue = {
+  receipentPubkey: string;
+  amount: number;
+};
