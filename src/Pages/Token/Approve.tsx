@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { TransferValue } from "../utils/types";
 import { Grid, Stack, Theme } from "@mui/material";
-import { CustomInput } from "../components/CustomInput";
-import { CustomButton } from "../components/CustomButton";
 import { makeStyles } from "@mui/styles";
+import { CustomInput } from "../../components/CustomInput";
+import { CustomButton } from "../../components/CustomButton";
+import { TokenApprove } from "../../utils/types";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -48,16 +48,16 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const Transfer: React.FC = () => {
-  const [data, setData] = useState<TransferValue>({
-    receipentPubkey: "",
+const Approve: React.FC = () => {
+  const [data, setData] = useState<TokenApprove>({
+    spenderPubkey: "",
     amount: 0,
   });
 
   const classes = useStyles();
 
-  const transferData = () => {
-    console.log("transfer page: ", data);
+  const approveData = () => {
+    console.log("approve page: ", data);
   };
 
   return (
@@ -70,21 +70,21 @@ const Transfer: React.FC = () => {
     >
       <Grid container className={classes.container}>
         <Grid container className={classes.center}>
-          <h5 className={classes.title}>TRANSFER</h5>
+          <h5 className={classes.title}>Approve Token</h5>
 
           <Grid container className={classes.gridContainer}>
             <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>
               <CustomInput
-                placeholder="Receipt Pubkey"
-                label="Receipt Pubkey"
-                id="receiptPubkey"
-                name="receiptPubkey"
+                placeholder="Spender Pubkey"
+                label="Spender Pubkey"
+                id="spenderPubkey"
+                name="spenderPubkey"
                 type="text"
-                value={data.receipentPubkey}
+                value={data.spenderPubkey}
                 onChange={(e: any) =>
                   setData({
                     ...data,
-                    receipentPubkey: e.target.value,
+                    spenderPubkey: e.target.value,
                   })
                 }
               />
@@ -103,7 +103,7 @@ const Transfer: React.FC = () => {
                 }
               />
               <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton onClick={transferData} disabled={false} label="Transfer" />
+                <CustomButton onClick={approveData} disabled={false} label="Approve" />
               </Grid>
             </Stack>
           </Grid>
@@ -113,4 +113,4 @@ const Transfer: React.FC = () => {
   );
 };
 
-export default Transfer;
+export default Approve;

@@ -6,12 +6,12 @@ export type Token = {
   description: string;
 };
 
-export type TransferValue = {
+export type TokenTransfer = {
   receipentPubkey: string;
   amount: number;
 };
 
-export type ApproveValue = {
+export type TokenApprove = {
   spenderPubkey: string;
   amount: number;
 };
