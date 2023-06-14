@@ -17,13 +17,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   const connect = () => {
-    const CasperWalletProvider = window.CasperWalletProvider;
-
-    const provider = CasperWalletProvider();
-
-    provider.requestConnection().then(() => {
-      navigate("/");
-    });
+    //CASPER SIGNER
   };
 
   return (
