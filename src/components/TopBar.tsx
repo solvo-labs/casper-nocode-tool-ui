@@ -55,6 +55,11 @@ const TopBar: React.FC = () => {
     setAnchorEl(null);
   };
 
+  const myTokens = () => {
+    navigate("/my-tokens");
+    setAnchorEl(null);
+  };
+
   const transfer = () => {
     navigate("/transfer");
     setAnchorEl(null);
@@ -108,6 +113,9 @@ const TopBar: React.FC = () => {
               >
                 <MenuItem onClick={tokenMint} className={classes.menuItem}>
                   {TOKEN_PAGE.TOKEN_MINT}
+                </MenuItem>
+                <MenuItem onClick={myTokens} className={classes.menuItem}>
+                  {TOKEN_PAGE.MY_TOKENS}
                 </MenuItem>
                 <MenuItem onClick={transfer} className={classes.menuItem}>
                   {TOKEN_PAGE.TRANSFER}
