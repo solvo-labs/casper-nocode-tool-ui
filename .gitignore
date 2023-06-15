@@ -129,5 +129,5 @@ out
 .yarn/install-state.gz
 .pnp.*
 
-.dist
+./dist
 .package.lock.json

@@ -3,8 +3,6 @@ import { Grid, Theme, LinearProgress } from "@mui/material";
 import { Outlet, Navigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import TopBar from "../components/TopBar";
-// @ts-ignore
-import { Signer } from "casper-js-sdk";
 
 const useStyles = makeStyles((theme: Theme) => ({
   main: {
@@ -26,7 +24,10 @@ const ProtectedRoute: React.FC = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        const isConnected = await Signer.isConnected();
+        const CasperWalletProvider = window.CasperWalletProvider;
+        const provider = CasperWalletProvider();
+
+        const isConnected = await provider.isConnected();
 
         setConnected(isConnected);
         setLoading(false);
@@ -58,7 +59,7 @@ const ProtectedRoute: React.FC = () => {
     <div className={classes.main}>
       <Grid container spacing={2} className={classes.container}>
         <TopBar />
-        <Grid item lg={10} md={9} xs={12}>
+        <Grid item lg={10} md={12} xs={12}>
           <Grid container direction={"column"} spacing={2}>
             {/* <Grid item><DrawerAppBar /></Grid> */}
             <Outlet />

@@ -4,8 +4,7 @@ import { Grid, Theme, Typography } from "@mui/material";
 import { WALLETS_NAME } from "../utils/enum";
 import { CustomButton } from "../components/CustomButton";
 import { makeStyles } from "@mui/styles";
-// @ts-ignore
-import { Signer } from "casper-js-sdk";
+import casperImage from "../assets/casper_wallet.png";
 
 const useStyles = makeStyles((_theme: Theme) => ({
   outerContainer: { padding: "1rem", border: "1px solid #BF000C", borderRadius: "0.5rem", justifyContent: "center", alignItems: "center" },
@@ -21,7 +20,10 @@ const Login: React.FC = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        const isConnected = await Signer.isConnected();
+        const CasperWalletProvider = window.CasperWalletProvider;
+        const provider = CasperWalletProvider();
+
+        const isConnected = await provider.isConnected();
 
         if (isConnected) {
           navigate("/");
@@ -39,8 +41,11 @@ const Login: React.FC = () => {
   }, []);
 
   const connect = () => {
-    //CASPER SIGNER
-    Signer.sendConnectionRequest()
+    const CasperWalletProvider = window.CasperWalletProvider;
+    const provider = CasperWalletProvider();
+
+    provider
+      .requestConnection()
       .then(() => {
         navigate("/");
       })
@@ -53,16 +58,16 @@ const Login: React.FC = () => {
     <Grid container className={classes.outerContainer}>
       <Grid container direction="column" className={classes.innerContainer}>
         <Typography variant="h6" className={classes.typography}>
-          {WALLETS_NAME.CASPER_SIGNER}
+          {WALLETS_NAME.CASPER_WALLET}
         </Typography>
-        <img className={classes.image} src="https://cspr.live/assets/images/casper-signer.png" />
+        <img className={classes.image} width={200} src={casperImage} />
       </Grid>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
         <CustomButton onClick={connect} label="SIGN IN" disabled={false} />
         <br />
         <CustomButton
           onClick={() => {
-            window.open("https://chrome.google.com/webstore/detail/casper-signer/djhndpllfiibmcdbnmaaahkhchcoijce", "_blank");
+            window.open("https://chrome.google.com/webstore/detail/casper-wallet/abkahkcbhngaebpcgfmhkoioedceoigp", "_blank");
           }}
           label="INSTALL"
           disabled={false}
