@@ -53,7 +53,7 @@ const ProtectedRoute: React.FC = () => {
     <div className={classes.main}>
       <Grid container spacing={2} className={classes.container}>
         <TopBar />
-        <Grid item lg={10} md={9} xs={12}>
+        <Grid item lg={10} md={12} xs={12}>
           <Grid container direction={"column"} spacing={2}>
             {/* <Grid item><DrawerAppBar /></Grid> */}
             <Outlet />
