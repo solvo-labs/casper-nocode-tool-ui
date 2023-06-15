@@ -10,7 +10,7 @@ import Approve from "../Pages/Token/Approve";
 const Router: React.FC = () => {
   return (
     <>
-      <BrowserRouter basename="/casper-nocode-tool-ui/">
+      <BrowserRouter basename="/casper-nocode-tool-ui">
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/" index element={<Main />} />
