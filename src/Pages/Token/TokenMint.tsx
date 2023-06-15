@@ -66,7 +66,10 @@ const TokenMint: React.FC = () => {
   const mintToken = async () => {
     // wallet
 
-    const publicKey = await Signer.getActivePublicKey();
+    const CasperWalletProvider = window.CasperWalletProvider;
+    const provider = CasperWalletProvider();
+
+    const publicKey = await provider.getActivePublicKey();
     const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
     // contract
@@ -88,9 +91,17 @@ const TokenMint: React.FC = () => {
 
     // signer logic
     try {
-      const signedDeploy = await Signer.sign(deployJson, publicKey);
-      console.log(signedDeploy);
-      const response = await axios.post("http://localhost:1923/install", signedDeploy, { headers: { "Content-Type": "application/json" } });
+      const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+
+      let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+
+      signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+
+      const data = DeployUtil.deployToJson(signedDeploy.val);
+
+      console.log(data);
+
+      const response = await axios.post("http://localhost:1923/install", data, { headers: { "Content-Type": "application/json" } });
       alert(response.data);
     } catch (error: any) {
       alert(error.message);
