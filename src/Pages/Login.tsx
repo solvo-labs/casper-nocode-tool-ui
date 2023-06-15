@@ -4,9 +4,10 @@ import { Grid, Theme, Typography } from "@mui/material";
 import { WALLETS_NAME } from "../utils/enum";
 import { CustomButton } from "../components/CustomButton";
 import { makeStyles } from "@mui/styles";
+// @ts-ignore
 import { Signer } from "casper-js-sdk";
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((_theme: Theme) => ({
   outerContainer: { padding: "1rem", border: "1px solid #BF000C", borderRadius: "0.5rem", justifyContent: "center", alignItems: "center" },
   innerContainer: { justifyContent: "center", alignItems: "center" },
   typography: { color: "#FFFAF0", borderBottom: "1px solid #BF000C" },

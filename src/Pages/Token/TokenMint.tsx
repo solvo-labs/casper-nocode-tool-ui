@@ -1,6 +1,7 @@
 import { Grid, Stack, Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
+// @ts-ignore
 import { Signer, Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 
 import axios from "axios";
@@ -202,7 +203,7 @@ const TokenMint: React.FC = () => {
                 }
               />
               <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton onClick={mintToken} disabled={false} label="Mint Token" />
+                <CustomButton onClick={mintToken} disabled={disable} label="Mint Token" />
               </Grid>
             </Stack>
           </Grid>

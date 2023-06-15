@@ -1,3 +1,4 @@
+// @ts-ignore
 import React from "react";
 import Router from "./router/Router";
 import { ThemeProvider } from "@mui/styles";

@@ -3,6 +3,7 @@ import { Grid, Theme, LinearProgress } from "@mui/material";
 import { Outlet, Navigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import TopBar from "../components/TopBar";
+// @ts-ignore
 import { Signer } from "casper-js-sdk";
 
 const useStyles = makeStyles((theme: Theme) => ({
