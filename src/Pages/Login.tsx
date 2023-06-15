@@ -39,14 +39,20 @@ const Login: React.FC = () => {
   }, []);
 
   const connect = () => {
+    const CasperWalletProvider = window.CasperWalletProvider;
+    const provider = CasperWalletProvider();
+
+    provider.requestConnection().then(() => {
+      navigate("/");
+    });
     //CASPER SIGNER
-    Signer.sendConnectionRequest()
-      .then(() => {
-        navigate("/");
-      })
-      .catch((err: any) => {
-        console.log(err);
-      });
+    // Signer.sendConnectionRequest()
+    //   .then(() => {
+    //     navigate("/");
+    //   })
+    //   .catch((err: any) => {
+    //     console.log(err);
+    //   });
   };
 
   return (
