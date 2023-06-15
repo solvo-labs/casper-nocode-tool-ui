@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://solvo-labs.github.io/casper-nocode-tool-ui/",
+  "homepage": "https://solvo-labs.github.io/casper-nocode-tool-ui",
   "scripts": {
     "dev": "vite",
     "start": "vite",
