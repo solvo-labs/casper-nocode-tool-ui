@@ -129,4 +129,4 @@ out
 .yarn/install-state.gz
 .pnp.*
 
-yarn.lock
+.dist
