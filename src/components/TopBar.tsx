@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
 import { APP_NAME, PAGES_NAME, TOKEN_PAGE } from "../utils/enum";
@@ -44,9 +44,22 @@ const TopBar: React.FC = () => {
   const open = Boolean(anchorEl);
   const [anchorElForProfile, setAnchorElForProfile] = React.useState<null | HTMLElement>(null);
   const openForProfile = Boolean(anchorElForProfile);
+  const [publicKey, setPublicKey] = useState<string>("");
 
   const classes = useStyles();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const init = async () => {
+      const CasperWalletProvider = window.CasperWalletProvider;
+      const provider = CasperWalletProvider();
+
+      const activePublicKey = await provider.getActivePublicKey();
+      setPublicKey(activePublicKey);
+    };
+
+    init();
+  }, []);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -76,9 +89,16 @@ const TopBar: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const logout = () => {
-    navigate("/");
-    setAnchorElForProfile(null);
+  const logout = async () => {
+    const CasperWalletProvider = window.CasperWalletProvider;
+    const provider = CasperWalletProvider();
+
+    const disconnectFromSite = await provider.disconnectFromSite();
+
+    if (disconnectFromSite) {
+      navigate("/login");
+      setAnchorElForProfile(null);
+    }
   };
 
   return (
@@ -161,9 +181,17 @@ const TopBar: React.FC = () => {
                   "& .MuiPaper-root": { background: "#0F1429", color: "#FFFFFF", border: "1px solid #FF0011" },
                 }}
               >
-                <MenuItem>
-                  <Typography>Hash code</Typography>
-                </MenuItem>
+                <Tooltip title="Copy Key">
+                  <MenuItem
+                    className={classes.menuItem}
+                    onClick={(event: React.MouseEvent) => {
+                      event.stopPropagation();
+                      navigator.clipboard.writeText(publicKey);
+                    }}
+                  >
+                    <Typography>{publicKey.slice(0, 10) + "..." + publicKey.slice(-6)} </Typography>
+                  </MenuItem>
+                </Tooltip>
                 <MenuItem onClick={logout} className={classes.menuItem}>
                   <Typography>Logout</Typography>
                 </MenuItem>
