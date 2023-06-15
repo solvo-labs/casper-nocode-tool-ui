@@ -19,3 +19,10 @@ export enum TOKEN_PAGE {
 export enum WALLETS_NAME {
   CASPER_SIGNER = "CASPER SIGNER",
 }
+
+export enum MY_ERC20TOKEN {
+  NAME = "NAME",
+  SYMBOL = "SYMBOL",
+  DECIMAL = "DECIMAL",
+  TOTAL_SUPPLY = "TOTAL SUPPLY",
+}
