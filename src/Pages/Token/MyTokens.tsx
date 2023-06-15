@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Card, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Theme, Typography } from "@mui/material";
+import { Card, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import axios from "axios";
+
 import { ERC20Token } from "../../utils/types";
 import { MY_ERC20TOKEN } from "../../utils/enum";
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   title: {
     fontWeight: 500,
     fontSize: "26px",
@@ -52,7 +52,7 @@ const MyTokens: React.FC = () => {
     ]);
   }, []);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
