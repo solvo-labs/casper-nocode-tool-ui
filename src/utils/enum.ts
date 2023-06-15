@@ -11,10 +11,18 @@ export enum PAGES_NAME {
 
 export enum TOKEN_PAGE {
   TOKEN_MINT = "Token Mint",
+  MY_TOKENS = "My Tokens",
   TRANSFER = "Transfer",
   APPROVE = "Approve",
 }
 
 export enum WALLETS_NAME {
   CASPER_SIGNER = "CASPER SIGNER",
+}
+
+export enum MY_ERC20TOKEN {
+  NAME = "NAME",
+  SYMBOL = "SYMBOL",
+  DECIMAL = "DECIMAL",
+  TOTAL_SUPPLY = "TOTAL SUPPLY",
 }
