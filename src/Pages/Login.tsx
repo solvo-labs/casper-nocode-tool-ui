@@ -20,11 +20,13 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     const init = async () => {
-      const isConnected = await Signer.isConnected();
+      try {
+        const isConnected = await Signer.isConnected();
 
-      if (isConnected) {
-        navigate("/");
-      }
+        if (isConnected) {
+          navigate("/");
+        }
+      } catch {}
     };
 
     const timer = setInterval(() => {
@@ -55,7 +57,17 @@ const Login: React.FC = () => {
         </Typography>
         <img className={classes.image} src="https://cspr.live/assets/images/casper-signer.png" />
       </Grid>
-      <CustomButton onClick={connect} label="SIGN IN" disabled={false} />
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
+        <CustomButton onClick={connect} label="SIGN IN" disabled={false} />
+        <br />
+        <CustomButton
+          onClick={() => {
+            window.open("https://chrome.google.com/webstore/detail/casper-signer/djhndpllfiibmcdbnmaaahkhchcoijce", "_blank");
+          }}
+          label="INSTALL"
+          disabled={false}
+        />
+      </div>
     </Grid>
   );
 };
