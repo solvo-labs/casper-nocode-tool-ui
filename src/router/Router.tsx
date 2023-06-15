@@ -11,7 +11,7 @@ import MyTokens from "../Pages/Token/MyTokens";
 const Router: React.FC = () => {
   return (
     <>
-      <BrowserRouter basename="/">
+      <BrowserRouter basename={import.meta.env.DEV ? "/" : "/casper-nocode-tool-ui"}>
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/" index element={<Main />} />

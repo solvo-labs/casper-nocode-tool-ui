@@ -25,10 +25,15 @@ const ProtectedRoute: React.FC = () => {
 
   useEffect(() => {
     const init = async () => {
-      const isConnected = await Signer.isConnected();
+      try {
+        const isConnected = await Signer.isConnected();
 
-      setConnected(isConnected);
-      setLoading(false);
+        setConnected(isConnected);
+        setLoading(false);
+      } catch {
+        setConnected(false);
+        setLoading(false);
+      }
     };
 
     init();
