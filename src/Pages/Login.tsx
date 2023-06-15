@@ -26,15 +26,20 @@ const Login: React.FC = () => {
       }
     };
 
-    init();
+    const timer = setInterval(() => {
+      init();
+    }, 1000);
+
+    return () => {
+      clearInterval(timer);
+    };
   }, []);
 
   const connect = () => {
     //CASPER SIGNER
     Signer.sendConnectionRequest()
       .then(() => {
-        console.log("here");
-        navigate("/token");
+        navigate("/");
       })
       .catch((err: any) => {
         console.log(err);
