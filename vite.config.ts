@@ -10,7 +10,7 @@ export default defineConfig(({ command }) => {
   };
 
   if (command !== "serve") {
-    config.base = "/casper-nocode-tool-ui/";
+    config.base = "/casper-nocode-tool-ui";
   }
 
   return config;
