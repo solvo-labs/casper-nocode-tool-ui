@@ -55,6 +55,8 @@ export const fetchErc20TokenDetails = async (contractHash: string) => {
 export const listofCreatorERC20Tokens = async (accountHash: string) => {
   const namedKeys = await fetchNamedKeys(accountHash);
 
+  console.log("nk", namedKeys);
+
   const promises = namedKeys.map((nk) => fetchErc20TokenDetails(nk.key));
 
   const data = Promise.all(promises);

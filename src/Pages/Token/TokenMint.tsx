@@ -9,7 +9,8 @@ import { ERC20TokenForm } from "../../utils/types";
 import { CustomInput } from "../../components/CustomInput";
 import { fetchContract } from "../../utils";
 import { CustomButton } from "../../components/CustomButton";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import toastr from "toastr";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -67,13 +68,10 @@ const TokenMint: React.FC = () => {
   const classes = useStyles();
   const navigate = useNavigate();
 
+  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
+
   const mintToken = async () => {
     // wallet
-
-    const CasperWalletProvider = window.CasperWalletProvider;
-    const provider = CasperWalletProvider();
-
-    const publicKey = await provider.getActivePublicKey();
     const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
     // contract
@@ -106,7 +104,7 @@ const TokenMint: React.FC = () => {
       const data = DeployUtil.deployToJson(signedDeploy.val);
 
       const response = await axios.post("http://localhost:1923/install", data, { headers: { "Content-Type": "application/json" } });
-      alert(response.data);
+      toastr.success(response.data, "ERC-20 Token deployed successfully.");
 
       navigate("/my-tokens");
       setActionLoader(false);

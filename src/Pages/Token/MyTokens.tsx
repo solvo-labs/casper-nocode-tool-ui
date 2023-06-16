@@ -5,6 +5,7 @@ import { makeStyles } from "@mui/styles";
 import { ERC20Token } from "../../utils/types";
 import { MY_ERC20TOKEN } from "../../utils/enum";
 import { listofCreatorERC20Tokens } from "../../utils/api";
+import { useOutletContext } from "react-router-dom";
 
 // @ts-ignore
 import { CLPublicKey } from "casper-js-sdk";
@@ -33,15 +34,12 @@ const MyTokens: React.FC = () => {
   const [data, setData] = useState<ERC20Token[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  const [publicKey] = useOutletContext<[publickey: string]>();
+
   const classes = useStyles();
 
   useEffect(() => {
     const init = async () => {
-      const CasperWalletProvider = window.CasperWalletProvider;
-      const provider = CasperWalletProvider();
-
-      const publicKey = await provider.getActivePublicKey();
-
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
       listofCreatorERC20Tokens(ownerPublicKey.toAccountHashStr().slice(13))
