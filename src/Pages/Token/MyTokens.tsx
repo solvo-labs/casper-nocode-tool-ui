@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Card, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from "@mui/material";
+import { Card, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, CircularProgress } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 import { ERC20Token } from "../../utils/types";
 import { MY_ERC20TOKEN } from "../../utils/enum";
+import { listofCreatorERC20Tokens } from "../../utils/api";
+
+// @ts-ignore
+import { CLPublicKey } from "casper-js-sdk";
 
 const useStyles = makeStyles(() => ({
   title: {
@@ -27,29 +31,29 @@ const MyTokens: React.FC = () => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [data, setData] = useState<ERC20Token[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const classes = useStyles();
 
-  // for retrieving data
-  // useEffect(() => {
-  //   const getMyTokens = async () => {
-  //     const response = await axios.get("http://localhost:1923/", {
-  //       headers: { "Content-Type": "application/json" },
-  //       data: { contractHash: "5e542e3bfacb53152a07322519eedd6f6cad1689508d588051603459b4b12590" },
-  //     });
-
-  //     setData(response.data);
-  //   };
-
-  //   getMyTokens();
-  // });
-
   useEffect(() => {
-    setData([
-      // { name: "ayse", symbol: "ayse", decimal: 0, supply: 1 },
-      // { name: "gul", symbol: "gul", decimal: 0, supply: 2 },
-      // { name: "eren", symbol: "eren", decimal: 2, supply: 3 },
-    ]);
+    const init = async () => {
+      const CasperWalletProvider = window.CasperWalletProvider;
+      const provider = CasperWalletProvider();
+
+      const publicKey = await provider.getActivePublicKey();
+
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+      listofCreatorERC20Tokens(ownerPublicKey.toAccountHashStr().slice(13))
+        .then((result) => {
+          setData(result);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    };
+
+    init();
   }, []);
 
   const handleChangePage = (_event: unknown, newPage: number) => {
@@ -60,6 +64,22 @@ const MyTokens: React.FC = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          height: "calc(100vh - 8rem)",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -114,10 +134,10 @@ const MyTokens: React.FC = () => {
                           <Typography color="#0f1429">{row.symbol}</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">{row.decimal}</Typography>
+                          <Typography color="#0f1429">{parseInt(row.decimals.hex, 16)}</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">{row.supply}</Typography>
+                          <Typography color="#0f1429">{parseInt(row.total_supply.hex, 16)}</Typography>
                         </TableCell>
                       </TableRow>
                     );

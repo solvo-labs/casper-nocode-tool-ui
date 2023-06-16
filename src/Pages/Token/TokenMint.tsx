@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 
 import axios from "axios";
-import { ERC20Token } from "../../utils/types";
+import { ERC20TokenForm } from "../../utils/types";
 import { CustomInput } from "../../components/CustomInput";
 import { fetchContract } from "../../utils";
 import { CustomButton } from "../../components/CustomButton";
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const TokenMint: React.FC = () => {
-  const [data, setData] = useState<ERC20Token>({
+  const [data, setData] = useState<ERC20TokenForm>({
     name: "",
     symbol: "",
     decimal: 9,
