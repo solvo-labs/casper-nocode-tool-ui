@@ -36,7 +36,7 @@ type NamedKey = {
 export const fetchNamedKeys = async (accountHash: string) => {
   const stateRootHash = (await axios.get<string>(serverApi + "stateRootHash")).data;
 
-  const response = await axios.get(api + "rpc/" + "state_get_item?state_root_hash=" + stateRootHash + "&key=account-hash-" + accountHash);
+  const response = await axios.get(api + "rpc/" + "state_get_item?state_root_hash=" + stateRootHash + "&key=" + accountHash);
   const namedKeys: NamedKey[] = response.data.result.stored_value.Account.named_keys;
 
   const filteredNamedKeys = namedKeys.filter((ky) => {
@@ -49,17 +49,17 @@ export const fetchNamedKeys = async (accountHash: string) => {
 export const fetchErc20TokenDetails = async (contractHash: string) => {
   const response = await axios.get<ERC20Token>(serverApi + "getERC20Token?contractHash=" + contractHash);
 
-  return response.data;
+  return { ...response.data, contractHash };
 };
 
 export const listofCreatorERC20Tokens = async (accountHash: string) => {
   const namedKeys = await fetchNamedKeys(accountHash);
 
-  console.log("nk", namedKeys);
-
   const promises = namedKeys.map((nk) => fetchErc20TokenDetails(nk.key));
 
-  const data = Promise.all(promises);
+  const data = await Promise.all(promises);
+
+  console.log(data);
 
   return data;
 };

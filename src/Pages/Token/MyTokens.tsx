@@ -42,7 +42,7 @@ const MyTokens: React.FC = () => {
     const init = async () => {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
-      listofCreatorERC20Tokens(ownerPublicKey.toAccountHashStr().slice(13))
+      listofCreatorERC20Tokens(ownerPublicKey.toAccountHashStr())
         .then((result) => {
           setData(result);
         })
