@@ -1,6 +1,14 @@
 export type ERC20Token = {
   name: string;
   symbol: string;
+  decimals: { type: string; hex: string };
+  total_supply: { type: string; hex: string };
+  contractHash: string;
+};
+
+export type ERC20TokenForm = {
+  name: string;
+  symbol: string;
   decimal: number;
   supply: number;
 };

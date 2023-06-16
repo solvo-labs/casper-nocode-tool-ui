@@ -1,14 +1,16 @@
-import { Grid, Stack, Theme } from "@mui/material";
+import { Grid, Stack, Theme, CircularProgress } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 
 import axios from "axios";
-import { ERC20Token } from "../../utils/types";
+import { ERC20TokenForm } from "../../utils/types";
 import { CustomInput } from "../../components/CustomInput";
 import { fetchContract } from "../../utils";
 import { CustomButton } from "../../components/CustomButton";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import toastr from "toastr";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -54,22 +56,22 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const TokenMint: React.FC = () => {
-  const [data, setData] = useState<ERC20Token>({
+  const [data, setData] = useState<ERC20TokenForm>({
     name: "",
     symbol: "",
     decimal: 9,
     supply: 0,
   });
 
+  const [actionLoader, setActionLoader] = useState<boolean>(false);
+
   const classes = useStyles();
+  const navigate = useNavigate();
+
+  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
 
   const mintToken = async () => {
     // wallet
-
-    const CasperWalletProvider = window.CasperWalletProvider;
-    const provider = CasperWalletProvider();
-
-    const publicKey = await provider.getActivePublicKey();
     const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
     // contract
@@ -93,16 +95,19 @@ const TokenMint: React.FC = () => {
     try {
       const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
 
+      setActionLoader(true);
+
       let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
       signedDeploy = DeployUtil.validateDeploy(signedDeploy);
 
       const data = DeployUtil.deployToJson(signedDeploy.val);
 
-      console.log(data);
+      const response = await axios.post("http://localhost:1923/deploy", data, { headers: { "Content-Type": "application/json" } });
+      toastr.success(response.data, "ERC-20 Token deployed successfully.");
 
-      const response = await axios.post("http://localhost:1923/install", data, { headers: { "Content-Type": "application/json" } });
-      alert(response.data);
+      navigate("/my-tokens");
+      setActionLoader(false);
     } catch (error: any) {
       alert(error.message);
     }
@@ -128,6 +133,22 @@ const TokenMint: React.FC = () => {
   };
 
   const disable = !(data.name && data.symbol && data.supply && data.decimal);
+
+  if (actionLoader) {
+    return (
+      <div
+        style={{
+          height: "calc(100vh - 8rem)",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <div

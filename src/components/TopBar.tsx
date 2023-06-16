@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
 import { APP_NAME, PAGES_NAME, TOKEN_PAGE } from "../utils/enum";
@@ -39,27 +39,18 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const TopBar: React.FC = () => {
+type Props = {
+  publicKey: string;
+};
+
+const TopBar: React.FC<Props> = ({ publicKey }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [anchorElForProfile, setAnchorElForProfile] = React.useState<null | HTMLElement>(null);
   const openForProfile = Boolean(anchorElForProfile);
-  const [publicKey, setPublicKey] = useState<string>("");
 
   const classes = useStyles();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const init = async () => {
-      const CasperWalletProvider = window.CasperWalletProvider;
-      const provider = CasperWalletProvider();
-
-      const activePublicKey = await provider.getActivePublicKey();
-      setPublicKey(activePublicKey);
-    };
-
-    init();
-  }, []);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

@@ -20,6 +20,8 @@ const ProtectedRoute: React.FC = () => {
   const classes = useStyles();
   const [loading, setLoading] = useState<boolean>(true);
   const [connected, setConnected] = useState<boolean>(false);
+  const [publicKey, setPublicKey] = useState<string>("");
+  const [provider, setProvider] = useState<any>();
 
   useEffect(() => {
     const init = async () => {
@@ -29,6 +31,10 @@ const ProtectedRoute: React.FC = () => {
 
         const isConnected = await provider.isConnected();
 
+        const activePublicKey = await provider.getActivePublicKey();
+
+        setProvider(provider);
+        setPublicKey(activePublicKey);
         setConnected(isConnected);
         setLoading(false);
       } catch {
@@ -58,11 +64,11 @@ const ProtectedRoute: React.FC = () => {
   return connected ? (
     <div className={classes.main}>
       <Grid container spacing={2} className={classes.container}>
-        <TopBar />
+        <TopBar publicKey={publicKey} />
         <Grid item lg={10} md={12} xs={12}>
           <Grid container direction={"column"} spacing={2}>
             {/* <Grid item><DrawerAppBar /></Grid> */}
-            <Outlet />
+            <Outlet context={[publicKey, provider]} />
           </Grid>
         </Grid>
       </Grid>
