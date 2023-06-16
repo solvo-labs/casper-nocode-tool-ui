@@ -1,4 +1,4 @@
-import { Grid, Stack, Theme } from "@mui/material";
+import { Grid, Stack, Theme, CircularProgress } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
 // @ts-ignore
@@ -9,6 +9,7 @@ import { ERC20TokenForm } from "../../utils/types";
 import { CustomInput } from "../../components/CustomInput";
 import { fetchContract } from "../../utils";
 import { CustomButton } from "../../components/CustomButton";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -61,7 +62,10 @@ const TokenMint: React.FC = () => {
     supply: 0,
   });
 
+  const [actionLoader, setActionLoader] = useState<boolean>(false);
+
   const classes = useStyles();
+  const navigate = useNavigate();
 
   const mintToken = async () => {
     // wallet
@@ -93,16 +97,19 @@ const TokenMint: React.FC = () => {
     try {
       const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
 
+      setActionLoader(true);
+
       let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
       signedDeploy = DeployUtil.validateDeploy(signedDeploy);
 
       const data = DeployUtil.deployToJson(signedDeploy.val);
 
-      console.log(data);
-
       const response = await axios.post("http://localhost:1923/install", data, { headers: { "Content-Type": "application/json" } });
       alert(response.data);
+
+      navigate("/my-tokens");
+      setActionLoader(false);
     } catch (error: any) {
       alert(error.message);
     }
@@ -128,6 +135,22 @@ const TokenMint: React.FC = () => {
   };
 
   const disable = !(data.name && data.symbol && data.supply && data.decimal);
+
+  if (actionLoader) {
+    return (
+      <div
+        style={{
+          height: "calc(100vh - 8rem)",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <div
