@@ -103,7 +103,7 @@ const TokenMint: React.FC = () => {
 
       const data = DeployUtil.deployToJson(signedDeploy.val);
 
-      const response = await axios.post("http://localhost:1923/install", data, { headers: { "Content-Type": "application/json" } });
+      const response = await axios.post("http://localhost:1923/deploy", data, { headers: { "Content-Type": "application/json" } });
       toastr.success(response.data, "ERC-20 Token deployed successfully.");
 
       navigate("/my-tokens");

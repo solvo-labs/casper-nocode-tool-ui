@@ -3,7 +3,7 @@ export type ERC20Token = {
   symbol: string;
   decimals: { type: string; hex: string };
   total_supply: { type: string; hex: string };
-  contract_hash: string;
+  contractHash: string;
 };
 
 export type ERC20TokenForm = {
