@@ -119,6 +119,11 @@ const MyTokens: React.FC = () => {
                         {MY_ERC20TOKEN.TOTAL_SUPPLY}
                       </Typography>
                     </TableCell>
+                    <TableCell key="enable_mint_burn" align="left">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        {MY_ERC20TOKEN.ENABLE_MINT_BURN}
+                      </Typography>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -136,6 +141,9 @@ const MyTokens: React.FC = () => {
                         </TableCell>
                         <TableCell align="left">
                           <Typography color="#0f1429">{parseInt(row.total_supply.hex, 16)}</Typography>
+                        </TableCell>
+                        <TableCell align="left">
+                          <Typography color="#0f1429">{parseInt(row.enable_mint_burn.hex, 16) ? "TRUE" : "FALSE"}</Typography>
                         </TableCell>
                       </TableRow>
                     );
