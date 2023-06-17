@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ERC20Token, TokenTransfer } from "../../utils/types";
+import { ERC20Token } from "../../utils/types";
 import { Grid, Stack, Theme, CircularProgress, MenuItem } from "@mui/material";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
