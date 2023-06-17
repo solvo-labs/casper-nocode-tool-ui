@@ -85,6 +85,11 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
     setAnchorEl(null);
   };
 
+  const allowance = () => {
+    navigate("/allowance");
+    setAnchorEl(null);
+  };
+
   const logout = async () => {
     const CasperWalletProvider = window.CasperWalletProvider;
     const provider = CasperWalletProvider();
@@ -152,6 +157,9 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                 </MenuItem>
                 <MenuItem onClick={approve} className={classes.menuItem}>
                   {TOKEN_PAGE.APPROVE}
+                </MenuItem>
+                <MenuItem onClick={allowance} className={classes.menuItem}>
+                  {TOKEN_PAGE.ALLOWANCE}
                 </MenuItem>
               </Menu>
             </Box>

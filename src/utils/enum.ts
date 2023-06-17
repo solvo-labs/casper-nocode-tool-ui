@@ -15,6 +15,7 @@ export enum TOKEN_PAGE {
   TRANSFER = "Transfer",
   APPROVE = "Approve",
   MINT_AND_BURN = "Mint & Burn",
+  ALLOWANCE = "Allowance",
 }
 
 export enum WALLETS_NAME {
