@@ -10,10 +10,11 @@ export enum PAGES_NAME {
 }
 
 export enum TOKEN_PAGE {
-  TOKEN_MINT = "Token Mint",
+  TOKEN_MINT = "Token Deploy",
   MY_TOKENS = "My Tokens",
   TRANSFER = "Transfer",
   APPROVE = "Approve",
+  MINT_AND_BURN = "Mint & Burn",
 }
 
 export enum WALLETS_NAME {

@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { CircularProgress, Grid, MenuItem, Select, SelectChangeEvent, Stack, Theme } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { ERC20Token, TokenTransfer } from "../../utils/types";
+import { Grid, Stack, Theme, CircularProgress, MenuItem } from "@mui/material";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
-import { ERC20Token, TokenApprove } from "../../utils/types";
+import { makeStyles } from "@mui/styles";
 import { useOutletContext, useNavigate } from "react-router-dom";
+import axios from "axios";
+import toastr from "toastr";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 import { listofCreatorERC20Tokens } from "../../utils/api";
-import axios from "axios";
-import toastr from "toastr";
+
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -68,19 +70,15 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const Approve: React.FC = () => {
-  const [data, setData] = useState<TokenApprove>({
-    spenderPubkey: "",
-    amount: 0,
-  });
-
-  const classes = useStyles();
-
-  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
+const MintAndBurn: React.FC = () => {
+  const [data, setData] = useState<number>(0);
   const [tokens, setTokens] = useState<ERC20Token[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedToken, setSelectedToken] = useState<ERC20Token>();
 
+  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
+
+  const classes = useStyles();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -99,7 +97,7 @@ const Approve: React.FC = () => {
     init();
   }, []);
 
-  const approve = async () => {
+  const mint = async () => {
     if (selectedToken) {
       const contract = new Contracts.Contract();
       contract.setContractHash(selectedToken.contractHash);
@@ -107,11 +105,11 @@ const Approve: React.FC = () => {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
       const args = RuntimeArgs.fromMap({
-        spender: CLValueBuilder.key(CLPublicKey.fromHex(data.spenderPubkey)),
-        amount: CLValueBuilder.u256(Number(data.amount * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
+        owner: CLValueBuilder.key(ownerPublicKey),
+        amount: CLValueBuilder.u256(Number(data * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
       });
 
-      const deploy = contract.callEntrypoint("approve", args, ownerPublicKey, "casper-test", "1000000000");
+      const deploy = contract.callEntrypoint("mint", args, ownerPublicKey, "casper-test", "1000000000");
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -124,10 +122,50 @@ const Approve: React.FC = () => {
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
 
-        const deployData = DeployUtil.deployToJson(signedDeploy.val);
+        const deployedData = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post("http://localhost:1923/deploy", deployData, { headers: { "Content-Type": "application/json" } });
-        toastr.success(response.data, selectedToken.name + "Token approved successfully.");
+        const response = await axios.post("http://localhost:1923/deploy", deployedData, { headers: { "Content-Type": "application/json" } });
+        toastr.success(response.data, selectedToken.name + " Token minted successfully.");
+
+        navigate("/my-tokens");
+        // setActionLoader(false);
+      } catch (error: any) {
+        alert(error.message);
+      }
+    } else {
+      toastr.error("Please Select a token for transfer");
+    }
+  };
+
+  const burn = async () => {
+    if (selectedToken) {
+      const contract = new Contracts.Contract();
+      contract.setContractHash(selectedToken.contractHash);
+
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+      const args = RuntimeArgs.fromMap({
+        owner: CLValueBuilder.key(ownerPublicKey),
+        amount: CLValueBuilder.u256(Number(data * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
+      });
+
+      const deploy = contract.callEntrypoint("burn", args, ownerPublicKey, "casper-test", "1000000000");
+
+      const deployJson = DeployUtil.deployToJson(deploy);
+
+      try {
+        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+
+        // setActionLoader(true);
+
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+
+        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+
+        const deployedData = DeployUtil.deployToJson(signedDeploy.val);
+
+        const response = await axios.post("http://localhost:1923/deploy", deployedData, { headers: { "Content-Type": "application/json" } });
+        toastr.success(response.data, selectedToken.name + " Token burned successfully.");
 
         navigate("/my-tokens");
         // setActionLoader(false);
@@ -155,6 +193,14 @@ const Approve: React.FC = () => {
     );
   }
 
+  const calculateSupply = () => {
+    if (selectedToken) {
+      return parseInt(selectedToken.total_supply.hex || "", 16) / Math.pow(10, parseInt(selectedToken.decimals.hex, 16));
+    }
+
+    return 0;
+  };
+
   return (
     <div
       style={{
@@ -165,17 +211,18 @@ const Approve: React.FC = () => {
     >
       <Grid container className={classes.container}>
         <Grid container className={classes.center}>
-          <h5 className={classes.title}>Approve Token</h5>
+          <h5 className={classes.title}>Transfer Token</h5>
 
           <Grid container className={classes.gridContainer}>
             <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={selectedToken ? selectedToken.contractHash : ""}
+                value={selectedToken?.contractHash || ""}
                 label="ERC-20 Token"
                 placeholder="Select ERC-20 Token"
                 onChange={(event: SelectChangeEvent) => {
+                  console.log(event.target);
                   const data = tokens.find((tk) => tk.contractHash === event.target.value);
                   setSelectedToken(data);
                 }}
@@ -194,37 +241,17 @@ const Approve: React.FC = () => {
                   );
                 })}
               </Select>
-              <CustomInput
-                placeholder="Spender Pubkey"
-                label="Spender Pubkey"
-                id="spenderPubkey"
-                name="spenderPubkey"
-                type="text"
-                value={data.spenderPubkey}
-                onChange={(e: any) =>
-                  setData({
-                    ...data,
-                    spenderPubkey: e.target.value,
-                  })
-                }
-              />
-              <CustomInput
-                placeholder="Amount"
-                label="Amount"
-                id="amount"
-                name="amount"
-                type="number"
-                value={data.amount}
-                onChange={(e: any) =>
-                  setData({
-                    ...data,
-                    amount: e.target.value,
-                  })
-                }
-              />
+              {selectedToken && <span>Total Supply : {calculateSupply()}</span>}
+              <CustomInput placeholder="Amount" label="Amount" id="amount" name="amount" type="number" value={data} onChange={(e: any) => setData(e.target.value)} />
               <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton onClick={approve} disabled={false} label="Approve" />
+                <CustomButton onClick={mint} disabled={data <= 0 || selectedToken === undefined} label="Mint" />
               </Grid>
+
+              {selectedToken?.enable_mint_burn && (
+                <Grid paddingTop={2} container justifyContent={"center"}>
+                  <CustomButton onClick={burn} disabled={data <= 0 || data > calculateSupply() || selectedToken === undefined} label="Burn" />
+                </Grid>
+              )}
             </Stack>
           </Grid>
         </Grid>
@@ -233,4 +260,4 @@ const Approve: React.FC = () => {
   );
 };
 
-export default Approve;
+export default MintAndBurn;
