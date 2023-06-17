@@ -173,7 +173,7 @@ const Transfer: React.FC = () => {
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={selectedToken?.contractHash}
+                value={selectedToken?.contractHash || ""}
                 label="ERC-20 Token"
                 placeholder="Select ERC-20 Token"
                 onChange={(event: SelectChangeEvent) => {
@@ -185,7 +185,7 @@ const Transfer: React.FC = () => {
                 style={{ borderRadius: "1rem", height: "3rem", color: "white" }}
               >
                 <MenuItem value="">
-                  <em>Select a ERC20 Token</em>
+                  <em>Select an ERC20 Token</em>
                 </MenuItem>
                 {tokens.map((tk) => {
                   console.log("tk", tk);
