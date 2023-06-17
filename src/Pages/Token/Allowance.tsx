@@ -70,11 +70,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const Transfer: React.FC = () => {
-  const [data, setData] = useState<TokenTransfer>({
-    receipentPubkey: "",
-    amount: 0,
-  });
+const Allowance: React.FC = () => {
+  const [receipentPubkey, setReceipentPubkey] = useState<string>("");
   const [tokens, setTokens] = useState<ERC20Token[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedToken, setSelectedToken] = useState<ERC20Token>();
@@ -100,19 +97,21 @@ const Transfer: React.FC = () => {
     init();
   }, []);
 
-  const transferData = async () => {
+  const allowance = async () => {
     if (selectedToken) {
       const contract = new Contracts.Contract();
       contract.setContractHash(selectedToken.contractHash);
 
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
+      console.log(receipentPubkey);
+
       const args = RuntimeArgs.fromMap({
-        recipient: CLValueBuilder.key(CLPublicKey.fromHex(data.receipentPubkey)),
-        amount: CLValueBuilder.u256(Number(data.amount * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
+        owner: CLValueBuilder.key(ownerPublicKey),
+        recipient: CLValueBuilder.key(CLPublicKey.fromHex(receipentPubkey)),
       });
 
-      const deploy = contract.callEntrypoint("transfer", args, ownerPublicKey, "casper-test", "1000000000");
+      const deploy = contract.callEntrypoint("allowance", args, ownerPublicKey, "casper-test", "1000000000");
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -128,7 +127,7 @@ const Transfer: React.FC = () => {
         const data = DeployUtil.deployToJson(signedDeploy.val);
 
         const response = await axios.post("http://localhost:1923/deploy", data, { headers: { "Content-Type": "application/json" } });
-        toastr.success(response.data, "ERC-20 Token transfered successfully.");
+        toastr.success(response.data, "Allowance created successfully.");
 
         navigate("/my-tokens");
         // setActionLoader(false);
@@ -136,7 +135,7 @@ const Transfer: React.FC = () => {
         alert(error.message);
       }
     } else {
-      toastr.error("Please Select a token for transfer");
+      toastr.error("Please Select a token for allowance");
     }
   };
 
@@ -202,30 +201,12 @@ const Transfer: React.FC = () => {
                 id="receiptPubkey"
                 name="receiptPubkey"
                 type="text"
-                value={data.receipentPubkey}
-                onChange={(e: any) =>
-                  setData({
-                    ...data,
-                    receipentPubkey: e.target.value,
-                  })
-                }
+                value={receipentPubkey}
+                onChange={(e: any) => setReceipentPubkey(e.target.value)}
               />
-              <CustomInput
-                placeholder="Amount"
-                label="Amount"
-                id="amount"
-                name="amount"
-                type="number"
-                value={data.amount}
-                onChange={(e: any) =>
-                  setData({
-                    ...data,
-                    amount: e.target.value,
-                  })
-                }
-              />
+
               <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton onClick={transferData} disabled={data.amount <= 0 || data.receipentPubkey === "" || selectedToken === undefined} label="Transfer" />
+                <CustomButton onClick={allowance} disabled={receipentPubkey === "" || selectedToken === undefined} label="Allowance" />
               </Grid>
             </Stack>
           </Grid>
@@ -235,4 +216,4 @@ const Transfer: React.FC = () => {
   );
 };
 
-export default Transfer;
+export default Allowance;

@@ -1,4 +1,4 @@
-import { Grid, Stack, Theme, CircularProgress } from "@mui/material";
+import { Grid, Stack, Theme, CircularProgress, Switch, FormControlLabel } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
 // @ts-ignore
@@ -61,6 +61,7 @@ const TokenMint: React.FC = () => {
     symbol: "",
     decimal: 9,
     supply: 0,
+    enableMintBurn: true,
   });
 
   const [actionLoader, setActionLoader] = useState<boolean>(false);
@@ -84,7 +85,8 @@ const TokenMint: React.FC = () => {
       name: CLValueBuilder.string(data.name),
       symbol: CLValueBuilder.string(data.symbol),
       decimals: CLValueBuilder.u8(data.decimal),
-      total_supply: CLValueBuilder.u256(data.supply),
+      total_supply: CLValueBuilder.u256(data.supply * Math.pow(10, data.decimal)),
+      enable_mint_burn: CLValueBuilder.bool(data.enableMintBurn),
     });
 
     const deploy = contract.install(new Uint8Array(wasm!), args, "110000000000", ownerPublicKey, "casper-test");
@@ -234,6 +236,13 @@ const TokenMint: React.FC = () => {
                   })
                 }
               />
+              <FormControlLabel
+                style={{ justifyContent: "start" }}
+                labelPlacement="start"
+                control={<Switch checked={data.enableMintBurn} color="warning" onChange={() => setData({ ...data, enableMintBurn: !data.enableMintBurn })} />}
+                label="Enable Mint & Burn"
+              />
+
               <Grid paddingTop={2} container justifyContent={"center"}>
                 <CustomButton onClick={mintToken} disabled={disable} label="Mint Token" />
               </Grid>

@@ -80,6 +80,16 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
     setAnchorEl(null);
   };
 
+  const mintAndBurn = () => {
+    navigate("/mint-and-burn");
+    setAnchorEl(null);
+  };
+
+  const allowance = () => {
+    navigate("/allowance");
+    setAnchorEl(null);
+  };
+
   const logout = async () => {
     const CasperWalletProvider = window.CasperWalletProvider;
     const provider = CasperWalletProvider();
@@ -139,11 +149,17 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                 <MenuItem onClick={myTokens} className={classes.menuItem}>
                   {TOKEN_PAGE.MY_TOKENS}
                 </MenuItem>
+                <MenuItem onClick={mintAndBurn} className={classes.menuItem}>
+                  {TOKEN_PAGE.MINT_AND_BURN}
+                </MenuItem>
                 <MenuItem onClick={transfer} className={classes.menuItem}>
                   {TOKEN_PAGE.TRANSFER}
                 </MenuItem>
                 <MenuItem onClick={approve} className={classes.menuItem}>
                   {TOKEN_PAGE.APPROVE}
+                </MenuItem>
+                <MenuItem onClick={allowance} className={classes.menuItem}>
+                  {TOKEN_PAGE.ALLOWANCE}
                 </MenuItem>
               </Menu>
             </Box>

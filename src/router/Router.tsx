@@ -7,6 +7,8 @@ import Main from "../Pages/Main";
 import Transfer from "../Pages/Token/Transfer";
 import Approve from "../Pages/Token/Approve";
 import MyTokens from "../Pages/Token/MyTokens";
+import MintAndBurn from "../Pages/Token/MintAndBurn";
+import Allowance from "../Pages/Token/Allowance";
 
 const Router: React.FC = () => {
   return (
@@ -19,6 +21,8 @@ const Router: React.FC = () => {
             <Route path="/my-tokens" index element={<MyTokens />} />
             <Route path="/transfer" index element={<Transfer />} />
             <Route path="/approve" element={<Approve />} />
+            <Route path="/mint-and-burn" element={<MintAndBurn />} />
+            <Route path="/allowance" element={<Allowance />} />
           </Route>
           <Route path="/login" index element={<Login />} />
         </Routes>

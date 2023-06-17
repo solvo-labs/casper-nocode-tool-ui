@@ -4,6 +4,7 @@ export type ERC20Token = {
   decimals: { type: string; hex: string };
   total_supply: { type: string; hex: string };
   contractHash: string;
+  enable_mint_burn: { type: string; hex: string };
 };
 
 export type ERC20TokenForm = {
@@ -11,6 +12,7 @@ export type ERC20TokenForm = {
   symbol: string;
   decimal: number;
   supply: number;
+  enableMintBurn: boolean;
 };
 
 export type TokenTransfer = {
