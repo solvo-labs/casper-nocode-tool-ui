@@ -169,7 +169,7 @@ const Transfer: React.FC = () => {
           <h5 className={classes.title}>Transfer Token</h5>
 
           <Grid container className={classes.gridContainer}>
-            <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>
+            <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"

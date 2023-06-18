@@ -165,7 +165,7 @@ const Allowance: React.FC = () => {
     >
       <Grid container className={classes.container}>
         <Grid container className={classes.center}>
-          <h5 className={classes.title}>Transfer Token</h5>
+          <h5 className={classes.title}>Allowance Token</h5>
 
           <Grid container className={classes.gridContainer}>
             <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>

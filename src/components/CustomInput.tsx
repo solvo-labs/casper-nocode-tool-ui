@@ -37,9 +37,7 @@ export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, typ
         "& .MuiInputLabel-root.Mui-focused": {
           color: "#FF0011",
         },
-        "& .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input": {
-          height: "11px",
-        },
+        "& .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input": {},
         "& .css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root": {
           transform: "translate(14px, 12px) scale(1)",
         },
