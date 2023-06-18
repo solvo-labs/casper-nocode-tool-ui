@@ -126,7 +126,7 @@ const Approve: React.FC = () => {
 
         const deployData = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post("http://18.185.15.120:8000/deploy", deployData, { headers: { "Content-Type": "application/json" } });
+        const response = await axios.post("https://18.185.15.120:8000/deploy", deployData, { headers: { "Content-Type": "application/json" } });
         toastr.success(response.data, selectedToken.name + "Token approved successfully.");
 
         navigate("/my-tokens");
