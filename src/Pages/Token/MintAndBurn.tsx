@@ -87,7 +87,11 @@ const MintAndBurn: React.FC = () => {
 
       listofCreatorERC20Tokens(ownerPublicKey.toAccountHashStr())
         .then((result) => {
-          setTokens(result);
+          const filteredData = result.filter((rs) => {
+            return parseInt(rs.enable_mint_burn.hex, 16);
+          });
+
+          setTokens(filteredData);
         })
         .finally(() => {
           setLoading(false);
@@ -177,6 +181,14 @@ const MintAndBurn: React.FC = () => {
     }
   };
 
+  const calculateSupply = () => {
+    if (selectedToken) {
+      return parseInt(selectedToken.total_supply.hex || "", 16) / Math.pow(10, parseInt(selectedToken.decimals.hex, 16));
+    }
+
+    return 0;
+  };
+
   if (loading) {
     return (
       <div
@@ -192,14 +204,6 @@ const MintAndBurn: React.FC = () => {
       </div>
     );
   }
-
-  const calculateSupply = () => {
-    if (selectedToken) {
-      return parseInt(selectedToken.total_supply.hex || "", 16) / Math.pow(10, parseInt(selectedToken.decimals.hex, 16));
-    }
-
-    return 0;
-  };
 
   return (
     <div
@@ -247,11 +251,9 @@ const MintAndBurn: React.FC = () => {
                 <CustomButton onClick={mint} disabled={data <= 0 || selectedToken === undefined} label="Mint" />
               </Grid>
 
-              {selectedToken?.enable_mint_burn && (
-                <Grid paddingTop={2} container justifyContent={"center"}>
-                  <CustomButton onClick={burn} disabled={data <= 0 || data > calculateSupply() || selectedToken === undefined} label="Burn" />
-                </Grid>
-              )}
+              <Grid paddingTop={2} container justifyContent={"center"}>
+                <CustomButton onClick={burn} disabled={data <= 0 || data > calculateSupply() || selectedToken === undefined} label="Burn" />
+              </Grid>
             </Stack>
           </Grid>
         </Grid>
