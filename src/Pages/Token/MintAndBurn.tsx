@@ -124,7 +124,7 @@ const MintAndBurn: React.FC = () => {
 
         const deployedData = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post("http://localhost:1923/deploy", deployedData, { headers: { "Content-Type": "application/json" } });
+        const response = await axios.post("http://18.185.15.120:8000/deploy", deployedData, { headers: { "Content-Type": "application/json" } });
         toastr.success(response.data, selectedToken.name + " Token minted successfully.");
 
         navigate("/my-tokens");
@@ -164,7 +164,7 @@ const MintAndBurn: React.FC = () => {
 
         const deployedData = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post("http://localhost:1923/deploy", deployedData, { headers: { "Content-Type": "application/json" } });
+        const response = await axios.post("http://18.185.15.120:8000/deploy", deployedData, { headers: { "Content-Type": "application/json" } });
         toastr.success(response.data, selectedToken.name + " Token burned successfully.");
 
         navigate("/my-tokens");

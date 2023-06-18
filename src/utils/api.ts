@@ -2,7 +2,7 @@ import axios from "axios";
 import { ERC20Token } from "./types";
 
 const api = "https://event-store-api-clarity-testnet.make.services/";
-const serverApi = "http://localhost:1923/";
+const serverApi = "http://18.185.15.120:8000/";
 
 // https://event-store-api-clarity-testnet.make.services/accounts/5e542e3bfacb53152a07322519eedd6f6cad1689508d588051603459b4b12590/erc20-tokens
 
