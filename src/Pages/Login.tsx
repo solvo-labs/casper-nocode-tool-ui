@@ -19,25 +19,17 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     const init = async () => {
-      try {
-        const CasperWalletProvider = window.CasperWalletProvider;
-        const provider = CasperWalletProvider();
+      const CasperWalletProvider = window.CasperWalletProvider;
+      const provider = CasperWalletProvider();
 
-        const isConnected = await provider.isConnected();
+      const isConnected = await provider.isConnected();
 
-        if (isConnected) {
-          navigate("/");
-        }
-      } catch {}
+      if (isConnected) {
+        navigate("/");
+      }
     };
 
-    const timer = setInterval(() => {
-      init();
-    }, 1000);
-
-    return () => {
-      clearInterval(timer);
-    };
+    init();
   }, []);
 
   const connect = () => {
