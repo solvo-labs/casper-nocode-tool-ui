@@ -55596,7 +55596,7 @@ const $r = i0(zL),
           let u = at.DeployUtil.setSignature(b, h.signature, S);
           u = at.DeployUtil.validateDeploy(u);
           const s = at.DeployUtil.deployToJson(u.val),
-            i = await Ao.post("http://18.185.15.120:8000/deploy", s, { headers: { "Content-Type": "application/json" } });
+            i = await Ao.post("https://18.185.15.120:8000/deploy", s, { headers: { "Content-Type": "application/json" } });
           $r.success(i.data, "ERC-20 Token deployed successfully."), l("/my-tokens"), o(!1);
         } catch (h) {
           alert(h.message);
@@ -55669,7 +55669,7 @@ const $r = i0(zL),
   },
   WL = () => ae.jsx(ae.Fragment, { children: "Main Page" }),
   VL = "https://event-store-api-clarity-testnet.make.services/",
-  Q3 = "http://18.185.15.120:8000/",
+  Q3 = "https://18.185.15.120:8000/",
   YL = async (e) => {
     const t = (await Ao.get(Q3 + "stateRootHash")).data;
     return (await Ao.get(VL + "rpc/state_get_item?state_root_hash=" + t + "&key=" + e)).data.result.stored_value.Account.named_keys.filter((l) =>
@@ -55732,7 +55732,7 @@ const $r = i0(zL),
           let i = at.DeployUtil.setSignature(h, s.signature, b);
           i = at.DeployUtil.validateDeploy(i);
           const m = at.DeployUtil.deployToJson(i.val),
-            w = await Ao.post("http://18.185.15.120:8000/deploy", m, { headers: { "Content-Type": "application/json" } });
+            w = await Ao.post("https://18.185.15.120:8000/deploy", m, { headers: { "Content-Type": "application/json" } });
           $r.success(w.data, "ERC-20 Token transfered successfully."), E("/my-tokens");
         } catch (s) {
           alert(s.message);
@@ -55860,7 +55860,7 @@ const $r = i0(zL),
           let i = at.DeployUtil.setSignature(h, s.signature, b);
           i = at.DeployUtil.validateDeploy(i);
           const m = at.DeployUtil.deployToJson(i.val),
-            w = await Ao.post("http://18.185.15.120:8000/deploy", m, { headers: { "Content-Type": "application/json" } });
+            w = await Ao.post("https://18.185.15.120:8000/deploy", m, { headers: { "Content-Type": "application/json" } });
           $r.success(w.data, v.name + "Token approved successfully."), E("/my-tokens");
         } catch (s) {
           alert(s.message);
@@ -55991,32 +55991,30 @@ const $r = i0(zL),
                               }),
                             }),
                             ae.jsx(iA, {
-                              children: a
-                                .slice(e * n, e * n + n)
-                                .map((d, x) =>
-                                  ae.jsxs(
-                                    nv,
-                                    {
-                                      hover: !0,
-                                      role: "checkbox",
-                                      tabIndex: -1,
-                                      children: [
-                                        ae.jsx(lr, { align: "left", children: ae.jsx(pn, { color: "#0f1429", children: d.name }) }),
-                                        ae.jsx(lr, { align: "left", children: ae.jsx(pn, { color: "#0f1429", children: d.symbol }) }),
-                                        ae.jsx(lr, { align: "left", children: ae.jsx(pn, { color: "#0f1429", children: parseInt(d.decimals.hex, 16) }) }),
-                                        ae.jsx(lr, {
-                                          align: "left",
-                                          children: ae.jsx(pn, { color: "#0f1429", children: parseInt(d.total_supply.hex, 16) / Math.pow(10, parseInt(d.decimals.hex, 16)) }),
-                                        }),
-                                        ae.jsx(lr, {
-                                          align: "left",
-                                          children: ae.jsx(pn, { color: "#0f1429", children: parseInt(d.enable_mint_burn.hex, 16) ? "TRUE" : "FALSE" }),
-                                        }),
-                                      ],
-                                    },
-                                    x
-                                  )
-                                ),
+                              children: a.slice(e * n, e * n + n).map((d, x) =>
+                                ae.jsxs(
+                                  nv,
+                                  {
+                                    hover: !0,
+                                    role: "checkbox",
+                                    tabIndex: -1,
+                                    children: [
+                                      ae.jsx(lr, { align: "left", children: ae.jsx(pn, { color: "#0f1429", children: d.name }) }),
+                                      ae.jsx(lr, { align: "left", children: ae.jsx(pn, { color: "#0f1429", children: d.symbol }) }),
+                                      ae.jsx(lr, { align: "left", children: ae.jsx(pn, { color: "#0f1429", children: parseInt(d.decimals.hex, 16) }) }),
+                                      ae.jsx(lr, {
+                                        align: "left",
+                                        children: ae.jsx(pn, { color: "#0f1429", children: parseInt(d.total_supply.hex, 16) / Math.pow(10, parseInt(d.decimals.hex, 16)) }),
+                                      }),
+                                      ae.jsx(lr, {
+                                        align: "left",
+                                        children: ae.jsx(pn, { color: "#0f1429", children: parseInt(d.enable_mint_burn.hex, 16) ? "TRUE" : "FALSE" }),
+                                      }),
+                                    ],
+                                  },
+                                  x
+                                )
+                              ),
                             }),
                           ],
                         }),
@@ -56097,7 +56095,7 @@ const $r = i0(zL),
             let w = at.DeployUtil.setSignature(s, m.signature, h);
             w = at.DeployUtil.validateDeploy(w);
             const c = at.DeployUtil.deployToJson(w.val),
-              y = await Ao.post("http://18.185.15.120:8000/deploy", c, { headers: { "Content-Type": "application/json" } });
+              y = await Ao.post("https://18.185.15.120:8000/deploy", c, { headers: { "Content-Type": "application/json" } });
             $r.success(y.data, r.name + " Token minted successfully."), E("/my-tokens");
           } catch (m) {
             alert(m.message);
@@ -56117,7 +56115,7 @@ const $r = i0(zL),
             let w = at.DeployUtil.setSignature(s, m.signature, h);
             w = at.DeployUtil.validateDeploy(w);
             const c = at.DeployUtil.deployToJson(w.val),
-              y = await Ao.post("http://18.185.15.120:8000/deploy", c, { headers: { "Content-Type": "application/json" } });
+              y = await Ao.post("https://18.185.15.120:8000/deploy", c, { headers: { "Content-Type": "application/json" } });
             $r.success(y.data, r.name + " Token burned successfully."), E("/my-tokens");
           } catch (m) {
             alert(m.message);
@@ -56229,7 +56227,7 @@ const $r = i0(zL),
           let i = at.DeployUtil.setSignature(h, s.signature, b);
           i = at.DeployUtil.validateDeploy(i);
           const m = at.DeployUtil.deployToJson(i.val),
-            w = await Ao.post("http://18.185.15.120:8000/deploy", m, { headers: { "Content-Type": "application/json" } });
+            w = await Ao.post("https://18.185.15.120:8000/deploy", m, { headers: { "Content-Type": "application/json" } });
           $r.success(w.data, "Allowance created successfully."), E("/my-tokens");
         } catch (s) {
           alert(s.message);
