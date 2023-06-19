@@ -104,8 +104,6 @@ const Allowance: React.FC = () => {
 
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
-      console.log(receipentPubkey);
-
       const args = RuntimeArgs.fromMap({
         owner: CLValueBuilder.key(ownerPublicKey),
         recipient: CLValueBuilder.key(CLPublicKey.fromHex(receipentPubkey)),
@@ -176,7 +174,6 @@ const Allowance: React.FC = () => {
                 label="ERC-20 Token"
                 placeholder="Select ERC-20 Token"
                 onChange={(event: SelectChangeEvent) => {
-                  console.log(event.target);
                   const data = tokens.find((tk) => tk.contractHash === event.target.value);
                   setSelectedToken(data);
                 }}
@@ -187,7 +184,6 @@ const Allowance: React.FC = () => {
                   <em>Select an ERC20 Token</em>
                 </MenuItem>
                 {tokens.map((tk) => {
-                  console.log("tk", tk);
                   return (
                     <MenuItem key={tk.contractHash} value={tk.contractHash}>
                       {tk.name + "(" + tk.symbol + ")"}
