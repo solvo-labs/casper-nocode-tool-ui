@@ -78,7 +78,7 @@ const MyTokens: React.FC = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          marginTop: "6rem",
+          marginTop: "14rem",
         }}
       >
         <CircularProgress />
@@ -89,12 +89,12 @@ const MyTokens: React.FC = () => {
   return (
     <div
       style={{
-        height: "calc(100vh-5rem)",
         padding: "1rem",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
+        marginTop: "8rem",
       }}
     >
       <h5 className={classes.title}>The Tokens I created</h5>
