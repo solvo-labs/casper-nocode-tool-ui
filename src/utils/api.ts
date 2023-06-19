@@ -59,7 +59,24 @@ export const listofCreatorERC20Tokens = async (accountHash: string) => {
 
   const data = await Promise.all(promises);
 
-  console.log(data);
-
   return data;
+};
+
+export const fetchErc20TokenMeta = async (contractPackage: string) => {
+  const response = await axios.get<{ data: ERC20TokenInfo[] }>(api + "contract-packages/" + contractPackage);
+
+  return response.data;
+};
+
+export const fetchErc20TokenWithBalances = async (accountHash: string) => {
+  const tokens = await fetchErc20Tokens(accountHash.slice(13));
+  const promises = tokens.map((tok) => fetchErc20TokenMeta(tok.contract_package_hash));
+
+  const data = await Promise.all(promises);
+
+  const finalData = data.map((dt: any, i: number) => {
+    return { ...dt, balance: tokens[i].balance };
+  });
+
+  return finalData;
 };
