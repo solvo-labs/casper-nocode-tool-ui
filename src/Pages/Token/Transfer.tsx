@@ -127,7 +127,7 @@ const Transfer: React.FC = () => {
 
         const data = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post("https://18.185.15.120:8000/deploy", data, { headers: { "Content-Type": "application/json" } });
+        const response = await axios.post("http://18.185.15.120:8000/deploy", data, { headers: { "Content-Type": "application/json" } });
         toastr.success(response.data, "ERC-20 Token transfered successfully.");
 
         navigate("/my-tokens");
