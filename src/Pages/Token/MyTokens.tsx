@@ -4,7 +4,7 @@ import { makeStyles } from "@mui/styles";
 
 import { ERC20Token } from "../../utils/types";
 import { MY_ERC20TOKEN } from "../../utils/enum";
-import { listofCreatorERC20Tokens } from "../../utils/api";
+import { fetchErc20TokenWithBalances, listofCreatorERC20Tokens } from "../../utils/api";
 import { useOutletContext } from "react-router-dom";
 
 // @ts-ignore
@@ -33,6 +33,7 @@ const MyTokens: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [data, setData] = useState<ERC20Token[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [myTokenList, setMyTokenList] = useState<any>([]);
 
   const [publicKey] = useOutletContext<[publickey: string]>();
 
@@ -42,7 +43,13 @@ const MyTokens: React.FC = () => {
     const init = async () => {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
-      listofCreatorERC20Tokens(ownerPublicKey.toAccountHashStr())
+      const accountHash = ownerPublicKey.toAccountHashStr();
+
+      const currentErc20Tokens = await fetchErc20TokenWithBalances(accountHash);
+
+      setMyTokenList(currentErc20Tokens);
+
+      listofCreatorERC20Tokens(accountHash)
         .then((result) => {
           setData(result);
         })
@@ -67,11 +74,11 @@ const MyTokens: React.FC = () => {
     return (
       <div
         style={{
-          height: "calc(100vh - 8rem)",
           width: "100%",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          marginTop: "6rem",
         }}
       >
         <CircularProgress />
@@ -90,7 +97,7 @@ const MyTokens: React.FC = () => {
         flexDirection: "column",
       }}
     >
-      <h5 className={classes.title}>My Tokens</h5>
+      <h5 className={classes.title}>The Tokens I created</h5>
 
       {data.length !== 0 ? (
         <div>
@@ -195,6 +202,107 @@ const MyTokens: React.FC = () => {
               }}
             >
               You do not have any token.
+            </Typography>
+          </Card>
+        </Grid>
+      )}
+      <h5 className={classes.title}>The Tokens In My Wallet</h5>
+
+      {myTokenList.length !== 0 ? (
+        <div>
+          <Paper className={classes.paper}>
+            <TableContainer className={classes.tableContainer}>
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell key="name" align="left">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        {MY_ERC20TOKEN.NAME}
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="symbol" align="left">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        {MY_ERC20TOKEN.SYMBOL}
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="decimal" align="left">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        {MY_ERC20TOKEN.DECIMAL}
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="balance" align="left">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        {MY_ERC20TOKEN.BALANCE}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {myTokenList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: any, index: number) => {
+                    return (
+                      <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                        <TableCell align="left">
+                          <Typography color="#0f1429">{row.contract_name}</Typography>
+                        </TableCell>
+                        <TableCell align="left">
+                          <Typography color="#0f1429">{row.metadata.symbol}</Typography>
+                        </TableCell>
+                        <TableCell align="left">
+                          <Typography color="#0f1429">{row.metadata.decimals}</Typography>
+                        </TableCell>
+                        <TableCell align="left">
+                          <Typography color="#0f1429">{Number(row.balance) / Math.pow(10, row.metadata.decimals)}</Typography>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[1, 5, 10]}
+              component="div"
+              count={data.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Paper>
+        </div>
+      ) : (
+        <Grid
+          item
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+          }}
+        >
+          <Card
+            style={{
+              backgroundColor: "white",
+              borderRadius: "1rem",
+              padding: "5rem 2.5rem",
+              margin: "2rem",
+              boxShadow: "0 0 10px 0 rgba(0,0,0,0.1)",
+              justifyContent: "center",
+              alignItems: "center",
+              display: "flex",
+              border: "1px solid #FF0011",
+            }}
+          >
+            <Typography
+              style={{
+                color: "#0f1429",
+                fontSize: "30px",
+                fontWeight: "bold",
+                justifyContent: "center",
+                alignItems: "center",
+                display: "flex",
+              }}
+            >
+              You do not have any token in your wallet.
             </Typography>
           </Card>
         </Grid>
