@@ -31,16 +31,15 @@ export const CustomSelect: React.FC<Props> = ({ onChange, value, children, id, l
       classes={{ select: classes.select }}
       sx={{
         "& .css-jedpe8-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select": {
-          height: "27px",
-          borderRadius: "1rem",
+          height: "2rem",
         },
         "& .MuiOutlinedInput-notchedOutline": {
-          borderRadius: "1rem",
           //TODO: for just clicked
           //border: "0.1rem solid #FF0011 !important",
           border: "0.1rem solid #0F1429 !important",
         },
-        borderRadius: "1rem !important",
+        alignItems: "center",
+        justifyContent: "center",
       }}
       onChange={onChange}
       value={value}
