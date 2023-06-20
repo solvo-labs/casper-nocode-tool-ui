@@ -1,13 +1,13 @@
 import React, { Children, cloneElement } from "react";
-import { Select, Theme } from "@mui/material";
+import { Select } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   select: {
     color: "white !important",
     boxShadow: "0 0 10px 0 rgba(0,0,0,0.1)",
     backgroundColor: "#FF3341 !important",
-    width: "10rem !important",
+    width: "100% !important",
   },
   selectedMenuItem: {
     backgroundColor: "#FF3341 !important",
@@ -20,7 +20,7 @@ type Props = {
   onChange: any;
   value?: any;
   label?: string;
-  children: any;
+  children?: any;
 };
 
 export const CustomSelect: React.FC<Props> = ({ onChange, value, children, id, label }) => {

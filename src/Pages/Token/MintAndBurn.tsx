@@ -12,6 +12,7 @@ import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from 
 import { listofCreatorERC20Tokens } from "../../utils/api";
 
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { CustomSelect } from "../../components/CustomSelect";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -219,22 +220,17 @@ const MintAndBurn: React.FC = () => {
 
           <Grid container className={classes.gridContainer}>
             <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={selectedToken?.contractHash || ""}
+              <CustomSelect
+                value={selectedToken?.contractHash || "default"}
                 label="ERC-20 Token"
-                placeholder="Select ERC-20 Token"
                 onChange={(event: SelectChangeEvent) => {
-                  console.log(event.target);
                   const data = tokens.find((tk) => tk.contractHash === event.target.value);
                   setSelectedToken(data);
                 }}
-                className={classes.select}
-                style={{ borderRadius: "1rem", height: "3rem", color: "white" }}
+                id={"custom-select"}
               >
-                <MenuItem value="">
-                  <em>Select an ERC20 Token</em>
+                <MenuItem value="default">
+                  <em>Select an ERC-20 Token</em>
                 </MenuItem>
                 {tokens.map((tk) => {
                   return (
@@ -243,7 +239,7 @@ const MintAndBurn: React.FC = () => {
                     </MenuItem>
                   );
                 })}
-              </Select>
+              </CustomSelect>
               {selectedToken && <span>Total Supply : {calculateSupply()}</span>}
               <CustomInput placeholder="Amount" label="Amount" id="amount" name="amount" type="number" value={data} onChange={(e: any) => setData(e.target.value)} />
               <Grid paddingTop={2} container justifyContent={"center"}>
