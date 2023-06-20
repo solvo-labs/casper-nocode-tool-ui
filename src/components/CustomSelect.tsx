@@ -40,6 +40,7 @@ export const CustomSelect: React.FC<Props> = ({ onChange, value, children, id, l
           //border: "0.1rem solid #FF0011 !important",
           border: "0.1rem solid #0F1429 !important",
         },
+        borderRadius: "1rem",
       }}
       onChange={onChange}
       value={value}
