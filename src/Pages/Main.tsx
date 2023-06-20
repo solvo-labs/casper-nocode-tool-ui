@@ -26,18 +26,7 @@ const Main: React.FC = () => {
         alignItems: "center",
       }}
     >
-      <CustomSelect
-        id="select"
-        onChange={(event: any) => {
-          setValue(event.target.value);
-        }}
-        value={value}
-      >
-        <MenuItem value={selectValues.MENU_1}>{selectValues.MENU_1}</MenuItem>
-        <MenuItem value={selectValues.MENU_2}>{selectValues.MENU_2}</MenuItem>
-        <MenuItem value={selectValues.MENU_3}>{selectValues.MENU_3}</MenuItem>
-        <MenuItem value={selectValues.MENU_4}>{selectValues.MENU_4}</MenuItem>
-      </CustomSelect>
+      <span>We integrated only Token pages.</span>
     </div>
   );
 };

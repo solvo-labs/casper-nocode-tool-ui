@@ -11,7 +11,7 @@ import toastr from "toastr";
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 import { listofCreatorERC20Tokens } from "../../utils/api";
 
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { SelectChangeEvent } from "@mui/material/Select";
 import { CustomSelect } from "../../components/CustomSelect";
 
 const useStyles = makeStyles((theme: Theme) => ({
