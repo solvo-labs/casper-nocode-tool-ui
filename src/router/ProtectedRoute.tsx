@@ -3,6 +3,7 @@ import { Grid, Theme, LinearProgress } from "@mui/material";
 import { Outlet, Navigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import TopBar from "../components/TopBar";
+import { fetchContract } from "../utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   main: {
@@ -22,6 +23,7 @@ const ProtectedRoute: React.FC = () => {
   const [connected, setConnected] = useState<boolean>(false);
   const [publicKey, setPublicKey] = useState<string>("");
   const [provider, setProvider] = useState<any>();
+  const [wasm, setWasm] = useState<any>();
 
   useEffect(() => {
     const init = async () => {
@@ -33,6 +35,9 @@ const ProtectedRoute: React.FC = () => {
 
         const activePublicKey = await provider.getActivePublicKey();
 
+        const wasm1 = await fetchContract("../assets/cep18.wasm");
+
+        setWasm(wasm1);
         setProvider(provider);
         setPublicKey(activePublicKey);
         setConnected(isConnected);
@@ -68,7 +73,7 @@ const ProtectedRoute: React.FC = () => {
         <Grid item lg={10} md={12} xs={12}>
           <Grid container direction={"column"} spacing={2}>
             {/* <Grid item><DrawerAppBar /></Grid> */}
-            <Outlet context={[publicKey, provider]} />
+            <Outlet context={[publicKey, provider, wasm]} />
           </Grid>
         </Grid>
       </Grid>

@@ -7,7 +7,6 @@ import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from 
 import axios from "axios";
 import { ERC20TokenForm } from "../../utils/types";
 import { CustomInput } from "../../components/CustomInput";
-import { fetchContract } from "../../utils";
 import { CustomButton } from "../../components/CustomButton";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import toastr from "toastr";
@@ -69,14 +68,13 @@ const TokenMint: React.FC = () => {
   const classes = useStyles();
   const navigate = useNavigate();
 
-  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
+  const [publicKey, provider, wasm] = useOutletContext<[publickey: string, provider: any, wasm: any]>();
 
   const mintToken = async () => {
     // wallet
     const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
     // contract
-    const wasm = await fetchContract("../assets/cep18.wasm");
 
     const contract = new Contracts.Contract();
 
