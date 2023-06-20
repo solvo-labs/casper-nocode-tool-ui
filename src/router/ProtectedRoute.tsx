@@ -35,7 +35,7 @@ const ProtectedRoute: React.FC = () => {
 
         const activePublicKey = await provider.getActivePublicKey();
 
-        const wasm1 = await fetchContract("../assets/cep18.wasm");
+        const wasm1 = await fetchContract("/cep18.wasm");
 
         setWasm(wasm1);
         setProvider(provider);
