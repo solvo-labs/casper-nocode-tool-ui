@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { ERC20Token } from "../../utils/types";
-import { Grid, Stack, Theme, CircularProgress, MenuItem } from "@mui/material";
+import { CircularProgress, Grid, MenuItem, Select, SelectChangeEvent, Stack, Theme } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
-import { makeStyles } from "@mui/styles";
+import { ERC20Token } from "../../utils/types";
 import { useOutletContext, useNavigate } from "react-router-dom";
-import axios from "axios";
-import toastr from "toastr";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 import { listofCreatorERC20Tokens } from "../../utils/api";
-
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import axios from "axios";
+import toastr from "toastr";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -70,15 +68,19 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const Allowance: React.FC = () => {
-  const [receipentPubkey, setReceipentPubkey] = useState<string>("");
+const IncreaseDecreaseAllowance: React.FC = () => {
+  const [data, setData] = useState<any>({
+    spenderPubkey: "",
+    amount: 0,
+  });
+
+  const classes = useStyles();
+
+  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
   const [tokens, setTokens] = useState<ERC20Token[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedToken, setSelectedToken] = useState<ERC20Token>();
 
-  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
-
-  const classes = useStyles();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -97,7 +99,7 @@ const Allowance: React.FC = () => {
     init();
   }, []);
 
-  const allowance = async () => {
+  const increase = async () => {
     if (selectedToken) {
       const contract = new Contracts.Contract();
       contract.setContractHash(selectedToken.contractHash);
@@ -105,11 +107,11 @@ const Allowance: React.FC = () => {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
       const args = RuntimeArgs.fromMap({
-        owner: CLValueBuilder.key(ownerPublicKey),
-        recipient: CLValueBuilder.key(CLPublicKey.fromHex(receipentPubkey)),
+        spender: CLValueBuilder.key(CLPublicKey.fromHex(data.spenderPubkey)),
+        amount: CLValueBuilder.u256(Number(data.amount * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
       });
 
-      const deploy = contract.callEntrypoint("allowance", args, ownerPublicKey, "casper-test", "1000000000");
+      const deploy = contract.callEntrypoint("increase_allowance", args, ownerPublicKey, "casper-test", "1000000000");
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -122,10 +124,10 @@ const Allowance: React.FC = () => {
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
 
-        const data = DeployUtil.deployToJson(signedDeploy.val);
+        const deployData = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post("https://18.185.15.120:8000/deploy", data, { headers: { "Content-Type": "application/json" } });
-        toastr.success(response.data, "Allowance created successfully.");
+        const response = await axios.post("https://18.185.15.120:8000/deploy", deployData, { headers: { "Content-Type": "application/json" } });
+        toastr.success(response.data, selectedToken.name + "Increased successfully.");
 
         navigate("/my-tokens");
         // setActionLoader(false);
@@ -133,10 +135,49 @@ const Allowance: React.FC = () => {
         alert(error.message);
       }
     } else {
-      toastr.error("Please Select a token for allowance");
+      toastr.error("Please Select a token for transfer");
     }
   };
 
+  const decrease = async () => {
+    if (selectedToken) {
+      const contract = new Contracts.Contract();
+      contract.setContractHash(selectedToken.contractHash);
+
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+      const args = RuntimeArgs.fromMap({
+        spender: CLValueBuilder.key(CLPublicKey.fromHex(data.spenderPubkey)),
+        amount: CLValueBuilder.u256(Number(data.amount * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
+      });
+
+      const deploy = contract.callEntrypoint("decrease_allowance", args, ownerPublicKey, "casper-test", "1000000000");
+
+      const deployJson = DeployUtil.deployToJson(deploy);
+
+      try {
+        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+
+        // setActionLoader(true);
+
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+
+        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+
+        const deployData = DeployUtil.deployToJson(signedDeploy.val);
+
+        const response = await axios.post("https://18.185.15.120:8000/deploy", deployData, { headers: { "Content-Type": "application/json" } });
+        toastr.success(response.data, selectedToken.name + "Decreased successfully.");
+
+        navigate("/my-tokens");
+        // setActionLoader(false);
+      } catch (error: any) {
+        alert(error.message);
+      }
+    } else {
+      toastr.error("Please Select a token for transfer");
+    }
+  };
   if (loading) {
     return (
       <div
@@ -163,14 +204,14 @@ const Allowance: React.FC = () => {
     >
       <Grid container className={classes.container}>
         <Grid container className={classes.center}>
-          <h5 className={classes.title}>Allowance Token</h5>
+          <h5 className={classes.title}>Decrease & Increase Token</h5>
 
           <Grid container className={classes.gridContainer}>
-            <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>
+            <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={selectedToken?.contractHash || ""}
+                value={selectedToken ? selectedToken.contractHash : ""}
                 label="ERC-20 Token"
                 placeholder="Select ERC-20 Token"
                 onChange={(event: SelectChangeEvent) => {
@@ -192,17 +233,38 @@ const Allowance: React.FC = () => {
                 })}
               </Select>
               <CustomInput
-                placeholder="Receipt Pubkey"
-                label="Receipt Pubkey"
-                id="receiptPubkey"
-                name="receiptPubkey"
+                placeholder="Spender Pubkey"
+                label="Spender Pubkey"
+                id="spenderPubkey"
+                name="spenderPubkey"
                 type="text"
-                value={receipentPubkey}
-                onChange={(e: any) => setReceipentPubkey(e.target.value)}
+                value={data.spenderPubkey}
+                onChange={(e: any) =>
+                  setData({
+                    ...data,
+                    spenderPubkey: e.target.value,
+                  })
+                }
               />
-
+              <CustomInput
+                placeholder="Amount"
+                label="Amount"
+                id="amount"
+                name="amount"
+                type="number"
+                value={data.amount}
+                onChange={(e: any) =>
+                  setData({
+                    ...data,
+                    amount: e.target.value,
+                  })
+                }
+              />
               <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton onClick={allowance} disabled={receipentPubkey === "" || selectedToken === undefined} label="Allowance" />
+                <CustomButton onClick={increase} disabled={false} label="Increase" />
+              </Grid>
+              <Grid paddingTop={2} container justifyContent={"center"}>
+                <CustomButton onClick={decrease} disabled={false} label="Decrease" />
               </Grid>
             </Stack>
           </Grid>
@@ -212,4 +274,4 @@ const Allowance: React.FC = () => {
   );
 };
 
-export default Allowance;
+export default IncreaseDecreaseAllowance;

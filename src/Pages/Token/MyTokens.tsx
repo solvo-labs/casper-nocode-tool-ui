@@ -78,7 +78,7 @@ const MyTokens: React.FC = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          marginTop: "6rem",
+          marginTop: "14rem",
         }}
       >
         <CircularProgress />
@@ -89,12 +89,12 @@ const MyTokens: React.FC = () => {
   return (
     <div
       style={{
-        height: "calc(100vh-5rem)",
         padding: "1rem",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
+        marginTop: "8rem",
       }}
     >
       <h5 className={classes.title}>The Tokens I created</h5>
@@ -136,7 +136,14 @@ const MyTokens: React.FC = () => {
                 <TableBody>
                   {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                      <TableRow
+                        style={{ cursor: "pointer" }}
+                        onClick={() => window.open("https://testnet.cspr.live/contract/" + row.contractHash.slice(5), "_blank")}
+                        hover
+                        role="checkbox"
+                        tabIndex={-1}
+                        key={index}
+                      >
                         <TableCell align="left">
                           <Typography color="#0f1429">{row.name}</Typography>
                         </TableCell>
@@ -240,7 +247,14 @@ const MyTokens: React.FC = () => {
                 <TableBody>
                   {myTokenList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: any, index: number) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                      <TableRow
+                        hover
+                        role="checkbox"
+                        onClick={() => window.open("https://testnet.cspr.live/contract-package/" + row.contract_package_hash, "_blank")}
+                        tabIndex={-1}
+                        key={index}
+                        style={{ cursor: "pointer" }}
+                      >
                         <TableCell align="left">
                           <Typography color="#0f1429">{row.contract_name}</Typography>
                         </TableCell>

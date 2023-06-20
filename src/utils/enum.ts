@@ -16,6 +16,7 @@ export enum TOKEN_PAGE {
   APPROVE = "Approve",
   MINT_AND_BURN = "Mint & Burn",
   ALLOWANCE = "Allowance",
+  INCREASE_DECREASE_ALLOWANCE = "Increase & Decrease Allowance",
 }
 
 export enum WALLETS_NAME {

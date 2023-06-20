@@ -177,7 +177,6 @@ const Transfer: React.FC = () => {
                 label="ERC-20 Token"
                 placeholder="Select ERC-20 Token"
                 onChange={(event: SelectChangeEvent) => {
-                  console.log(event.target);
                   const data = tokens.find((tk) => tk.contractHash === event.target.value);
                   setSelectedToken(data);
                 }}
@@ -188,7 +187,6 @@ const Transfer: React.FC = () => {
                   <em>Select an ERC20 Token</em>
                 </MenuItem>
                 {tokens.map((tk) => {
-                  console.log("tk", tk);
                   return (
                     <MenuItem key={tk.contractHash} value={tk.contractHash}>
                       {tk.name + "(" + tk.symbol + ")"}

@@ -186,7 +186,6 @@ const Approve: React.FC = () => {
                   <em>Select an ERC20 Token</em>
                 </MenuItem>
                 {tokens.map((tk) => {
-                  console.log("tk", tk);
                   return (
                     <MenuItem key={tk.contractHash} value={tk.contractHash}>
                       {tk.name + "(" + tk.symbol + ")"}
