@@ -71,47 +71,51 @@ const TokenMint: React.FC = () => {
   const [publicKey, provider, wasm] = useOutletContext<[publickey: string, provider: any, wasm: any]>();
 
   const mintToken = async () => {
-    // wallet
-    const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-
-    // contract
-
-    const contract = new Contracts.Contract();
-
-    // parameters
-    const args = RuntimeArgs.fromMap({
-      name: CLValueBuilder.string(data.name),
-      symbol: CLValueBuilder.string(data.symbol),
-      decimals: CLValueBuilder.u8(data.decimal),
-      total_supply: CLValueBuilder.u256(data.supply * Math.pow(10, data.decimal)),
-      enable_mint_burn: CLValueBuilder.bool(data.enableMintBurn),
-    });
-
-    const deploy = contract.install(new Uint8Array(wasm!), args, "150000000000", ownerPublicKey, "casper-test");
-
-    const deployJson = DeployUtil.deployToJson(deploy);
-
-    // signer logic
     try {
-      const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
-      setActionLoader(true);
+      // contract
 
-      let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+      const contract = new Contracts.Contract();
 
-      signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+      // parameters
+      const args = RuntimeArgs.fromMap({
+        name: CLValueBuilder.string(data.name),
+        symbol: CLValueBuilder.string(data.symbol),
+        decimals: CLValueBuilder.u8(data.decimal),
+        total_supply: CLValueBuilder.u256(data.supply * Math.pow(10, data.decimal)),
+        enable_mint_burn: CLValueBuilder.bool(data.enableMintBurn),
+      });
 
-      const data = DeployUtil.deployToJson(signedDeploy.val);
+      const deploy = contract.install(new Uint8Array(wasm!), args, "150000000000", ownerPublicKey, "casper-test");
 
-      const response = await axios.post("https://18.185.15.120:8000/deploy", data, { headers: { "Content-Type": "application/json" } });
-      toastr.success(response.data, "ERC-20 Token deployed successfully.");
-      window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
+      const deployJson = DeployUtil.deployToJson(deploy);
 
-      navigate("/my-tokens");
-      setActionLoader(false);
-    } catch (error: any) {
-      alert(error.message);
+      // signer logic
+      try {
+        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+
+        setActionLoader(true);
+
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+
+        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+
+        const data = DeployUtil.deployToJson(signedDeploy.val);
+
+        const response = await axios.post("https://18.185.15.120:8000/deploy", data, { headers: { "Content-Type": "application/json" } });
+        toastr.success(response.data, "ERC-20 Token deployed successfully.");
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
+
+        navigate("/my-tokens");
+        setActionLoader(false);
+      } catch (error: any) {
+        alert(error.message);
+      }
+    } catch (err: any) {
+      toastr.error(err);
     }
+    // wallet
 
     // provider
     //   .sign(JSON.stringify(deployJson), publicKey)
