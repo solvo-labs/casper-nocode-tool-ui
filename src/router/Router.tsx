@@ -14,7 +14,7 @@ import IncreaseDecreaseAllowance from "../Pages/Token/IncreaseDecreaseAllowance"
 const Router: React.FC = () => {
   return (
     <>
-      <BrowserRouter basename={import.meta.env.DEV ? "/" : "/casper-nocode-tool-ui"}>
+      <BrowserRouter basename={"/"}>
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/" index element={<Main />} />

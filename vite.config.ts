@@ -9,9 +9,5 @@ export default defineConfig(({ command }) => {
     base: "/",
   };
 
-  if (command !== "serve") {
-    config.base = "/casper-nocode-tool-ui";
-  }
-
   return config;
 });
