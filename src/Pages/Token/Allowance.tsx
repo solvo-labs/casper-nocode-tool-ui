@@ -127,6 +127,7 @@ const Allowance: React.FC = () => {
 
         const response = await axios.post("https://18.185.15.120:8000/deploy", data, { headers: { "Content-Type": "application/json" } });
         toastr.success(response.data, "Allowance created successfully.");
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
         // setActionLoader(false);
