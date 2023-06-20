@@ -58,7 +58,7 @@ const TokenMint: React.FC = () => {
   const [data, setData] = useState<ERC20TokenForm>({
     name: "",
     symbol: "",
-    decimal: 9,
+    decimal: 8,
     supply: 0,
     enableMintBurn: true,
   });
