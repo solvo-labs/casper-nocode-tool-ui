@@ -115,7 +115,7 @@ const TransferFrom: React.FC = () => {
         amount: CLValueBuilder.u256(Number(data.amount * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
       });
 
-      const deploy = contract.callEntrypoint("transfer_from", args, ownerPublicKey, "casper-test", "1000000000");
+      const deploy = contract.callEntrypoint("transfer_from", args, ownerPublicKey, "casper-test", "2000000000");
 
       const deployJson = DeployUtil.deployToJson(deploy);
 

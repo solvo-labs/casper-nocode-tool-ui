@@ -85,10 +85,10 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
     setAnchorEl(null);
   };
 
-  const allowance = () => {
-    navigate("/allowance");
-    setAnchorEl(null);
-  };
+  // const allowance = () => {
+  //   navigate("/allowance");
+  //   setAnchorEl(null);
+  // };
 
   const increaseDecreaseAllowance = () => {
     navigate("/increase-decrease-allowance");
@@ -168,9 +168,9 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                 <MenuItem onClick={approve} className={classes.menuItem}>
                   {TOKEN_PAGE.APPROVE}
                 </MenuItem>
-                <MenuItem onClick={allowance} className={classes.menuItem}>
+                {/* <MenuItem onClick={allowance} className={classes.menuItem}>
                   {TOKEN_PAGE.ALLOWANCE}
-                </MenuItem>
+                </MenuItem> */}
                 <MenuItem onClick={increaseDecreaseAllowance} className={classes.menuItem}>
                   {TOKEN_PAGE.INCREASE_DECREASE_ALLOWANCE}
                 </MenuItem>
