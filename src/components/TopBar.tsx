@@ -95,6 +95,11 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
     setAnchorEl(null);
   };
 
+  const transferFrom = () => {
+    navigate("/transfer-from");
+    setAnchorEl(null);
+  };
+
   const logout = async () => {
     const CasperWalletProvider = window.CasperWalletProvider;
     const provider = CasperWalletProvider();
@@ -168,6 +173,10 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                 </MenuItem>
                 <MenuItem onClick={increaseDecreaseAllowance} className={classes.menuItem}>
                   {TOKEN_PAGE.INCREASE_DECREASE_ALLOWANCE}
+                </MenuItem>
+
+                <MenuItem onClick={transferFrom} className={classes.menuItem}>
+                  {TOKEN_PAGE.TRANSFER_FROM}
                 </MenuItem>
               </Menu>
             </Box>

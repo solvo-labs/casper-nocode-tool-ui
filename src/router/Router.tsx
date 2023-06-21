@@ -10,6 +10,7 @@ import MyTokens from "../Pages/Token/MyTokens";
 import MintAndBurn from "../Pages/Token/MintAndBurn";
 import Allowance from "../Pages/Token/Allowance";
 import IncreaseDecreaseAllowance from "../Pages/Token/IncreaseDecreaseAllowance";
+import TransferFrom from "../Pages/Token/TransferFrom";
 
 const Router: React.FC = () => {
   return (
@@ -21,6 +22,7 @@ const Router: React.FC = () => {
             <Route path="/token" index element={<TokenMint />} />
             <Route path="/my-tokens" index element={<MyTokens />} />
             <Route path="/transfer" index element={<Transfer />} />
+            <Route path="/transfer-from" index element={<TransferFrom />} />
             <Route path="/approve" element={<Approve />} />
             <Route path="/mint-and-burn" element={<MintAndBurn />} />
             <Route path="/allowance" element={<Allowance />} />
