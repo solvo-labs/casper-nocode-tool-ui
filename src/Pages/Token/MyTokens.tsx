@@ -30,7 +30,9 @@ const useStyles = makeStyles(() => ({
 
 const MyTokens: React.FC = () => {
   const [page, setPage] = React.useState(0);
+  const [page2, setPage2] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage2, setRowsPerPage2] = React.useState(5);
   const [data, setData] = useState<ERC20Token[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [myTokenList, setMyTokenList] = useState<any>([]);
@@ -46,16 +48,40 @@ const MyTokens: React.FC = () => {
       const accountHash = ownerPublicKey.toAccountHashStr();
 
       const currentErc20Tokens = await fetchErc20TokenWithBalances(accountHash);
+      console.log(currentErc20Tokens);
+      let finalData = currentErc20Tokens.map((dt) => {
+        return {
+          name: dt.contract_name,
+          symbol: dt.metadata.symbol,
+          decimals: dt.metadata.decimals,
+          balance: Number(dt.balance) / Math.pow(10, dt.metadata.decimals),
+          contractPackageHash: dt.contract_package_hash,
+          contractHash: "",
+        };
+      });
 
-      setMyTokenList(currentErc20Tokens);
+      const creatorTokens = await listofCreatorERC20Tokens(accountHash);
 
-      listofCreatorERC20Tokens(accountHash)
-        .then((result) => {
-          setData(result);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      creatorTokens.forEach((ct) => {
+        if (finalData.findIndex((fd) => fd.symbol !== ct.symbol) > -1) {
+          finalData.push({
+            name: ct.name,
+            symbol: ct.symbol,
+            decimals: parseInt(ct.decimals.hex, 16),
+            balance: parseInt(ct.total_supply.hex, 16) / Math.pow(10, parseInt(ct.decimals.hex, 16)),
+            contractPackageHash: "",
+            contractHash: ct.contractHash,
+          });
+        }
+      });
+
+      console.log(finalData);
+
+      setData(creatorTokens);
+
+      setMyTokenList(finalData);
+
+      setLoading(false);
     };
 
     init();
@@ -68,6 +94,15 @@ const MyTokens: React.FC = () => {
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
+  };
+
+  const handleChangePage2 = (_event: unknown, newPage: number) => {
+    setPage2(newPage);
+  };
+
+  const handleChangeRowsPerPage2 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage2(+event.target.value);
+    setPage2(0);
   };
 
   if (loading) {
@@ -217,7 +252,7 @@ const MyTokens: React.FC = () => {
 
       {myTokenList.length !== 0 ? (
         <div>
-          <Paper className={classes.paper}>
+          <Paper id="2" className={classes.paper}>
             <TableContainer className={classes.tableContainer}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
@@ -245,27 +280,27 @@ const MyTokens: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {myTokenList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: any, index: number) => {
+                  {myTokenList.slice(page2 * rowsPerPage2, page2 * rowsPerPage2 + rowsPerPage2).map((row: any, index: number) => {
                     return (
                       <TableRow
                         hover
                         role="checkbox"
-                        onClick={() => window.open("https://testnet.cspr.live/contract-package/" + row.contract_package_hash, "_blank")}
+                        onClick={() => window.open("https://testnet.cspr.live/contract-package/" + row.contractPackageHash, "_blank")}
                         tabIndex={-1}
                         key={index}
                         style={{ cursor: "pointer" }}
                       >
                         <TableCell align="left">
-                          <Typography color="#0f1429">{row.contract_name}</Typography>
+                          <Typography color="#0f1429">{row.name}</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">{row.metadata.symbol}</Typography>
+                          <Typography color="#0f1429">{row.symbol}</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">{row.metadata.decimals}</Typography>
+                          <Typography color="#0f1429">{row.decimals}</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">{Number(row.balance) / Math.pow(10, row.metadata.decimals)}</Typography>
+                          <Typography color="#0f1429">{row.balance}</Typography>
                         </TableCell>
                       </TableRow>
                     );
@@ -276,11 +311,11 @@ const MyTokens: React.FC = () => {
             <TablePagination
               rowsPerPageOptions={[1, 5, 10]}
               component="div"
-              count={data.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
+              count={myTokenList.length}
+              rowsPerPage={rowsPerPage2}
+              page={page2}
+              onPageChange={handleChangePage2}
+              onRowsPerPageChange={handleChangeRowsPerPage2}
             />
           </Paper>
         </div>
