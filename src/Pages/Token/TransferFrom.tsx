@@ -110,7 +110,7 @@ const TransferFrom: React.FC = () => {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
       const args = RuntimeArgs.fromMap({
-        owner: CLValueBuilder.key(data.fromPubkey),
+        owner: CLValueBuilder.key(CLPublicKey.fromHex(data.fromPubkey)),
         recipient: CLValueBuilder.key(CLPublicKey.fromHex(data.receipentPubkey)),
         amount: CLValueBuilder.u256(Number(data.amount * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
       });
