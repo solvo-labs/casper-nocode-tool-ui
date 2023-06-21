@@ -4,11 +4,11 @@ import { makeStyles } from "@mui/styles";
 
 import { ERC20Token } from "../../utils/types";
 import { MY_ERC20TOKEN } from "../../utils/enum";
-import { fetchErc20TokenWithBalances, listofCreatorERC20Tokens } from "../../utils/api";
 import { useOutletContext } from "react-router-dom";
 
 // @ts-ignore
 import { CLPublicKey } from "casper-js-sdk";
+import { initTokens } from "../../utils";
 
 const useStyles = makeStyles(() => ({
   title: {
@@ -47,35 +47,7 @@ const MyTokens: React.FC = () => {
 
       const accountHash = ownerPublicKey.toAccountHashStr();
 
-      const currentErc20Tokens = await fetchErc20TokenWithBalances(accountHash);
-      console.log(currentErc20Tokens);
-      let finalData = currentErc20Tokens.map((dt) => {
-        return {
-          name: dt.contract_name,
-          symbol: dt.metadata.symbol,
-          decimals: dt.metadata.decimals,
-          balance: Number(dt.balance) / Math.pow(10, dt.metadata.decimals),
-          contractPackageHash: dt.contract_package_hash,
-          contractHash: "",
-        };
-      });
-
-      const creatorTokens = await listofCreatorERC20Tokens(accountHash);
-
-      creatorTokens.forEach((ct) => {
-        if (finalData.findIndex((fd) => fd.symbol !== ct.symbol) > -1) {
-          finalData.push({
-            name: ct.name,
-            symbol: ct.symbol,
-            decimals: parseInt(ct.decimals.hex, 16),
-            balance: parseInt(ct.total_supply.hex, 16) / Math.pow(10, parseInt(ct.decimals.hex, 16)),
-            contractPackageHash: "",
-            contractHash: ct.contractHash,
-          });
-        }
-      });
-
-      console.log(finalData);
+      const { creatorTokens, finalData } = await initTokens(accountHash);
 
       setData(creatorTokens);
 
