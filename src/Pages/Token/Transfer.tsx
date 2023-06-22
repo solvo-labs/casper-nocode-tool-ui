@@ -194,6 +194,7 @@ const Transfer: React.FC = () => {
                   );
                 })}
               </CustomSelect>
+              {selectedToken && <span>Balance : {selectedToken.balance}</span>}
               <CustomInput
                 placeholder="Receipt Pubkey"
                 label="Receipt Pubkey"

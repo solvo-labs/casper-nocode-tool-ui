@@ -125,7 +125,6 @@ export const initTokens = async (accountHash: string) => {
 
   let finalData: Token[] = [...walletData];
 
-  // console.log(creatorTokens);
   creatorTokens.forEach((ct) => {
     const isExist = walletData.findIndex((wd) => {
       return wd.contractHash === ct.contractHash;
