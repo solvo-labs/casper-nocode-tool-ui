@@ -89,28 +89,49 @@ export const contractPackageHashToContractHash = async (contractPackageHash: str
   return response.data.data[0].contract_hash;
 };
 
-export const initTokens = async (accountHash: string) => {
+export type Token = {
+  name: string;
+  symbol: string;
+  decimals: number;
+  balance: number;
+  contractPackageHash: string;
+  contractHash: string;
+};
+
+export const allTokensFromWallet = async (accountHash: string) => {
   const currentErc20Tokens = await fetchErc20TokenWithBalances(accountHash);
 
   const currentErc20TokensContractHashPromises = currentErc20Tokens.map((dt) => contractPackageHashToContractHash(dt.contract_package_hash));
 
   const currentErc20TokensContractHash = await Promise.all(currentErc20TokensContractHashPromises);
 
-  let finalData = currentErc20Tokens.map((dt, index) => {
+  let walletData: Token[] = currentErc20Tokens.map((dt, index) => {
     return {
       name: dt.contract_name,
       symbol: dt.metadata.symbol,
       decimals: dt.metadata.decimals,
       balance: Number(dt.balance) / Math.pow(10, dt.metadata.decimals),
       contractPackageHash: dt.contract_package_hash,
-      contractHash: currentErc20TokensContractHash[index],
+      contractHash: "hash-" + currentErc20TokensContractHash[index],
     };
   });
 
+  return walletData;
+};
+
+export const initTokens = async (accountHash: string) => {
+  const walletData = await allTokensFromWallet(accountHash);
   const creatorTokens = await listofCreatorERC20Tokens(accountHash);
 
+  let finalData: Token[] = [...walletData];
+
+  // console.log(creatorTokens);
   creatorTokens.forEach((ct) => {
-    if (finalData.findIndex((fd) => fd.symbol !== ct.symbol) > -1) {
+    const isExist = walletData.findIndex((wd) => {
+      return wd.contractHash === ct.contractHash;
+    });
+
+    if (isExist < 0) {
       finalData.push({
         name: ct.name,
         symbol: ct.symbol,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ERC20Token, TokenTransfer } from "../../utils/types";
+import { TokenTransfer } from "../../utils/types";
 import { Grid, Stack, Theme, CircularProgress, MenuItem } from "@mui/material";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
@@ -9,7 +9,7 @@ import axios from "axios";
 import toastr from "toastr";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { listofCreatorERC20Tokens } from "../../utils/api";
+import { Token, initTokens } from "../../utils/api";
 
 import { SelectChangeEvent } from "@mui/material/Select";
 import { CustomSelect } from "../../components/CustomSelect";
@@ -76,9 +76,9 @@ const Transfer: React.FC = () => {
     receipentPubkey: "",
     amount: 0,
   });
-  const [tokens, setTokens] = useState<ERC20Token[]>([]);
+  const [tokens, setTokens] = useState<Token[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedToken, setSelectedToken] = useState<ERC20Token>();
+  const [selectedToken, setSelectedToken] = useState<Token>();
 
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
 
@@ -89,13 +89,15 @@ const Transfer: React.FC = () => {
     const init = async () => {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
-      listofCreatorERC20Tokens(ownerPublicKey.toAccountHashStr())
-        .then((result) => {
-          setTokens(result);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      const accountHash = ownerPublicKey.toAccountHashStr();
+
+      const { finalData } = await initTokens(accountHash);
+
+      const filteredFinalData = finalData.filter((fd) => fd.balance > 0);
+
+      setTokens(filteredFinalData);
+
+      setLoading(false);
     };
 
     init();
@@ -110,7 +112,7 @@ const Transfer: React.FC = () => {
 
       const args = RuntimeArgs.fromMap({
         recipient: CLValueBuilder.key(CLPublicKey.fromHex(data.receipentPubkey)),
-        amount: CLValueBuilder.u256(Number(data.amount * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
+        amount: CLValueBuilder.u256(Number(data.amount * Math.pow(10, selectedToken.decimals))),
       });
 
       const deploy = contract.callEntrypoint("transfer", args, ownerPublicKey, "casper-test", "1000000000");
