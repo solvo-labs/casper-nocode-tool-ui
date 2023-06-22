@@ -80,3 +80,47 @@ export const fetchErc20TokenWithBalances = async (accountHash: string) => {
 
   return finalData;
 };
+
+export const contractPackageHashToContractHash = async (contractPackageHash: string) => {
+  const response = await axios.get(
+    api + "extended-deploys?page=1&limit=1&fields=entry_point,contract_package&contract_package_hash=" + contractPackageHash + "&with_amounts_in_currency_id=1"
+  );
+
+  return response.data.data[0].contract_hash;
+};
+
+export const initTokens = async (accountHash: string) => {
+  const currentErc20Tokens = await fetchErc20TokenWithBalances(accountHash);
+
+  const currentErc20TokensContractHashPromises = currentErc20Tokens.map((dt) => contractPackageHashToContractHash(dt.contract_package_hash));
+
+  const currentErc20TokensContractHash = await Promise.all(currentErc20TokensContractHashPromises);
+
+  let finalData = currentErc20Tokens.map((dt, index) => {
+    return {
+      name: dt.contract_name,
+      symbol: dt.metadata.symbol,
+      decimals: dt.metadata.decimals,
+      balance: Number(dt.balance) / Math.pow(10, dt.metadata.decimals),
+      contractPackageHash: dt.contract_package_hash,
+      contractHash: currentErc20TokensContractHash[index],
+    };
+  });
+
+  const creatorTokens = await listofCreatorERC20Tokens(accountHash);
+
+  creatorTokens.forEach((ct) => {
+    if (finalData.findIndex((fd) => fd.symbol !== ct.symbol) > -1) {
+      finalData.push({
+        name: ct.name,
+        symbol: ct.symbol,
+        decimals: parseInt(ct.decimals.hex, 16),
+        balance: parseInt(ct.total_supply.hex, 16) / Math.pow(10, parseInt(ct.decimals.hex, 16)),
+        contractPackageHash: "",
+        contractHash: ct.contractHash,
+      });
+    }
+  });
+
+  return { creatorTokens, finalData };
+};

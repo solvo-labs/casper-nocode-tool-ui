@@ -8,7 +8,7 @@ import { useOutletContext } from "react-router-dom";
 
 // @ts-ignore
 import { CLPublicKey } from "casper-js-sdk";
-import { initTokens } from "../../utils";
+import { initTokens } from "../../utils/api";
 
 const useStyles = makeStyles(() => ({
   title: {
@@ -257,7 +257,7 @@ const MyTokens: React.FC = () => {
                       <TableRow
                         hover
                         role="checkbox"
-                        onClick={() => window.open("https://testnet.cspr.live/contract-package/" + row.contractPackageHash, "_blank")}
+                        onClick={() => window.open("https://testnet.cspr.live/contract/" + row.contractHash, "_blank")}
                         tabIndex={-1}
                         key={index}
                         style={{ cursor: "pointer" }}
