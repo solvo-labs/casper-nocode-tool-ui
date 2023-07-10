@@ -9,6 +9,9 @@ export const MyCollections = () => {
   const [publicKey] = useOutletContext<[publickey: string]>();
   const [loading, setLoading] = useState<boolean>(true);
 
+  // @to-do add collection model
+  const [collections, setCollections] = useState<any>([]);
+
   useEffect(() => {
     const init = async () => {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
@@ -20,7 +23,7 @@ export const MyCollections = () => {
       const result = await Promise.all(promises);
 
       setLoading(false);
-      console.log(result);
+      setCollections(result);
     };
 
     init();
