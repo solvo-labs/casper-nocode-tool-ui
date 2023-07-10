@@ -9,7 +9,7 @@ import axios from "axios";
 import toastr from "toastr";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { listofCreatorERC20Tokens } from "../../utils/api";
+import { SERVER_API, listofCreatorERC20Tokens } from "../../utils/api";
 
 import { SelectChangeEvent } from "@mui/material/Select";
 import { CustomSelect } from "../../components/CustomSelect";
@@ -129,7 +129,7 @@ const MintAndBurn: React.FC = () => {
 
         const deployedData = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post("https://18.185.15.120:8000/deploy", deployedData, { headers: { "Content-Type": "application/json" } });
+        const response = await axios.post(SERVER_API + "deploy", deployedData, { headers: { "Content-Type": "application/json" } });
         toastr.success(response.data, selectedToken.name + " Token minted successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
@@ -170,7 +170,7 @@ const MintAndBurn: React.FC = () => {
 
         const deployedData = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post("https://18.185.15.120:8000/deploy", deployedData, { headers: { "Content-Type": "application/json" } });
+        const response = await axios.post(SERVER_API + deploy, deployedData, { headers: { "Content-Type": "application/json" } });
         toastr.success(response.data, selectedToken.name + " Token burned successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 

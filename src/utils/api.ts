@@ -2,7 +2,7 @@ import axios from "axios";
 import { ERC20Token } from "./types";
 
 const api = "https://event-store-api-clarity-testnet.make.services/";
-const serverApi = "https://18.185.15.120:8000/";
+export const SERVER_API = import.meta.env.DEV ? "http://localhost:1923/" : "https://18.185.15.120:8000/";
 
 // https://event-store-api-clarity-testnet.make.services/accounts/5e542e3bfacb53152a07322519eedd6f6cad1689508d588051603459b4b12590/erc20-tokens
 
@@ -34,7 +34,7 @@ type NamedKey = {
 };
 
 export const fetchNamedKeys = async (accountHash: string) => {
-  const stateRootHash = (await axios.get<string>(serverApi + "stateRootHash")).data;
+  const stateRootHash = (await axios.get<string>(SERVER_API + "stateRootHash")).data;
 
   const response = await axios.get(api + "rpc/" + "state_get_item?state_root_hash=" + stateRootHash + "&key=" + accountHash);
   const namedKeys: NamedKey[] = response.data.result.stored_value.Account.named_keys;
@@ -63,7 +63,7 @@ export const fetchCep78NamedKeys = async (accountHash: string) => {
 };
 
 export const fetchErc20TokenDetails = async (contractHash: string) => {
-  const response = await axios.get<ERC20Token>(serverApi + "getERC20Token?contractHash=" + contractHash);
+  const response = await axios.get<ERC20Token>(SERVER_API + "getERC20Token?contractHash=" + contractHash);
 
   return { ...response.data, contractHash };
 };

@@ -9,7 +9,7 @@ import axios from "axios";
 import toastr from "toastr";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { Token, initTokens } from "../../utils/api";
+import { SERVER_API, Token, initTokens } from "../../utils/api";
 
 import { SelectChangeEvent } from "@mui/material/Select";
 import { CustomSelect } from "../../components/CustomSelect";
@@ -130,7 +130,7 @@ const Transfer: React.FC = () => {
 
         const data = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post("https://18.185.15.120:8000/deploy", data, { headers: { "Content-Type": "application/json" } });
+        const response = await axios.post(SERVER_API + "deploy", data, { headers: { "Content-Type": "application/json" } });
         toastr.success(response.data, "ERC-20 Token transfered successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 

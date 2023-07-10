@@ -10,6 +10,7 @@ import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import toastr from "toastr";
+import { SERVER_API } from "../../utils/api";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -103,7 +104,7 @@ const TokenMint: React.FC = () => {
 
         const data = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post("https://18.185.15.120:8000/deploy", data, { headers: { "Content-Type": "application/json" } });
+        const response = await axios.post(SERVER_API + "deploy", data, { headers: { "Content-Type": "application/json" } });
         toastr.success(response.data, "ERC-20 Token deployed successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 

@@ -7,7 +7,7 @@ import { ERC20Token } from "../../utils/types";
 import { useOutletContext, useNavigate } from "react-router-dom";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { listofCreatorERC20Tokens } from "../../utils/api";
+import { SERVER_API, listofCreatorERC20Tokens } from "../../utils/api";
 import axios from "axios";
 import toastr from "toastr";
 import { CustomSelect } from "../../components/CustomSelect";
@@ -127,7 +127,7 @@ const IncreaseDecreaseAllowance: React.FC = () => {
 
         const deployData = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post("https://18.185.15.120:8000/deploy", deployData, { headers: { "Content-Type": "application/json" } });
+        const response = await axios.post(SERVER_API + "deploy", deployData, { headers: { "Content-Type": "application/json" } });
         toastr.success(response.data, selectedToken.name + "Increased successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
@@ -168,7 +168,7 @@ const IncreaseDecreaseAllowance: React.FC = () => {
 
         const deployData = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post("https://18.185.15.120:8000/deploy", deployData, { headers: { "Content-Type": "application/json" } });
+        const response = await axios.post(SERVER_API + "deploy", deployData, { headers: { "Content-Type": "application/json" } });
         toastr.success(response.data, selectedToken.name + "Decreased successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
