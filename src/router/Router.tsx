@@ -11,6 +11,8 @@ import MintAndBurn from "../Pages/Token/MintAndBurn";
 import Allowance from "../Pages/Token/Allowance";
 import IncreaseDecreaseAllowance from "../Pages/Token/IncreaseDecreaseAllowance";
 import TransferFrom from "../Pages/Token/TransferFrom";
+import { CreateCollection } from "../Pages/NFT/CreateCollection";
+import { MyCollections } from "../Pages/NFT/MyCollections";
 
 const Router: React.FC = () => {
   return (
@@ -19,6 +21,8 @@ const Router: React.FC = () => {
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/" index element={<Main />} />
+
+            {/* TOKENS */}
             <Route path="/token" index element={<TokenMint />} />
             <Route path="/my-tokens" index element={<MyTokens />} />
             <Route path="/transfer" index element={<Transfer />} />
@@ -27,6 +31,10 @@ const Router: React.FC = () => {
             <Route path="/mint-and-burn" element={<MintAndBurn />} />
             <Route path="/allowance" element={<Allowance />} />
             <Route path="/increase-decrease-allowance" element={<IncreaseDecreaseAllowance />} />
+
+            {/* NFTS */}
+            <Route path="/create-collection" index element={<CreateCollection />}></Route>
+            <Route path="/my-collections" index element={<MyCollections />}></Route>
           </Route>
           <Route path="/login" index element={<Login />} />
         </Routes>

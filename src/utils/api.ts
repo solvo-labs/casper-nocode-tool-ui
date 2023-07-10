@@ -39,8 +39,24 @@ export const fetchNamedKeys = async (accountHash: string) => {
   const response = await axios.get(api + "rpc/" + "state_get_item?state_root_hash=" + stateRootHash + "&key=" + accountHash);
   const namedKeys: NamedKey[] = response.data.result.stored_value.Account.named_keys;
 
+  return namedKeys;
+};
+
+const fetchCep18NamedKeys = async (accountHash: string) => {
+  const namedKeys = await fetchNamedKeys(accountHash);
+
   const filteredNamedKeys = namedKeys.filter((ky) => {
     return ky.name.startsWith("cep18_contract_hash");
+  });
+
+  return filteredNamedKeys;
+};
+
+export const fetchCep78NamedKeys = async (accountHash: string) => {
+  const namedKeys = await fetchNamedKeys(accountHash);
+
+  const filteredNamedKeys = namedKeys.filter((ky) => {
+    return ky.name.startsWith("cep78_contract_hash");
   });
 
   return filteredNamedKeys;
@@ -53,7 +69,7 @@ export const fetchErc20TokenDetails = async (contractHash: string) => {
 };
 
 export const listofCreatorERC20Tokens = async (accountHash: string) => {
-  const namedKeys = await fetchNamedKeys(accountHash);
+  const namedKeys = await fetchCep18NamedKeys(accountHash);
 
   const promises = namedKeys.map((nk) => fetchErc20TokenDetails(nk.key));
 
