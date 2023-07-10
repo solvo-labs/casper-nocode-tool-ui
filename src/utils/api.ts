@@ -160,3 +160,9 @@ export const initTokens = async (accountHash: string) => {
 
   return { creatorTokens, finalData };
 };
+
+export const getNftCollection = async (contractHash: string) => {
+  const response = await axios.get<any>(SERVER_API + "getCollection?contractHash=" + contractHash);
+
+  return { ...response.data, contractHash };
+};
