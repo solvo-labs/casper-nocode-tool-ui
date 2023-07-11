@@ -4,6 +4,7 @@ import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from 
 import { useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
+import toastr from "toastr";
 
 export const CreateCollection = () => {
   const [collectionData, setCollectionData] = useState();

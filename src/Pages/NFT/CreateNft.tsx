@@ -11,7 +11,7 @@ export const CreateNft = () => {
 
   const createNft = async () => {
     const contract = new Contracts.Contract();
-    contract.setContractHash("hash-cd5bba5fea0986ff57a0ada0999e030a354725d7ee1a3373519f58ab906a6213");
+    contract.setContractHash("hash-5480fd53270a9768dc9c37ac41921a583d7f19095479f89552cda74185cca66c");
 
     const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 

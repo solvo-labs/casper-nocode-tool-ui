@@ -14,6 +14,7 @@ import TransferFrom from "../Pages/Token/TransferFrom";
 import { CreateCollection } from "../Pages/NFT/CreateCollection";
 import { MyCollections } from "../Pages/NFT/MyCollections";
 import { CreateNft } from "../Pages/NFT/CreateNft";
+import { NftList } from "../Pages/NFT/NftList";
 
 const Router: React.FC = () => {
   return (
@@ -37,6 +38,7 @@ const Router: React.FC = () => {
             <Route path="/create-collection" index element={<CreateCollection />} />
             <Route path="/my-collections" index element={<MyCollections />} />
             <Route path="/create-nft" index element={<CreateNft />} />
+            <Route path="/nft-list/:collectionHash" index element={<NftList />} />
           </Route>
           <Route path="/login" index element={<Login />} />
         </Routes>
