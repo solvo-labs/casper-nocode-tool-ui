@@ -13,6 +13,7 @@ import IncreaseDecreaseAllowance from "../Pages/Token/IncreaseDecreaseAllowance"
 import TransferFrom from "../Pages/Token/TransferFrom";
 import { CreateCollection } from "../Pages/NFT/CreateCollection";
 import { MyCollections } from "../Pages/NFT/MyCollections";
+import { CreateNft } from "../Pages/NFT/CreateNft";
 
 const Router: React.FC = () => {
   return (
@@ -33,8 +34,9 @@ const Router: React.FC = () => {
             <Route path="/increase-decrease-allowance" element={<IncreaseDecreaseAllowance />} />
 
             {/* NFTS */}
-            <Route path="/create-collection" index element={<CreateCollection />}></Route>
-            <Route path="/my-collections" index element={<MyCollections />}></Route>
+            <Route path="/create-collection" index element={<CreateCollection />} />
+            <Route path="/my-collections" index element={<MyCollections />} />
+            <Route path="/create-nft" index element={<CreateNft />} />
           </Route>
           <Route path="/login" index element={<Login />} />
         </Routes>
