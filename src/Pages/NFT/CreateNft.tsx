@@ -22,7 +22,7 @@ export const CreateNft = () => {
       ),
     });
 
-    const deploy = contract.callEntrypoint("mint", args, ownerPublicKey, "casper-test", "1000000000");
+    const deploy = contract.callEntrypoint("mint", args, ownerPublicKey, "casper-test", "2000000000");
 
     const deployJson = DeployUtil.deployToJson(deploy);
 
