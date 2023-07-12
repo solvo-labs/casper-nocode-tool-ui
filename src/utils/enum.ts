@@ -20,6 +20,11 @@ export enum TOKEN_PAGE {
   TRANSFER_FROM = "Transfer From",
 }
 
+export enum NFT_PAGE {
+  CREATE_NFT = "Create NFT",
+  CREATE_COLLECTION = "Create Collection",
+}
+
 export enum WALLETS_NAME {
   CASPER_WALLET = "CASPER WALLET",
 }
@@ -31,4 +36,66 @@ export enum MY_ERC20TOKEN {
   TOTAL_SUPPLY = "TOTAL SUPPLY",
   ENABLE_MINT_BURN = "ENABLE MINT BURN",
   BALANCE = "BALANCE",
+}
+
+export enum NamedKeyConventionMode {
+  DerivedFromCollectionName,
+  V1_0Standard,
+  V1_0Custom,
+}
+
+export enum NFTOwnershipMode {
+  Minter,
+  Assigned,
+  Transferable,
+}
+
+export enum NFTMetadataKind {
+  CEP78,
+  NFT721,
+  Raw,
+  CustomValidated,
+}
+
+export enum NFTKind {
+  Physical,
+  Digital,
+  Virtual,
+}
+
+export enum MetadataMutability {
+  Immutable,
+  Mutable
+}
+
+export enum MintingMode {
+  Installer,
+  Public,
+}
+
+export enum BurnMode {
+  Burnable,
+  NonBurnable,
+}
+
+export enum WhiteListMode {
+  Unlocked,
+  Locked,
+}
+
+export enum NFTIdentifierMode {
+  Ordinal,
+  Hash,
+}
+
+export enum OwnerReverseLookupMode {
+  NoLookup,
+  Complate,
+  TransfersOnly,
+}
+
+export enum NFTHolderMode {
+  Accounts,
+  Contracts,
+  Mixed,
 }
