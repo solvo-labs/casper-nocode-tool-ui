@@ -94,6 +94,8 @@ export const CreateCollection = () => {
   const navigate = useNavigate();
   const classes = useStyles();
 
+  const disable = !(collectionData.name && collectionData.symbol)
+
   const mintCollection = async () => {
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
@@ -168,9 +170,9 @@ export const CreateCollection = () => {
     } catch (error) {}
   };
 
-  const listSelectItem = (netwalie: Object) => {
-    const newman = Object.values(netwalie).filter((v) => isNaN(Number(v)));
-    return newman.map((keys: any, value: any) => (
+  const listSelectItem = (value: Object) => {
+    const listItem = Object.values(value).filter((v) => isNaN(Number(v)));
+    return listItem.map((keys: any, value: any) => (
       <MenuItem value={value}>{keys}</MenuItem>
     ));
   };
@@ -470,10 +472,8 @@ export const CreateCollection = () => {
               </FormControl>
               <Grid paddingTop={2} container justifyContent={"center"}>
                 <CustomButton
-                  onClick={() => {
-                    console.log(collectionData);
-                  }}
-                  disabled={false}
+                  onClick={mintCollection}
+                  disabled={disable}
                   label="Create Collection"
                 />
               </Grid>
