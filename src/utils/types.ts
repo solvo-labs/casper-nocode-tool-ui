@@ -44,3 +44,8 @@ export type Collection = {
   namedKeyConventionMode?: NamedKeyConventionMode;
   ownerReverseLookupMode?: OwnerReverseLookupMode;
 }
+
+export type NFT = {
+  contractHash: string;
+  tokenMetaData: object;
+}
