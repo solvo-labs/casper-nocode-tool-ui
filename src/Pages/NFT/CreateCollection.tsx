@@ -188,12 +188,6 @@ export const CreateCollection = () => {
     ));
   };
 
-  console.log(collectionData.jsonSchema);
-  
-  
-
-
-
   return (
     <div
       style={{
