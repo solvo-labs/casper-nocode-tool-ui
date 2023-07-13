@@ -47,13 +47,20 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      textAlign: "center",
+      // textAlign: "center",
     },
   },
   title: {
     position: "relative",
     top: "3rem",
     borderBottom: "1px solid #FF0011 !important",
+  },
+  titleItem: {
+    marginBottom: "3rem !important",
+    marginTop: "8rem !important",
+    [theme.breakpoints.down("sm")]: {
+      marginTop: "4rem !important",
+    },
   },
   gridContainer: {
     justifyContent: "center",
@@ -117,7 +124,9 @@ export const CreateCollection = () => {
         nft_metadata_kind: CLValueBuilder.u8(collectionData.nftMetadataKind),
         whitelist_mode: CLValueBuilder.u8(collectionData.whiteListMode),
         identifier_mode: CLValueBuilder.u8(collectionData.identifierMode),
-        metadata_mutability: CLValueBuilder.u8(collectionData.metadataMutability),
+        metadata_mutability: CLValueBuilder.u8(
+          collectionData.metadataMutability
+        ),
         json_schema: CLValueBuilder.string(collectionData.jsonSchema),
         minting_mode: CLValueBuilder.u8(collectionData.mintingMode),
         burn_mode: CLValueBuilder.u8(collectionData.burnMode),
@@ -181,6 +190,9 @@ export const CreateCollection = () => {
 
   console.log(collectionData.jsonSchema);
   
+  
+
+
 
   return (
     <div
@@ -192,7 +204,7 @@ export const CreateCollection = () => {
     >
       <Grid container className={classes.container}>
         <Grid container className={classes.center}>
-          <Grid item marginBottom={"3rem"} marginTop={"8rem"}>
+          <Grid item className={classes.titleItem}>
             <Typography className={classes.title} variant="h5">
               Create Collection
             </Typography>
@@ -246,15 +258,26 @@ export const CreateCollection = () => {
                 }}
                 value={collectionData.totalSupply}
               ></CustomInput>
-              <Typography sx={{borderBottom: "1px solid #FF0011 !important"}} variant="button">Metadata</Typography>
+              <Typography
+                sx={{ borderBottom: "1px solid #FF0011 !important" }}
+                variant="button"
+              >
+                Metadata
+              </Typography>
               <CustomInput
                 placeholder="Metadata Name"
                 label="Metadata Name"
                 id="metadataName"
                 name="metadataName"
                 type="text"
-                onChange={ (e:any)=>{
-                  setCollectionData({...collectionData, jsonSchema:{...collectionData.jsonSchema, name: e.target.value}});
+                onChange={(e: any) => {
+                  setCollectionData({
+                    ...collectionData,
+                    jsonSchema: {
+                      ...collectionData.jsonSchema,
+                      name: e.target.value,
+                    },
+                  });
                 }}
                 value={collectionData.jsonSchema.name}
               ></CustomInput>
@@ -265,7 +288,13 @@ export const CreateCollection = () => {
                 name="metadataDescription"
                 type="text"
                 onChange={(e: any) => {
-                  setCollectionData({...collectionData, jsonSchema:{...collectionData.jsonSchema, description: e.target.value}});
+                  setCollectionData({
+                    ...collectionData,
+                    jsonSchema: {
+                      ...collectionData.jsonSchema,
+                      description: e.target.value,
+                    },
+                  });
                 }}
                 value={collectionData.jsonSchema.description}
               ></CustomInput>
@@ -276,12 +305,20 @@ export const CreateCollection = () => {
                 name="imageURL"
                 type="text"
                 onChange={(e: any) => {
-                  setCollectionData({...collectionData, jsonSchema:{...collectionData.jsonSchema, imageURL: e.target.value}});
+                  setCollectionData({
+                    ...collectionData,
+                    jsonSchema: {
+                      ...collectionData.jsonSchema,
+                      imageURL: e.target.value,
+                    },
+                  });
                 }}
                 value={collectionData.jsonSchema.imageURL}
               ></CustomInput>
 
-              <Divider sx={{backgroundColor:"red", marginTop: "3rem !important"}}></Divider>
+              <Divider
+                sx={{ backgroundColor: "red", marginTop: "3rem !important" }}
+              ></Divider>
 
               <FormControl fullWidth>
                 <InputLabel
