@@ -37,7 +37,11 @@ export type Collection = {
   whiteListMode?: WhiteListMode;
   identifierMode: NFTIdentifierMode;
   metadataMutability?: MetadataMutability;
-  jsonSchema?: object;
+  jsonSchema: {
+    name: string;
+    description: string;
+    imageURL: string;
+  };
   mintingMode?: MintingMode;
   burnMode?: BurnMode;
   holderMode?: NFTHolderMode;
