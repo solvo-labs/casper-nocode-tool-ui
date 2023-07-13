@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { json, useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
 import { Collection } from "../../utils/types";
 import {
+  Divider,
   FormControl,
   Grid,
   InputLabel,
@@ -79,7 +80,11 @@ export const CreateCollection = () => {
     whiteListMode: 0,
     identifierMode: 0,
     metadataMutability: 1,
-    jsonSchema: {},
+    jsonSchema: {
+      name: "",
+      description: "",
+      imageURL: "",
+    },
     mintingMode: 0,
     burnMode: 0,
     holderMode: 2,
@@ -94,7 +99,7 @@ export const CreateCollection = () => {
   const navigate = useNavigate();
   const classes = useStyles();
 
-  const disable = !(collectionData.name && collectionData.symbol)
+  const disable = !(collectionData.name && collectionData.symbol);
 
   const mintCollection = async () => {
     try {
@@ -112,10 +117,7 @@ export const CreateCollection = () => {
         nft_metadata_kind: CLValueBuilder.u8(collectionData.nftMetadataKind),
         whitelist_mode: CLValueBuilder.u8(collectionData.whiteListMode),
         identifier_mode: CLValueBuilder.u8(collectionData.identifierMode),
-        metadata_mutability: CLValueBuilder.u8(
-          collectionData.metadataMutability
-        ),
-        //TODO jsonschema
+        metadata_mutability: CLValueBuilder.u8(collectionData.metadataMutability),
         json_schema: CLValueBuilder.string(collectionData.jsonSchema),
         minting_mode: CLValueBuilder.u8(collectionData.mintingMode),
         burn_mode: CLValueBuilder.u8(collectionData.burnMode),
@@ -176,6 +178,9 @@ export const CreateCollection = () => {
       <MenuItem value={value}>{keys}</MenuItem>
     ));
   };
+
+  console.log(collectionData.jsonSchema);
+  
 
   return (
     <div
@@ -241,6 +246,43 @@ export const CreateCollection = () => {
                 }}
                 value={collectionData.totalSupply}
               ></CustomInput>
+              <Typography sx={{borderBottom: "1px solid #FF0011 !important"}} variant="button">Metadata</Typography>
+              <CustomInput
+                placeholder="Metadata Name"
+                label="Metadata Name"
+                id="metadataName"
+                name="metadataName"
+                type="text"
+                onChange={ (e:any)=>{
+                  setCollectionData({...collectionData, jsonSchema:{...collectionData.jsonSchema, name: e.target.value}});
+                }}
+                value={collectionData.jsonSchema.name}
+              ></CustomInput>
+              <CustomInput
+                placeholder="Metadata Description"
+                label="Metadata Description"
+                id="metadataDescription"
+                name="metadataDescription"
+                type="text"
+                onChange={(e: any) => {
+                  setCollectionData({...collectionData, jsonSchema:{...collectionData.jsonSchema, description: e.target.value}});
+                }}
+                value={collectionData.jsonSchema.description}
+              ></CustomInput>
+              <CustomInput
+                placeholder="Image URL"
+                label="Collection Image URL"
+                id="imageURL"
+                name="imageURL"
+                type="text"
+                onChange={(e: any) => {
+                  setCollectionData({...collectionData, jsonSchema:{...collectionData.jsonSchema, imageURL: e.target.value}});
+                }}
+                value={collectionData.jsonSchema.imageURL}
+              ></CustomInput>
+
+              <Divider sx={{backgroundColor:"red", marginTop: "3rem !important"}}></Divider>
+
               <FormControl fullWidth>
                 <InputLabel
                   sx={{ color: "white" }}
@@ -364,7 +406,7 @@ export const CreateCollection = () => {
                   {listSelectItem(MetadataMutability)}
                 </CustomSelect>
               </FormControl>
-              //TODO jsonSchema
+
               <FormControl fullWidth>
                 <InputLabel
                   sx={{ color: "white" }}
