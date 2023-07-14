@@ -57,21 +57,17 @@ type Props = {
 };
 
 const TopBar: React.FC<Props> = ({ publicKey }) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const [anchorElForProfile, setAnchorElForProfile] =
-    React.useState<null | HTMLElement>(null);
+  const [nftAnchorEl, setAnchorElForNFT] = React.useState<null | HTMLElement>(null);
+  const openNFT = Boolean(nftAnchorEl);
+  const [tokenAnchorEl, setAnchorElForToken] = React.useState<null | HTMLElement>(null);
+  const openToken = Boolean(tokenAnchorEl);
+  const [anchorElForProfile, setAnchorElForProfile] = React.useState<null | HTMLElement>(null);
   const openForProfile = Boolean(anchorElForProfile);
-
   const classes = useStyles();
   const navigate = useNavigate();
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClickForProfile = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElForProfile(event.currentTarget);
+  const handleClick = (event: React.MouseEvent<HTMLElement>, setState: any) => {
+    setState(event.currentTarget);
   };
 
   // function tokenMint() {
@@ -148,14 +144,15 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
     } else if (a === NFT_PAGE.CREATE_NFT) {
       navigate("/create-nft");
     }
-    setAnchorEl(null);
+    setAnchorElForNFT(null);
+    setAnchorElForToken(null);
+    setAnchorElForProfile(null);
   };
 
   const listMenuItem = (pages: object) => {
     const value = Object.values(pages);
     return value.map((a: any) => (
-      <MenuItem onClick={() => handleRouter(a)
-      } className={classes.menuItem}>
+      <MenuItem onClick={() => handleRouter(a)} className={classes.menuItem}>
         {a}
       </MenuItem>
     ));
@@ -191,9 +188,9 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
               </Button>
               <Box>
                 <Button
-                  onClick={handleClick}
-                  onMouseOver={handleClick}
-                  onMouseOut={handleClick}
+                  onClick={(e: any) => handleClick(e, setAnchorElForNFT)}
+                  onMouseOver={(e: any) => handleClick(e, setAnchorElForNFT)}
+                  onMouseOut={(e: any) => handleClick(e, setAnchorElForNFT)}
                 >
                   <Typography className={classes.menuTitle}>
                     {PAGES_NAME.NFT}
@@ -202,9 +199,9 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                 <Menu
                   id="demo-positioned-menu"
                   aria-labelledby="demo-positioned-button"
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={() => setAnchorEl(null)}
+                  anchorEl={nftAnchorEl}
+                  open={openNFT}
+                  onClose={() => setAnchorElForNFT(null)}
                   anchorOrigin={{
                     vertical: "bottom",
                     horizontal: "left",
@@ -225,7 +222,10 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                 </Menu>
               </Box>
               <Box>
-                <Button onClick={handleClick} onMouseOver={handleClick}>
+                <Button
+                  onClick={(e: any) => handleClick(e, setAnchorElForToken)}
+                  onMouseOver={(e: any) => handleClick(e, setAnchorElForToken)}
+                >
                   <Typography className={classes.menuTitle}>
                     {PAGES_NAME.TOKEN}
                   </Typography>
@@ -233,9 +233,9 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                 <Menu
                   id="demo-positioned-menu"
                   aria-labelledby="demo-positioned-button"
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={() => setAnchorEl(null)}
+                  anchorEl={tokenAnchorEl}
+                  open={openToken}
+                  onClose={() => setAnchorElForToken(null)}
                   anchorOrigin={{
                     vertical: "bottom",
                     horizontal: "left",
@@ -253,34 +253,6 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                   }}
                 >
                   {listMenuItem(TOKEN_PAGE)}
-                  {/* <MenuItem onClick={tokenMint} className={classes.menuItem}>
-                  {TOKEN_PAGE.TOKEN_MINT}
-                  </MenuItem>
-                  <MenuItem onClick={myTokens} className={classes.menuItem}>
-                  {TOKEN_PAGE.MY_TOKENS}
-                  </MenuItem>
-                  <MenuItem onClick={mintAndBurn} className={classes.menuItem}>
-                  {TOKEN_PAGE.MINT_AND_BURN}
-                  </MenuItem>
-                  <MenuItem onClick={transfer} className={classes.menuItem}>
-                  {TOKEN_PAGE.TRANSFER}
-                  </MenuItem>
-                  <MenuItem onClick={approve} className={classes.menuItem}>
-                  {TOKEN_PAGE.APPROVE}
-                </MenuItem> */}
-                  {/* <MenuItem onClick={allowance} className={classes.menuItem}>
-                  {TOKEN_PAGE.ALLOWANCE}
-                </MenuItem> */}
-                  {/* <MenuItem
-                  onClick={increaseDecreaseAllowance}
-                  className={classes.menuItem}
-                  >
-                  {TOKEN_PAGE.INCREASE_DECREASE_ALLOWANCE}
-                  </MenuItem>
-                  
-                  <MenuItem onClick={transferFrom} className={classes.menuItem}>
-                  {TOKEN_PAGE.TRANSFER_FROM}
-                </MenuItem> */}
                 </Menu>
               </Box>
             </Box>
@@ -288,8 +260,10 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Profile">
                 <IconButton
-                  onClick={handleClickForProfile}
-                  onMouseOver={handleClickForProfile}
+                  onClick={(e: any) => handleClick(e, setAnchorElForProfile)}
+                  onMouseOver={(e: any) =>
+                    handleClick(e, setAnchorElForProfile)
+                  }
                   sx={{ p: 0 }}
                 >
                   <Avatar alt="alt" src="" />
