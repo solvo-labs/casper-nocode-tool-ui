@@ -47,19 +47,15 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      // textAlign: "center",
     },
   },
   title: {
     position: "relative",
-    top: "3rem",
     borderBottom: "1px solid #FF0011 !important",
   },
   titleItem: {
-    marginBottom: "3rem !important",
-    marginTop: "8rem !important",
     [theme.breakpoints.down("sm")]: {
-      marginTop: "4rem !important",
+      marginTop: "2rem !important",
     },
   },
   gridContainer: {

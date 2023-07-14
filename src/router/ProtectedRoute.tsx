@@ -73,7 +73,7 @@ const ProtectedRoute: React.FC = () => {
     <div className={classes.main}>
       <Grid container spacing={0} className={classes.container} alignContent={"start"}>
         <TopBar publicKey={publicKey} />
-        <Grid item lg={12} md={12} xs={12}  height={"100vh"} paddingTop={"12rem"}>
+        <Grid item lg={12} md={12} xs={12} height={"100vh"} paddingTop={{xl:"12rem", md:"12rem", sm:"10rem", xs: "8rem"}}>
           <Grid container direction={"column"}  spacing={0}>
             {/* <Grid item><DrawerAppBar /></Grid> */}
             <Outlet context={[publicKey, provider, wasm, nftWasm]} />
