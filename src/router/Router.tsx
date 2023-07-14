@@ -15,6 +15,7 @@ import { CreateCollection } from "../Pages/NFT/CreateCollection";
 import { MyCollections } from "../Pages/NFT/MyCollections";
 import { CreateNft } from "../Pages/NFT/CreateNft";
 import { NftList } from "../Pages/NFT/NftList";
+import { MyNFTs } from "../Pages/NFT/MyNFTs";
 
 const Router: React.FC = () => {
   return (
@@ -37,6 +38,7 @@ const Router: React.FC = () => {
             {/* NFTS */}
             <Route path="/create-collection" index element={<CreateCollection />} />
             <Route path="/my-collections" index element={<MyCollections />} />
+            <Route path="/my-nfts" index element={<MyNFTs />} />
             <Route path="/create-nft" index element={<CreateNft />} />
             <Route path="/nft-list/:collectionHash" index element={<NftList />} />
           </Route>
