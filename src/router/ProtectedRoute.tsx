@@ -71,10 +71,10 @@ const ProtectedRoute: React.FC = () => {
 
   return connected ? (
     <div className={classes.main}>
-      <Grid container spacing={2} className={classes.container}>
+      <Grid container spacing={0} className={classes.container} alignContent={"start"}>
         <TopBar publicKey={publicKey} />
-        <Grid item lg={12} md={12} xs={12}>
-          <Grid container direction={"column"} spacing={2}>
+        <Grid item lg={12} md={12} xs={12}  height={"100vh"} paddingTop={"12rem"}>
+          <Grid container direction={"column"}  spacing={0}>
             {/* <Grid item><DrawerAppBar /></Grid> */}
             <Outlet context={[publicKey, provider, wasm, nftWasm]} />
           </Grid>
