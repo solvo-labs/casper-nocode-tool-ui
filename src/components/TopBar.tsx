@@ -152,7 +152,7 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
   const listMenuItem = (pages: object) => {
     const value = Object.values(pages);
     return value.map((a: any) => (
-      <MenuItem onClick={() => handleRouter(a)} className={classes.menuItem}>
+      <MenuItem key={a} onClick={() => handleRouter(a)} className={classes.menuItem}>
         {a}
       </MenuItem>
     ));
@@ -197,8 +197,7 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                   </Typography>
                 </Button>
                 <Menu
-                  id="demo-positioned-menu"
-                  aria-labelledby="demo-positioned-button"
+                  id="nftMenu"
                   anchorEl={nftAnchorEl}
                   open={openNFT}
                   onClose={() => setAnchorElForNFT(null)}
@@ -231,8 +230,7 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                   </Typography>
                 </Button>
                 <Menu
-                  id="demo-positioned-menu"
-                  aria-labelledby="demo-positioned-button"
+                  id="collectionMenu"
                   anchorEl={tokenAnchorEl}
                   open={openToken}
                   onClose={() => setAnchorElForToken(null)}
