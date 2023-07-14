@@ -51,5 +51,8 @@ export type Collection = {
 
 export type NFT = {
   contractHash: string;
-  tokenMetaData: object;
+  tokenMetaData: {
+    name: string;
+    description: string;
+  };
 }
