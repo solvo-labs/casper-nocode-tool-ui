@@ -29,8 +29,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   title: {
-    position: "relative",
-    top: "3rem",
     borderBottom: "1px solid #FF0011 !important",
   },
   gridContainer: {
@@ -52,7 +50,10 @@ export const CreateNft = () => {
   const classes = useStyles();
   const [nftData, setNftData] = useState<NFT>({
     contractHash: "",
-    tokenMetaData: {},
+    tokenMetaData: {
+      name: "",
+      description:"",
+    },
   });
 
   let hashLength = nftData.contractHash.length;
@@ -130,7 +131,7 @@ export const CreateNft = () => {
     >
       <Grid container className={classes.container}>
         <Grid container className={classes.center}>
-          <Grid item marginBottom={"3rem"} marginTop={"8rem"}>
+          <Grid item>
             <Typography className={classes.title} variant="h5">
               Create NFT
             </Typography>
@@ -157,19 +158,45 @@ export const CreateNft = () => {
                 value={nftData.contractHash}
               ></CustomInput>
               {/* //TODO nft metadata input */}
+              <Typography
+                sx={{ borderBottom: "1px solid #FF0011 !important" }}
+                variant="button"
+              >
+                Metadata
+              </Typography>
               <CustomInput
-                placeholder="Metadata"
-                label="NFT Metadata"
-                id="tokenMetadata"
-                name="tokenMetadata"
+                placeholder="Metadata Name"
+                label="Metadata Name"
+                id="metadataName"
+                name="metadataName"
                 type="text"
                 onChange={(e: any) => {
                   setNftData({
                     ...nftData,
-                    tokenMetaData: e.target.value,
+                    tokenMetaData: {
+                      ...nftData.tokenMetaData,
+                      name: e.target.value,
+                    },
                   });
                 }}
-                value={"nftData"}
+                value={nftData.tokenMetaData.name}
+              ></CustomInput>
+              <CustomInput
+                placeholder="Metadata Description"
+                label="Metadata Description"
+                id="metadataDescription"
+                name="metadataDescription"
+                type="text"
+                onChange={(e: any) => {
+                  setNftData({
+                    ...nftData,
+                    tokenMetaData: {
+                      ...nftData.tokenMetaData,
+                      description: e.target.value,
+                    },
+                  });
+                }}
+                value={nftData.tokenMetaData.description}
               ></CustomInput>
 
               <Grid paddingTop={2} container justifyContent={"center"}>
