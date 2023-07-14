@@ -139,6 +139,8 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
       navigate("/allowance");
     } else if (a === TOKEN_PAGE.INCREASE_DECREASE_ALLOWANCE) {
       navigate("/increase-decrease-allowance");
+    } else if (a === NFT_PAGE.MY_COLLECTIONS) {
+      navigate("/my-collections");
     } else if (a === NFT_PAGE.CREATE_COLLECTION) {
       navigate("/create-collection");
     } else if (a === NFT_PAGE.CREATE_NFT) {
