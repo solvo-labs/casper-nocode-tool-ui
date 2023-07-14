@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { CircularProgress, Grid, MenuItem, SelectChangeEvent, Stack, Theme } from "@mui/material";
+import {
+  CircularProgress,
+  Grid,
+  MenuItem,
+  SelectChangeEvent,
+  Stack,
+  Theme,
+  Typography,
+} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
@@ -30,10 +38,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   title: {
-    fontWeight: 500,
-    fontSize: "26px",
-    position: "relative",
-    top: "3rem",
     borderBottom: "1px solid #FF0011 !important",
   },
   gridContainer: {
@@ -77,7 +81,8 @@ const Approve: React.FC = () => {
 
   const classes = useStyles();
 
-  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
+  const [publicKey, provider] =
+    useOutletContext<[publickey: string, provider: any]>();
   const [tokens, setTokens] = useState<ERC20Token[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedToken, setSelectedToken] = useState<ERC20Token>();
@@ -109,10 +114,20 @@ const Approve: React.FC = () => {
 
       const args = RuntimeArgs.fromMap({
         spender: CLValueBuilder.key(CLPublicKey.fromHex(data.spenderPubkey)),
-        amount: CLValueBuilder.u256(Number(data.amount * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
+        amount: CLValueBuilder.u256(
+          Number(
+            data.amount * Math.pow(10, parseInt(selectedToken.decimals.hex, 16))
+          )
+        ),
       });
 
-      const deploy = contract.callEntrypoint("approve", args, ownerPublicKey, "casper-test", "1000000000");
+      const deploy = contract.callEntrypoint(
+        "approve",
+        args,
+        ownerPublicKey,
+        "casper-test",
+        "1000000000"
+      );
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -121,15 +136,27 @@ const Approve: React.FC = () => {
 
         // setActionLoader(true);
 
-        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+        let signedDeploy = DeployUtil.setSignature(
+          deploy,
+          sign.signature,
+          ownerPublicKey
+        );
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
 
         const deployData = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post(SERVER_API + "deploy", deployData, { headers: { "Content-Type": "application/json" } });
-        toastr.success(response.data, selectedToken.name + "Token approved successfully.");
-        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
+        const response = await axios.post(SERVER_API + "deploy", deployData, {
+          headers: { "Content-Type": "application/json" },
+        });
+        toastr.success(
+          response.data,
+          selectedToken.name + "Token approved successfully."
+        );
+        window.open(
+          "https://testnet.cspr.live/deploy/" + response.data,
+          "_blank"
+        );
 
         navigate("/my-tokens");
         // setActionLoader(false);
@@ -167,15 +194,25 @@ const Approve: React.FC = () => {
     >
       <Grid container className={classes.container}>
         <Grid container className={classes.center}>
-          <h5 className={classes.title}>Approve Token</h5>
-
+          <Grid item>
+            <Typography variant="h5" className={classes.title}>
+              Approve Token
+            </Typography>
+          </Grid>
           <Grid container className={classes.gridContainer}>
-            <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
+            <Stack
+              spacing={4}
+              direction={"column"}
+              marginTop={4}
+              className={classes.stackContainer}
+            >
               <CustomSelect
                 value={selectedToken?.contractHash || "default"}
                 label="ERC-20 Token"
                 onChange={(event: SelectChangeEvent) => {
-                  const data = tokens.find((tk) => tk.contractHash === event.target.value);
+                  const data = tokens.find(
+                    (tk) => tk.contractHash === event.target.value
+                  );
                   setSelectedToken(data);
                 }}
                 id={"custom-select"}
@@ -220,7 +257,13 @@ const Approve: React.FC = () => {
                 }
               />
               <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton onClick={approve} disabled={!selectedToken || !data.spenderPubkey || data.amount <= 0} label="Approve" />
+                <CustomButton
+                  onClick={approve}
+                  disabled={
+                    !selectedToken || !data.spenderPubkey || data.amount <= 0
+                  }
+                  label="Approve"
+                />
               </Grid>
             </Stack>
           </Grid>
