@@ -24,8 +24,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   container: {
-    maxWidth: "80vw",
-    minWidth: "80vw",
+    maxWidth: "70vw",
+    minWidth: "70vw",
     marginTop: "4rem",
     // backgroundColor: "darkgray",
     [theme.breakpoints.down("md")]: {

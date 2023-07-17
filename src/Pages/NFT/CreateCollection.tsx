@@ -95,10 +95,7 @@ export const CreateCollection = () => {
     ownerReverseLookupMode: 0,
   });
 
-  const [publicKey, provider, wasm, nftWasm] =
-    useOutletContext<
-      [publickey: string, provider: any, wasm: any, nftWasm: any]
-    >();
+  const [publicKey, provider, wasm, nftWasm] = useOutletContext<[publickey: string, provider: any, wasm: any, nftWasm: any]>();
   const navigate = useNavigate();
   const classes = useStyles();
 
