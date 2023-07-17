@@ -23,7 +23,7 @@ export const CreateCollectionCard: React.FC<Props> = ({onClick}) => {
   const classes = useStyles();
   return (
     <Card sx={{ margin:"1rem", minHeight:"320px", backgroundColor: "#161D3B", color:"white" }} onClick={onClick}>
-      <CardActionArea>
+      <CardActionArea sx={{padding: "1.2rem",}}>
         <CardMedia
           component="img"
           height="200"
