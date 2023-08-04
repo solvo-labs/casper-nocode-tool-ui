@@ -5,7 +5,7 @@ import { Card, CardActionArea, CardContent, CardMedia, Theme, Typography } from 
 const useStyles = makeStyles((theme: Theme) => ({
   title:{
     textAlign: "center",
-    fontSize: "1.5rem",
+    fontSize: "1.2rem",
     [theme.breakpoints.down("xl")]: {
       fontSize: "1rem",
       },
