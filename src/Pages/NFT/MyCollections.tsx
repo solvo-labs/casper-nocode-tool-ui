@@ -53,33 +53,35 @@ export const MyCollections = () => {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
       const data = await fetchCep78NamedKeys(ownerPublicKey.toAccountHashStr());
-
+      
       const promises = data.map((data) => getNftCollection(data.key));
-
+      
       const result = await Promise.all(promises);
+      console.log(result);
 
       setLoading(false);
       setCollections(result);
+      
     };
 
     init();
   }, []);
 
-  // if (loading) {
-  //   return (
-  //     <div
-  //       style={{
-  //         height: "calc(100vh - 8rem)",
-  //         width: "100%",
-  //         display: "flex",
-  //         justifyContent: "center",
-  //         alignItems: "center",
-  //       }}
-  //     >
-  //       <CircularProgress />
-  //     </div>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <div
+        style={{
+          height: "calc(100vh - 8rem)",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -125,15 +127,15 @@ export const MyCollections = () => {
               }}
             />
           </Grid>
-          <Grid item lg={4} md={4} sm={6} xs={6}>
-            <NftCard></NftCard>
-          </Grid>
-          <Grid item lg={4} md={4} sm={6} xs={6}>
-            <NftCard></NftCard>
-          </Grid>
-          <Grid item lg={4} md={4} sm={6} xs={6}>
-            <NftCard></NftCard>
-          </Grid>
+          {
+            collections.map((e:any)=>{
+              return (
+                <Grid item lg={4} md={4} sm={6} xs={6}>
+                <NftCard></NftCard>
+                </Grid>
+              )
+            })
+          }
         </Grid>
       </Grid>
     </div>
