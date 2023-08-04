@@ -32,6 +32,7 @@ import {
   WhiteListMode,
 } from "../../utils/enum";
 import { CustomSelect } from "../../components/CustomSelect";
+import toastr from "toastr";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -102,12 +103,14 @@ export const CreateCollection = () => {
   const disable = !(collectionData.name && collectionData.symbol);
 
   const mintCollection = async () => {
+    
     try {
+      console.log(collectionData);
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-
+      
       // contract
       const contract = new Contracts.Contract();
-
+      
       const args = RuntimeArgs.fromMap({
         collection_name: CLValueBuilder.string(collectionData.name),
         collection_symbol: CLValueBuilder.string(collectionData.symbol),
@@ -120,7 +123,7 @@ export const CreateCollection = () => {
         metadata_mutability: CLValueBuilder.u8(
           collectionData.metadataMutability
         ),
-        json_schema: CLValueBuilder.string(collectionData.jsonSchema),
+        json_schema: CLValueBuilder.string(JSON.stringify(collectionData.jsonSchema)),
         minting_mode: CLValueBuilder.u8(collectionData.mintingMode),
         burn_mode: CLValueBuilder.u8(collectionData.burnMode),
         holder_mode: CLValueBuilder.u8(collectionData.holderMode),
@@ -160,7 +163,7 @@ export const CreateCollection = () => {
         const response = await axios.post(SERVER_API + "deploy", data, {
           headers: { "Content-Type": "application/json" },
         });
-        toastr.success(response.data, "ERC-20 Token deployed successfully.");
+        toastr.success(response.data, "CEP-78 Collection deployed successfully.");
         window.open(
           "https://testnet.cspr.live/deploy/" + response.data,
           "_blank"
@@ -171,7 +174,10 @@ export const CreateCollection = () => {
       } catch (error: any) {
         alert(error.message);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+      toastr.error("error");
+    }
   };
 
   const listSelectItem = (value: Object) => {
