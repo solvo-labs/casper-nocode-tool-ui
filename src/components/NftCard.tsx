@@ -1,8 +1,24 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Card, CardActionArea, CardContent, CardMedia, Theme, Typography } from "@mui/material";
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia,
+  Theme,
+  Typography,
+} from "@mui/material";
 
-const useStyles = makeStyles((theme: Theme) => ({}));
+const useStyles = makeStyles((theme: Theme) => ({
+  card: {
+    margin: "1rem",
+    maxHeight: "400px",
+    height: "360px",
+    [theme.breakpoints.down("xl")]: {
+      // fontSize: "1rem",
+    },
+  },
+}));
 
 type Props = {
   onClick: any;
@@ -13,7 +29,7 @@ type Props = {
 export const NftCard: React.FC = () => {
   const classes = useStyles();
   return (
-    <Card sx={{ margin:"1rem" }}>
+    <Card className={classes.card}>
       <CardActionArea>
         <CardMedia
           component="img"
@@ -26,7 +42,8 @@ export const NftCard: React.FC = () => {
             Lizard
           </Typography>
           <Typography variant="body2" color="text.secondary">
-          The Nissan GT-R (Japanese: GT-R, Nissan GT-R), is a sports car and grand tourer produced by Nissan, unveiled in 2007.
+            The Nissan GT-R (Japanese: GT-R, Nissan GT-R), is a sports car and
+            grand tourer produced by Nissan, unveiled in 2007.
           </Typography>
         </CardContent>
       </CardActionArea>
