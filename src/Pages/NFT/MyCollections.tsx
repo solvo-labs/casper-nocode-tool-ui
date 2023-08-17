@@ -4,17 +4,17 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import { CLPublicKey } from "casper-js-sdk";
 import { fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
 import {
-  Card,
+  CardActionArea,
   CircularProgress,
   Grid,
   Stack,
   Theme,
   Typography,
 } from "@mui/material";
-import { NftCard } from "../../components/NftCard";
 import { makeStyles } from "@mui/styles";
 import { CustomButton, CustomButtonText } from "../../components/CustomButton";
 import { CreateCollectionCard } from "../../components/CreateCollectionCard";
+import CollectionCard from "../../components/CollectionCard";
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleContainer: {
@@ -57,7 +57,6 @@ export const MyCollections = () => {
       const promises = data.map((data) => getNftCollection(data.key));
       
       const result = await Promise.all(promises);
-      console.log(result);
 
       setLoading(false);
       setCollections(result);
@@ -71,7 +70,7 @@ export const MyCollections = () => {
     return (
       <div
         style={{
-          height: "calc(100vh - 8rem)",
+          height: "50vh",
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -127,15 +126,18 @@ export const MyCollections = () => {
               }}
             />
           </Grid>
-          {
-            collections.map((e:any)=>{
-              return (
-                <Grid item lg={4} md={4} sm={6} xs={6}>
-                <NftCard></NftCard>
-                </Grid>
-              )
-            })
-          }
+          {collections.map((e: any) => (
+            <Grid item lg={4} md={4} sm={6} xs={6}>
+              <CardActionArea>
+                <CollectionCard
+                  onClick={() => navigate("/nft-list/" + e.contractHash)}
+                  title={e.collection_name}
+                  contractHash={e.contractHash}
+                  symbol={e.collection_symbol}
+                ></CollectionCard>
+              </CardActionArea>
+            </Grid>
+          ))}
         </Grid>
       </Grid>
     </div>
