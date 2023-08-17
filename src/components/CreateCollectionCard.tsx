@@ -1,39 +1,61 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Card, CardActionArea, CardContent, CardMedia, Theme, Typography } from "@mui/material";
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia,
+  Theme,
+  Typography,
+} from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
-  title:{
+  card: {
+    margin: "1rem",
+    maxHeight: "400px",
+    height: "360px",
+    backgroundColor: "#161D3B !important",
+    color: "white !important",
+  },
+  title: {
     textAlign: "center",
     fontSize: "1.2rem",
+    fontWeight: "bold",
+    backgroundcolor: "primary",
+    backgroundImage: `linear-gradient(45deg, #9F74FB, #8B5AF1)`,
+    backgroundSize: "100%",
+    backgroundRepeat: "repeat",
+    backgroundClip: "text",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
     [theme.breakpoints.down("xl")]: {
       fontSize: "1rem",
-      },
-    [theme.breakpoints.down("sm")]: {
-    fontSize: ".9rem",
     },
-  }
+    [theme.breakpoints.down("sm")]: {
+      fontSize: ".9rem",
+    },
+  },
 }));
 
 type Props = {
   onClick: any;
 };
 
-export const CreateCollectionCard: React.FC<Props> = ({onClick}) => {
+export const CreateCollectionCard: React.FC<Props> = ({ onClick }) => {
   const classes = useStyles();
   return (
-    <Card sx={{ margin:"1rem", minHeight:"320px", backgroundColor: "#161D3B", color:"white" }} onClick={onClick}>
-      <CardActionArea sx={{padding: "1.2rem",}}>
+    <CardActionArea>
+      <Card className={classes.card} onClick={onClick}>
         <CardMedia
           component="img"
           height="200"
           image="../../public/image/collection-image.jpg"
           alt="green iguana"
         />
-        <CardContent>
+        <CardContent sx={{ height: "fullWidth" }}>
           <p className={classes.title}>CREATE COLLECTION</p>
         </CardContent>
-      </CardActionArea>
-    </Card>
+      </Card>
+    </CardActionArea>
   );
 };
