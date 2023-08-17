@@ -1,22 +1,28 @@
 import React, { useEffect } from "react";
 import { getNftCollection, getNftMetadata } from "../../utils/api";
+import { useParams } from "react-router-dom";
 
 export const NftList = () => {
+  const params = useParams();
+  const nftCollectionHash = params.collectionHash;
+
   useEffect(() => {
     const init = async () => {
-      const mockedNftCollection = "hash-5480fd53270a9768dc9c37ac41921a583d7f19095479f89552cda74185cca66c";
+      if (nftCollectionHash) {
+        const mockedNftCollection = nftCollectionHash;
 
-      const nftCollection = await getNftCollection(mockedNftCollection);
-      const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
+        const nftCollection = await getNftCollection(mockedNftCollection);
+        const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
 
-      let promises = [];
-      for (let index = 0; index < nftCount; index++) {
-        promises.push(getNftMetadata(mockedNftCollection, index.toString()));
+        let promises = [];
+        for (let index = 0; index < nftCount; index++) {
+          promises.push(getNftMetadata(mockedNftCollection, index.toString()));
+        }
+
+        const nftMetas = await Promise.all(promises);
+
+        console.log(nftMetas);
       }
-
-      const nftMetas = await Promise.all(promises);
-
-      console.log(nftMetas);
     };
 
     init();
