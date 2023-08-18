@@ -4,7 +4,6 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import { CLPublicKey } from "casper-js-sdk";
 import { fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
 import {
-  CardActionArea,
   CircularProgress,
   Grid,
   Stack,
