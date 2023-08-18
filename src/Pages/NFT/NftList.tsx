@@ -66,7 +66,6 @@ export const NftList = () => {
 
     init();
   }, []);
-  console.log(nftData);
 
   if (loading) {
     return (
