@@ -1,4 +1,16 @@
-import { BurnMode, MetadataMutability, MintingMode, NFTHolderMode, NFTIdentifierMode, NFTKind, NFTMetadataKind, NFTOwnershipMode, NamedKeyConventionMode, OwnerReverseLookupMode, WhiteListMode } from "./enum";
+import {
+  BurnMode,
+  MetadataMutability,
+  MintingMode,
+  NFTHolderMode,
+  NFTIdentifierMode,
+  NFTKind,
+  NFTMetadataKind,
+  NFTOwnershipMode,
+  NamedKeyConventionMode,
+  OwnerReverseLookupMode,
+  WhiteListMode,
+} from "./enum";
 
 export type ERC20Token = {
   name: string;
@@ -47,7 +59,7 @@ export type Collection = {
   holderMode?: NFTHolderMode;
   namedKeyConventionMode?: NamedKeyConventionMode;
   ownerReverseLookupMode?: OwnerReverseLookupMode;
-}
+};
 
 export type NFT = {
   contractHash: string;
@@ -55,4 +67,10 @@ export type NFT = {
     name: string;
     description: string;
   };
-}
+};
+
+export type CollectionMetada = {
+  name: string;
+  symbol: string;
+  hash: string;
+};
