@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   card: {
     margin: "1rem",
     maxHeight: "400px",
-    height: "360px",
+    height: "300px",
     [theme.breakpoints.down("xl")]: {
       // fontSize: "1rem",
     },

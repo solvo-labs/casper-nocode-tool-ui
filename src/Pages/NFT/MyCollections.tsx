@@ -25,7 +25,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   container: {
     maxWidth: "70vw",
     minWidth: "70vw",
-    marginTop: "4rem",
+    // marginTop: "4rem",
+    marginBottom: "2rem",
     // backgroundColor: "darkgray",
     [theme.breakpoints.down("lg")]: {
       minWidth: "90vw",
@@ -82,7 +83,7 @@ export const MyCollections = () => {
   };
 
   return (
-    <div>
+    <Grid container className={classes.container}>
       <Grid
         container
         className={classes.titleContainer}
@@ -116,7 +117,7 @@ export const MyCollections = () => {
           ></CustomButton>
         </Stack>
       </Grid>
-      <Grid container className={classes.container}>
+      <Grid container sx={{marginTop: "2rem"}}>
         <Grid container width={"100%"} justifyContent={"flex-start"}>
           <Grid item lg={4} md={4} sm={6} xs={6}>
             <CreateCollectionCard
@@ -137,6 +138,6 @@ export const MyCollections = () => {
           ))}
         </Grid>
       </Grid>
-    </div>
+    </Grid>
   );
 };
