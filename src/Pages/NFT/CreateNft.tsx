@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 import { useOutletContext } from "react-router-dom";
@@ -201,9 +201,7 @@ export const CreateNft = () => {
 
               <Grid paddingTop={2} container justifyContent={"center"}>
                 <CustomButton
-                  onClick={() => {
-                    console.log(nftData);
-                  }}
+                  onClick={createNft}
                   disabled={disable}
                   label="Create NFT"
                 />

@@ -6,7 +6,6 @@ import {
   CardContent,
   CardMedia,
   Theme,
-  Typography,
 } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({

@@ -1,20 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 // @ts-ignore
 import { CLPublicKey } from "casper-js-sdk";
 import { fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
 import {
-  Card,
   CircularProgress,
   Grid,
   Stack,
   Theme,
   Typography,
 } from "@mui/material";
-import { NftCard } from "../../components/NftCard";
 import { makeStyles } from "@mui/styles";
 import { CustomButton, CustomButtonText } from "../../components/CustomButton";
-import { CreateCollectionCard } from "../../components/CreateCollectionCard";
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleContainer: {
@@ -61,26 +58,28 @@ export const MyNFTs = () => {
 
       setLoading(false);
       setCollections(result);
+      console.log(collections);
+      
     };
 
     init();
   }, []);
 
-  // if (loading) {
-  //   return (
-  //     <div
-  //       style={{
-  //         height: "calc(100vh - 8rem)",
-  //         width: "100%",
-  //         display: "flex",
-  //         justifyContent: "center",
-  //         alignItems: "center",
-  //       }}
-  //     >
-  //       <CircularProgress />
-  //     </div>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <div
+        style={{
+          height: "calc(100vh - 8rem)",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <Grid>
@@ -120,33 +119,6 @@ export const MyNFTs = () => {
       </Grid>
       <Grid container className={classes.container}>
         <Grid container width={"100%"} justifyContent={"flex-start"}>
-          <Grid item lg={3} md={3} sm={4} xs={6}>
-            <NftCard></NftCard>
-          </Grid>
-          <Grid item lg={3} md={3} sm={4} xs={6}>
-            <NftCard></NftCard>
-          </Grid>
-          <Grid item lg={3} md={3} sm={4} xs={6}>
-            <NftCard></NftCard>
-          </Grid>
-          <Grid item lg={3} md={3} sm={4} xs={6}>
-            <NftCard></NftCard>
-          </Grid>
-          <Grid item lg={3} md={3} sm={4} xs={6}>
-            <NftCard></NftCard>
-          </Grid>
-          <Grid item lg={3} md={3} sm={4} xs={6}>
-            <NftCard></NftCard>
-          </Grid>
-          <Grid item lg={3} md={3} sm={4} xs={6}>
-            <NftCard></NftCard>
-          </Grid>
-          <Grid item lg={3} md={3} sm={4} xs={6}>
-            <NftCard></NftCard>
-          </Grid>
-          <Grid item lg={3} md={3} sm={4} xs={6}>
-            <NftCard></NftCard>
-          </Grid>
         </Grid>
       </Grid>
     </Grid>

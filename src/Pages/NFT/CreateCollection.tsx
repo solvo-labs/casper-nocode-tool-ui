@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { json, useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
 import { Collection } from "../../utils/types";
@@ -96,7 +96,7 @@ export const CreateCollection = () => {
     ownerReverseLookupMode: 0,
   });
 
-  const [publicKey, provider, wasm, nftWasm] = useOutletContext<[publickey: string, provider: any, wasm: any, nftWasm: any]>();
+  const [publicKey, provider, nftWasm] = useOutletContext<[publickey: string, provider: any, wasm: any, nftWasm: any]>();
   const navigate = useNavigate();
   const classes = useStyles();
 

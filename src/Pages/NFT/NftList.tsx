@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getNftCollection, getNftMetadata } from "../../utils/api";
 import { useParams } from "react-router-dom";
 import { CircularProgress, Grid, Theme, Typography } from "@mui/material";
