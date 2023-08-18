@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { CircularProgress, Grid, Theme, Typography } from "@mui/material";
 import { NftCard } from "../../components/NftCard";
 import { makeStyles } from "@mui/styles";
+import { CollectionMetada } from "../../utils/types";
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleContainer: {
@@ -34,13 +35,21 @@ export const NftList = () => {
   const [nftData, setNftData] = useState<any[]>([]);
   const classes = useStyles();
   const [loading, setLoading] = useState<boolean>(true);
+  const [collectionData, setCollectionData] = useState<
+    CollectionMetada | undefined
+  >();
 
   useEffect(() => {
     const init = async () => {
       if (nftCollectionHash) {
-        // const mockedNftCollection = nftCollectionHash;
-
         const nftCollection = await getNftCollection(nftCollectionHash);
+        setCollectionData({
+          ...collectionData,
+          name: nftCollection.collection_name,
+          hash: nftCollection.contractHash,
+          symbol: nftCollection.collection_symbol,
+        });
+
         const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
 
         let promises = [];
@@ -79,7 +88,7 @@ export const NftList = () => {
     <Grid container direction={"column"}>
       <Grid container className={classes.titleContainer}>
         <Typography variant="h4" className={classes.title}>
-          Collection Name
+          {collectionData?.name} ({collectionData?.symbol})
         </Typography>
       </Grid>
 
