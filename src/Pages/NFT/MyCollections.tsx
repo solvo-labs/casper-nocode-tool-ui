@@ -28,8 +28,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     minWidth: "70vw",
     marginTop: "4rem",
     // backgroundColor: "darkgray",
-    [theme.breakpoints.down("md")]: {
-      maxWidth: "95vw",
+    [theme.breakpoints.down("lg")]: {
+      minWidth: "90vw",
       marginTop: "4rem",
     },
   },
@@ -80,7 +80,7 @@ export const MyCollections = () => {
         <CircularProgress />
       </div>
     );
-  }
+  };
 
   return (
     <div>
@@ -128,14 +128,12 @@ export const MyCollections = () => {
           </Grid>
           {collections.map((e: any) => (
             <Grid item lg={4} md={4} sm={6} xs={6}>
-              <CardActionArea>
                 <CollectionCard
                   onClick={() => navigate("/nft-list/" + e.contractHash)}
                   title={e.collection_name}
                   contractHash={e.contractHash}
                   symbol={e.collection_symbol}
                 ></CollectionCard>
-              </CardActionArea>
             </Grid>
           ))}
         </Grid>
