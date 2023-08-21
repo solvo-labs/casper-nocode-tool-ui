@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 import { useNavigate, useOutletContext } from "react-router-dom";
@@ -33,6 +33,8 @@ import {
 } from "../../utils/enum";
 import { CustomSelect } from "../../components/CustomSelect";
 import toastr from "toastr";
+import { NFTStorage } from "nft.storage";
+import ImageUpload from "../../components/ImageUpload";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -96,11 +98,53 @@ export const CreateCollection = () => {
     ownerReverseLookupMode: 0,
   });
 
-  const [publicKey, provider, nftWasm] = useOutletContext<[publickey: string, provider: any, wasm: any, nftWasm: any]>();
+  const [publicKey, provider, nftWasm] =
+    useOutletContext<
+      [publickey: string, provider: any, wasm: any, nftWasm: any]
+    >();
   const navigate = useNavigate();
   const classes = useStyles();
+  const [file, setFile] = useState<any>();
+  const [fileLoading, setFileLoading] = useState<boolean>(false);
 
-  const disable = !(collectionData.name && collectionData.symbol);
+  const disable = useMemo(() => {
+    const disable = !(collectionData.name && collectionData.symbol && fileLoading);
+    return disable;
+  }, [collectionData]);
+
+  useEffect(() => {
+    const storeImage = async () => {
+      if (file) {
+        setFileLoading(true);
+        console.log("storageImage", file);
+
+        const storage = new NFTStorage({
+          token: import.meta.env.VITE_NFT_STORAGE_API_KEY,
+        });
+        const fileCid = await storage.storeBlob(new Blob([file]));
+
+        const fileUrl = "https://ipfs.io/ipfs/" + fileCid;
+
+        const obj = {
+          image: fileUrl,
+        };
+
+        // (5)
+        const metadata = new Blob([JSON.stringify(obj)], {
+          type: "application/json",
+        });
+        const metadataCid = await storage.storeBlob(metadata);
+        const metadataUrl = "https://ipfs.io/ipfs/" + metadataCid;
+        setCollectionData({
+          ...collectionData,
+          jsonSchema: { ...collectionData.jsonSchema, imageURL: metadataUrl },
+        });
+        setFileLoading(false);
+      }
+    };
+
+    storeImage();
+  }, [file]);
 
   const mintCollection = async () => {
     
@@ -123,7 +167,9 @@ export const CreateCollection = () => {
         metadata_mutability: CLValueBuilder.u8(
           collectionData.metadataMutability
         ),
-        json_schema: CLValueBuilder.string(JSON.stringify(collectionData.jsonSchema)),
+        json_schema: CLValueBuilder.string(
+          JSON.stringify(collectionData.jsonSchema)
+        ),
         minting_mode: CLValueBuilder.u8(collectionData.mintingMode),
         burn_mode: CLValueBuilder.u8(collectionData.burnMode),
         holder_mode: CLValueBuilder.u8(collectionData.holderMode),
@@ -163,7 +209,10 @@ export const CreateCollection = () => {
         const response = await axios.post(SERVER_API + "deploy", data, {
           headers: { "Content-Type": "application/json" },
         });
-        toastr.success(response.data, "CEP-78 Collection deployed successfully.");
+        toastr.success(
+          response.data,
+          "CEP-78 Collection deployed successfully."
+        );
         window.open(
           "https://testnet.cspr.live/deploy/" + response.data,
           "_blank"
@@ -257,6 +306,13 @@ export const CreateCollection = () => {
               >
                 Metadata
               </Typography>
+              <ImageUpload
+                loading={fileLoading}
+                file={file}
+                setFile={(data) => {
+                  setFile(data);
+                }}
+              ></ImageUpload>
               <CustomInput
                 placeholder="Metadata Name"
                 label="Metadata Name"
@@ -291,7 +347,7 @@ export const CreateCollection = () => {
                 }}
                 value={collectionData.jsonSchema.description}
               ></CustomInput>
-              <CustomInput
+              {/* <CustomInput
                 placeholder="Image URL"
                 label="Collection Image URL"
                 id="imageURL"
@@ -307,7 +363,7 @@ export const CreateCollection = () => {
                   });
                 }}
                 value={collectionData.jsonSchema.imageURL}
-              ></CustomInput>
+              ></CustomInput> */}
 
               <Divider
                 sx={{ backgroundColor: "red", marginTop: "3rem !important" }}
