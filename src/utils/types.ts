@@ -73,4 +73,9 @@ export type CollectionMetada = {
   name: string;
   symbol: string;
   hash: string;
+  json_schema: {
+    name: string;
+    description: string;
+    imageURL: string;
+  };
 };
