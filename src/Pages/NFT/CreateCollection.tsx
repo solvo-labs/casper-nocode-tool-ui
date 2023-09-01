@@ -98,9 +98,15 @@ export const CreateCollection = () => {
     ownerReverseLookupMode: 0,
   });
 
-  const [publicKey, provider, nftWasm] =
+  const [publicKey, provider, nftWasm, collectionWasm] =
     useOutletContext<
-      [publickey: string, provider: any, wasm: any, nftWasm: any]
+      [
+        publickey: string,
+        provider: any,
+        wasm: any,
+        nftWasm: any,
+        collectionWasm: any
+      ]
     >();
   const navigate = useNavigate();
   const classes = useStyles();
@@ -108,7 +114,11 @@ export const CreateCollection = () => {
   const [fileLoading, setFileLoading] = useState<boolean>(false);
 
   const disable = useMemo(() => {
-    const disable = !(collectionData.name && collectionData.symbol && fileLoading);
+    const disable = !(
+      collectionData.name &&
+      collectionData.symbol &&
+      !fileLoading
+    );
     return disable;
   }, [collectionData]);
 
@@ -137,7 +147,10 @@ export const CreateCollection = () => {
         const metadataUrl = "https://ipfs.io/ipfs/" + metadataCid;
         setCollectionData({
           ...collectionData,
-          jsonSchema: { ...collectionData.jsonSchema, imageURL: metadataUrl },
+          jsonSchema: {
+            ...collectionData.jsonSchema,
+            imageURL: metadataUrl,
+          },
         });
         setFileLoading(false);
       }
@@ -147,14 +160,13 @@ export const CreateCollection = () => {
   }, [file]);
 
   const mintCollection = async () => {
-    
     try {
       console.log(collectionData);
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-      
+
       // contract
       const contract = new Contracts.Contract();
-      
+
       const args = RuntimeArgs.fromMap({
         collection_name: CLValueBuilder.string(collectionData.name),
         collection_symbol: CLValueBuilder.string(collectionData.symbol),
@@ -182,11 +194,12 @@ export const CreateCollection = () => {
       });
 
       const deploy = contract.install(
-        new Uint8Array(nftWasm!),
+        new Uint8Array(collectionWasm!),
         args,
         "300000000000",
         ownerPublicKey,
         "casper-test"
+        // [publicKey]
       );
 
       const deployJson = DeployUtil.deployToJson(deploy);
@@ -218,7 +231,7 @@ export const CreateCollection = () => {
           "_blank"
         );
 
-        navigate("/my-tokens");
+        navigate("/my-collection");
         // setActionLoader(false);
       } catch (error: any) {
         alert(error.message);
@@ -324,6 +337,7 @@ export const CreateCollection = () => {
                     ...collectionData,
                     jsonSchema: {
                       ...collectionData.jsonSchema,
+
                       name: e.target.value,
                     },
                   });
