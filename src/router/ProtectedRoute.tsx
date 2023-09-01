@@ -25,6 +25,7 @@ const ProtectedRoute: React.FC = () => {
   const [provider, setProvider] = useState<any>();
   const [wasm, setWasm] = useState<any>();
   const [nftWasm, setNftWasm] = useState<any>();
+  const [collectionWasm, setCollectionWasm] = useState<any>();
 
   useEffect(() => {
     const init = async () => {
@@ -38,9 +39,11 @@ const ProtectedRoute: React.FC = () => {
 
         const wasm1 = await fetchContract("/cep18.wasm");
         const wasm2 = await fetchContract("/cep47.wasm");
+        const colWasm = await fetchContract("/cep78.wasm")
 
         setWasm(wasm1);
         setNftWasm(wasm2);
+        setCollectionWasm(colWasm);
         setProvider(provider);
         setPublicKey(activePublicKey);
         setConnected(isConnected);
@@ -76,7 +79,7 @@ const ProtectedRoute: React.FC = () => {
         <Grid item lg={12} md={12} xs={12} height={"100vh"} paddingTop={{xl:"12rem", md:"12rem", sm:"10rem", xs: "8rem"}}>
           <Grid container direction={"column"}  spacing={0}>
             {/* <Grid item><DrawerAppBar /></Grid> */}
-            <Outlet context={[publicKey, provider, wasm, nftWasm]} />
+            <Outlet context={[publicKey, provider, wasm, nftWasm, collectionWasm]} />
           </Grid>
         </Grid>
       </Grid>
