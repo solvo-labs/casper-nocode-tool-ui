@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 type Props = {
   title: string;
   symbol: string;
+  image: string;
   contractHash: string;
   onClick: () => void;
 };
@@ -31,6 +32,7 @@ export const CollectionCard: React.FC<Props> = ({
   title,
   symbol,
   contractHash,
+  image,
   onClick,
 }) => {
   const classes = useStyles();
@@ -40,8 +42,8 @@ export const CollectionCard: React.FC<Props> = ({
         <CardMedia
           component="img"
           height="200"
-          image="https://w0.peakpx.com/wallpaper/237/346/HD-wallpaper-gt-r-nissan-japanese-car-cartoon.jpg"
-          alt="green iguana"
+          image={image}
+          alt="collection-image"
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
