@@ -2,18 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 // @ts-ignore
 import { CLPublicKey } from "casper-js-sdk";
-import {
-  collectionImage,
-  fetchCep78NamedKeys,
-  getNftCollection,
-} from "../../utils/api";
-import {
-  CircularProgress,
-  Grid,
-  Stack,
-  Theme,
-  Typography,
-} from "@mui/material";
+import { collectionImage, fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
+import { CircularProgress, Grid, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomButton, CustomButtonText } from "../../components/CustomButton";
 import { CreateCollectionCard } from "../../components/CreateCollectionCard";
@@ -59,16 +49,12 @@ export const MyCollections = () => {
     try {
       let imageLink: string;
       const parsedData = JSON.parse(metadata.json_schema);
-      if (
-        parsedData.imageURL &&
-        parsedData.imageURL.startsWith("https://ipfs.io/ipfs/")
-      ) {
+      if (parsedData.imageURL && parsedData.imageURL.startsWith("https://ipfs.io/ipfs/")) {
         const result = await collectionImage(parsedData.imageURL);
         imageLink = result;
         return result;
       } else {
-        imageLink =
-          "https://w0.peakpx.com/wallpaper/237/346/HD-wallpaper-gt-r-nissan-japanese-car-cartoon.jpg";
+        imageLink = "https://w0.peakpx.com/wallpaper/237/346/HD-wallpaper-gt-r-nissan-japanese-car-cartoon.jpg";
       }
       return Promise.resolve(imageLink);
     } catch (error) {
@@ -120,30 +106,25 @@ export const MyCollections = () => {
 
   return (
     <Grid container className={classes.container}>
-      <Grid
-        container
-        className={classes.titleContainer}
-        direction={"row"}
-        justifyContent={"space-between"}
-      >
+      <Grid container className={classes.titleContainer} direction={"row"} justifyContent={"space-between"}>
         <Typography className={classes.title} variant="h4">
           My Collections
         </Typography>
         <Stack direction={"row"} spacing={2}>
-          <CustomButtonText
+          {/* <CustomButtonText
             disabled={false}
             label="My NFTs"
             onClick={() => {
               navigate("/my-nfts");
             }}
-          ></CustomButtonText>
-          <CustomButtonText
+          ></CustomButtonText> */}
+          {/* <CustomButtonText
             disabled={false}
             label="My Collections"
             onClick={() => {
               navigate("/my-collections");
             }}
-          ></CustomButtonText>
+          ></CustomButtonText> */}
           <CustomButton
             disabled={false}
             label="Mint NFT"
