@@ -2,7 +2,9 @@ import axios from "axios";
 import { ERC20Token } from "./types";
 
 const api = "https://event-store-api-clarity-testnet.make.services/";
-const serverApi = "https://18.185.15.120:8000/";
+export const SERVER_API = import.meta.env.DEV
+  ? "http://localhost:1923/"
+  : "https://18.185.15.120:8000/";
 
 // https://event-store-api-clarity-testnet.make.services/accounts/5e542e3bfacb53152a07322519eedd6f6cad1689508d588051603459b4b12590/erc20-tokens
 
@@ -22,8 +24,12 @@ export type ERC20TokenInfo = {
   balance: string;
 };
 
-export const fetchErc20Tokens = async (accountHash: string): Promise<ERC20TokenInfo[]> => {
-  const response = await axios.get<{ data: ERC20TokenInfo[] }>(api + "accounts/" + accountHash + "/erc20-tokens");
+export const fetchErc20Tokens = async (
+  accountHash: string
+): Promise<ERC20TokenInfo[]> => {
+  const response = await axios.get<{ data: ERC20TokenInfo[] }>(
+    api + "accounts/" + accountHash + "/erc20-tokens"
+  );
 
   return response.data.data;
 };
@@ -34,10 +40,25 @@ type NamedKey = {
 };
 
 export const fetchNamedKeys = async (accountHash: string) => {
-  const stateRootHash = (await axios.get<string>(serverApi + "stateRootHash")).data;
+  const stateRootHash = (await axios.get<string>(SERVER_API + "stateRootHash"))
+    .data;
 
-  const response = await axios.get(api + "rpc/" + "state_get_item?state_root_hash=" + stateRootHash + "&key=" + accountHash);
-  const namedKeys: NamedKey[] = response.data.result.stored_value.Account.named_keys;
+  const response = await axios.get(
+    api +
+      "rpc/" +
+      "state_get_item?state_root_hash=" +
+      stateRootHash +
+      "&key=" +
+      accountHash
+  );
+  const namedKeys: NamedKey[] =
+    response.data.result.stored_value.Account.named_keys;
+
+  return namedKeys;
+};
+
+const fetchCep18NamedKeys = async (accountHash: string) => {
+  const namedKeys = await fetchNamedKeys(accountHash);
 
   const filteredNamedKeys = namedKeys.filter((ky) => {
     return ky.name.startsWith("cep18_contract_hash");
@@ -46,14 +67,26 @@ export const fetchNamedKeys = async (accountHash: string) => {
   return filteredNamedKeys;
 };
 
+export const fetchCep78NamedKeys = async (accountHash: string) => {
+  const namedKeys = await fetchNamedKeys(accountHash);
+
+  const filteredNamedKeys = namedKeys.filter((ky) => {
+    return ky.name.startsWith("cep78_contract_hash");
+  });
+
+  return filteredNamedKeys;
+};
+
 export const fetchErc20TokenDetails = async (contractHash: string) => {
-  const response = await axios.get<ERC20Token>(serverApi + "getERC20Token?contractHash=" + contractHash);
+  const response = await axios.get<ERC20Token>(
+    SERVER_API + "getERC20Token?contractHash=" + contractHash
+  );
 
   return { ...response.data, contractHash };
 };
 
 export const listofCreatorERC20Tokens = async (accountHash: string) => {
-  const namedKeys = await fetchNamedKeys(accountHash);
+  const namedKeys = await fetchCep18NamedKeys(accountHash);
 
   const promises = namedKeys.map((nk) => fetchErc20TokenDetails(nk.key));
 
@@ -63,14 +96,18 @@ export const listofCreatorERC20Tokens = async (accountHash: string) => {
 };
 
 export const fetchErc20TokenMeta = async (contractPackage: string) => {
-  const response = await axios.get<{ data: ERC20TokenInfo[] }>(api + "contract-packages/" + contractPackage);
+  const response = await axios.get<{ data: ERC20TokenInfo[] }>(
+    api + "contract-packages/" + contractPackage
+  );
 
   return response.data;
 };
 
 export const fetchErc20TokenWithBalances = async (accountHash: string) => {
   const tokens = await fetchErc20Tokens(accountHash.slice(13));
-  const promises = tokens.map((tok) => fetchErc20TokenMeta(tok.contract_package_hash));
+  const promises = tokens.map((tok) =>
+    fetchErc20TokenMeta(tok.contract_package_hash)
+  );
 
   const data = await Promise.all(promises);
 
@@ -81,9 +118,14 @@ export const fetchErc20TokenWithBalances = async (accountHash: string) => {
   return finalData;
 };
 
-export const contractPackageHashToContractHash = async (contractPackageHash: string) => {
+export const contractPackageHashToContractHash = async (
+  contractPackageHash: string
+) => {
   const response = await axios.get(
-    api + "extended-deploys?page=1&limit=1&fields=entry_point,contract_package&contract_package_hash=" + contractPackageHash + "&with_amounts_in_currency_id=1"
+    api +
+      "extended-deploys?page=1&limit=1&fields=entry_point,contract_package&contract_package_hash=" +
+      contractPackageHash +
+      "&with_amounts_in_currency_id=1"
   );
 
   return response.data.data[0].contract_hash;
@@ -101,9 +143,13 @@ export type Token = {
 export const allTokensFromWallet = async (accountHash: string) => {
   const currentErc20Tokens = await fetchErc20TokenWithBalances(accountHash);
 
-  const currentErc20TokensContractHashPromises = currentErc20Tokens.map((dt) => contractPackageHashToContractHash(dt.contract_package_hash));
+  const currentErc20TokensContractHashPromises = currentErc20Tokens.map((dt) =>
+    contractPackageHashToContractHash(dt.contract_package_hash)
+  );
 
-  const currentErc20TokensContractHash = await Promise.all(currentErc20TokensContractHashPromises);
+  const currentErc20TokensContractHash = await Promise.all(
+    currentErc20TokensContractHashPromises
+  );
 
   let walletData: Token[] = currentErc20Tokens.map((dt, index) => {
     return {
@@ -135,7 +181,9 @@ export const initTokens = async (accountHash: string) => {
         name: ct.name,
         symbol: ct.symbol,
         decimals: parseInt(ct.decimals.hex, 16),
-        balance: parseInt(ct.total_supply.hex, 16) / Math.pow(10, parseInt(ct.decimals.hex, 16)),
+        balance:
+          parseInt(ct.total_supply.hex, 16) /
+          Math.pow(10, parseInt(ct.decimals.hex, 16)),
         contractPackageHash: "",
         contractHash: ct.contractHash,
       });
@@ -143,4 +191,29 @@ export const initTokens = async (accountHash: string) => {
   });
 
   return { creatorTokens, finalData };
+};
+
+export const getNftCollection = async (contractHash: string) => {
+  const response = await axios.get<any>(
+    SERVER_API + "getCollection?contractHash=" + contractHash
+  );
+  // console.log("response", response.data.json_schema);
+  return { ...response.data, contractHash };
+};
+
+export const getNftMetadata = async (contractHash: string, index: string) => {
+  const response = await axios.get<any>(
+    SERVER_API +
+      "getNftMetadata?contractHash=" +
+      contractHash +
+      "&index=" +
+      index
+  );
+
+  return JSON.parse(response.data);
+};
+
+export const collectionImage = async (apiLink: string):Promise<string> => {
+  const response = await axios.get<any>(apiLink);
+  return response.data.image;
 };

@@ -30,6 +30,20 @@ export const CustomSelect: React.FC<Props> = ({ onChange, value, children, id, l
     <Select
       classes={{ select: classes.select }}
       sx={{
+        color: "white",
+            ".MuiOutlinedInput-notchedOutline": {
+              borderColor: "white",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "white",
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "white",
+            },
+            ".MuiSvgIcon-root ": {
+              fill: "white !important",
+            },
+        
         "& .css-jedpe8-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select": {
           height: "2rem",
         },

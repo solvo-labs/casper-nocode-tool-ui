@@ -9,7 +9,7 @@ import axios from "axios";
 import toastr from "toastr";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { Token, initTokens } from "../../utils/api";
+import { SERVER_API, Token, initTokens } from "../../utils/api";
 
 import { SelectChangeEvent } from "@mui/material/Select";
 import { CustomSelect } from "../../components/CustomSelect";
@@ -80,8 +80,7 @@ const Transfer: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedToken, setSelectedToken] = useState<Token>();
 
-  const [publicKey, provider] =
-    useOutletContext<[publickey: string, provider: any]>();
+  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
 
   const classes = useStyles();
   const navigate = useNavigate();
@@ -112,21 +111,11 @@ const Transfer: React.FC = () => {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
       const args = RuntimeArgs.fromMap({
-        recipient: CLValueBuilder.key(
-          CLPublicKey.fromHex(data.receipentPubkey)
-        ),
-        amount: CLValueBuilder.u256(
-          Number(data.amount * Math.pow(10, selectedToken.decimals))
-        ),
+        recipient: CLValueBuilder.key(CLPublicKey.fromHex(data.receipentPubkey)),
+        amount: CLValueBuilder.u256(Number(data.amount * Math.pow(10, selectedToken.decimals))),
       });
 
-      const deploy = contract.callEntrypoint(
-        "transfer",
-        args,
-        ownerPublicKey,
-        "casper-test",
-        "1000000000"
-      );
+      const deploy = contract.callEntrypoint("transfer", args, ownerPublicKey, "casper-test", "1000000000");
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -135,26 +124,15 @@ const Transfer: React.FC = () => {
 
         // setActionLoader(true);
 
-        let signedDeploy = DeployUtil.setSignature(
-          deploy,
-          sign.signature,
-          ownerPublicKey
-        );
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
 
         const data = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post(
-          "https://18.185.15.120:8000/deploy",
-          data,
-          { headers: { "Content-Type": "application/json" } }
-        );
+        const response = await axios.post(SERVER_API + "deploy", data, { headers: { "Content-Type": "application/json" } });
         toastr.success(response.data, "ERC-20 Token transfered successfully.");
-        window.open(
-          "https://testnet.cspr.live/deploy/" + response.data,
-          "_blank"
-        );
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
         // setActionLoader(false);
@@ -195,19 +173,12 @@ const Transfer: React.FC = () => {
           <h5 className={classes.title}>Transfer Token</h5>
 
           <Grid container className={classes.gridContainer}>
-            <Stack
-              spacing={4}
-              direction={"column"}
-              marginTop={4}
-              className={classes.stackContainer}
-            >
+            <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
               <CustomSelect
                 value={selectedToken?.contractHash || "default"}
                 label="ERC-20 Token"
                 onChange={(event: SelectChangeEvent) => {
-                  const data = tokens.find(
-                    (tk) => tk.contractHash === event.target.value
-                  );
+                  const data = tokens.find((tk) => tk.contractHash === event.target.value);
                   setSelectedToken(data);
                 }}
                 id={"custom-select"}
@@ -253,15 +224,7 @@ const Transfer: React.FC = () => {
                 }
               />
               <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton
-                  onClick={transferData}
-                  disabled={
-                    data.amount <= 0 ||
-                    data.receipentPubkey === "" ||
-                    selectedToken === undefined
-                  }
-                  label="Transfer"
-                />
+                <CustomButton onClick={transferData} disabled={data.amount <= 0 || data.receipentPubkey === "" || selectedToken === undefined} label="Transfer" />
               </Grid>
             </Stack>
           </Grid>

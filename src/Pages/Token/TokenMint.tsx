@@ -1,4 +1,4 @@
-import { Grid, Stack, Theme, CircularProgress, Switch, FormControlLabel } from "@mui/material";
+import { Grid, Stack, Theme, CircularProgress, Switch, FormControlLabel, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
 // @ts-ignore
@@ -10,6 +10,7 @@ import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import toastr from "toastr";
+import { SERVER_API } from "../../utils/api";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -29,11 +30,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   title: {
-    fontWeight: 500,
-    fontSize: "26px",
     position: "relative",
-    top: "3rem",
     borderBottom: "1px solid #FF0011 !important",
+  },
+  titleItem: {
+    marginBottom: "1rem !important",
+    [theme.breakpoints.down("sm")]: {
+      marginBottom: "1rem !important",
+    },
   },
   gridContainer: {
     justifyContent: "center",
@@ -73,12 +77,12 @@ const TokenMint: React.FC = () => {
   const mintToken = async () => {
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-      console.log('ownerPublicKey', ownerPublicKey);
+      console.log("ownerPublicKey", ownerPublicKey);
 
       // contract
 
       const contract = new Contracts.Contract();
-      console.log('contract', contract);
+      console.log("contract", contract);
 
       // parameters
       const args = RuntimeArgs.fromMap({
@@ -88,33 +92,30 @@ const TokenMint: React.FC = () => {
         total_supply: CLValueBuilder.u256(data.supply * Math.pow(10, data.decimal)),
         enable_mint_burn: CLValueBuilder.bool(data.enableMintBurn),
       });
-      console.log('args', args);
+      console.log("args", args);
 
       const deploy = contract.install(new Uint8Array(wasm!), args, "150000000000", ownerPublicKey, "casper-test");
-      console.log('deploy', deploy);
-      
+
       const deployJson = DeployUtil.deployToJson(deploy);
-      console.log('deployJson', deployJson);
-      
+      console.log("deployJson", deployJson);
+
       // signer logic
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-        console.log('sign', sign);
-        
+        console.log("sign", sign);
+
         setActionLoader(true);
 
         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
-        console.log('signedDeploy', signedDeploy);
-        
+
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-        console.log('signedDeploy', signedDeploy);
-        
+        console.log("signedDeploy", signedDeploy);
+
         const data = DeployUtil.deployToJson(signedDeploy.val);
-        console.log('data', data);
-        
-        const response = await axios.post("https://18.185.15.120:8000/deploy", data, { headers: { "Content-Type": "application/json" } });
-        console.log('response', response);
-        
+
+        const response = await axios.post(SERVER_API + "deploy", data, {
+          headers: { "Content-Type": "application/json" },
+        });
         toastr.success(response.data, "ERC-20 Token deployed successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
@@ -176,8 +177,11 @@ const TokenMint: React.FC = () => {
     >
       <Grid container className={classes.container}>
         <Grid container className={classes.center}>
-          <h5 className={classes.title}>Mint Token</h5>
-
+          <Grid item className={classes.titleItem}>
+            <Typography variant="h5" className={classes.title}>
+              Mint Token
+            </Typography>
+          </Grid>
           <Grid container className={classes.gridContainer}>
             <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
               <CustomInput

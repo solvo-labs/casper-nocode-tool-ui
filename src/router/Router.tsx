@@ -12,6 +12,11 @@ import MintAndBurn from "../Pages/Token/MintAndBurn";
 import Allowance from "../Pages/Token/Allowance";
 import IncreaseDecreaseAllowance from "../Pages/Token/IncreaseDecreaseAllowance";
 import TransferFrom from "../Pages/Token/TransferFrom";
+import { CreateCollection } from "../Pages/NFT/CreateCollection";
+import { MyCollections } from "../Pages/NFT/MyCollections";
+import { CreateNft } from "../Pages/NFT/CreateNft";
+import { NftList } from "../Pages/NFT/NftList";
+import { MyNFTs } from "../Pages/NFT/MyNFTs";
 
 import { Tokenomics } from "../Pages/Tokenomics/Tokenomics";
 import { Vesting } from "../Pages/Tokenomics/Vesting";
@@ -24,24 +29,26 @@ const Router: React.FC = () => {
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/" index element={<Main />} />
+
+            {/* TOKENS */}
             <Route path="/token" index element={<TokenMint />} />
             <Route path="/my-tokens" index element={<MyTokens />} />
             <Route path="/tokenomics" index element={<Tokenomics />} />
             <Route path="/vesting-list" index element={<VestingList />} />
-            <Route
-              path="/create-vesting/:tokenid/:name/:amount"
-              index
-              element={<Vesting />}
-            />
+            <Route path="/create-vesting/:tokenid/:name/:amount" index element={<Vesting />} />
             <Route path="/transfer" index element={<Transfer />} />
             <Route path="/transfer-from" index element={<TransferFrom />} />
             <Route path="/approve" element={<Approve />} />
             <Route path="/mint-and-burn" element={<MintAndBurn />} />
             <Route path="/allowance" element={<Allowance />} />
-            <Route
-              path="/increase-decrease-allowance"
-              element={<IncreaseDecreaseAllowance />}
-            />
+            <Route path="/increase-decrease-allowance" element={<IncreaseDecreaseAllowance />} />
+
+            {/* NFTS */}
+            <Route path="/create-collection" index element={<CreateCollection />} />
+            <Route path="/my-collections" index element={<MyCollections />} />
+            <Route path="/my-nfts" index element={<MyNFTs />} />
+            <Route path="/create-nft" index element={<CreateNft />} />
+            <Route path="/nft-list/:collectionHash" index element={<NftList />} />
           </Route>
           <Route path="/login" index element={<Login />} />
         </Routes>
