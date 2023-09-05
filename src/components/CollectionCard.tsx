@@ -1,13 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Theme,
-  Typography,
-} from "@mui/material";
+import { Card, CardActionArea, CardContent, CardMedia, Theme, Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -28,23 +21,12 @@ type Props = {
   onClick: () => void;
 };
 
-export const CollectionCard: React.FC<Props> = ({
-  title,
-  symbol,
-  contractHash,
-  image,
-  onClick,
-}) => {
+export const CollectionCard: React.FC<Props> = ({ title, symbol, contractHash, image, onClick }) => {
   const classes = useStyles();
   return (
     <CardActionArea>
       <Card className={classes.card} onClick={onClick}>
-        <CardMedia
-          component="img"
-          height="200"
-          image={image}
-          alt="collection-image"
-        />
+        <CardMedia component="img" height="200" image={image} alt="collection-image" />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             {title}

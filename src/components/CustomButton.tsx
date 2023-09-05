@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         backgroundColor: "#FF0011",
       },
     },
-  }
+  },
 }));
 
 type Props = {
@@ -59,11 +59,11 @@ export const CustomButton: React.FC<Props> = ({ onClick, label, disabled }) => {
   );
 };
 
-export const CustomButtonText: React.FC<Props> = ({onClick, label, disabled}) => {
+export const CustomButtonText: React.FC<Props> = ({ onClick, label, disabled }) => {
   const classes = useStyles();
   return (
     <Button variant="text" className={classes.textButton} onClick={onClick} disabled={disabled}>
       {label}
     </Button>
   );
-}
+};

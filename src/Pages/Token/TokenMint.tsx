@@ -1,12 +1,4 @@
-import {
-  Grid,
-  Stack,
-  Theme,
-  CircularProgress,
-  Switch,
-  FormControlLabel,
-  Typography,
-} from "@mui/material";
+import { Grid, Stack, Theme, CircularProgress, Switch, FormControlLabel, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
 // @ts-ignore
@@ -85,45 +77,39 @@ const TokenMint: React.FC = () => {
   const mintToken = async () => {
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+      console.log("ownerPublicKey", ownerPublicKey);
 
       // contract
 
       const contract = new Contracts.Contract();
+      console.log("contract", contract);
 
       // parameters
       const args = RuntimeArgs.fromMap({
         name: CLValueBuilder.string(data.name),
         symbol: CLValueBuilder.string(data.symbol),
         decimals: CLValueBuilder.u8(data.decimal),
-        total_supply: CLValueBuilder.u256(
-          data.supply * Math.pow(10, data.decimal)
-        ),
+        total_supply: CLValueBuilder.u256(data.supply * Math.pow(10, data.decimal)),
         enable_mint_burn: CLValueBuilder.bool(data.enableMintBurn),
       });
+      console.log("args", args);
 
-      const deploy = contract.install(
-        new Uint8Array(wasm!),
-        args,
-        "150000000000",
-        ownerPublicKey,
-        "casper-test"
-      );
+      const deploy = contract.install(new Uint8Array(wasm!), args, "150000000000", ownerPublicKey, "casper-test");
 
       const deployJson = DeployUtil.deployToJson(deploy);
+      console.log("deployJson", deployJson);
 
       // signer logic
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+        console.log("sign", sign);
 
         setActionLoader(true);
 
-        let signedDeploy = DeployUtil.setSignature(
-          deploy,
-          sign.signature,
-          ownerPublicKey
-        );
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+        console.log("signedDeploy", signedDeploy);
 
         const data = DeployUtil.deployToJson(signedDeploy.val);
 
@@ -131,10 +117,7 @@ const TokenMint: React.FC = () => {
           headers: { "Content-Type": "application/json" },
         });
         toastr.success(response.data, "ERC-20 Token deployed successfully.");
-        window.open(
-          "https://testnet.cspr.live/deploy/" + response.data,
-          "_blank"
-        );
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
         setActionLoader(false);
@@ -200,12 +183,7 @@ const TokenMint: React.FC = () => {
             </Typography>
           </Grid>
           <Grid container className={classes.gridContainer}>
-            <Stack
-              spacing={4}
-              direction={"column"}
-              marginTop={4}
-              className={classes.stackContainer}
-            >
+            <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
               <CustomInput
                 placeholder="Name"
                 label="Name"
@@ -279,24 +257,12 @@ const TokenMint: React.FC = () => {
               <FormControlLabel
                 style={{ justifyContent: "start" }}
                 labelPlacement="start"
-                control={
-                  <Switch
-                    checked={data.enableMintBurn}
-                    color="warning"
-                    onChange={() =>
-                      setData({ ...data, enableMintBurn: !data.enableMintBurn })
-                    }
-                  />
-                }
+                control={<Switch checked={data.enableMintBurn} color="warning" onChange={() => setData({ ...data, enableMintBurn: !data.enableMintBurn })} />}
                 label="Enable Mint & Burn"
               />
 
               <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton
-                  onClick={mintToken}
-                  disabled={disable}
-                  label="Mint Token"
-                />
+                <CustomButton onClick={mintToken} disabled={disable} label="Mint Token" />
               </Grid>
             </Stack>
           </Grid>

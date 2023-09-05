@@ -52,13 +52,13 @@ export const CreateNft = () => {
     contractHash: "",
     tokenMetaData: {
       name: "",
-      description:"",
+      description: "",
     },
   });
 
   let hashLength = nftData.contractHash.length;
   let hashCheck = nftData.contractHash.startsWith("hash-");
-  const disable = !(nftData.contractHash && nftData.tokenMetaData && hashCheck && hashLength == 69)
+  const disable = !(nftData.contractHash && nftData.tokenMetaData && hashCheck && hashLength == 69);
 
   const createNft = async () => {
     const contract = new Contracts.Contract();
@@ -69,7 +69,8 @@ export const CreateNft = () => {
 
     const args = RuntimeArgs.fromMap({
       token_owner: CLValueBuilder.key(ownerPublicKey),
-      token_meta_data: CLValueBuilder.string(nftData.tokenMetaData
+      token_meta_data: CLValueBuilder.string(
+        nftData.tokenMetaData
         // JSON.stringify({
         //   name: "Kaaacca2",
         //   description: "hello",
@@ -80,13 +81,7 @@ export const CreateNft = () => {
       ),
     });
 
-    const deploy = contract.callEntrypoint(
-      "mint",
-      args,
-      ownerPublicKey,
-      "casper-test",
-      "2000000000"
-    );
+    const deploy = contract.callEntrypoint("mint", args, ownerPublicKey, "casper-test", "2000000000");
 
     const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -95,11 +90,7 @@ export const CreateNft = () => {
 
       // setActionLoader(true);
 
-      let signedDeploy = DeployUtil.setSignature(
-        deploy,
-        sign.signature,
-        ownerPublicKey
-      );
+      let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
       signedDeploy = DeployUtil.validateDeploy(signedDeploy);
 
@@ -109,10 +100,7 @@ export const CreateNft = () => {
         headers: { "Content-Type": "application/json" },
       });
       toastr.success(response.data, "Mint completed successfully.");
-      window.open(
-        "https://testnet.cspr.live/deploy/" + response.data,
-        "_blank"
-      );
+      window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
       // navigate("/my-tokens");
       // setActionLoader(false);
@@ -137,12 +125,7 @@ export const CreateNft = () => {
             </Typography>
           </Grid>
           <Grid container className={classes.gridContainer}>
-            <Stack
-              spacing={4}
-              direction={"column"}
-              marginTop={4}
-              className={classes.stackContainer}
-            >
+            <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
               <CustomInput
                 placeholder="Collection Address"
                 label="Collection Address"
@@ -158,10 +141,7 @@ export const CreateNft = () => {
                 value={nftData.contractHash}
               ></CustomInput>
               {/* //TODO nft metadata input */}
-              <Typography
-                sx={{ borderBottom: "1px solid #FF0011 !important" }}
-                variant="button"
-              >
+              <Typography sx={{ borderBottom: "1px solid #FF0011 !important" }} variant="button">
                 Metadata
               </Typography>
               <CustomInput
@@ -200,11 +180,7 @@ export const CreateNft = () => {
               ></CustomInput>
 
               <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton
-                  onClick={createNft}
-                  disabled={disable}
-                  label="Create NFT"
-                />
+                <CustomButton onClick={createNft} disabled={disable} label="Create NFT" />
               </Grid>
             </Stack>
           </Grid>

@@ -2,20 +2,7 @@ import React from "react";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
 import { APP_NAME, NFT_PAGE, PAGES_NAME, TOKEN_PAGE } from "../utils/enum";
-import {
-  AppBar,
-  Avatar,
-  Box,
-  Button,
-  Container,
-  IconButton,
-  Menu,
-  MenuItem,
-  Theme,
-  Toolbar,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { AppBar, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -167,26 +154,15 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
           <Toolbar disableGutters>
             {/* ICON */}
             {/* <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} /> */}
-            <Typography
-              variant="h5"
-              noWrap
-              component="a"
-              href=""
-              className={classes.appName}
-              onClick={() => navigate("/")}
-            >
+            <Typography variant="h5" noWrap component="a" href="" className={classes.appName} onClick={() => navigate("/")}>
               {APP_NAME.CASPER}
             </Typography>
             <Box sx={{ flexGrow: 1, display: "flex" }}>
               <Button onClick={() => {}}>
-                <Typography className={classes.menuTitle}>
-                  {PAGES_NAME.STAKING}
-                </Typography>
+                <Typography className={classes.menuTitle}>{PAGES_NAME.STAKING}</Typography>
               </Button>
               <Button onClick={() => {}}>
-                <Typography className={classes.menuTitle}>
-                  {PAGES_NAME.DAO}
-                </Typography>
+                <Typography className={classes.menuTitle}>{PAGES_NAME.DAO}</Typography>
               </Button>
               <Box>
                 <Button
@@ -194,9 +170,7 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                   onMouseOver={(e: any) => handleClick(e, setAnchorElForNFT)}
                   onMouseOut={(e: any) => handleClick(e, setAnchorElForNFT)}
                 >
-                  <Typography className={classes.menuTitle}>
-                    {PAGES_NAME.NFT}
-                  </Typography>
+                  <Typography className={classes.menuTitle}>{PAGES_NAME.NFT}</Typography>
                 </Button>
                 <Menu
                   id="nftMenu"
@@ -223,13 +197,8 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                 </Menu>
               </Box>
               <Box>
-                <Button
-                  onClick={(e: any) => handleClick(e, setAnchorElForToken)}
-                  onMouseOver={(e: any) => handleClick(e, setAnchorElForToken)}
-                >
-                  <Typography className={classes.menuTitle}>
-                    {PAGES_NAME.TOKEN}
-                  </Typography>
+                <Button onClick={(e: any) => handleClick(e, setAnchorElForToken)} onMouseOver={(e: any) => handleClick(e, setAnchorElForToken)}>
+                  <Typography className={classes.menuTitle}>{PAGES_NAME.TOKEN}</Typography>
                 </Button>
                 <Menu
                   id="collectionMenu"
@@ -259,13 +228,7 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
 
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Profile">
-                <IconButton
-                  onClick={(e: any) => handleClick(e, setAnchorElForProfile)}
-                  onMouseOver={(e: any) =>
-                    handleClick(e, setAnchorElForProfile)
-                  }
-                  sx={{ p: 0 }}
-                >
+                <IconButton onClick={(e: any) => handleClick(e, setAnchorElForProfile)} onMouseOver={(e: any) => handleClick(e, setAnchorElForProfile)} sx={{ p: 0 }}>
                   <Avatar alt="alt" src="" />
                 </IconButton>
               </Tooltip>
@@ -299,9 +262,7 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                       navigator.clipboard.writeText(publicKey);
                     }}
                   >
-                    <Typography>
-                      {publicKey.slice(0, 10) + "..." + publicKey.slice(-6)}{" "}
-                    </Typography>
+                    <Typography>{publicKey.slice(0, 10) + "..." + publicKey.slice(-6)} </Typography>
                   </MenuItem>
                 </Tooltip>
                 <MenuItem onClick={logout} className={classes.menuItem}>

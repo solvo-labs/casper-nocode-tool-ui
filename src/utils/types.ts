@@ -39,6 +39,17 @@ export type TokenApprove = {
   amount: number;
 };
 
+export type Section = {
+  name: string;
+  amount: number;
+  percent: number;
+  isOldSection: boolean;
+};
+
+export type RecipientModal = {
+  show: boolean;
+  activeTab: string;
+};
 export type Collection = {
   name: string;
   symbol: string;

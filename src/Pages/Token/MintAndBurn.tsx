@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ERC20Token } from "../../utils/types";
-import {
-  Grid,
-  Stack,
-  Theme,
-  CircularProgress,
-  MenuItem,
-  Typography,
-} from "@mui/material";
+import { Grid, Stack, Theme, CircularProgress, MenuItem, Typography } from "@mui/material";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
 import { makeStyles } from "@mui/styles";
@@ -80,8 +73,7 @@ const MintAndBurn: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedToken, setSelectedToken] = useState<ERC20Token>();
 
-  const [publicKey, provider] =
-    useOutletContext<[publickey: string, provider: any]>();
+  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
 
   const classes = useStyles();
   const navigate = useNavigate();
@@ -115,18 +107,10 @@ const MintAndBurn: React.FC = () => {
 
       const args = RuntimeArgs.fromMap({
         owner: CLValueBuilder.key(ownerPublicKey),
-        amount: CLValueBuilder.u256(
-          Number(data * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))
-        ),
+        amount: CLValueBuilder.u256(Number(data * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
       });
 
-      const deploy = contract.callEntrypoint(
-        "mint",
-        args,
-        ownerPublicKey,
-        "casper-test",
-        "1000000000"
-      );
+      const deploy = contract.callEntrypoint("mint", args, ownerPublicKey, "casper-test", "1000000000");
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -135,11 +119,7 @@ const MintAndBurn: React.FC = () => {
 
         // setActionLoader(true);
 
-        let signedDeploy = DeployUtil.setSignature(
-          deploy,
-          sign.signature,
-          ownerPublicKey
-        );
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
 
@@ -148,14 +128,8 @@ const MintAndBurn: React.FC = () => {
         const response = await axios.post(SERVER_API + "deploy", deployedData, {
           headers: { "Content-Type": "application/json" },
         });
-        toastr.success(
-          response.data,
-          selectedToken.name + " Token minted successfully."
-        );
-        window.open(
-          "https://testnet.cspr.live/deploy/" + response.data,
-          "_blank"
-        );
+        toastr.success(response.data, selectedToken.name + " Token minted successfully.");
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
         // setActionLoader(false);
@@ -176,18 +150,10 @@ const MintAndBurn: React.FC = () => {
 
       const args = RuntimeArgs.fromMap({
         owner: CLValueBuilder.key(ownerPublicKey),
-        amount: CLValueBuilder.u256(
-          Number(data * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))
-        ),
+        amount: CLValueBuilder.u256(Number(data * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
       });
 
-      const deploy = contract.callEntrypoint(
-        "burn",
-        args,
-        ownerPublicKey,
-        "casper-test",
-        "1000000000"
-      );
+      const deploy = contract.callEntrypoint("burn", args, ownerPublicKey, "casper-test", "1000000000");
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -196,11 +162,7 @@ const MintAndBurn: React.FC = () => {
 
         // setActionLoader(true);
 
-        let signedDeploy = DeployUtil.setSignature(
-          deploy,
-          sign.signature,
-          ownerPublicKey
-        );
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
 
@@ -209,14 +171,8 @@ const MintAndBurn: React.FC = () => {
         const response = await axios.post(SERVER_API + deploy, deployedData, {
           headers: { "Content-Type": "application/json" },
         });
-        toastr.success(
-          response.data,
-          selectedToken.name + " Token burned successfully."
-        );
-        window.open(
-          "https://testnet.cspr.live/deploy/" + response.data,
-          "_blank"
-        );
+        toastr.success(response.data, selectedToken.name + " Token burned successfully.");
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
         // setActionLoader(false);
@@ -230,10 +186,7 @@ const MintAndBurn: React.FC = () => {
 
   const calculateSupply = () => {
     if (selectedToken) {
-      return (
-        parseInt(selectedToken.total_supply.hex || "", 16) /
-        Math.pow(10, parseInt(selectedToken.decimals.hex, 16))
-      );
+      return parseInt(selectedToken.total_supply.hex || "", 16) / Math.pow(10, parseInt(selectedToken.decimals.hex, 16));
     }
 
     return 0;
@@ -271,19 +224,12 @@ const MintAndBurn: React.FC = () => {
             </Typography>
           </Grid>
           <Grid container className={classes.gridContainer}>
-            <Stack
-              spacing={2}
-              direction={"column"}
-              marginTop={4}
-              className={classes.stackContainer}
-            >
+            <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>
               <CustomSelect
                 value={selectedToken?.contractHash || "default"}
                 label="ERC-20 Token"
                 onChange={(event: SelectChangeEvent) => {
-                  const data = tokens.find(
-                    (tk) => tk.contractHash === event.target.value
-                  );
+                  const data = tokens.find((tk) => tk.contractHash === event.target.value);
                   setSelectedToken(data);
                 }}
                 id={"custom-select"}
@@ -300,38 +246,13 @@ const MintAndBurn: React.FC = () => {
                 })}
               </CustomSelect>
               {selectedToken && <span>Total Supply : {calculateSupply()}</span>}
-              <CustomInput
-                placeholder="Amount"
-                label="Amount"
-                id="amount"
-                name="amount"
-                type="number"
-                value={data}
-                onChange={(e: any) => setData(e.target.value)}
-              />
-              <Grid
-                container
-                direction={"row"}
-                paddingTop={"2rem"}
-                justifyContent={"space-around"}
-              >
+              <CustomInput placeholder="Amount" label="Amount" id="amount" name="amount" type="number" value={data} onChange={(e: any) => setData(e.target.value)} />
+              <Grid container direction={"row"} paddingTop={"2rem"} justifyContent={"space-around"}>
                 <Grid item>
-                  <CustomButton
-                    onClick={mint}
-                    disabled={data <= 0 || selectedToken === undefined}
-                    label="Mint"
-                  />
+                  <CustomButton onClick={mint} disabled={data <= 0 || selectedToken === undefined} label="Mint" />
                 </Grid>
                 <Grid item>
-                  <CustomButton
-                    onClick={burn}
-                    disabled={
-                      data <= 0 ||
-                      data > calculateSupply() ||
-                      selectedToken === undefined
-                    }
-                    label="Burn"
-                  />
+                  <CustomButton onClick={burn} disabled={data <= 0 || data > calculateSupply() || selectedToken === undefined} label="Burn" />
                 </Grid>
               </Grid>
             </Stack>
