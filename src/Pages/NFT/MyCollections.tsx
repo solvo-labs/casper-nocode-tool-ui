@@ -5,7 +5,7 @@ import { CLPublicKey } from "casper-js-sdk";
 import { collectionImage, fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
 import { CircularProgress, Grid, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { CustomButton, CustomButtonText } from "../../components/CustomButton";
+import { CustomButton } from "../../components/CustomButton";
 import { CreateCollectionCard } from "../../components/CreateCollectionCard";
 import CollectionCard from "../../components/CollectionCard";
 import { CollectionMetada } from "../../utils/types";
