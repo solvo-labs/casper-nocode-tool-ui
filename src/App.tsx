@@ -5,7 +5,7 @@ import { ThemeProvider } from "@mui/styles";
 import { createTheme } from "@mui/material";
 
 const App = () => {
-  const theme = createTheme();
+  const theme = createTheme({});
 
   return (
     <ThemeProvider theme={theme}>

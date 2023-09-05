@@ -24,3 +24,15 @@ export type TokenApprove = {
   spenderPubkey: string;
   amount: number;
 };
+
+export type Section = {
+  name: string;
+  amount: number;
+  percent: number;
+  isOldSection: boolean;
+};
+
+export type RecipientModal = {
+  show: boolean;
+  activeTab: string;
+};

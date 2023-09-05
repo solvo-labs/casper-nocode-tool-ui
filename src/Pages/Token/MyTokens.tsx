@@ -1,5 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Card, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, CircularProgress } from "@mui/material";
+import {
+  Card,
+  Grid,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 import { ERC20Token } from "../../utils/types";
@@ -63,7 +76,9 @@ const MyTokens: React.FC = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
@@ -72,7 +87,9 @@ const MyTokens: React.FC = () => {
     setPage2(newPage);
   };
 
-  const handleChangeRowsPerPage2 = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage2 = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage2(+event.target.value);
     setPage2(0);
   };
@@ -141,34 +158,53 @@ const MyTokens: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                    return (
-                      <TableRow
-                        style={{ cursor: "pointer" }}
-                        onClick={() => window.open("https://testnet.cspr.live/contract/" + row.contractHash.slice(5), "_blank")}
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                        key={index}
-                      >
-                        <TableCell align="left">
-                          <Typography color="#0f1429">{row.name}</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">{row.symbol}</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">{parseInt(row.decimals.hex, 16)}</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">{parseInt(row.total_supply.hex, 16) / Math.pow(10, parseInt(row.decimals.hex, 16))}</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">{parseInt(row.enable_mint_burn.hex, 16) ? "TRUE" : "FALSE"}</Typography>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                  {data
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row, index) => {
+                      return (
+                        <TableRow
+                          style={{ cursor: "pointer" }}
+                          onClick={() =>
+                            window.open(
+                              "https://testnet.cspr.live/contract/" +
+                                row.contractHash.slice(5),
+                              "_blank"
+                            )
+                          }
+                          hover
+                          role="checkbox"
+                          tabIndex={-1}
+                          key={index}
+                        >
+                          <TableCell align="left">
+                            <Typography color="#0f1429">{row.name}</Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography color="#0f1429">
+                              {row.symbol}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography color="#0f1429">
+                              {parseInt(row.decimals.hex, 16)}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography color="#0f1429">
+                              {parseInt(row.total_supply.hex, 16) /
+                                Math.pow(10, parseInt(row.decimals.hex, 16))}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography color="#0f1429">
+                              {parseInt(row.enable_mint_burn.hex, 16)
+                                ? "TRUE"
+                                : "FALSE"}
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -252,31 +288,48 @@ const MyTokens: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {myTokenList.slice(page2 * rowsPerPage2, page2 * rowsPerPage2 + rowsPerPage2).map((row: any, index: number) => {
-                    return (
-                      <TableRow
-                        hover
-                        role="checkbox"
-                        onClick={() => window.open("https://testnet.cspr.live/contract/" + row.contractHash, "_blank")}
-                        tabIndex={-1}
-                        key={index}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <TableCell align="left">
-                          <Typography color="#0f1429">{row.name}</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">{row.symbol}</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">{row.decimals}</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">{row.balance}</Typography>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                  {myTokenList
+                    .slice(
+                      page2 * rowsPerPage2,
+                      page2 * rowsPerPage2 + rowsPerPage2
+                    )
+                    .map((row: any, index: number) => {
+                      return (
+                        <TableRow
+                          hover
+                          role="checkbox"
+                          onClick={() =>
+                            window.open(
+                              "https://testnet.cspr.live/contract/" +
+                                row.contractHash,
+                              "_blank"
+                            )
+                          }
+                          tabIndex={-1}
+                          key={index}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <TableCell align="left">
+                            <Typography color="#0f1429">{row.name}</Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography color="#0f1429">
+                              {row.symbol}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography color="#0f1429">
+                              {row.decimals}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography color="#0f1429">
+                              {row.balance}
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                 </TableBody>
               </Table>
             </TableContainer>

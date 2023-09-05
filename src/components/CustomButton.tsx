@@ -34,7 +34,12 @@ export const CustomButton: React.FC<Props> = ({ onClick, label, disabled }) => {
   const classes = useStyles();
 
   return (
-    <Button variant="contained" className={classes.button} onClick={onClick} disabled={disabled}>
+    <Button
+      variant="contained"
+      className={classes.button}
+      onClick={onClick}
+      disabled={disabled}
+    >
       {label}
     </Button>
   );

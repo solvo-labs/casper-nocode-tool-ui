@@ -14,14 +14,16 @@ const useStyles = makeStyles((theme: Theme) => ({
 type Props = {
   placeholder: string;
   label: string;
-  id: string;
+  id?: string;
   name: string;
   type: string;
   value: string | number;
   onChange: any;
+  disable?: boolean;
+  required?: boolean;
 };
 
-export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, type, value, onChange }) => {
+export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, type, value, onChange, disable = false, required }) => {
   const classes = useStyles();
 
   return (
@@ -60,9 +62,10 @@ export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, typ
       label={label}
       value={value}
       onChange={onChange}
-      required
+      required={required}
       type={type}
       fullWidth
+      disabled={disable}
     />
   );
 };

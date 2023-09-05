@@ -73,10 +73,12 @@ const TokenMint: React.FC = () => {
   const mintToken = async () => {
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+      console.log('ownerPublicKey', ownerPublicKey);
 
       // contract
 
       const contract = new Contracts.Contract();
+      console.log('contract', contract);
 
       // parameters
       const args = RuntimeArgs.fromMap({
@@ -86,24 +88,33 @@ const TokenMint: React.FC = () => {
         total_supply: CLValueBuilder.u256(data.supply * Math.pow(10, data.decimal)),
         enable_mint_burn: CLValueBuilder.bool(data.enableMintBurn),
       });
+      console.log('args', args);
 
       const deploy = contract.install(new Uint8Array(wasm!), args, "150000000000", ownerPublicKey, "casper-test");
-
+      console.log('deploy', deploy);
+      
       const deployJson = DeployUtil.deployToJson(deploy);
-
+      console.log('deployJson', deployJson);
+      
       // signer logic
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-
+        console.log('sign', sign);
+        
         setActionLoader(true);
 
         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
-
+        console.log('signedDeploy', signedDeploy);
+        
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-
+        console.log('signedDeploy', signedDeploy);
+        
         const data = DeployUtil.deployToJson(signedDeploy.val);
-
+        console.log('data', data);
+        
         const response = await axios.post("https://18.185.15.120:8000/deploy", data, { headers: { "Content-Type": "application/json" } });
+        console.log('response', response);
+        
         toastr.success(response.data, "ERC-20 Token deployed successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
