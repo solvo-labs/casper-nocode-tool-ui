@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { ERC20Token } from "../../utils/types";
-import { Grid, Stack, Theme, CircularProgress, MenuItem } from "@mui/material";
+import {
+  Grid,
+  Stack,
+  Theme,
+  CircularProgress,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
 import { makeStyles } from "@mui/styles";
@@ -9,7 +16,7 @@ import axios from "axios";
 import toastr from "toastr";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { listofCreatorERC20Tokens } from "../../utils/api";
+import { SERVER_API, listofCreatorERC20Tokens } from "../../utils/api";
 
 import { SelectChangeEvent } from "@mui/material/Select";
 import { CustomSelect } from "../../components/CustomSelect";
@@ -32,10 +39,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   title: {
-    fontWeight: 500,
-    fontSize: "26px",
-    position: "relative",
-    top: "3rem",
     borderBottom: "1px solid #FF0011 !important",
   },
   gridContainer: {
@@ -77,7 +80,8 @@ const Allowance: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedToken, setSelectedToken] = useState<ERC20Token>();
 
-  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
+  const [publicKey, provider] =
+    useOutletContext<[publickey: string, provider: any]>();
 
   const classes = useStyles();
   const navigate = useNavigate();
@@ -110,7 +114,13 @@ const Allowance: React.FC = () => {
         recipient: CLValueBuilder.key(CLPublicKey.fromHex(receipentPubkey)),
       });
 
-      const deploy = contract.callEntrypoint("allowance", args, ownerPublicKey, "casper-test", "1000000000");
+      const deploy = contract.callEntrypoint(
+        "allowance",
+        args,
+        ownerPublicKey,
+        "casper-test",
+        "1000000000"
+      );
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -119,15 +129,24 @@ const Allowance: React.FC = () => {
 
         // setActionLoader(true);
 
-        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+        let signedDeploy = DeployUtil.setSignature(
+          deploy,
+          sign.signature,
+          ownerPublicKey
+        );
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
 
         const data = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post("https://18.185.15.120:8000/deploy", data, { headers: { "Content-Type": "application/json" } });
+        const response = await axios.post(SERVER_API + "deploy", data, {
+          headers: { "Content-Type": "application/json" },
+        });
         toastr.success(response.data, "Allowance created successfully.");
-        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
+        window.open(
+          "https://testnet.cspr.live/deploy/" + response.data,
+          "_blank"
+        );
 
         navigate("/my-tokens");
         // setActionLoader(false);
@@ -165,15 +184,25 @@ const Allowance: React.FC = () => {
     >
       <Grid container className={classes.container}>
         <Grid container className={classes.center}>
-          <h5 className={classes.title}>Allowance Token</h5>
-
+          <Grid item>
+            <Typography className={classes.title} variant="h5">
+              Allowance Token
+            </Typography>
+          </Grid>
           <Grid container className={classes.gridContainer}>
-            <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>
+            <Stack
+              spacing={2}
+              direction={"column"}
+              marginTop={4}
+              className={classes.stackContainer}
+            >
               <CustomSelect
                 value={selectedToken?.contractHash || "default"}
                 label="ERC-20 Token"
                 onChange={(event: SelectChangeEvent) => {
-                  const data = tokens.find((tk) => tk.contractHash === event.target.value);
+                  const data = tokens.find(
+                    (tk) => tk.contractHash === event.target.value
+                  );
                   setSelectedToken(data);
                 }}
                 id={"custom-select"}
@@ -199,8 +228,14 @@ const Allowance: React.FC = () => {
                 onChange={(e: any) => setReceipentPubkey(e.target.value)}
               />
 
-              <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton onClick={allowance} disabled={receipentPubkey === "" || selectedToken === undefined} label="Allowance" />
+              <Grid paddingTop={"2rem"} container justifyContent={"center"}>
+                <CustomButton
+                  onClick={allowance}
+                  disabled={
+                    receipentPubkey === "" || selectedToken === undefined
+                  }
+                  label="Allowance"
+                />
               </Grid>
             </Stack>
           </Grid>

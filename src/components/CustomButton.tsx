@@ -22,6 +22,25 @@ const useStyles = makeStyles((theme: Theme) => ({
       },
     },
   },
+  textButton: {
+    padding: "10px",
+    color: "#FFFFFF !important",
+    borderRadius: "1rem",
+    minWidth: "235px",
+    minHeight: "44px",
+    [theme.breakpoints.down("sm")]: {
+      minWidth: "200px",
+    },
+    "&.Mui-disabled": {
+      backgroundColor: "#FEBFC4 !important",
+    },
+    "&:not(.Mui-disabled)": {
+      // backgroundColor: "#FF0011",
+      "&:hover": {
+        backgroundColor: "#FF0011",
+      },
+    },
+  }
 }));
 
 type Props = {
@@ -39,3 +58,12 @@ export const CustomButton: React.FC<Props> = ({ onClick, label, disabled }) => {
     </Button>
   );
 };
+
+export const CustomButtonText: React.FC<Props> = ({onClick, label, disabled}) => {
+  const classes = useStyles();
+  return (
+    <Button variant="text" className={classes.textButton} onClick={onClick} disabled={disabled}>
+      {label}
+    </Button>
+  );
+}
