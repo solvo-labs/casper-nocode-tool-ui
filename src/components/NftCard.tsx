@@ -1,13 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Theme,
-  Typography,
-} from "@mui/material";
+import { Card, CardActionArea, CardContent, CardMedia, Theme, Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -31,12 +24,7 @@ export const NftCard: React.FC<Props> = ({ name, description }) => {
   return (
     <CardActionArea>
       <Card className={classes.card}>
-        <CardMedia
-          component="img"
-          height="200"
-          image="https://w0.peakpx.com/wallpaper/237/346/HD-wallpaper-gt-r-nissan-japanese-car-cartoon.jpg"
-          alt="green iguana"
-        />
+        <CardMedia component="img" height="200" image="https://w0.peakpx.com/wallpaper/237/346/HD-wallpaper-gt-r-nissan-japanese-car-cartoon.jpg" alt="green iguana" />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             {name}

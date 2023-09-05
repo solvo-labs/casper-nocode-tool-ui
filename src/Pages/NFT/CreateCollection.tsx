@@ -5,16 +5,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
 import { Collection } from "../../utils/types";
-import {
-  Divider,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Stack,
-  Theme,
-  Typography,
-} from "@mui/material";
+import { Divider, FormControl, Grid, InputLabel, MenuItem, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
@@ -98,27 +89,14 @@ export const CreateCollection = () => {
     ownerReverseLookupMode: 0,
   });
 
-  const [publicKey, provider, collectionWasm] =
-    useOutletContext<
-      [
-        publickey: string,
-        provider: any,
-        wasm: any,
-        nftWasm: any,
-        collectionWasm: any
-      ]
-    >();
+  const [publicKey, provider, collectionWasm] = useOutletContext<[publickey: string, provider: any, wasm: any, nftWasm: any, collectionWasm: any]>();
   const navigate = useNavigate();
   const classes = useStyles();
   const [file, setFile] = useState<any>();
   const [fileLoading, setFileLoading] = useState<boolean>(false);
 
   const disable = useMemo(() => {
-    const disable = !(
-      collectionData.name &&
-      collectionData.symbol &&
-      !fileLoading
-    );
+    const disable = !(collectionData.name && collectionData.symbol && !fileLoading);
     return disable;
   }, [collectionData]);
 
@@ -176,21 +154,13 @@ export const CreateCollection = () => {
         nft_metadata_kind: CLValueBuilder.u8(collectionData.nftMetadataKind),
         whitelist_mode: CLValueBuilder.u8(collectionData.whiteListMode),
         identifier_mode: CLValueBuilder.u8(collectionData.identifierMode),
-        metadata_mutability: CLValueBuilder.u8(
-          collectionData.metadataMutability
-        ),
-        json_schema: CLValueBuilder.string(
-          JSON.stringify(collectionData.jsonSchema)
-        ),
+        metadata_mutability: CLValueBuilder.u8(collectionData.metadataMutability),
+        json_schema: CLValueBuilder.string(JSON.stringify(collectionData.jsonSchema)),
         minting_mode: CLValueBuilder.u8(collectionData.mintingMode),
         burn_mode: CLValueBuilder.u8(collectionData.burnMode),
         holder_mode: CLValueBuilder.u8(collectionData.holderMode),
-        named_key_convention: CLValueBuilder.u8(
-          collectionData.namedKeyConventionMode
-        ),
-        owner_reverse_lookup_mode: CLValueBuilder.u8(
-          collectionData.namedKeyConventionMode
-        ),
+        named_key_convention: CLValueBuilder.u8(collectionData.namedKeyConventionMode),
+        owner_reverse_lookup_mode: CLValueBuilder.u8(collectionData.namedKeyConventionMode),
       });
 
       const deploy = contract.install(
@@ -209,11 +179,7 @@ export const CreateCollection = () => {
 
         // setActionLoader(true);
 
-        let signedDeploy = DeployUtil.setSignature(
-          deploy,
-          sign.signature,
-          ownerPublicKey
-        );
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
 
@@ -222,14 +188,8 @@ export const CreateCollection = () => {
         const response = await axios.post(SERVER_API + "deploy", data, {
           headers: { "Content-Type": "application/json" },
         });
-        toastr.success(
-          response.data,
-          "CEP-78 Collection deployed successfully."
-        );
-        window.open(
-          "https://testnet.cspr.live/deploy/" + response.data,
-          "_blank"
-        );
+        toastr.success(response.data, "CEP-78 Collection deployed successfully.");
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-collection");
         // setActionLoader(false);
@@ -244,9 +204,7 @@ export const CreateCollection = () => {
 
   const listSelectItem = (value: Object) => {
     const listItem = Object.values(value).filter((v) => isNaN(Number(v)));
-    return listItem.map((keys: any, value: any) => (
-      <MenuItem value={value}>{keys}</MenuItem>
-    ));
+    return listItem.map((keys: any, value: any) => <MenuItem value={value}>{keys}</MenuItem>);
   };
 
   return (
@@ -265,12 +223,7 @@ export const CreateCollection = () => {
             </Typography>
           </Grid>
           <Grid container className={classes.gridContainer}>
-            <Stack
-              spacing={4}
-              direction={"column"}
-              marginTop={4}
-              className={classes.stackContainer}
-            >
+            <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
               <CustomInput
                 placeholder="Collection Name"
                 label="Collection Name"
@@ -313,10 +266,7 @@ export const CreateCollection = () => {
                 }}
                 value={collectionData.totalSupply}
               ></CustomInput>
-              <Typography
-                sx={{ borderBottom: "1px solid #FF0011 !important" }}
-                variant="button"
-              >
+              <Typography sx={{ borderBottom: "1px solid #FF0011 !important" }} variant="button">
                 Metadata
               </Typography>
               <ImageUpload
@@ -379,15 +329,10 @@ export const CreateCollection = () => {
                 value={collectionData.jsonSchema.imageURL}
               ></CustomInput> */}
 
-              <Divider
-                sx={{ backgroundColor: "red", marginTop: "3rem !important" }}
-              ></Divider>
+              <Divider sx={{ backgroundColor: "red", marginTop: "3rem !important" }}></Divider>
 
               <FormControl fullWidth>
-                <InputLabel
-                  sx={{ color: "white" }}
-                  id="demo-simple-select-label"
-                >
+                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
                   Ownership Mode
                 </InputLabel>
                 <CustomSelect
@@ -405,10 +350,7 @@ export const CreateCollection = () => {
                 </CustomSelect>
               </FormControl>
               <FormControl fullWidth>
-                <InputLabel
-                  sx={{ color: "white" }}
-                  id="demo-simple-select-label"
-                >
+                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
                   Collection Kind
                 </InputLabel>
                 <CustomSelect
@@ -426,9 +368,7 @@ export const CreateCollection = () => {
                 </CustomSelect>
               </FormControl>
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">
-                  Collection Kind
-                </InputLabel>
+                <InputLabel id="demo-simple-select-label">Collection Kind</InputLabel>
                 <CustomSelect
                   id="collectionnftMetadataKind"
                   value={collectionData.nftMetadataKind}
@@ -444,10 +384,7 @@ export const CreateCollection = () => {
                 </CustomSelect>
               </FormControl>
               <FormControl fullWidth>
-                <InputLabel
-                  sx={{ color: "white" }}
-                  id="demo-simple-select-label"
-                >
+                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
                   White List Mode
                 </InputLabel>
                 <CustomSelect
@@ -465,10 +402,7 @@ export const CreateCollection = () => {
                 </CustomSelect>
               </FormControl>
               <FormControl fullWidth>
-                <InputLabel
-                  sx={{ color: "white" }}
-                  id="demo-simple-select-label"
-                >
+                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
                   Identifier Mode
                 </InputLabel>
                 <CustomSelect
@@ -486,10 +420,7 @@ export const CreateCollection = () => {
                 </CustomSelect>
               </FormControl>
               <FormControl fullWidth>
-                <InputLabel
-                  sx={{ color: "white" }}
-                  id="demo-simple-select-label"
-                >
+                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
                   Metadata Mutability
                 </InputLabel>
                 <CustomSelect
@@ -508,10 +439,7 @@ export const CreateCollection = () => {
               </FormControl>
 
               <FormControl fullWidth>
-                <InputLabel
-                  sx={{ color: "white" }}
-                  id="demo-simple-select-label"
-                >
+                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
                   Minting Mode
                 </InputLabel>
                 <CustomSelect
@@ -529,10 +457,7 @@ export const CreateCollection = () => {
                 </CustomSelect>
               </FormControl>
               <FormControl fullWidth>
-                <InputLabel
-                  sx={{ color: "white" }}
-                  id="demo-simple-select-label"
-                >
+                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
                   Burn Mode
                 </InputLabel>
                 <CustomSelect
@@ -550,10 +475,7 @@ export const CreateCollection = () => {
                 </CustomSelect>
               </FormControl>
               <FormControl fullWidth>
-                <InputLabel
-                  sx={{ color: "white" }}
-                  id="demo-simple-select-label"
-                >
+                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
                   Holder Mode
                 </InputLabel>
                 <CustomSelect
@@ -571,10 +493,7 @@ export const CreateCollection = () => {
                 </CustomSelect>
               </FormControl>
               <FormControl fullWidth>
-                <InputLabel
-                  sx={{ color: "white" }}
-                  id="demo-simple-select-label"
-                >
+                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
                   Named Key Convention Mode
                 </InputLabel>
                 <CustomSelect
@@ -592,10 +511,7 @@ export const CreateCollection = () => {
                 </CustomSelect>
               </FormControl>
               <FormControl fullWidth>
-                <InputLabel
-                  sx={{ color: "white" }}
-                  id="demo-simple-select-label"
-                >
+                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
                   Owner Reverse Lookup Mode
                 </InputLabel>
                 <CustomSelect
@@ -613,11 +529,7 @@ export const CreateCollection = () => {
                 </CustomSelect>
               </FormControl>
               <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton
-                  onClick={mintCollection}
-                  disabled={disable}
-                  label="Create Collection"
-                />
+                <CustomButton onClick={mintCollection} disabled={disable} label="Create Collection" />
               </Grid>
             </Stack>
           </Grid>

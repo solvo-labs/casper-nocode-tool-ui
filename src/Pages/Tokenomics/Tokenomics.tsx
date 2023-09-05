@@ -5,16 +5,7 @@ import { Section } from "../../utils/types";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import {
-  CardContent,
-  CircularProgress,
-  Divider,
-  Grid,
-  IconButton,
-  Stack,
-  Theme,
-  Typography,
-} from "@mui/material";
+import { CardContent, CircularProgress, Divider, Grid, IconButton, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useEffect, useMemo, useState } from "react";
 import TokenSelector from "../../components/TokenSelector";
@@ -85,10 +76,7 @@ export const Tokenomics = () => {
   const navigate = useNavigate();
 
   const addInput = () => {
-    setSections([
-      ...sections,
-      { name: "", amount: 0, percent: 0, isOldSection: false },
-    ]);
+    setSections([...sections, { name: "", amount: 0, percent: 0, isOldSection: false }]);
   };
 
   const removeInput = (index: number) => {
@@ -101,22 +89,15 @@ export const Tokenomics = () => {
     if (selectedToken) {
       // const totalBalance = selectedToken.amount / Math.pow(10, selectedToken.decimal);
 
-      const availableBalance =
-        selectedToken.balance! -
-        sections.reduce((acc, cur) => acc + cur.amount, 0);
+      const availableBalance = selectedToken.balance! - sections.reduce((acc, cur) => acc + cur.amount, 0);
 
-      const availablePercent =
-        (availableBalance / Number(selectedToken.balance)) * 100;
+      const availablePercent = (availableBalance / Number(selectedToken.balance)) * 100;
 
       return { availableBalance, availablePercent };
     }
   }, [sections, selectedToken]);
 
-  const sectionSetter = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number,
-    key: keyof Section
-  ) => {
+  const sectionSetter = (e: React.ChangeEvent<HTMLInputElement>, index: number, key: keyof Section) => {
     const newSection = [...sections];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -208,16 +189,10 @@ export const Tokenomics = () => {
           <Stack spacing={4}>
             <Grid item className={classes.selectorContainer}>
               <Typography variant="h5">Tokenomics</Typography>
-              <Divider
-                sx={{ marginTop: "1rem", background: "white" }}
-              ></Divider>
+              <Divider sx={{ marginTop: "1rem", background: "white" }}></Divider>
             </Grid>
             <Grid item>
-              <TokenSelector
-                selectedToken={selectedToken}
-                setSelectedToken={(data) => setSelectedToken(data)}
-                tokens={tokens}
-              ></TokenSelector>
+              <TokenSelector selectedToken={selectedToken} setSelectedToken={(data) => setSelectedToken(data)} tokens={tokens}></TokenSelector>
             </Grid>
           </Stack>
         </Grid>
@@ -235,24 +210,16 @@ export const Tokenomics = () => {
               {selectedToken && (
                 <>
                   <Typography> Selected: {selectedToken?.name} </Typography>
-                  <Divider
-                    orientation="vertical"
-                    sx={{ marginTop: "1rem", background: "white" }}
-                  />
+                  <Divider orientation="vertical" sx={{ marginTop: "1rem", background: "white" }} />
                   {limits?.availableBalance ? (
                     <Typography>
                       Available balance: {limits.availableBalance} (%
                       {limits.availablePercent.toFixed(2)})
                     </Typography>
                   ) : (
-                    <Typography>
-                      Available balance: {limits?.availableBalance}{" "}
-                    </Typography>
+                    <Typography>Available balance: {limits?.availableBalance} </Typography>
                   )}
-                  <Divider
-                    orientation="vertical"
-                    sx={{ marginTop: "1rem", background: "white" }}
-                  />
+                  <Divider orientation="vertical" sx={{ marginTop: "1rem", background: "white" }} />
                   <Typography>
                     Total Balance:
                     {selectedToken?.balance}
@@ -262,48 +229,26 @@ export const Tokenomics = () => {
             </Stack>
           </CardContent>
           {selectedToken && (
-            <Stack
-              direction={"column"}
-              justifyContent={"space-around"}
-              spacing={2}
-            >
+            <Stack direction={"column"} justifyContent={"space-around"} spacing={2}>
               {sections.map((section: Section, index: number) => (
-                <Stack
-                  display={"flex"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                  direction={"row"}
-                  spacing={2}
-                  key={index}
-                >
+                <Stack display={"flex"} justifyContent={"center"} alignItems={"center"} direction={"row"} spacing={2} key={index}>
                   <Grid item display={"flex"} alignContent={"center"}>
                     {index > sections.length - 2 ? (
                       <IconButton onClick={addInput} disabled={disable}>
                         <AddIcon sx={{ color: "white" }}></AddIcon>
                       </IconButton>
                     ) : (
-                      <IconButton
-                        onClick={() => removeInput(index)}
-                        disabled={section.isOldSection}
-                      >
+                      <IconButton onClick={() => removeInput(index)} disabled={section.isOldSection}>
                         <RemoveIcon sx={{ color: "red" }} />
                       </IconButton>
                     )}
                   </Grid>
-                  <Grid
-                    item
-                    display={"flex"}
-                    justifyContent={"center"}
-                    alignItems={"center"}
-                    marginBottom={"10px !important"}
-                  >
+                  <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"} marginBottom={"10px !important"}>
                     <CustomInput
                       id="Name"
                       label="Section Name"
                       name="sectionName"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        sectionSetter(e, index, "name")
-                      }
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => sectionSetter(e, index, "name")}
                       placeholder="Section Name"
                       type="text"
                       disable={section.isOldSection}
@@ -314,9 +259,7 @@ export const Tokenomics = () => {
                       label="%"
                       name="percent"
                       value={section.percent}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        sectionSetter(e, index, "percent")
-                      }
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => sectionSetter(e, index, "percent")}
                       disable={section.isOldSection}
                       type="text"
                       placeholder={"percent"}
@@ -325,37 +268,19 @@ export const Tokenomics = () => {
                       id="Amount"
                       label="Amount"
                       placeholder="Amount"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        sectionSetter(e, index, "amount")
-                      }
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => sectionSetter(e, index, "amount")}
                       disable={section.isOldSection}
                       type="text"
                       value={section.amount}
                       name={"amount"}
                     />
                   </Grid>
-                  <Grid
-                    item
-                    display={"flex"}
-                    justifyContent={"center"}
-                    alignItems={"center"}
-                  >
+                  <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"}>
                     <CustomButton
                       label="Vesting"
-                      disabled={
-                        section.isOldSection ||
-                        section.name === "" ||
-                        limits!.availableBalance < 0
-                      }
+                      disabled={section.isOldSection || section.name === "" || limits!.availableBalance < 0}
                       onClick={() => {
-                        navigate(
-                          "/create-vesting/" +
-                            selectedToken.contractHash +
-                            "/" +
-                            section.name +
-                            "/" +
-                            section.amount
-                        );
+                        navigate("/create-vesting/" + selectedToken.contractHash + "/" + section.name + "/" + section.amount);
                       }}
                     />
                   </Grid>

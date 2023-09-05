@@ -70,8 +70,7 @@ const useStyles = makeStyles((_theme: Theme) => ({
     "& .css-zylse7-MuiButtonBase-root-MuiIconButton-root.Mui-disabled": {
       color: "#f5f5f566",
     },
-    "& .makeStyles-pagination-18 .css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon":
-      {},
+    "& .makeStyles-pagination-18 .css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon": {},
   },
 }));
 
@@ -86,16 +85,7 @@ const timestampToDate = (timestamp: number) => {
     value.length < 2 ? (value = 0 + "" + value) : value;
     return value;
   };
-  const date =
-    formatter(dayFormat) +
-    "/" +
-    formatter(monthFormat) +
-    "/" +
-    dateFormat.getFullYear() +
-    " " +
-    formatter(hourFormat) +
-    ":" +
-    formatter(minutesFormat);
+  const date = formatter(dayFormat) + "/" + formatter(monthFormat) + "/" + dateFormat.getFullYear() + " " + formatter(hourFormat) + ":" + formatter(minutesFormat);
   return timestamp == 0 ? "-" : date;
 };
 
@@ -107,9 +97,7 @@ export const VestingList = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("1");
   const [vestingList, setVestingList] = useState<[string, "Stream"][]>([]);
-  const [outgoingvestingList, setOutgoingVestingList] = useState<
-    [string, "Stream"][]
-  >([]);
+  const [outgoingvestingList, setOutgoingVestingList] = useState<[string, "Stream"][]>([]);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
 
@@ -121,27 +109,12 @@ export const VestingList = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
 
-  const tableHeaders = [
-    "Name",
-    "Status",
-    "Start",
-    "End",
-    "Last Withdrawn At",
-    "Mint",
-    "Period",
-    "Withdrawn Amount",
-    "Deposited Amount",
-    "Cliff",
-    "Cliff Amount",
-    "Claim",
-  ];
+  const tableHeaders = ["Name", "Status", "Start", "End", "Last Withdrawn At", "Mint", "Period", "Withdrawn Amount", "Deposited Amount", "Cliff", "Cliff Amount", "Claim"];
 
   const getStatusIcon = (startDate: number, endDate: number) => {
     const timestamp = getTimestamp();
@@ -180,51 +153,28 @@ export const VestingList = () => {
   };
 
   const listVesting = (list: any, isOutgoing = false) => {
-    return list
-      ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-      ?.map((e: any, index: number) => (
-        <TableRow className={classes.tableRow} key={index}>
-          <TableCell>{e[1].name}</TableCell>
+    return list?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((e: any, index: number) => (
+      <TableRow className={classes.tableRow} key={index}>
+        <TableCell>{e[1].name}</TableCell>
+        <TableCell align="center">{getStatusIcon(e[1].start, e[1].end)}</TableCell>
+        <TableCell>{timestampToDate(e[1].start)}</TableCell>
+        <TableCell>{timestampToDate(e[1].end)}</TableCell>
+        <TableCell>{timestampToDate(e[1].lastWithdrawnAt)}</TableCell>
+        <TableCell>{e.metadata.name}</TableCell>
+        <TableCell align="center">{Object.keys(UnlockSchedule).find((key) => UnlockSchedule[key as keyof UnlockScheduleType] === e[1].period)}</TableCell>
+        <TableCell align="center">{e[1].withdrawnAmount.toNumber() / Math.pow(10, e.decimal)}</TableCell>
+        <TableCell align="center">{e[1].depositedAmount.toNumber() / Math.pow(10, e.decimal)}</TableCell>
+        <TableCell>{timestampToDate(e[1].cliff)}</TableCell>
+        <TableCell align="center">{e[1].cliffAmount.toNumber() / Math.pow(10, e[1].cliffAmount.length)}</TableCell>
+        {!isOutgoing && (
           <TableCell align="center">
-            {getStatusIcon(e[1].start, e[1].end)}
-          </TableCell>
-          <TableCell>{timestampToDate(e[1].start)}</TableCell>
-          <TableCell>{timestampToDate(e[1].end)}</TableCell>
-          <TableCell>{timestampToDate(e[1].lastWithdrawnAt)}</TableCell>
-          <TableCell>{e.metadata.name}</TableCell>
-          <TableCell align="center">
-            {Object.keys(UnlockSchedule).find(
-              (key) =>
-                UnlockSchedule[key as keyof UnlockScheduleType] === e[1].period
+            {e[1].withdrawnAmount.toNumber() !== e[1].depositedAmount.toNumber() && getTimestamp() >= e[1].start && getTimestamp() <= e[1].end && (
+              <CustomButton onClick={() => {}} label={"Claim"} disabled={false} />
             )}
           </TableCell>
-          <TableCell align="center">
-            {e[1].withdrawnAmount.toNumber() / Math.pow(10, e.decimal)}
-          </TableCell>
-          <TableCell align="center">
-            {e[1].depositedAmount.toNumber() / Math.pow(10, e.decimal)}
-          </TableCell>
-          <TableCell>{timestampToDate(e[1].cliff)}</TableCell>
-          <TableCell align="center">
-            {e[1].cliffAmount.toNumber() /
-              Math.pow(10, e[1].cliffAmount.length)}
-          </TableCell>
-          {!isOutgoing && (
-            <TableCell align="center">
-              {e[1].withdrawnAmount.toNumber() !==
-                e[1].depositedAmount.toNumber() &&
-                getTimestamp() >= e[1].start &&
-                getTimestamp() <= e[1].end && (
-                  <CustomButton
-                    onClick={() => {}}
-                    label={"Claim"}
-                    disabled={false}
-                  />
-                )}
-            </TableCell>
-          )}
-        </TableRow>
-      ));
+        )}
+      </TableRow>
+    ));
   };
 
   if (loading) {
@@ -260,26 +210,13 @@ export const VestingList = () => {
               setActiveTab(newValue);
             }}
           >
-            <Tab
-              sx={{ color: "white" }}
-              label="My Incoming Vesting's"
-              value="1"
-            />
-            <Tab
-              sx={{ color: "white" }}
-              label="My outgoing Vesting's"
-              value="2"
-            />
+            <Tab sx={{ color: "white" }} label="My Incoming Vesting's" value="1" />
+            <Tab sx={{ color: "white" }} label="My outgoing Vesting's" value="2" />
           </TabList>
         </Box>
         <TabPanel value="1">
           {vestingList && (
-            <Grid
-              container
-              direction={"row"}
-              className={classes.container}
-              sx={{ minWidth: "900px" }}
-            >
+            <Grid container direction={"row"} className={classes.container} sx={{ minWidth: "900px" }}>
               <Grid item className={classes.titleContainer}>
                 <Typography variant="h5">My Incoming Vesting's</Typography>
                 <Divider sx={{ marginTop: "1rem", background: "white" }} />
@@ -319,12 +256,7 @@ export const VestingList = () => {
         </TabPanel>
         <TabPanel value="2">
           {outgoingvestingList && (
-            <Grid
-              container
-              direction={"row"}
-              className={classes.container}
-              sx={{ minWidth: "900px" }}
-            >
+            <Grid container direction={"row"} className={classes.container} sx={{ minWidth: "900px" }}>
               <Grid item className={classes.titleContainer}>
                 <Typography variant="h5">My Outgoing Vesting's</Typography>
                 <Divider sx={{ marginTop: "1rem", background: "white" }} />
@@ -341,9 +273,7 @@ export const VestingList = () => {
                         ))}
                       </TableRow>
                     </TableHead>
-                    <TableBody>
-                      {listVesting(outgoingvestingList, true)}
-                    </TableBody>
+                    <TableBody>{listVesting(outgoingvestingList, true)}</TableBody>
                   </Table>
                 </TableContainer>
               </Grid>

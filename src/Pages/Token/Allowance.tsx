@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ERC20Token } from "../../utils/types";
-import {
-  Grid,
-  Stack,
-  Theme,
-  CircularProgress,
-  MenuItem,
-  Typography,
-} from "@mui/material";
+import { Grid, Stack, Theme, CircularProgress, MenuItem, Typography } from "@mui/material";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
 import { makeStyles } from "@mui/styles";
@@ -80,8 +73,7 @@ const Allowance: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedToken, setSelectedToken] = useState<ERC20Token>();
 
-  const [publicKey, provider] =
-    useOutletContext<[publickey: string, provider: any]>();
+  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
 
   const classes = useStyles();
   const navigate = useNavigate();
@@ -114,13 +106,7 @@ const Allowance: React.FC = () => {
         recipient: CLValueBuilder.key(CLPublicKey.fromHex(receipentPubkey)),
       });
 
-      const deploy = contract.callEntrypoint(
-        "allowance",
-        args,
-        ownerPublicKey,
-        "casper-test",
-        "1000000000"
-      );
+      const deploy = contract.callEntrypoint("allowance", args, ownerPublicKey, "casper-test", "1000000000");
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -129,11 +115,7 @@ const Allowance: React.FC = () => {
 
         // setActionLoader(true);
 
-        let signedDeploy = DeployUtil.setSignature(
-          deploy,
-          sign.signature,
-          ownerPublicKey
-        );
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
 
@@ -143,10 +125,7 @@ const Allowance: React.FC = () => {
           headers: { "Content-Type": "application/json" },
         });
         toastr.success(response.data, "Allowance created successfully.");
-        window.open(
-          "https://testnet.cspr.live/deploy/" + response.data,
-          "_blank"
-        );
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
         // setActionLoader(false);
@@ -190,19 +169,12 @@ const Allowance: React.FC = () => {
             </Typography>
           </Grid>
           <Grid container className={classes.gridContainer}>
-            <Stack
-              spacing={2}
-              direction={"column"}
-              marginTop={4}
-              className={classes.stackContainer}
-            >
+            <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>
               <CustomSelect
                 value={selectedToken?.contractHash || "default"}
                 label="ERC-20 Token"
                 onChange={(event: SelectChangeEvent) => {
-                  const data = tokens.find(
-                    (tk) => tk.contractHash === event.target.value
-                  );
+                  const data = tokens.find((tk) => tk.contractHash === event.target.value);
                   setSelectedToken(data);
                 }}
                 id={"custom-select"}
@@ -229,13 +201,7 @@ const Allowance: React.FC = () => {
               />
 
               <Grid paddingTop={"2rem"} container justifyContent={"center"}>
-                <CustomButton
-                  onClick={allowance}
-                  disabled={
-                    receipentPubkey === "" || selectedToken === undefined
-                  }
-                  label="Allowance"
-                />
+                <CustomButton onClick={allowance} disabled={receipentPubkey === "" || selectedToken === undefined} label="Allowance" />
               </Grid>
             </Stack>
           </Grid>

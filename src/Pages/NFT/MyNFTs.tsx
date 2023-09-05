@@ -3,13 +3,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 // @ts-ignore
 import { CLPublicKey } from "casper-js-sdk";
 import { fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
-import {
-  CircularProgress,
-  Grid,
-  Stack,
-  Theme,
-  Typography,
-} from "@mui/material";
+import { CircularProgress, Grid, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomButton, CustomButtonText } from "../../components/CustomButton";
 
@@ -59,7 +53,6 @@ export const MyNFTs = () => {
       setLoading(false);
       setCollections(result);
       console.log(collections);
-      
     };
 
     init();
@@ -83,13 +76,7 @@ export const MyNFTs = () => {
 
   return (
     <Grid>
-      <Grid
-        container
-        className={classes.titleContainer}
-        direction={"row"}
-        justifyContent={"space-between"}
-        alignContent={"start"}
-      >
+      <Grid container className={classes.titleContainer} direction={"row"} justifyContent={"space-between"} alignContent={"start"}>
         <Typography className={classes.title} variant="h4">
           My NFTs
         </Typography>
@@ -118,8 +105,7 @@ export const MyNFTs = () => {
         </Stack>
       </Grid>
       <Grid container className={classes.container}>
-        <Grid container width={"100%"} justifyContent={"flex-start"}>
-        </Grid>
+        <Grid container width={"100%"} justifyContent={"flex-start"}></Grid>
       </Grid>
     </Grid>
   );

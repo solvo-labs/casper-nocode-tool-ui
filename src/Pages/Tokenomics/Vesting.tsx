@@ -28,14 +28,7 @@ import { makeStyles } from "@mui/styles";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { RecipientModal } from "../../utils/types";
-import {
-  Durations,
-  DurationsType,
-  RecipientFormInput,
-  UnlockSchedule,
-  UnlockScheduleType,
-  VestParamsData,
-} from "../../lib/models/Vesting";
+import { Durations, DurationsType, RecipientFormInput, UnlockSchedule, UnlockScheduleType, VestParamsData } from "../../lib/models/Vesting";
 import dayjs from "dayjs";
 import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
@@ -178,9 +171,7 @@ export const Vesting = () => {
     activeTab: "1",
   });
   const [recipients, setRecipients] = useState<RecipientFormInput[]>([]);
-  const [recipient, setRecipient] = useState<RecipientFormInput>(
-    recipientDefaultState
-  );
+  const [recipient, setRecipient] = useState<RecipientFormInput>(recipientDefaultState);
   const [loading, setLoading] = useState<boolean>(false);
 
   const classes = useStyles();
@@ -274,10 +265,7 @@ export const Vesting = () => {
                   >
                     {Object.keys(Durations).map((tk) => {
                       return (
-                        <MenuItem
-                          key={tk}
-                          value={Durations[tk as keyof DurationsType]}
-                        >
+                        <MenuItem key={tk} value={Durations[tk as keyof DurationsType]}>
                           {tk}
                         </MenuItem>
                       );
@@ -304,26 +292,14 @@ export const Vesting = () => {
               >
                 {Object.keys(UnlockSchedule).map((tk) => {
                   return (
-                    <MenuItem
-                      key={tk}
-                      value={UnlockSchedule[tk as keyof UnlockScheduleType]}
-                    >
+                    <MenuItem key={tk} value={UnlockSchedule[tk as keyof UnlockScheduleType]}>
                       {tk}
                     </MenuItem>
                   );
                 })}
               </Select>
             </FormControl>
-            <FormControlLabel
-              control={
-                <Switch
-                  color="error"
-                  value={activateCliff}
-                  onChange={() => setActivateCliff(!activateCliff)}
-                />
-              }
-              label="Activate Cliff"
-            />
+            <FormControlLabel control={<Switch color="error" value={activateCliff} onChange={() => setActivateCliff(!activateCliff)} />} label="Activate Cliff" />
 
             {activateCliff && (
               <>
@@ -367,34 +343,11 @@ export const Vesting = () => {
             )}
           </Stack>
         </Grid>
-        <Grid
-          item
-          marginTop={2}
-          display={"flex"}
-          justifyContent={"center"}
-          alignItems={"center"}
-          flexDirection={"column"}
-        >
-          <CustomButton
-            label="Add Recipient"
-            disabled={false}
-            onClick={() => setRecipientModal({ ...recipientModal, show: true })}
-          />
+        <Grid item marginTop={2} display={"flex"} justifyContent={"center"} alignItems={"center"} flexDirection={"column"}>
+          <CustomButton label="Add Recipient" disabled={false} onClick={() => setRecipientModal({ ...recipientModal, show: true })} />
         </Grid>
-        <Grid
-          item
-          marginTop={2}
-          marginBottom={5}
-          display={"flex"}
-          justifyContent={"center"}
-          alignItems={"center"}
-          flexDirection={"column"}
-        >
-          <CustomButton
-            label="Create Vesting Contract"
-            disabled={vestParams.period <= 0 || recipients.length <= 0}
-            onClick={() => {}}
-          />
+        <Grid item marginTop={2} marginBottom={5} display={"flex"} justifyContent={"center"} alignItems={"center"} flexDirection={"column"}>
+          <CustomButton label="Create Vesting Contract" disabled={vestParams.period <= 0 || recipients.length <= 0} onClick={() => {}} />
         </Grid>
 
         <Modal
@@ -421,40 +374,22 @@ export const Vesting = () => {
             }}
           >
             <div className={classes.modalContent}>
-              <Typography
-                id="modal-modal-title"
-                variant="h6"
-                component="h2"
-                color={"white"}
-                align="center"
-                marginBottom={"1rem"}
-              >
+              <Typography id="modal-modal-title" variant="h6" component="h2" color={"white"} align="center" marginBottom={"1rem"}>
                 Manage The Recipient's
               </Typography>
               <Divider />
               <TabContext value={recipientModal?.activeTab || "1"}>
                 <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                   <TabList
-                    onChange={(
-                      _event: React.SyntheticEvent,
-                      newValue: string
-                    ) => {
+                    onChange={(_event: React.SyntheticEvent, newValue: string) => {
                       setRecipientModal({
                         ...recipientModal,
                         activeTab: newValue,
                       });
                     }}
                   >
-                    <Tab
-                      sx={{ color: "white" }}
-                      label="Add New Recipient"
-                      value="1"
-                    />
-                    <Tab
-                      sx={{ color: "white" }}
-                      label="Recipient List"
-                      value="2"
-                    />
+                    <Tab sx={{ color: "white" }} label="Add New Recipient" value="1" />
+                    <Tab sx={{ color: "white" }} label="Recipient List" value="2" />
                   </TabList>
                 </Box>
                 <TabPanel value="1">
@@ -464,33 +399,15 @@ export const Vesting = () => {
                       setRecipient(data);
                     }}
                   />
-                  <Grid
-                    item
-                    marginTop={2}
-                    display={"flex"}
-                    justifyContent={"center"}
-                    alignItems={"center"}
-                    flexDirection={"column"}
-                  >
+                  <Grid item marginTop={2} display={"flex"} justifyContent={"center"} alignItems={"center"} flexDirection={"column"}>
                     <CustomButton
                       label="Save Recipient"
-                      disabled={
-                        recipient.amount <= 0 ||
-                        recipient.recipientAddress === ""
-                      }
+                      disabled={recipient.amount <= 0 || recipient.recipientAddress === ""}
                       onClick={() => {
-                        const totalShare = recipients.reduce(
-                          (acc, cur) => acc + Number(cur.amount),
-                          0
-                        );
+                        const totalShare = recipients.reduce((acc, cur) => acc + Number(cur.amount), 0);
 
-                        if (
-                          totalShare + Number(recipient.amount) >
-                          Number(queryParams.amount)
-                        ) {
-                          toastr.error(
-                            "Please check your input because total balance is exceed"
-                          );
+                        if (totalShare + Number(recipient.amount) > Number(queryParams.amount)) {
+                          toastr.error("Please check your input because total balance is exceed");
                         } else {
                           const lastRecipients = [...recipients, recipient];
 
@@ -529,16 +446,7 @@ export const Vesting = () => {
                               disablePadding
                             >
                               <ListItemButton>
-                                <ListItemText
-                                  style={{ color: "black" }}
-                                  id={labelId}
-                                  primary={
-                                    "Address : " +
-                                    value.recipientAddress +
-                                    ", Amount : " +
-                                    value.amount
-                                  }
-                                />
+                                <ListItemText style={{ color: "black" }} id={labelId} primary={"Address : " + value.recipientAddress + ", Amount : " + value.amount} />
                               </ListItemButton>
                             </ListItem>
                             <Divider
@@ -553,9 +461,7 @@ export const Vesting = () => {
                       })}
                     </List>
                   ) : (
-                    <span style={{ color: "white" }}>
-                      There are no recipients
-                    </span>
+                    <span style={{ color: "white" }}>There are no recipients</span>
                   )}
                 </TabPanel>
               </TabContext>

@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  SelectChangeEvent,
-} from "@mui/material";
+import { FormControl, InputLabel, MenuItem, SelectChangeEvent } from "@mui/material";
 import { Token } from "../utils/api";
 import { CustomSelect } from "./CustomSelect";
 
@@ -14,11 +9,7 @@ type Props = {
   setSelectedToken: (param: Token) => void;
 };
 
-const TokenSelector: React.FC<Props> = ({
-  tokens,
-  selectedToken,
-  setSelectedToken,
-}) => {
+const TokenSelector: React.FC<Props> = ({ tokens, selectedToken, setSelectedToken }) => {
   return (
     <FormControl fullWidth>
       <InputLabel
@@ -35,9 +26,7 @@ const TokenSelector: React.FC<Props> = ({
         value={selectedToken?.contractHash || ""}
         label=" Token"
         onChange={(e: SelectChangeEvent<string>) => {
-          const token = tokens.find(
-            (tkn: Token) => tkn.contractHash === e.target.value
-          );
+          const token = tokens.find((tkn: Token) => tkn.contractHash === e.target.value);
           if (token != undefined) {
             setSelectedToken(token);
           }

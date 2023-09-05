@@ -1,12 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Theme,
-} from "@mui/material";
+import { Card, CardActionArea, CardContent, CardMedia, Theme } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -45,12 +39,7 @@ export const CreateCollectionCard: React.FC<Props> = ({ onClick }) => {
   return (
     <CardActionArea>
       <Card className={classes.card} onClick={onClick}>
-        <CardMedia
-          component="img"
-          height="200"
-          image="../../public/image/collection-image.jpg"
-          alt="green iguana"
-        />
+        <CardMedia component="img" height="200" image="../../public/image/collection-image.jpg" alt="green iguana" />
         <CardContent sx={{ height: "fullWidth" }}>
           <p className={classes.title}>CREATE COLLECTION</p>
         </CardContent>
