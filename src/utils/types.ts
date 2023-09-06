@@ -77,6 +77,7 @@ export type NFT = {
   tokenMetaData: {
     name: string;
     description: string;
+    imageURL: string;
   };
 };
 
