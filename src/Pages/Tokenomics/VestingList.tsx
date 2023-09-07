@@ -236,7 +236,6 @@ export const VestingList = () => {
                     <TableBody>{listVesting(vestingList)}</TableBody>
                   </Table>
                 </TableContainer>
-                <br /> <br /> <br />
               </Grid>
               <Grid container className={classes.paginatonContainer}>
                 <TablePagination

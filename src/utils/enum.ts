@@ -7,6 +7,7 @@ export enum PAGES_NAME {
   DAO = "DAO",
   NFT = "NFT",
   TOKEN = "TOKEN",
+  TOKENOMICS = "TOKENOMICS",
 }
 
 export enum TOKEN_PAGE {
@@ -18,6 +19,11 @@ export enum TOKEN_PAGE {
   ALLOWANCE = "Allowance",
   INCREASE_DECREASE_ALLOWANCE = "Increase & Decrease Allowance",
   TRANSFER_FROM = "Transfer From",
+}
+
+export enum TOKENOMICS_PAGE {
+  CREATE_TOKENOMICS = "Create Tokenomics",
+  MANAGE_TOKENOMICS = "Manage Tokenomics",
 }
 
 export enum NFT_PAGE {
