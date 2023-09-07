@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
-import { APP_NAME, NFT_PAGE, PAGES_NAME, TOKEN_PAGE } from "../utils/enum";
+import { APP_NAME, NFT_PAGE, PAGES_NAME, TOKEN_PAGE, TOKENOMICS_PAGE } from "../utils/enum";
 import { AppBar, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -48,6 +48,8 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
   const openNFT = Boolean(nftAnchorEl);
   const [tokenAnchorEl, setAnchorElForToken] = React.useState<null | HTMLElement>(null);
   const openToken = Boolean(tokenAnchorEl);
+  const [tokenomicsAnchorEl, setAnchorElForTokenomics] = React.useState<null | HTMLElement>(null);
+  const openTokenomics = Boolean(tokenomicsAnchorEl);
   const [anchorElForProfile, setAnchorElForProfile] = React.useState<null | HTMLElement>(null);
   const openForProfile = Boolean(anchorElForProfile);
   const classes = useStyles();
@@ -132,9 +134,14 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
       navigate("/create-collection");
     } else if (a === NFT_PAGE.CREATE_NFT) {
       navigate("/create-nft");
+    } else if (a === TOKENOMICS_PAGE.CREATE_TOKENOMICS) {
+      navigate("/tokenomics");
+    } else if (a === TOKENOMICS_PAGE.MANAGE_TOKENOMICS) {
+      navigate("/vesting-list");
     }
     setAnchorElForNFT(null);
     setAnchorElForToken(null);
+    setAnchorElForTokenomics(null);
     setAnchorElForProfile(null);
   };
 
@@ -222,6 +229,34 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                   }}
                 >
                   {listMenuItem(TOKEN_PAGE)}
+                </Menu>
+              </Box>
+              <Box>
+                <Button onClick={(e: any) => handleClick(e, setAnchorElForTokenomics)} onMouseOver={(e: any) => handleClick(e, setAnchorElForTokenomics)}>
+                  <Typography className={classes.menuTitle}>{PAGES_NAME.TOKENOMICS}</Typography>
+                </Button>
+                <Menu
+                  id="tokenomicsMenu"
+                  anchorEl={tokenomicsAnchorEl}
+                  open={openTokenomics}
+                  onClose={() => setAnchorElForTokenomics(null)}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  sx={{
+                    "& .MuiPaper-root": {
+                      background: "#0F1429",
+                      color: "#FFFFFF",
+                      border: "1px solid #FF0011",
+                    },
+                  }}
+                >
+                  {listMenuItem(TOKENOMICS_PAGE)}
                 </Menu>
               </Box>
             </Box>
