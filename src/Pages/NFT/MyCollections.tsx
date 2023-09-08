@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 // @ts-ignore
 import { CLPublicKey } from "casper-js-sdk";
-import { collectionImage, fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
+import { fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
 import { CircularProgress, Grid, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomButton } from "../../components/CustomButton";
 import { CreateCollectionCard } from "../../components/CreateCollectionCard";
 import CollectionCard from "../../components/CollectionCard";
 import { CollectionMetada } from "../../utils/types";
+import { getMetadataImage } from "../../utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleContainer: {
@@ -45,24 +46,6 @@ export const MyCollections = () => {
   const classes = useStyles();
   const navigate = useNavigate();
 
-  const getMetadataImage = async (metadata: any) => {
-    try {
-      let imageLink: string;
-      const parsedData = JSON.parse(metadata.json_schema);
-      if (parsedData.imageURL && parsedData.imageURL.startsWith("https://ipfs.io/ipfs/")) {
-        const result = await collectionImage(parsedData.imageURL);
-        imageLink = result;
-        return result;
-      } else {
-        imageLink = "https://w0.peakpx.com/wallpaper/237/346/HD-wallpaper-gt-r-nissan-japanese-car-cartoon.jpg";
-      }
-      return Promise.resolve(imageLink);
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-      return "https://w0.peakpx.com/wallpaper/237/346/HD-wallpaper-gt-r-nissan-japanese-car-cartoon.jpg";
-    }
-  };
-
   useEffect(() => {
     const init = async () => {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
@@ -82,6 +65,7 @@ export const MyCollections = () => {
       });
 
       setLoading(false);
+      console.log(finalData);
       setCollections(finalData);
     };
 
