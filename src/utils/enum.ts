@@ -100,3 +100,8 @@ export enum NFTHolderMode {
   Contracts,
   Mixed,
 }
+
+export enum FETCH_IMAGE_TYPE {
+  COLLECTION,
+  NFT,
+}
