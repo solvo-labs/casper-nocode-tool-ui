@@ -94,10 +94,10 @@ export const VestingList = () => {
 
   // const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, ] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("1");
-  const [vestingList, setVestingList] = useState<[string, "Stream"][]>([]);
-  const [outgoingvestingList, setOutgoingVestingList] = useState<[string, "Stream"][]>([]);
+  const [vestingList, ] = useState<[string, "Stream"][]>([]);
+  const [outgoingvestingList, ] = useState<[string, "Stream"][]>([]);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
 

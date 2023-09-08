@@ -172,7 +172,7 @@ export const Vesting = () => {
   });
   const [recipients, setRecipients] = useState<RecipientFormInput[]>([]);
   const [recipient, setRecipient] = useState<RecipientFormInput>(recipientDefaultState);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, ] = useState<boolean>(false);
 
   const classes = useStyles();
 
