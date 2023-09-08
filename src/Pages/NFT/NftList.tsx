@@ -4,6 +4,9 @@ import { useParams } from "react-router-dom";
 import { CircularProgress, Grid, Theme, Typography } from "@mui/material";
 import { NftCard } from "../../components/NftCard";
 import { makeStyles } from "@mui/styles";
+import { getMetadataImage } from "../../utils";
+import { NFT } from "../../utils/types";
+import { FETCH_IMAGE_TYPE } from "../../utils/enum";
 // import { CollectionMetada } from "../../utils/types";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -32,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const NftList = () => {
   const params = useParams();
   const nftCollectionHash = params.collectionHash;
-  const [nftData, setNftData] = useState<any[]>([]);
+  const [nftData, setNftData] = useState<NFT[]>([]);
   const classes = useStyles();
   const [loading, setLoading] = useState<boolean>(true);
   // const [collectionData, setCollectionData] = useState<
@@ -43,12 +46,6 @@ export const NftList = () => {
     const init = async () => {
       if (nftCollectionHash) {
         const nftCollection = await getNftCollection(nftCollectionHash);
-        // setCollectionData({
-        //   ...collectionData,
-        //   name: nftCollection.collection_name,
-        //   hash: nftCollection.contractHash,
-        //   symbol: nftCollection.collection_symbol,
-        // });
 
         const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
 
@@ -58,8 +55,17 @@ export const NftList = () => {
         }
 
         const nftMetas = await Promise.all(promises);
+        const imagePromises = nftMetas.map((e: any) => getMetadataImage(e, FETCH_IMAGE_TYPE.NFT));
+        const images = await Promise.all(imagePromises);
+        
+        const finalData = nftMetas.map((e: any, index: number) => {
+          return {
+            ...e,
+            imageURL: images[index],
+          };
+        });
 
-        setNftData(nftMetas);
+        setNftData(finalData);
         setLoading(false);
       }
     };
@@ -94,7 +100,7 @@ export const NftList = () => {
       <Grid container className={classes.container}>
         {nftData.map((e: any) => (
           <Grid item lg={3} md={3} sm={4} xs={6}>
-            <NftCard description={e.description} name={e.name}></NftCard>
+            <NftCard description={e.description} name={e.name} imageURL={e.imageURL}></NftCard>
           </Grid>
         ))}
       </Grid>
