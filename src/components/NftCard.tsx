@@ -17,14 +17,15 @@ type Props = {
   // onClick: any;
   name: string;
   description: string;
+  imageURL: string;
 };
 
-export const NftCard: React.FC<Props> = ({ name, description }) => {
+export const NftCard: React.FC<Props> = ({ name, description, imageURL }) => {
   const classes = useStyles();
   return (
     <CardActionArea>
       <Card className={classes.card}>
-        <CardMedia component="img" height="200" image="https://w0.peakpx.com/wallpaper/237/346/HD-wallpaper-gt-r-nissan-japanese-car-cartoon.jpg" alt="green iguana" />
+        <CardMedia component="img" height="200" image={imageURL} alt={name} />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             {name}
