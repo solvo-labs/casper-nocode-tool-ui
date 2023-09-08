@@ -10,6 +10,7 @@ import { CreateCollectionCard } from "../../components/CreateCollectionCard";
 import CollectionCard from "../../components/CollectionCard";
 import { CollectionMetada } from "../../utils/types";
 import { getMetadataImage } from "../../utils";
+import { FETCH_IMAGE_TYPE } from "../../utils/enum";
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleContainer: {
@@ -55,7 +56,7 @@ export const MyCollections = () => {
       const promises = data.map((data) => getNftCollection(data.key));
 
       const result = await Promise.all(promises);
-      const imagePromises = result.map((e: any) => getMetadataImage(e));
+      const imagePromises = result.map((e: any) => getMetadataImage(e.json_schema, FETCH_IMAGE_TYPE.COLLECTION));
       const images = await Promise.all(imagePromises);
       const finalData = result.map((e: any, index: number) => {
         return {
