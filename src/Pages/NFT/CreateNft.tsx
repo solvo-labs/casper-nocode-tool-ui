@@ -77,10 +77,10 @@ export const CreateNft = () => {
   }, [nftData, fileLoading]);
 
   const createNft = async () => {
-    try {
-      const contract = new Contracts.Contract();
+    const contract = new Contracts.Contract();
+    contract.setContractHash(nftData.contractHash);
 
-      contract.setContractHash(nftData.contractHash);
+    try {
       console.log(nftData.tokenMetaData);
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
