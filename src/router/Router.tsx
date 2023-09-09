@@ -21,6 +21,7 @@ import { MyNFTs } from "../Pages/NFT/MyNFTs";
 import { Tokenomics } from "../Pages/Tokenomics/Tokenomics";
 import { Vesting } from "../Pages/Tokenomics/Vesting";
 import { VestingList } from "../Pages/Tokenomics/VestingList";
+import CreateMarketplace from "../Pages/Marketplace/CreateMarketplace";
 
 const Router: React.FC = () => {
   return (
@@ -49,6 +50,9 @@ const Router: React.FC = () => {
             <Route path="/my-nfts" index element={<MyNFTs />} />
             <Route path="/create-nft" index element={<CreateNft />} />
             <Route path="/nft-list/:collectionHash" index element={<NftList />} />
+            {/* MARKETPLACE */}
+            <Route path="/marketplace" index element={<NftList />} />
+            <Route path="/create-marketplace" index element={<CreateMarketplace />} />
           </Route>
           <Route path="/login" index element={<Login />} />
         </Routes>
