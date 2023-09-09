@@ -98,14 +98,12 @@ export const CreateCollection = () => {
   const disable = useMemo(() => {
     const disable = !(collectionData.name && collectionData.symbol && !fileLoading);
     return disable;
-  }, [collectionData]);
+  }, [collectionData, fileLoading]);
 
   useEffect(() => {
     const storeImage = async () => {
       if (file) {
         setFileLoading(true);
-        console.log("storageImage", file);
-
         const storage = new NFTStorage({
           token: import.meta.env.VITE_NFT_STORAGE_API_KEY,
         });
@@ -116,8 +114,6 @@ export const CreateCollection = () => {
         const obj = {
           image: fileUrl,
         };
-
-        // (5)
         const metadata = new Blob([JSON.stringify(obj)], {
           type: "application/json",
         });
@@ -191,7 +187,7 @@ export const CreateCollection = () => {
         toastr.success(response.data, "CEP-78 Collection deployed successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
-        navigate("/my-collection");
+        navigate("/my-collections");
         // setActionLoader(false);
       } catch (error: any) {
         alert(error.message);

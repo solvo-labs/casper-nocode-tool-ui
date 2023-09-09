@@ -213,7 +213,7 @@ export const getNftMetadata = async (contractHash: string, index: string) => {
   return JSON.parse(response.data);
 };
 
-export const collectionImage = async (apiLink: string):Promise<string> => {
+export const fetchIPFSImage = async (apiLink: string):Promise<string> => {
   const response = await axios.get<any>(apiLink);
   return response.data.image;
 };
