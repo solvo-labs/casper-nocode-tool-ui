@@ -8,6 +8,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     [theme.breakpoints.down("sm")]: {
       minWidth: "300px",
     },
+    //   "& .MuiInputBase-input.Mui-disabled": {
+    //     WebkitTextFillColor: "gray",
+    // },
+    "& input.Mui-disabled": {
+      border: "1px solid gray",
+      borderRadius: "16px",
+      WebkitTextFillColor: "gray",
+      labelColor: "gray",
+    },
+    "& .MuiInputLabel-root.Mui-disabled": { color: "gray" },
   },
 }));
 
@@ -23,7 +33,17 @@ type Props = {
   required?: boolean;
 };
 
-export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, type, value, onChange, disable = false, required }) => {
+export const CustomInput: React.FC<Props> = ({
+  placeholder,
+  label,
+  id,
+  name,
+  type,
+  value,
+  onChange,
+  disable = false,
+  required,
+}) => {
   const classes = useStyles();
 
   return (
