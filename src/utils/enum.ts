@@ -34,7 +34,7 @@ export enum NFT_PAGE {
 }
 
 export enum MARKETPLACE_PAGE {
-  MARKETPLACE = "Marketplace",
+  LIST_MARKETPLACE = "List Marketplace",
   CREATE_MARKETPLACE = "Create Marketplace",
 }
 
