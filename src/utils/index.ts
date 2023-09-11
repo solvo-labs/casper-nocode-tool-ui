@@ -18,7 +18,7 @@ export const fetchContract = async (path: string) => {
 export const getMetadataImage = async (metadata: any, type: FETCH_IMAGE_TYPE) => {
   try {
     let imageLink: string =
-      "https://w0.peakpx.com/wallpaper/237/346/HD-wallpaper-gt-r-nissan-japanese-car-cartoon.jpg";
+      "../public/image/casper.png";
 
     if (type == FETCH_IMAGE_TYPE.COLLECTION) {
       const parsedData = JSON.parse(metadata);
@@ -41,7 +41,7 @@ export const getMetadataImage = async (metadata: any, type: FETCH_IMAGE_TYPE) =>
     return imageLink;
   } catch (error) {
     console.error("Error parsing JSON:", error);
-    return "https://w0.peakpx.com/wallpaper/237/346/HD-wallpaper-gt-r-nissan-japanese-car-cartoon.jpg";
+    return "../public/image/casper.png";
   }
 };
 
