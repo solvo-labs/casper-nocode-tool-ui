@@ -7,6 +7,7 @@ import { makeStyles } from "@mui/styles";
 import { getMetadataImage } from "../../utils";
 import { NFT } from "../../utils/types";
 import { FETCH_IMAGE_TYPE } from "../../utils/enum";
+import { CreateCollectionCard } from "../../components/CreateCollectionCard";
 // import { CollectionMetada } from "../../utils/types";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -38,14 +39,14 @@ export const NftList = () => {
   const [nftData, setNftData] = useState<NFT[]>([]);
   const classes = useStyles();
   const [loading, setLoading] = useState<boolean>(true);
-  // const [collectionData, setCollectionData] = useState<
-  //   CollectionMetada | undefined
-  // >();
+  const [collectionData, setCollectionData] = useState<any>();
 
   useEffect(() => {
     const init = async () => {
       if (nftCollectionHash) {
         const nftCollection = await getNftCollection(nftCollectionHash);
+
+        setCollectionData(nftCollection);
 
         const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
 
@@ -57,7 +58,7 @@ export const NftList = () => {
         const nftMetas = await Promise.all(promises);
         const imagePromises = nftMetas.map((e: any) => getMetadataImage(e, FETCH_IMAGE_TYPE.NFT));
         const images = await Promise.all(imagePromises);
-        
+
         const finalData = nftMetas.map((e: any, index: number) => {
           return {
             ...e,
@@ -93,7 +94,7 @@ export const NftList = () => {
     <Grid container direction={"column"}>
       <Grid container className={classes.titleContainer}>
         <Typography variant="h4" className={classes.title}>
-          {/* {collectionData?.name} ({collectionData?.symbol}) */}
+          {collectionData?.collection_name} Collection {parseInt(collectionData.number_of_minted_tokens.hex) + "/" + parseInt(collectionData.total_token_supply.hex)}
         </Typography>
       </Grid>
 
@@ -103,6 +104,14 @@ export const NftList = () => {
             <NftCard description={e.description} name={e.name} imageURL={e.imageURL}></NftCard>
           </Grid>
         ))}
+        <Grid item lg={3} md={3} sm={4} xs={6}>
+          <CreateCollectionCard
+            text="ADD NFT"
+            onClick={() => {
+              // navigate("/create-collection");
+            }}
+          />
+        </Grid>
       </Grid>
     </Grid>
   );

@@ -6,7 +6,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   card: {
     margin: "1rem",
     maxHeight: "400px",
-    height: "300px",
+    height: "360px",
     [theme.breakpoints.down("xl")]: {
       // fontSize: "1rem",
     },
@@ -25,7 +25,7 @@ export const NftCard: React.FC<Props> = ({ name, description, imageURL, onClick 
   return (
     <CardActionArea>
       <Card className={classes.card} onClick={onClick}>
-        <CardMedia component="img" height="200" image={imageURL} alt={name} />
+        <CardMedia component="img" height="250" image={imageURL} alt={name} />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             {name}
