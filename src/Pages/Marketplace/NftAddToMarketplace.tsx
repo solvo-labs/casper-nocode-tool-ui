@@ -78,11 +78,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const steps = ["Select Collection", "Select the NFT to load"];
 
-const AddNFTtoMarketplace = () => {
+const AddNftToMarketplace = () => {
   const classes = useStyles();
-  const [publicKey, provider, , , , ] = useOutletContext<[publicKey:string, provider:any, wasm:any, nftWasm:any, collectionWasm:any, marketplaceWasm:any]>();
+  const [publicKey, provider, wasm, nftWasm, collectionWasm, marketplaceWasm] = useOutletContext<[publicKey:string, provider:any, wasm:any, nftWasm:any, collectionWasm:any, marketplaceWasm:any]>();
   const [activeStep, setActiveStep] = React.useState(0);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [skipped, setSkipped] = React.useState(new Set<number>());
   const [loading, setLoading] = useState<boolean>(true);
   const [collections, setCollections] = useState<CollectionMetada[] | any>([]);
@@ -100,8 +100,10 @@ const AddNFTtoMarketplace = () => {
       newSkipped = new Set(newSkipped.values());
       newSkipped.delete(activeStep);
     }
-    if (activeStep == 0) {
-      fetchNft();
+    if (true) {
+      // fetchNft();
+      console.log(activeStep);
+      
     }
 
     console.log(selectedCollection);
@@ -115,128 +117,128 @@ const AddNFTtoMarketplace = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  useEffect(() => {
-    const init = async () => {
-      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+  // useEffect(() => {
+  //   const init = async () => {
+  //     const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
-      const data = await fetchCep78NamedKeys(ownerPublicKey.toAccountHashStr());
+  //     const data = await fetchCep78NamedKeys(ownerPublicKey.toAccountHashStr());
 
-      const promises = data.map((data) => getNftCollection(data.key));
+  //     const promises = data.map((data) => getNftCollection(data.key));
 
-      const result = await Promise.all(promises);
-      const imagePromises = result.map((e: any) =>
-        getMetadataImage(e.json_schema, FETCH_IMAGE_TYPE.COLLECTION)
-      );
-      const images = await Promise.all(imagePromises);
-      const finalData = result.map((e: any, index: number) => {
-        return {
-          ...e,
-          image: images[index],
-        };
-      });
+  //     const result = await Promise.all(promises);
+  //     const imagePromises = result.map((e: any) =>
+  //       getMetadataImage(e.json_schema, FETCH_IMAGE_TYPE.COLLECTION)
+  //     );
+  //     const images = await Promise.all(imagePromises);
+  //     const finalData = result.map((e: any, index: number) => {
+  //       return {
+  //         ...e,
+  //         image: images[index],
+  //       };
+  //     });
 
-      setLoading(false);
-      console.log(finalData);
-      setCollections(finalData);
-    };
+  //     setLoading(false);
+  //     console.log(finalData);
+  //     setCollections(finalData);
+  //   };
 
-    init();
-  }, []);
+  //   init();
+  // }, []);
 
   // useEffect(() => {
-  const fetchNft = async () => {
-    setLoading(true);
-    if (selectedCollection) {
-      const nftCollection = await getNftCollection(selectedCollection);
+  // const fetchNft = async () => {
+  //   setLoading(true);
+  //   if (selectedCollection) {
+  //     const nftCollection = await getNftCollection(selectedCollection);
 
-      const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
+  //     const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
 
-      let promises = [];
-      for (let index = 0; index < nftCount; index++) {
-        promises.push(getNftMetadata(selectedCollection, index.toString()));
-      }
+  //     let promises = [];
+  //     for (let index = 0; index < nftCount; index++) {
+  //       promises.push(getNftMetadata(selectedCollection, index.toString()));
+  //     }
 
-      const nftMetas = await Promise.all(promises);
-      const imagePromises = nftMetas.map((e: any) =>
-        getMetadataImage(e, FETCH_IMAGE_TYPE.NFT)
-      );
-      const images = await Promise.all(imagePromises);
+  //     const nftMetas = await Promise.all(promises);
+  //     const imagePromises = nftMetas.map((e: any) =>
+  //       getMetadataImage(e, FETCH_IMAGE_TYPE.NFT)
+  //     );
+  //     const images = await Promise.all(imagePromises);
 
-      const finalData = nftMetas.map((e: any, index: number) => {
-        return {
-          ...e,
-          imageURL: images[index],
-        };
-      });
+  //     const finalData = nftMetas.map((e: any, index: number) => {
+  //       return {
+  //         ...e,
+  //         imageURL: images[index],
+  //       };
+  //     });
 
-      setNftData(finalData);
-      setLoading(false);
-    }
-  };
+  //     setNftData(finalData);
+  //     setLoading(false);
+  //   }
+  // };
 
   // init();
   // }, [activeStep, selectedCollection]);
 
-  const addListing = async () => {
-    try {
-      const contract = new Contracts.Contract();
-      contract.setContractHash(
-        "hash-ff84a99cfb1cd08f4c4df628d02c5fec71b5f12dc058434414f13aa1e221e287"
-      );
-      const args = RuntimeArgs.fromMap({
-        collection: CLValueBuilder.key(selectedCollection),
-        token_id: CLValueBuilder.u64(selectedNftIndex),
-        price: CLValueBuilder.u256(75 * 1_000_000_000),
-      });
-      const deploy = contract.callEntrypoint(
-        "add_listing",
-        args,
-        publicKey,
-        "casper-test",
-        "10000000000"
-      );
-      const deployJson = DeployUtil.deployToJson(deploy);
-      console.log("deployjson", deployJson);
+  // const addListing = async () => {
+  //   try {
+  //     const contract = new Contracts.Contract();
+  //     contract.setContractHash(
+  //       "hash-ff84a99cfb1cd08f4c4df628d02c5fec71b5f12dc058434414f13aa1e221e287"
+  //     );
+  //     const args = RuntimeArgs.fromMap({
+  //       collection: CLValueBuilder.key(selectedCollection),
+  //       token_id: CLValueBuilder.u64(selectedNftIndex),
+  //       price: CLValueBuilder.u256(75 * 1_000_000_000),
+  //     });
+  //     const deploy = contract.callEntrypoint(
+  //       "add_listing",
+  //       args,
+  //       publicKey,
+  //       "casper-test",
+  //       "10000000000"
+  //     );
+  //     const deployJson = DeployUtil.deployToJson(deploy);
+  //     console.log("deployjson", deployJson);
 
-      try {
-        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-        let signedDeploy = DeployUtil.setSignature(
-          deploy,
-          sign.signature,
-          publicKey
-        );
-        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-        const data = DeployUtil.deployToJson(signedDeploy.val);
-        const response = await axios.post(SERVER_API + "deploy", data, {
-          headers: { "Content-Type": "application/json" },
-        });
-        toastr.success(response.data, "Nft added to Marketplace successfully.");
-        console.log(response.data);
+  //     try {
+  //       const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+  //       let signedDeploy = DeployUtil.setSignature(
+  //         deploy,
+  //         sign.signature,
+  //         publicKey
+  //       );
+  //       signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+  //       const data = DeployUtil.deployToJson(signedDeploy.val);
+  //       const response = await axios.post(SERVER_API + "deploy", data, {
+  //         headers: { "Content-Type": "application/json" },
+  //       });
+  //       toastr.success(response.data, "Nft added to Marketplace successfully.");
+  //       console.log(response.data);
 
-      } catch (error: any) {
-        alert(error.message);
-      }
-    } catch (error) {
-      console.log(error);
-      toastr.error("error");
-    }
-  };
+  //     } catch (error: any) {
+  //       alert(error.message);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toastr.error("error");
+  //   }
+  // };
 
-  if (loading) {
-    return (
-      <div
-        style={{
-          height: "50vh",
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <CircularProgress />
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div
+  //       style={{
+  //         height: "50vh",
+  //         width: "100%",
+  //         display: "flex",
+  //         justifyContent: "center",
+  //         alignItems: "center",
+  //       }}
+  //     >
+  //       <CircularProgress />
+  //     </div>
+  //   );
+  // }
 
   return (
     <Grid container className={classes.container}>
@@ -251,7 +253,7 @@ const AddNFTtoMarketplace = () => {
           sx={{ color: "white" }}
           className={classes.stepperTitle}
         >
-          {steps.map((label, index) => {
+          {/* {steps.map((label, index) => {
             const stepProps: { completed?: boolean } = {};
             const labelProps: {
               optional?: React.ReactNode;
@@ -264,7 +266,7 @@ const AddNFTtoMarketplace = () => {
                 <StepLabel {...labelProps}>{label}</StepLabel>
               </Step>
             );
-          })}
+          })} */}
         </Stepper>
       </Grid>
 
@@ -287,7 +289,7 @@ const AddNFTtoMarketplace = () => {
         )}
         {activeStep === 1 && (
           <Grid container marginY={"2rem"}>
-            {nftData.map((e: any, index: number) => (
+            {/* {nftData.map((e: any, index: number) => (
               <Grid item lg={3} md={3} sm={6} xs={6}>
                 <NftCard
                   description={e.description}
@@ -299,7 +301,7 @@ const AddNFTtoMarketplace = () => {
                   }}
                 ></NftCard>
               </Grid>
-            ))}
+            ))} */}
           </Grid>
         )}
         <Grid container width={"100%"}>
@@ -325,4 +327,4 @@ const AddNFTtoMarketplace = () => {
   );
 };
 
-export default AddNFTtoMarketplace;
+export default AddNftToMarketplace;
