@@ -108,6 +108,7 @@ const AddNftToMarketplace = () => {
 
   const addListing = async () => {
     try {
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
       const contract = new Contracts.Contract();
       console.log(marketplaceHash);
       console.log(selectedCollection);
@@ -116,25 +117,32 @@ const AddNftToMarketplace = () => {
       contract.setContractHash(marketplaceHash);
 
       const args = RuntimeArgs.fromMap({
-        collection: CasperHelpers.stringToKey(selectedCollection),
+        collection: CasperHelpers.stringToKey("b1acd833758036848ff21448621e9a545af5e96c9a6bf27a4103d59bb925867f"),
         token_id: CLValueBuilder.u64(selectedNftIndex),
         price: CLValueBuilder.u256(75 * 1_000_000_000),
       });
+
+      console.log(args);
+      
       const deploy = contract.callEntrypoint(
         "add_listing",
         args,
-        publicKey,
+        ownerPublicKey,
         "casper-test",
         "10000000000"
       );
       const deployJson = DeployUtil.deployToJson(deploy);
+
+      console.log("dep", deploy);
+      console.log("dpjason", deployJson);
+      
 
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
         let signedDeploy = DeployUtil.setSignature(
           deploy,
           sign.signature,
-          publicKey
+          ownerPublicKey
         );
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
         const data = DeployUtil.deployToJson(signedDeploy.val);
