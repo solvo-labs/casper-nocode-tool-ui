@@ -11,6 +11,10 @@ const useStyles = makeStyles((theme: Theme) => ({
       // fontSize: "1rem",
     },
   },
+  alternateCard: {
+    margin: "1rem",
+    maxHeight: "200px",
+  },
 }));
 
 type Props = {
@@ -21,12 +25,32 @@ type Props = {
   onClick: () => void;
 };
 
-export const CollectionCard: React.FC<Props> = ({ title, symbol, contractHash, image, onClick }) => {
+const CollectionCard: React.FC<Props> = ({ title, symbol, contractHash, image, onClick }) => {
   const classes = useStyles();
   return (
     <CardActionArea>
       <Card className={classes.card} onClick={onClick}>
         <CardMedia component="img" height="200" image={image} alt="collection-image" />
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="div">
+            {title}
+          </Typography>
+          <Typography variant="h6">{symbol}</Typography>
+          <Typography variant="body2" color="text.secondary">
+            {contractHash.slice(0, 20)}
+          </Typography>
+        </CardContent>
+      </Card>
+    </CardActionArea>
+  );
+};
+
+export const CollectionCardAlternate: React.FC<Props> = ({ title, symbol, contractHash, image, onClick }) => {
+  const classes = useStyles();
+  return (
+    <CardActionArea>
+      <Card className={classes.alternateCard} onClick={onClick}>
+        <CardMedia component="img" height="100" image={image} alt="collection-image" />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             {title}
