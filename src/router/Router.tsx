@@ -54,10 +54,10 @@ const Router: React.FC = () => {
             <Route path="/create-nft" index element={<CreateNft />} />
             <Route path="/nft-list/:collectionHash" index element={<NftList />} />
             {/* MARKETPLACE */}
-            <Route path="/list-marketplace" index element={<ListMarketplace />} />
+            <Route path="/marketplace" index element={<ListMarketplace />} />
             <Route path="/create-marketplace" index element={<CreateMarketplace />} />
             <Route path="/marketplace/:marketplaceHash" index element={<MarketplaceManager />} />
-            <Route path="/add-nft-to-marketplace" index element={<AddNFTtoMarketplace />} />
+            <Route path="/add-nft-to-marketplace/:marketplaceHash" index element={<AddNFTtoMarketplace />} />
           </Route>
           <Route path="/login" index element={<Login />} />
         </Routes>

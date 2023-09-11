@@ -3,7 +3,7 @@ import { Grid, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomButton } from "../../components/CustomButton";
 import { NftCard } from "../../components/NftCard";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleContainer: {
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const MarketplaceManager = () => {
   const classes = useStyles();
   const navigate = useNavigate();
-  
+  const { marketplaceHash } = useParams();
 
   return (
     <Grid
@@ -42,7 +42,7 @@ const MarketplaceManager = () => {
           <CustomButton
             disabled={false}
             label="Add NFT to Marketplace"
-            onClick={() => navigate("/add-nft-to-marketplace")}
+            onClick={() => navigate("/add-nft-to-marketplace/"+marketplaceHash)}
           ></CustomButton>
         </Stack>
       </Grid>
@@ -50,28 +50,28 @@ const MarketplaceManager = () => {
         <Typography variant="h5">Non Approved NFT's</Typography>
       </Grid>
       <Grid container>
-        <Grid item lg={3} md={3} sm={4} xs={6}>
+        <Grid item lg={3} md={4} sm={6} xs={6}>
           <NftCard
             description={"sadasd"}
             name={"asdasd"}
             imageURL={"asdas"}
           ></NftCard>
         </Grid>
-        <Grid item lg={3} md={3} sm={4} xs={6}>
+        <Grid item lg={3} md={4} sm={6} xs={6}>
           <NftCard
             description={"sadasd"}
             name={"asdasd"}
             imageURL={"asdas"}
           ></NftCard>
         </Grid>
-        <Grid item lg={3} md={3} sm={4} xs={6}>
+        <Grid item lg={3} md={4} sm={6} xs={6}>
           <NftCard
             description={"sadasd"}
             name={"asdasd"}
             imageURL={"asdas"}
           ></NftCard>
         </Grid>
-        <Grid item lg={3} md={3} sm={4} xs={6}>
+        <Grid item lg={3} md={4} sm={6} xs={6}>
           <NftCard
             description={"sadasd"}
             name={"asdasd"}
@@ -83,28 +83,28 @@ const MarketplaceManager = () => {
         <Typography variant="h5">Listed NFT</Typography>
       </Grid>
       <Grid container>
-        <Grid item lg={3} md={3} sm={4} xs={6}>
+        <Grid item lg={3} md={4} sm={6} xs={6}>
           <NftCard
             description={"sadasd"}
             name={"asdasd"}
             imageURL={"asdas"}
           ></NftCard>
         </Grid>
-        <Grid item lg={3} md={3} sm={4} xs={6}>
+        <Grid item lg={3} md={4} sm={6} xs={6}>
           <NftCard
             description={"sadasd"}
             name={"asdasd"}
             imageURL={"asdas"}
           ></NftCard>
         </Grid>
-        <Grid item lg={3} md={3} sm={4} xs={6}>
+        <Grid item lg={3} md={4} sm={6} xs={6}>
           <NftCard
             description={"sadasd"}
             name={"asdasd"}
             imageURL={"asdas"}
           ></NftCard>
         </Grid>
-        <Grid item lg={3} md={3} sm={4} xs={6}>
+        <Grid item lg={3} md={4} sm={6} xs={6}>
           <NftCard
             description={"sadasd"}
             name={"asdasd"}
