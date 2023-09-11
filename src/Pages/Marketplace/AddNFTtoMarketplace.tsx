@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
-  Button,
   CircularProgress,
-  FormControl,
+  // FormControl,
   Grid,
-  InputLabel,
-  MenuItem,
+  // InputLabel,
+  // MenuItem,
   Stack,
   Step,
   StepLabel,
@@ -25,9 +23,18 @@ import {
 import { getMetadataImage } from "../../utils";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { FETCH_IMAGE_TYPE } from "../../utils/enum";
-import { CLPublicKey } from "casper-js-sdk";
+const {
+  RuntimeArgs,
+  CLValueBuilder,
+  Contracts,
+  CLPublicKey,
+  DeployUtil,
+} = require("casper-js-sdk");
 import { CollectionMetada, NFT } from "../../utils/types";
 import { NftCard } from "../../components/NftCard";
+import toastr from "toastr";
+import axios from "axios";
+import { SERVER_API } from "../../utils/api";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -73,9 +80,9 @@ const steps = ["Select Collection", "Select the NFT to load"];
 
 const AddNFTtoMarketplace = () => {
   const classes = useStyles();
-  const [publicKey] = useOutletContext<[publickey: string]>();
+  const [publicKey, provider, , , , ] = useOutletContext<[publicKey:string, provider:any, wasm:any, nftWasm:any, collectionWasm:any, marketplaceWasm:any]>();
   const [activeStep, setActiveStep] = React.useState(0);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [skipped, setSkipped] = React.useState(new Set<number>());
   const [loading, setLoading] = useState<boolean>(true);
   const [collections, setCollections] = useState<CollectionMetada[] | any>([]);
@@ -93,7 +100,12 @@ const AddNFTtoMarketplace = () => {
       newSkipped = new Set(newSkipped.values());
       newSkipped.delete(activeStep);
     }
+    if (activeStep == 0) {
+      fetchNft();
+    }
 
+    console.log(selectedCollection);
+    console.log(selectedNftIndex);
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setSkipped(newSkipped);
     console.log(selectedCollection);
@@ -131,39 +143,84 @@ const AddNFTtoMarketplace = () => {
     init();
   }, []);
 
-  useEffect(() => {
-    const init = async () => {
-      setLoading(true);
-      if (selectedCollection) {
-        const nftCollection = await getNftCollection(selectedCollection);
+  // useEffect(() => {
+  const fetchNft = async () => {
+    setLoading(true);
+    if (selectedCollection) {
+      const nftCollection = await getNftCollection(selectedCollection);
 
-        const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
+      const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
 
-        let promises = [];
-        for (let index = 0; index < nftCount; index++) {
-          promises.push(getNftMetadata(selectedCollection, index.toString()));
-        }
-
-        const nftMetas = await Promise.all(promises);
-        const imagePromises = nftMetas.map((e: any) =>
-          getMetadataImage(e, FETCH_IMAGE_TYPE.NFT)
-        );
-        const images = await Promise.all(imagePromises);
-
-        const finalData = nftMetas.map((e: any, index: number) => {
-          return {
-            ...e,
-            imageURL: images[index],
-          };
-        });
-
-        setNftData(finalData);
-        setLoading(false);
+      let promises = [];
+      for (let index = 0; index < nftCount; index++) {
+        promises.push(getNftMetadata(selectedCollection, index.toString()));
       }
-    };
 
-    init();
-  }, [activeStep, selectedCollection]);
+      const nftMetas = await Promise.all(promises);
+      const imagePromises = nftMetas.map((e: any) =>
+        getMetadataImage(e, FETCH_IMAGE_TYPE.NFT)
+      );
+      const images = await Promise.all(imagePromises);
+
+      const finalData = nftMetas.map((e: any, index: number) => {
+        return {
+          ...e,
+          imageURL: images[index],
+        };
+      });
+
+      setNftData(finalData);
+      setLoading(false);
+    }
+  };
+
+  // init();
+  // }, [activeStep, selectedCollection]);
+
+  const addListing = async () => {
+    try {
+      const contract = new Contracts.Contract();
+      contract.setContractHash(
+        "hash-ff84a99cfb1cd08f4c4df628d02c5fec71b5f12dc058434414f13aa1e221e287"
+      );
+      const args = RuntimeArgs.fromMap({
+        collection: CLValueBuilder.key(selectedCollection),
+        token_id: CLValueBuilder.u64(selectedNftIndex),
+        price: CLValueBuilder.u256(75 * 1_000_000_000),
+      });
+      const deploy = contract.callEntrypoint(
+        "add_listing",
+        args,
+        publicKey,
+        "casper-test",
+        "10000000000"
+      );
+      const deployJson = DeployUtil.deployToJson(deploy);
+      console.log("deployjson", deployJson);
+
+      try {
+        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+        let signedDeploy = DeployUtil.setSignature(
+          deploy,
+          sign.signature,
+          publicKey
+        );
+        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+        const data = DeployUtil.deployToJson(signedDeploy.val);
+        const response = await axios.post(SERVER_API + "deploy", data, {
+          headers: { "Content-Type": "application/json" },
+        });
+        toastr.success(response.data, "Nft added to Marketplace successfully.");
+        console.log(response.data);
+
+      } catch (error: any) {
+        alert(error.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toastr.error("error");
+    }
+  };
 
   if (loading) {
     return (

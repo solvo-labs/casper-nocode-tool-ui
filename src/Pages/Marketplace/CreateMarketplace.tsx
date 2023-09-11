@@ -22,7 +22,7 @@ const CreateMarketplace = () => {
   const [publicKey, provider, , , , marketplaceWasm] = useOutletContext<[publicKey:string, provider:any, wasm:any, nftWasm:any, collectionWasm:any, marketplaceWasm:any]>();
   const classes = useStyles();
   const [checked, setChecked] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [feeWallet, setFeeWallet] = useState<string>("");
   const [marketplaceName, setMarketplaceName] = useState<string>("");

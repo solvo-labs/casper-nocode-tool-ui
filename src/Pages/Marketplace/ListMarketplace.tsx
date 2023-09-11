@@ -1,8 +1,8 @@
 import { CircularProgress, Grid, Stack } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { MarketplaceCard } from "../../components/MarketplaceCard";
 import { CLPublicKey } from "casper-js-sdk";
-import { fetchMarketplaceNamedKeys, getNftCollection } from "../../utils/api";
+import { fetchMarketplaceNamedKeys } from "../../utils/api";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { Marketplace } from "../../utils/types";
 
