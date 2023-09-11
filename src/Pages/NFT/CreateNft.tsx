@@ -2,16 +2,17 @@ import { useEffect, useMemo, useState } from "react";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 import { useOutletContext } from "react-router-dom";
-import { SERVER_API } from "../../utils/api";
+import { SERVER_API, fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
 import axios from "axios";
 import toastr from "toastr";
 import { NFT } from "../../utils/types";
-import { Grid, Stack, Theme, Typography } from "@mui/material";
+import { CircularProgress, Grid, MenuItem, SelectChangeEvent, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
 import ImageUpload from "../../components/ImageUpload";
 import { NFTStorage } from "nft.storage";
+import { CustomSelect } from "../../components/CustomSelect";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -48,8 +49,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export const CreateNft = () => {
-  const [publicKey, provider] =
-    useOutletContext<[publickey: string, provider: any]>();
+  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
   const classes = useStyles();
   const [nftData, setNftData] = useState<NFT>({
     contractHash: "",
@@ -62,23 +62,37 @@ export const CreateNft = () => {
 
   const [file, setFile] = useState<any>();
   const [fileLoading, setFileLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [collections, setCollections] = useState<any>([]);
+  const [selectedCollection, setSelectedCollection] = useState<any>();
+
+  useEffect(() => {
+    const init = async () => {
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+      const data = await fetchCep78NamedKeys(ownerPublicKey.toAccountHashStr());
+
+      const promises = data.map((data) => getNftCollection(data.key));
+
+      const result = await Promise.all(promises);
+
+      setCollections(result);
+      setLoading(false);
+    };
+
+    init();
+  }, []);
 
   const disable = useMemo(() => {
     let hashLength = nftData.contractHash.length;
     let hashCheck = nftData.contractHash.startsWith("hash-");
-    const disable = !(
-      nftData.contractHash &&
-      nftData.tokenMetaData &&
-      hashCheck &&
-      hashLength == 69 &&
-      !fileLoading
-    );
+    const disable = !(nftData.contractHash && nftData.tokenMetaData && hashCheck && hashLength == 69 && !fileLoading);
     return disable;
   }, [nftData, fileLoading]);
 
   const createNft = async () => {
     const contract = new Contracts.Contract();
-    contract.setContractHash(nftData.contractHash);
+    contract.setContractHash(selectedCollection.contractHash);
 
     try {
       console.log(nftData.tokenMetaData);
@@ -86,18 +100,10 @@ export const CreateNft = () => {
 
       const args = RuntimeArgs.fromMap({
         token_owner: CLValueBuilder.key(ownerPublicKey),
-        token_meta_data: CLValueBuilder.string(
-          JSON.stringify(nftData.tokenMetaData)
-        ),
+        token_meta_data: CLValueBuilder.string(JSON.stringify(nftData.tokenMetaData)),
       });
 
-      const deploy = contract.callEntrypoint(
-        "mint",
-        args,
-        ownerPublicKey,
-        "casper-test",
-        "2000000000"
-      );
+      const deploy = contract.callEntrypoint("mint", args, ownerPublicKey, "casper-test", "2000000000");
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -106,11 +112,7 @@ export const CreateNft = () => {
 
         // setActionLoader(true);
 
-        let signedDeploy = DeployUtil.setSignature(
-          deploy,
-          sign.signature,
-          ownerPublicKey
-        );
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
 
@@ -120,10 +122,7 @@ export const CreateNft = () => {
           headers: { "Content-Type": "application/json" },
         });
         toastr.success(response.data, "Mint completed successfully.");
-        window.open(
-          "https://testnet.cspr.live/deploy/" + response.data,
-          "_blank"
-        );
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         // navigate("/my-tokens");
         // setActionLoader(false);
@@ -170,6 +169,22 @@ export const CreateNft = () => {
     storeImage();
   }, [file]);
 
+  if (loading) {
+    return (
+      <div
+        style={{
+          height: "calc(100vh - 8rem)",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
@@ -186,38 +201,33 @@ export const CreateNft = () => {
             </Typography>
           </Grid>
           <Grid container className={classes.gridContainer}>
-            <Stack
-              spacing={4}
-              direction={"column"}
-              marginTop={4}
-              className={classes.stackContainer}
-            >
-              <CustomInput
-                placeholder="Collection Address"
-                label="Collection Address"
-                id="collectionAddress"
-                name="collectionAddress"
-                type="text"
-                onChange={(e: any) => {
-                  setNftData({
-                    ...nftData,
-                    contractHash: e.target.value,
-                  });
+            <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
+              <CustomSelect
+                value={selectedCollection?.contractHash || "default"}
+                label="ERC-20 Token"
+                onChange={(event: SelectChangeEvent) => {
+                  const data = collections.find((tk: any) => tk.contractHash === event.target.value);
+                  setSelectedCollection(data);
                 }}
-                value={nftData.contractHash}
-              ></CustomInput>
-              {/* //TODO nft metadata input */}
-              <Typography
-                sx={{ borderBottom: "1px solid #FF0011 !important" }}
-                variant="button"
+                id={"custom-select"}
               >
+                <MenuItem value="default">
+                  <em>Select a Collection</em>
+                </MenuItem>
+                {collections.map((tk: any) => {
+                  return (
+                    <MenuItem key={tk.contractHash} value={tk.contractHash}>
+                      {tk.collection_name}
+                    </MenuItem>
+                  );
+                })}
+              </CustomSelect>
+
+              {/* //TODO nft metadata input */}
+              <Typography sx={{ borderBottom: "1px solid #FF0011 !important" }} variant="button">
                 Metadata
               </Typography>
-              <ImageUpload
-                file={file}
-                loading={fileLoading}
-                setFile={(data) => setFile(data)}
-              ></ImageUpload>
+              <ImageUpload file={file} loading={fileLoading} setFile={(data) => setFile(data)}></ImageUpload>
               <CustomInput
                 placeholder="Metadata Name"
                 label="Metadata Name"
@@ -254,11 +264,7 @@ export const CreateNft = () => {
               ></CustomInput>
 
               <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton
-                  onClick={createNft}
-                  disabled={disable}
-                  label="Create NFT"
-                />
+                <CustomButton onClick={createNft} disabled={disable} label="Create NFT" />
               </Grid>
             </Stack>
           </Grid>
