@@ -1,7 +1,10 @@
 import {
   Box,
   CircularProgress,
+  FormControl,
   Grid,
+  InputLabel,
+  MenuItem,
   Modal,
   Stack,
   Theme,
@@ -11,18 +14,31 @@ import { makeStyles } from "@mui/styles";
 import { useEffect, useState } from "react";
 import {
   fetchCep78NamedKeys,
+  fetchMarketplaceNamedKeys,
   getNftCollection,
   getNftMetadata,
 } from "../../utils/api";
 import { getMetadataImage } from "../../utils";
 import { FETCH_IMAGE_TYPE } from "../../utils/enum";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { CollectionMetada, NFT } from "../../utils/types";
+import { CollectionMetada, Marketplace, NFT } from "../../utils/types";
 import { CollectionCardAlternate } from "../../components/CollectionCard";
 // @ts-ignore
-import { CLPublicKey } from "casper-js-sdk";
+import {
+  CLPublicKey,
+  Contracts,
+  RuntimeArgs,
+  CLValueBuilder,
+  CLKey,
+  CLByteArray,
+  DeployUtil,
+} from "casper-js-sdk";
 import { NftCard } from "../../components/NftCard";
 import { CustomButton } from "../../components/CustomButton";
+import toastr from "toastr";
+import axios from "axios";
+import { SERVER_API } from "../../utils/api";
+import { CustomSelect } from "../../components/CustomSelect";
 
 const style = {
   position: "absolute",
@@ -78,6 +94,8 @@ const ApproveNFT = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [openApprove, setOpenApprove] = useState(false);
+  const [marketplace, setMarketplace] = useState<Marketplace[]>([]);
+  const [selectedMarketplace, setSelectedMarketplace] = useState<string>();
   const [selectedCollection, setSelectedCollection] = useState<string | null>(
     ""
   );
@@ -97,13 +115,13 @@ const ApproveNFT = () => {
 
   const handleOpen = (contract: string) => {
     console.log(contract);
-    // setSelectedCollection(contract)
+    setSelectedCollection(contract);
     fetchNft(contract);
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
-    setSelectedCollection(null);
+    // setSelectedCollection(null);
   };
 
   const handleOpenNft = () => {
@@ -112,6 +130,22 @@ const ApproveNFT = () => {
   const handleCloseNft = () => {
     setOpenApprove(false);
   };
+
+  useEffect(() => {
+    const init = async () => {
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+      const data = await fetchMarketplaceNamedKeys(
+        ownerPublicKey.toAccountHashStr()
+      );
+
+      setLoading(false);
+      setMarketplace(data);
+      console.log(data);
+    };
+
+    init();
+  }, []);
 
   useEffect(() => {
     const init = async () => {
@@ -167,7 +201,63 @@ const ApproveNFT = () => {
 
       setNftData(finalData);
       setLoading(false);
-      console.log(finalData);
+    }
+  };
+
+  const approve = async () => {
+    try {
+      if (selectedMarketplace) {
+        const contract = new Contracts.Contract();
+        contract.setContractHash(selectedCollection);
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+        const marketplaceHash = selectedMarketplace.replace("hash-", "");
+        console.log(marketplaceHash);
+
+        const args = RuntimeArgs.fromMap({
+          operator: new CLKey(
+            new CLByteArray(
+              Uint8Array.from(Buffer.from(marketplaceHash, "hex"))
+            )
+          ),
+          token_id: CLValueBuilder.u64(0),
+        });
+
+        const deploy = contract.callEntrypoint(
+          "approve",
+          args,
+          ownerPublicKey,
+          "casper-test",
+          "10000000000"
+        );
+        console.log(deploy);
+
+        const deployJson = DeployUtil.deployToJson(deploy);
+        console.log(deployJson);
+        try {
+          const sign = await provider.sign(
+            JSON.stringify(deployJson),
+            publicKey
+          );
+          let signedDeploy = DeployUtil.setSignature(
+            deploy,
+            sign.signature,
+            ownerPublicKey
+          );
+          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+          const data = DeployUtil.deployToJson(signedDeploy.val);
+          const response = await axios.post(SERVER_API + "deploy", data, {
+            headers: { "Content-Type": "application/json" },
+          });
+          toastr.success(response.data, "Approve deployed successfully.");
+          console.log(response.data);
+        } catch (error: any) {
+          alert(error.message);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toastr.error("error");
     }
   };
 
@@ -209,7 +299,6 @@ const ApproveNFT = () => {
               ></CollectionCardAlternate>
               <Modal open={open} onClose={handleClose}>
                 <Box sx={style}>
-                  {loading && <CircularProgress />}
                   <Typography
                     id="modal-modal-title"
                     variant="h6"
@@ -227,8 +316,37 @@ const ApproveNFT = () => {
                           onClick={handleOpenNft}
                         ></NftCard>
                         <Modal open={openApprove} onClose={handleCloseNft}>
-                          <Box sx={style}  display={"flex"} alignItems={"center"} justifyContent={"center"}>
+                          <Box
+                            sx={style}
+                            display={"flex"}
+                            alignItems={"center"}
+                            justifyContent={"center"}
+                          >
                             <Stack spacing={"2rem"}>
+                              <FormControl fullWidth>
+                                <InputLabel sx={{ color: "black" }}>
+                                  Ownership Mode
+                                </InputLabel>
+                                <CustomSelect
+                                  id="ownershipMode"
+                                  value={selectedMarketplace}
+                                  label="Ownership Mode"
+                                  onChange={(e: any) =>
+                                    setSelectedMarketplace(e.target.value)
+                                  }
+                                >
+                                  {marketplace.map((mp: any) => {
+                                    return (
+                                      <MenuItem key={mp.key} value={mp.key}>
+                                        {mp.name +
+                                          "(" +
+                                          mp.key.slice(0, 12) +
+                                          ")"}
+                                      </MenuItem>
+                                    );
+                                  })}
+                                </CustomSelect>
+                              </FormControl>
                               <Typography
                                 display={"flex"}
                                 justifyContent={"center"}
@@ -250,7 +368,7 @@ const ApproveNFT = () => {
                                 <CustomButton
                                   disabled={false}
                                   label="Confirm"
-                                  onClick={() => {}}
+                                  onClick={approve}
                                 ></CustomButton>
                               </Stack>
                             </Stack>
