@@ -31,7 +31,7 @@ export enum NFT_PAGE {
   MY_COLLECTIONS = "My Collections",
   CREATE_NFT = "Create NFT",
   CREATE_COLLECTION = "Create Collection",
-  APPROVE_NFT = "Approve"
+  APPROVE_NFT = "Approve Nft"
 }
 
 export enum MARKETPLACE_PAGE {
