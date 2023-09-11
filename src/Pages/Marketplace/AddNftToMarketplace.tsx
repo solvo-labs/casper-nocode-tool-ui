@@ -18,13 +18,8 @@ import {
 } from "../../utils/api";
 import { CasperHelpers, getMetadataImage } from "../../utils";
 import { FETCH_IMAGE_TYPE } from "../../utils/enum";
-import {
-  Contracts,
-  RuntimeArgs,
-  DeployUtil,
-  CLValueBuilder,
-  CLPublicKey,
-} from "casper-js-sdk";
+// @ts-ignore
+import {Contracts,RuntimeArgs,DeployUtil,CLValueBuilder,CLPublicKey} from "casper-js-sdk";
 import { CollectionMetada, NFT } from "../../utils/types";
 import { useOutletContext, useParams } from "react-router-dom";
 import { CollectionCardAlternate } from "../../components/CollectionCard";

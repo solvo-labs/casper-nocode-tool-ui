@@ -24,8 +24,8 @@ import { VestingList } from "../Pages/Tokenomics/VestingList";
 import CreateMarketplace from "../Pages/Marketplace/CreateMarketplace";
 import ListMarketplace from "../Pages/Marketplace/ListMarketplace";
 import MarketplaceManager from "../Pages/Marketplace/MarketplaceManager";
-import AddNFTtoMarketplace from "../Pages/Marketplace/AddNFTtoMarketplace";
 import ApproveNFT from "../Pages/NFT/Approve";
+import AddNftToMarketplace from "../Pages/Marketplace/AddNftToMarketplace";
 
 const Router: React.FC = () => {
   return (
@@ -59,7 +59,7 @@ const Router: React.FC = () => {
             <Route path="/marketplace" index element={<ListMarketplace />} />
             <Route path="/create-marketplace" index element={<CreateMarketplace />} />
             <Route path="/marketplace/:marketplaceHash" index element={<MarketplaceManager />} />
-            <Route path="/add-nft-to-marketplace/:marketplaceHash" index element={<AddNFTtoMarketplace />} />
+            <Route path="/add-nft-to-marketplace/:marketplaceHash" index element={<AddNftToMarketplace />} />
           </Route>
           <Route path="/login" index element={<Login />} />
         </Routes>
