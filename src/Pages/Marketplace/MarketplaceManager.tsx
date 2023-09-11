@@ -30,19 +30,24 @@ const MarketplaceManager = () => {
   const { marketplaceHash } = useParams();
 
   return (
-    <Grid
-      container
-      direction={"column"}
-      className={classes.container}
-    >
+    <Grid container direction={"column"} className={classes.container}>
       <Grid item className={classes.container}>
         <Stack direction={"row"} justifyContent={"space-between"}>
           <Typography variant="h4">Marketplace name</Typography>
-          <CustomButton
-            disabled={false}
-            label="Add NFT to Marketplace"
-            onClick={() => navigate("/add-nft-to-marketplace/"+marketplaceHash)}
-          ></CustomButton>
+          <Stack direction={"row"} spacing={2}>
+            <CustomButton
+              disabled={false}
+              label="Add Whitelist"
+              onClick={() => {}}
+            ></CustomButton>
+            <CustomButton
+              disabled={false}
+              label="Add NFT to Marketplace"
+              onClick={() =>
+                navigate("/add-nft-to-marketplace/" + marketplaceHash)
+              }
+            ></CustomButton>
+          </Stack>
         </Stack>
       </Grid>
       <Grid item marginTop={"2rem"}>
