@@ -17,7 +17,7 @@ type Props = {
   name: string;
   description: string;
   imageURL: string;
-  onClick: () => void;
+  onClick?: () => void;
 };
 
 export const NftCard: React.FC<Props> = ({ name, description, imageURL, onClick }) => {
