@@ -91,3 +91,8 @@ export type CollectionMetada = {
     imageURL: string;
   };
 };
+
+export type Marketplace = {
+  name: string;
+  key: string;
+}
