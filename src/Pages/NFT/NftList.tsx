@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getNftCollection, getNftMetadata } from "../../utils/api";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { CircularProgress, Grid, Theme, Typography } from "@mui/material";
 import { NftCard } from "../../components/NftCard";
 import { makeStyles } from "@mui/styles";
@@ -40,6 +40,7 @@ export const NftList = () => {
   const classes = useStyles();
   const [loading, setLoading] = useState<boolean>(true);
   const [collectionData, setCollectionData] = useState<any>();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const init = async () => {
@@ -108,7 +109,7 @@ export const NftList = () => {
           <CreateCollectionCard
             text="ADD NFT"
             onClick={() => {
-              // navigate("/create-collection");
+              navigate("/create-nft/" + nftCollectionHash);
             }}
           />
         </Grid>

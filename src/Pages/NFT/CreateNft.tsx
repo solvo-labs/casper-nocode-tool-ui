@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 import { SERVER_API, fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
 import axios from "axios";
 import toastr from "toastr";
@@ -49,6 +49,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export const CreateNft = () => {
+  const params = useParams();
+
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
   const classes = useStyles();
   const [nftData, setNftData] = useState<NFT>({
@@ -75,6 +77,12 @@ export const CreateNft = () => {
       const promises = data.map((data) => getNftCollection(data.key));
 
       const result = await Promise.all(promises);
+
+      if (params.collectionHash) {
+        const currentCollection = result.find((rs) => rs.contractHash === params.collectionHash);
+
+        setSelectedCollection(currentCollection);
+      }
 
       setCollections(result);
       setLoading(false);
