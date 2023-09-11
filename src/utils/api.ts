@@ -77,6 +77,16 @@ export const fetchCep78NamedKeys = async (accountHash: string) => {
   return filteredNamedKeys;
 };
 
+export const fetchMarketplaceNamedKeys = async (accountHash: string) => {
+  const namedKeys = await fetchNamedKeys(accountHash);
+
+  const filteredNamedKeys = namedKeys.filter((ky) => {
+    return ky.name.startsWith("marketplace_contract_hash");
+  });
+
+  return filteredNamedKeys;
+};
+
 export const fetchErc20TokenDetails = async (contractHash: string) => {
   const response = await axios.get<ERC20Token>(
     SERVER_API + "getERC20Token?contractHash=" + contractHash
