@@ -168,6 +168,8 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
       navigate("/vesting-list");
     } else if (a === MARKETPLACE_PAGE.CREATE_MARKETPLACE) {
       navigate("/create-marketplace");
+    } else if (a === MARKETPLACE_PAGE.LIST_MARKETPLACE) {
+      navigate("/list-marketplace")
     }
     setAnchorElForNFT(null);
     setAnchorElForToken(null);
