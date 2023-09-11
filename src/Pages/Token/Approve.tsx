@@ -82,9 +82,7 @@ const Approve: React.FC = () => {
 
   useEffect(() => {
     const init = async () => {
-      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-
-      listofCreatorERC20Tokens(ownerPublicKey.toAccountHashStr())
+      listofCreatorERC20Tokens(publicKey)
         .then((result) => {
           setTokens(result);
         })

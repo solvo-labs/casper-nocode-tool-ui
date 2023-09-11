@@ -15,12 +15,8 @@ const ListMarketplace = () => {
 
   useEffect(() => {
     const init = async () => {
-      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+      const data = await fetchMarketplaceNamedKeys(publicKey);
 
-      const data = await fetchMarketplaceNamedKeys(
-        ownerPublicKey.toAccountHashStr()
-      );
-      
       setLoading(false);
       setMarketplace(data);
       console.log(data);
@@ -49,11 +45,7 @@ const ListMarketplace = () => {
     <Grid>
       <Stack>
         {marketplace.map((e: any) => (
-          <MarketplaceCard
-            hash={e.key.slice(0,20)}
-            name={e.name}
-            onClick={() => navigate("/marketplace/" + e.key)}
-          ></MarketplaceCard>
+          <MarketplaceCard hash={e.key.slice(0, 20)} name={e.name} onClick={() => navigate("/marketplace/" + e.key)}></MarketplaceCard>
         ))}
       </Stack>
     </Grid>

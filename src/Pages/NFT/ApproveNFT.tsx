@@ -1,38 +1,14 @@
-import {
-  Box,
-  CircularProgress,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Modal,
-  Stack,
-  Theme,
-  Typography,
-} from "@mui/material";
+import { Box, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Modal, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useEffect, useState } from "react";
-import {
-  fetchCep78NamedKeys,
-  fetchMarketplaceNamedKeys,
-  getNftCollection,
-  getNftMetadata,
-} from "../../utils/api";
+import { fetchCep78NamedKeys, fetchMarketplaceNamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
 import { getMetadataImage } from "../../utils";
 import { FETCH_IMAGE_TYPE } from "../../utils/enum";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { CollectionMetada, Marketplace, NFT } from "../../utils/types";
 import { CollectionCardAlternate } from "../../components/CollectionCard";
 // @ts-ignore
-import {
-  CLPublicKey,
-  Contracts,
-  RuntimeArgs,
-  CLValueBuilder,
-  CLKey,
-  CLByteArray,
-  DeployUtil,
-} from "casper-js-sdk";
+import { CLPublicKey, Contracts, RuntimeArgs, CLValueBuilder, CLKey, CLByteArray, DeployUtil } from "casper-js-sdk";
 import { NftCard } from "../../components/NftCard";
 import { CustomButton } from "../../components/CustomButton";
 import toastr from "toastr";
@@ -96,22 +72,10 @@ const ApproveNFT = () => {
   const [openApprove, setOpenApprove] = useState(false);
   const [marketplace, setMarketplace] = useState<Marketplace[]>([]);
   const [selectedMarketplace, setSelectedMarketplace] = useState<string>();
-  const [selectedCollection, setSelectedCollection] = useState<string | null>(
-    ""
-  );
+  const [selectedCollection, setSelectedCollection] = useState<string | null>("");
   const [nftData, setNftData] = useState<NFT[] | any>([]);
 
-  const [publicKey, provider, , , , marketplaceWasm] =
-    useOutletContext<
-      [
-        publicKey: string,
-        provider: any,
-        wasm: any,
-        nftWasm: any,
-        collectionWasm: any,
-        marketplaceWasm: any
-      ]
-    >();
+  const [publicKey, provider, , , , marketplaceWasm] = useOutletContext<[publicKey: string, provider: any, wasm: any, nftWasm: any, collectionWasm: any, marketplaceWasm: any]>();
 
   const handleOpen = (contract: string) => {
     console.log(contract);
@@ -133,11 +97,7 @@ const ApproveNFT = () => {
 
   useEffect(() => {
     const init = async () => {
-      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-
-      const data = await fetchMarketplaceNamedKeys(
-        ownerPublicKey.toAccountHashStr()
-      );
+      const data = await fetchMarketplaceNamedKeys(publicKey);
 
       setLoading(false);
       setMarketplace(data);
@@ -149,16 +109,12 @@ const ApproveNFT = () => {
 
   useEffect(() => {
     const init = async () => {
-      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-
-      const data = await fetchCep78NamedKeys(ownerPublicKey.toAccountHashStr());
+      const data = await fetchCep78NamedKeys(publicKey);
 
       const promises = data.map((data) => getNftCollection(data.key));
 
       const result = await Promise.all(promises);
-      const imagePromises = result.map((e: any) =>
-        getMetadataImage(e.json_schema, FETCH_IMAGE_TYPE.COLLECTION)
-      );
+      const imagePromises = result.map((e: any) => getMetadataImage(e.json_schema, FETCH_IMAGE_TYPE.COLLECTION));
       const images = await Promise.all(imagePromises);
       const finalData = result.map((e: any, index: number) => {
         return {
@@ -187,9 +143,7 @@ const ApproveNFT = () => {
       }
 
       const nftMetas = await Promise.all(promises);
-      const imagePromises = nftMetas.map((e: any) =>
-        getMetadataImage(e, FETCH_IMAGE_TYPE.NFT)
-      );
+      const imagePromises = nftMetas.map((e: any) => getMetadataImage(e, FETCH_IMAGE_TYPE.NFT));
       const images = await Promise.all(imagePromises);
 
       const finalData = nftMetas.map((e: any, index: number) => {
@@ -215,35 +169,18 @@ const ApproveNFT = () => {
         console.log(marketplaceHash);
 
         const args = RuntimeArgs.fromMap({
-          operator: new CLKey(
-            new CLByteArray(
-              Uint8Array.from(Buffer.from(marketplaceHash, "hex"))
-            )
-          ),
+          operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(marketplaceHash, "hex")))),
           token_id: CLValueBuilder.u64(0),
         });
 
-        const deploy = contract.callEntrypoint(
-          "approve",
-          args,
-          ownerPublicKey,
-          "casper-test",
-          "10000000000"
-        );
+        const deploy = contract.callEntrypoint("approve", args, ownerPublicKey, "casper-test", "10000000000");
         console.log(deploy);
 
         const deployJson = DeployUtil.deployToJson(deploy);
         console.log(deployJson);
         try {
-          const sign = await provider.sign(
-            JSON.stringify(deployJson),
-            publicKey
-          );
-          let signedDeploy = DeployUtil.setSignature(
-            deploy,
-            sign.signature,
-            ownerPublicKey
-          );
+          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
           signedDeploy = DeployUtil.validateDeploy(signedDeploy);
           const data = DeployUtil.deployToJson(signedDeploy.val);
           const response = await axios.post(SERVER_API + "deploy", data, {
@@ -299,77 +236,34 @@ const ApproveNFT = () => {
               ></CollectionCardAlternate>
               <Modal open={open} onClose={handleClose}>
                 <Box sx={style}>
-                  <Typography
-                    id="modal-modal-title"
-                    variant="h6"
-                    component="h2"
-                  >
+                  <Typography id="modal-modal-title" variant="h6" component="h2">
                     Approve {e.collection_name}'s NFT
                   </Typography>
                   <Grid container>
                     {nftData.map((e: any, index: number) => (
                       <Grid item lg={4} md={4} sm={6} xs={6}>
-                        <NftCard
-                          description={e.description}
-                          name={e.name}
-                          imageURL={e.imageURL}
-                          onClick={handleOpenNft}
-                        ></NftCard>
+                        <NftCard description={e.description} name={e.name} imageURL={e.imageURL} onClick={handleOpenNft}></NftCard>
                         <Modal open={openApprove} onClose={handleCloseNft}>
-                          <Box
-                            sx={style}
-                            display={"flex"}
-                            alignItems={"center"}
-                            justifyContent={"center"}
-                          >
+                          <Box sx={style} display={"flex"} alignItems={"center"} justifyContent={"center"}>
                             <Stack spacing={"2rem"}>
                               <FormControl fullWidth>
-                                <InputLabel sx={{ color: "black" }}>
-                                  Ownership Mode
-                                </InputLabel>
-                                <CustomSelect
-                                  id="ownershipMode"
-                                  value={selectedMarketplace}
-                                  label="Ownership Mode"
-                                  onChange={(e: any) =>
-                                    setSelectedMarketplace(e.target.value)
-                                  }
-                                >
+                                <InputLabel sx={{ color: "black" }}>Ownership Mode</InputLabel>
+                                <CustomSelect id="ownershipMode" value={selectedMarketplace} label="Ownership Mode" onChange={(e: any) => setSelectedMarketplace(e.target.value)}>
                                   {marketplace.map((mp: any) => {
                                     return (
                                       <MenuItem key={mp.key} value={mp.key}>
-                                        {mp.name +
-                                          "(" +
-                                          mp.key.slice(0, 12) +
-                                          ")"}
+                                        {mp.name + "(" + mp.key.slice(0, 12) + ")"}
                                       </MenuItem>
                                     );
                                   })}
                                 </CustomSelect>
                               </FormControl>
-                              <Typography
-                                display={"flex"}
-                                justifyContent={"center"}
-                                variant="h6"
-                                component="h2"
-                              >
+                              <Typography display={"flex"} justifyContent={"center"} variant="h6" component="h2">
                                 Are you sure you are about to approve now?
                               </Typography>
-                              <Stack
-                                direction={"row"}
-                                spacing={"2rem"}
-                                justifyContent={"center"}
-                              >
-                                <CustomButton
-                                  disabled={false}
-                                  label="Deny"
-                                  onClick={handleCloseNft}
-                                ></CustomButton>
-                                <CustomButton
-                                  disabled={false}
-                                  label="Confirm"
-                                  onClick={approve}
-                                ></CustomButton>
+                              <Stack direction={"row"} spacing={"2rem"} justifyContent={"center"}>
+                                <CustomButton disabled={false} label="Deny" onClick={handleCloseNft}></CustomButton>
+                                <CustomButton disabled={false} label="Confirm" onClick={approve}></CustomButton>
                               </Stack>
                             </Stack>
                           </Box>

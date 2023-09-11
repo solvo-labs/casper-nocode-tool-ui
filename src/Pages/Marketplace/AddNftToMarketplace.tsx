@@ -1,25 +1,12 @@
-import {
-  CircularProgress,
-  Grid,
-  Stack,
-  Step,
-  StepLabel,
-  Stepper,
-  Theme,
-  Typography,
-} from "@mui/material";
+import { CircularProgress, Grid, Stack, Step, StepLabel, Stepper, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { CustomButton } from "../../components/CustomButton";
-import {
-  fetchCep78NamedKeys,
-  getNftCollection,
-  getNftMetadata,
-} from "../../utils/api";
+import { fetchCep78NamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
 import { CasperHelpers, getMetadataImage } from "../../utils";
 import { FETCH_IMAGE_TYPE } from "../../utils/enum";
 // @ts-ignore
-import {Contracts,RuntimeArgs,DeployUtil,CLValueBuilder,CLPublicKey} from "casper-js-sdk";
+import { Contracts, RuntimeArgs, DeployUtil, CLValueBuilder, CLPublicKey } from "casper-js-sdk";
 import { CollectionMetada, NFT } from "../../utils/types";
 import { useOutletContext, useParams } from "react-router-dom";
 import { CollectionCardAlternate } from "../../components/CollectionCard";
@@ -66,17 +53,7 @@ const AddNftToMarketplace = () => {
   const { marketplaceHash } = useParams();
   console.log(marketplaceHash);
 
-  const [publicKey, provider, , , , marketplaceWasm] =
-    useOutletContext<
-      [
-        publicKey: string,
-        provider: any,
-        wasm: any,
-        nftWasm: any,
-        collectionWasm: any,
-        marketplaceWasm: any
-      ]
-    >();
+  const [publicKey, provider, , , , marketplaceWasm] = useOutletContext<[publicKey: string, provider: any, wasm: any, nftWasm: any, collectionWasm: any, marketplaceWasm: any]>();
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set<number>());
   const [collections, setCollections] = useState<CollectionMetada[] | any>([]);
@@ -123,27 +100,16 @@ const AddNftToMarketplace = () => {
       });
 
       console.log(args);
-      
-      const deploy = contract.callEntrypoint(
-        "add_listing",
-        args,
-        ownerPublicKey,
-        "casper-test",
-        "10000000000"
-      );
+
+      const deploy = contract.callEntrypoint("add_listing", args, ownerPublicKey, "casper-test", "10000000000");
       const deployJson = DeployUtil.deployToJson(deploy);
 
       console.log("dep", deploy);
       console.log("dpjason", deployJson);
-      
 
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-        let signedDeploy = DeployUtil.setSignature(
-          deploy,
-          sign.signature,
-          ownerPublicKey
-        );
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
         const data = DeployUtil.deployToJson(signedDeploy.val);
         const response = await axios.post(SERVER_API + "deploy", data, {
@@ -162,16 +128,12 @@ const AddNftToMarketplace = () => {
 
   useEffect(() => {
     const init = async () => {
-      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-
-      const data = await fetchCep78NamedKeys(ownerPublicKey.toAccountHashStr());
+      const data = await fetchCep78NamedKeys(publicKey);
 
       const promises = data.map((data) => getNftCollection(data.key));
 
       const result = await Promise.all(promises);
-      const imagePromises = result.map((e: any) =>
-        getMetadataImage(e.json_schema, FETCH_IMAGE_TYPE.COLLECTION)
-      );
+      const imagePromises = result.map((e: any) => getMetadataImage(e.json_schema, FETCH_IMAGE_TYPE.COLLECTION));
       const images = await Promise.all(imagePromises);
       const finalData = result.map((e: any, index: number) => {
         return {
@@ -201,9 +163,7 @@ const AddNftToMarketplace = () => {
       }
 
       const nftMetas = await Promise.all(promises);
-      const imagePromises = nftMetas.map((e: any) =>
-        getMetadataImage(e, FETCH_IMAGE_TYPE.NFT)
-      );
+      const imagePromises = nftMetas.map((e: any) => getMetadataImage(e, FETCH_IMAGE_TYPE.NFT));
       const images = await Promise.all(imagePromises);
 
       const finalData = nftMetas.map((e: any, index: number) => {
@@ -226,11 +186,7 @@ const AddNftToMarketplace = () => {
         </Typography>
       </Grid>
       <Grid item width={"80%"} marginTop={"4rem"}>
-        <Stepper
-          activeStep={activeStep}
-          sx={{ color: "white" }}
-          className={classes.stepperTitle}
-        >
+        <Stepper activeStep={activeStep} sx={{ color: "white" }} className={classes.stepperTitle}>
           {steps.map((label, index) => {
             const stepProps: { completed?: boolean } = {};
             const labelProps: {
@@ -278,21 +234,9 @@ const AddNftToMarketplace = () => {
             ))}
           </Grid>
           <Grid container width={"100%"}>
-            <Stack
-              width={"100%"}
-              direction={"row"}
-              justifyContent={"space-evenly"}
-            >
-              <CustomButton
-                disabled={activeStep === 0}
-                label="Back"
-                onClick={handleBack}
-              ></CustomButton>
-              <CustomButton
-                disabled={!selectedCollection}
-                label={"Next"}
-                onClick={handleNext}
-              ></CustomButton>
+            <Stack width={"100%"} direction={"row"} justifyContent={"space-evenly"}>
+              <CustomButton disabled={activeStep === 0} label="Back" onClick={handleBack}></CustomButton>
+              <CustomButton disabled={!selectedCollection} label={"Next"} onClick={handleNext}></CustomButton>
             </Stack>
           </Grid>
         </>
@@ -316,34 +260,15 @@ const AddNftToMarketplace = () => {
             ))}
           </Grid>
           <Grid container width={"100%"}>
-            <Stack
-              width={"100%"}
-              direction={"row"}
-              justifyContent={"space-evenly"}
-            >
-              <CustomButton
-                disabled={false}
-                label="Back"
-                onClick={handleBack}
-              ></CustomButton>
-              <CustomButton
-                disabled={!selectedNftIndex}
-                label={"Next"}
-                onClick={handleNext}
-              ></CustomButton>
+            <Stack width={"100%"} direction={"row"} justifyContent={"space-evenly"}>
+              <CustomButton disabled={false} label="Back" onClick={handleBack}></CustomButton>
+              <CustomButton disabled={!selectedNftIndex} label={"Next"} onClick={handleNext}></CustomButton>
             </Stack>
           </Grid>
         </>
       )}
       {activeStep === steps.length && (
-        <Grid
-          container
-          direction={"column"}
-          display={"flex"}
-          justifyContent={"center"}
-          justifyItems={"center"}
-          alignContent={"center"}
-        >
+        <Grid container direction={"column"} display={"flex"} justifyContent={"center"} justifyItems={"center"} alignContent={"center"}>
           <Stack spacing={"2rem"}>
             <Grid item className={classes.text}>
               <Typography>{selectedCollection}</Typography>
@@ -352,11 +277,7 @@ const AddNftToMarketplace = () => {
               <Typography>Nft Index: {selectedNftIndex}</Typography>
             </Grid>
             <Grid item className={classes.text}>
-              <CustomButton
-                disabled={!(selectedCollection && selectedNftIndex)}
-                label="Add"
-                onClick={addListing}
-              ></CustomButton>
+              <CustomButton disabled={!(selectedCollection && selectedNftIndex)} label="Add" onClick={addListing}></CustomButton>
             </Grid>
           </Stack>
         </Grid>
