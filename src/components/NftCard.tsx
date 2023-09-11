@@ -14,17 +14,17 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 type Props = {
-  // onClick: any;
   name: string;
   description: string;
   imageURL: string;
+  onClick: () => void;
 };
 
-export const NftCard: React.FC<Props> = ({ name, description, imageURL }) => {
+export const NftCard: React.FC<Props> = ({ name, description, imageURL, onClick }) => {
   const classes = useStyles();
   return (
     <CardActionArea>
-      <Card className={classes.card}>
+      <Card className={classes.card} onClick={onClick}>
         <CardMedia component="img" height="200" image={imageURL} alt={name} />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
