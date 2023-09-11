@@ -1,6 +1,7 @@
 import { CircularProgress, Grid, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { MarketplaceCard } from "../../components/MarketplaceCard";
+// @ts-ignore
 import { CLPublicKey } from "casper-js-sdk";
 import { fetchMarketplaceNamedKeys } from "../../utils/api";
 import { useNavigate, useOutletContext } from "react-router-dom";
