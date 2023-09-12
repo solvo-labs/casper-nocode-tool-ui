@@ -22,9 +22,9 @@ import { Tokenomics } from "../Pages/Tokenomics/Tokenomics";
 import { Vesting } from "../Pages/Tokenomics/Vesting";
 import { VestingList } from "../Pages/Tokenomics/VestingList";
 import CreateMarketplace from "../Pages/Marketplace/CreateMarketplace";
-import ListMarketplace from "../Pages/Marketplace/ListMarketplace";
 import MarketplaceManager from "../Pages/Marketplace/MarketplaceManager";
 import ApproveNFT from "../Pages/NFT/ApproveNFT";
+import ListMarketplace from "../Pages/Marketplace/ListMarketplace";
 import AddNftToMarketplace from "../Pages/Marketplace/AddNftToMarketplace";
 
 const Router: React.FC = () => {

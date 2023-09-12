@@ -147,8 +147,6 @@ export const Tokenomics = () => {
       const accountHash = ownerPublicKey.toAccountHashStr();
       const { finalData } = await initTokens(accountHash);
 
-      console.log("finalData", finalData);
-
       const filteredFinalData = finalData.filter((fd) => fd.balance > 0);
 
       setTokens(filteredFinalData);
