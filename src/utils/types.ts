@@ -74,6 +74,8 @@ export type NFT = {
     description: string;
     imageURL: string;
   };
+  mergable?: boolean;
+  timeable?: boolean;
 };
 
 export type CollectionMetada = {

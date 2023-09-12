@@ -2,7 +2,7 @@ import { Grid, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomButton } from "../../components/CustomButton";
 import { NftCard } from "../../components/NftCard";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleContainer: {
@@ -28,6 +28,7 @@ const MarketplaceManager = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const { marketplaceHash } = useParams();
+  const [publicKey] = useOutletContext<[publickey: string]>();
 
   return (
     <Grid container direction={"column"} className={classes.container}>
@@ -35,18 +36,8 @@ const MarketplaceManager = () => {
         <Stack direction={"row"} justifyContent={"space-between"}>
           <Typography variant="h4">Marketplace name</Typography>
           <Stack direction={"row"} spacing={2}>
-            <CustomButton
-              disabled={false}
-              label="Add Whitelist"
-              onClick={() => {}}
-            ></CustomButton>
-            <CustomButton
-              disabled={false}
-              label="Add NFT to Marketplace"
-              onClick={() =>
-                navigate("/add-nft-to-marketplace/" + marketplaceHash)
-              }
-            ></CustomButton>
+            <CustomButton disabled={false} label="Add Whitelist" onClick={() => {}}></CustomButton>
+            <CustomButton disabled={false} label="Add NFT to Marketplace" onClick={() => navigate("/add-nft-to-marketplace/" + marketplaceHash)}></CustomButton>
           </Stack>
         </Stack>
       </Grid>
@@ -55,32 +46,16 @@ const MarketplaceManager = () => {
       </Grid>
       <Grid container>
         <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard
-            description={"sadasd"}
-            name={"asdasd"}
-            imageURL={"asdas"}
-          ></NftCard>
+          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
         </Grid>
         <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard
-            description={"sadasd"}
-            name={"asdasd"}
-            imageURL={"asdas"}
-          ></NftCard>
+          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
         </Grid>
         <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard
-            description={"sadasd"}
-            name={"asdasd"}
-            imageURL={"asdas"}
-          ></NftCard>
+          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
         </Grid>
         <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard
-            description={"sadasd"}
-            name={"asdasd"}
-            imageURL={"asdas"}
-          ></NftCard>
+          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
         </Grid>
       </Grid>
       <Grid item>
@@ -88,32 +63,16 @@ const MarketplaceManager = () => {
       </Grid>
       <Grid container>
         <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard
-            description={"sadasd"}
-            name={"asdasd"}
-            imageURL={"asdas"}
-          ></NftCard>
+          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
         </Grid>
         <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard
-            description={"sadasd"}
-            name={"asdasd"}
-            imageURL={"asdas"}
-          ></NftCard>
+          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
         </Grid>
         <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard
-            description={"sadasd"}
-            name={"asdasd"}
-            imageURL={"asdas"}
-          ></NftCard>
+          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
         </Grid>
         <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard
-            description={"sadasd"}
-            name={"asdasd"}
-            imageURL={"asdas"}
-          ></NftCard>
+          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
         </Grid>
       </Grid>
     </Grid>

@@ -6,7 +6,7 @@ import { SERVER_API, fetchCep78NamedKeys, getNftCollection } from "../../utils/a
 import axios from "axios";
 import toastr from "toastr";
 import { NFT } from "../../utils/types";
-import { CircularProgress, Grid, MenuItem, SelectChangeEvent, Stack, Theme, Typography } from "@mui/material";
+import { CircularProgress, FormControlLabel, Grid, MenuItem, SelectChangeEvent, Stack, Switch, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
@@ -60,6 +60,8 @@ export const CreateNft = () => {
       description: "",
       imageURL: "",
     },
+    mergable: true,
+    timeable: true,
   });
 
   const [file, setFile] = useState<any>();
@@ -266,6 +268,18 @@ export const CreateNft = () => {
                 }}
                 value={nftData.tokenMetaData.description}
               ></CustomInput>
+              <FormControlLabel
+                style={{ justifyContent: "start" }}
+                labelPlacement="start"
+                control={<Switch checked={nftData.mergable} color="error" onChange={() => setNftData({ ...nftData, mergable: !nftData.mergable })} />}
+                label="Mergeable NFT"
+              />
+              <FormControlLabel
+                style={{ justifyContent: "start" }}
+                labelPlacement="start"
+                control={<Switch checked={nftData.timeable} color="error" onChange={() => setNftData({ ...nftData, timeable: !nftData.timeable })} />}
+                label="Timeable NFT"
+              />
 
               <Grid paddingTop={2} container justifyContent={"center"}>
                 <CustomButton onClick={createNft} disabled={disable} label="Create NFT" />
