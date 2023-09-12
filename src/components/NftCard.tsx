@@ -1,6 +1,7 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import { Card, CardActionArea, CardContent, CardMedia, Theme, Typography } from "@mui/material";
+import { CustomButton } from "./CustomButton";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -18,10 +19,11 @@ type Props = {
   description: string;
   imageURL: string;
   index: number;
+  price?: number;
   onClick?: () => void;
 };
 
-export const NftCard: React.FC<Props> = ({ name, description, imageURL, index, onClick }) => {
+export const NftCard: React.FC<Props> = ({ name, description, imageURL, index, price, onClick }) => {
   const classes = useStyles();
   return (
     <CardActionArea>
@@ -34,9 +36,17 @@ export const NftCard: React.FC<Props> = ({ name, description, imageURL, index, o
           <Typography variant="body2" color="text.secondary">
             Description : {description}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Index : {index}
-          </Typography>
+          {price && (
+            <>
+              <Typography variant="body1">Price : {price} CSPR</Typography>
+            </>
+          )}
+
+          {!price && (
+            <Typography variant="body2" color="text.secondary">
+              Index : {index}
+            </Typography>
+          )}
         </CardContent>
       </Card>
     </CardActionArea>

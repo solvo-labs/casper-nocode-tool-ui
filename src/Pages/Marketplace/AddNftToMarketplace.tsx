@@ -90,6 +90,7 @@ const AddNftToMarketplace = () => {
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
       const contract = new Contracts.Contract();
+      localStorage.setItem("listing", JSON.stringify({ collection: selectedCollection, token_id: selectedNftIndex, price }));
 
       contract.setContractHash(marketplaceHash);
 
@@ -282,7 +283,7 @@ const AddNftToMarketplace = () => {
           <Grid container width={"100%"}>
             <Stack width={"100%"} direction={"row"} justifyContent={"space-evenly"}>
               <CustomButton disabled={false} label="Back" onClick={handleBack}></CustomButton>
-              <CustomButton disabled={!selectedNftIndex} label={"Next"} onClick={handleNext}></CustomButton>
+              <CustomButton disabled={false} label={"Next"} onClick={handleNext}></CustomButton>
             </Stack>
           </Grid>
         </>
@@ -308,7 +309,7 @@ const AddNftToMarketplace = () => {
               value={price}
             ></CustomInput>
             <Grid item className={classes.text}>
-              <CustomButton disabled={!(selectedCollection && selectedNftIndex && price > 0)} label="Create Listing" onClick={addListing}></CustomButton>
+              <CustomButton disabled={!(selectedCollection && selectedNftIndex !== undefined && price > 0)} label="Create Listing" onClick={addListing}></CustomButton>
             </Grid>
           </Stack>
         </Grid>
