@@ -49,9 +49,7 @@ export const MyCollections = () => {
 
   useEffect(() => {
     const init = async () => {
-      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-
-      const data = await fetchCep78NamedKeys(ownerPublicKey.toAccountHashStr());
+      const data = await fetchCep78NamedKeys(publicKey);
 
       const promises = data.map((data) => getNftCollection(data.key));
 

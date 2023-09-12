@@ -11,7 +11,7 @@ const Main: React.FC = () => {
         alignItems: "center",
       }}
     >
-      <span>We integrated only Token pages.</span>
+      <span>Casper no code tool.</span>
     </div>
   );
 };

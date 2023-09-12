@@ -80,9 +80,7 @@ const MintAndBurn: React.FC = () => {
 
   useEffect(() => {
     const init = async () => {
-      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-
-      listofCreatorERC20Tokens(ownerPublicKey.toAccountHashStr())
+      listofCreatorERC20Tokens(publicKey)
         .then((result) => {
           const filteredData = result.filter((rs) => {
             return parseInt(rs.enable_mint_burn.hex, 16);

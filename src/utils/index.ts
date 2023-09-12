@@ -1,5 +1,7 @@
 import { fetchIPFSImage } from "./api";
 import { FETCH_IMAGE_TYPE } from "./enum";
+// @ts-ignore
+import {CLValueBuilder} from "casper-js-sdk"
 
 export const fetchContract = async (path: string) => {
   try {
@@ -16,7 +18,7 @@ export const fetchContract = async (path: string) => {
 export const getMetadataImage = async (metadata: any, type: FETCH_IMAGE_TYPE) => {
   try {
     let imageLink: string =
-      "https://w0.peakpx.com/wallpaper/237/346/HD-wallpaper-gt-r-nissan-japanese-car-cartoon.jpg";
+      "../public/image/casper.png";
 
     if (type == FETCH_IMAGE_TYPE.COLLECTION) {
       const parsedData = JSON.parse(metadata);
@@ -39,6 +41,24 @@ export const getMetadataImage = async (metadata: any, type: FETCH_IMAGE_TYPE) =>
     return imageLink;
   } catch (error) {
     console.error("Error parsing JSON:", error);
-    return "https://w0.peakpx.com/wallpaper/237/346/HD-wallpaper-gt-r-nissan-japanese-car-cartoon.jpg";
+    return "../public/image/casper.png";
   }
 };
+
+export class CasperHelpers {
+  static stringToKey(string:string) {
+    return CLValueBuilder.key(this.stringToKeyParameter(string));
+  }
+
+  static stringToKeyParameter(string:string) {
+    return CLValueBuilder.byteArray(this.convertHashStrToHashBuff(string));
+  }
+
+  static convertHashStrToHashBuff(hashStr:string) {
+    let hashHex = hashStr;
+    if (hashStr.startsWith("hash-")) {
+      hashHex = hashStr.slice(5);
+    }
+    return Buffer.from(hashHex, "hex");
+  }
+}

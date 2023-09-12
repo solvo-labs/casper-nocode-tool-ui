@@ -1,8 +1,28 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
-import { APP_NAME, NFT_PAGE, PAGES_NAME, TOKEN_PAGE, TOKENOMICS_PAGE } from "../utils/enum";
-import { AppBar, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
+import {
+  APP_NAME,
+  MARKETPLACE_PAGE,
+  NFT_PAGE,
+  PAGES_NAME,
+  TOKEN_PAGE,
+  TOKENOMICS_PAGE,
+} from "../utils/enum";
+import {
+  AppBar,
+  Avatar,
+  Box,
+  Button,
+  Container,
+  IconButton,
+  Menu,
+  MenuItem,
+  Theme,
+  Toolbar,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -44,13 +64,21 @@ type Props = {
 };
 
 const TopBar: React.FC<Props> = ({ publicKey }) => {
-  const [nftAnchorEl, setAnchorElForNFT] = React.useState<null | HTMLElement>(null);
+  const [nftAnchorEl, setAnchorElForNFT] = React.useState<null | HTMLElement>(
+    null
+  );
   const openNFT = Boolean(nftAnchorEl);
-  const [tokenAnchorEl, setAnchorElForToken] = React.useState<null | HTMLElement>(null);
+  const [tokenAnchorEl, setAnchorElForToken] =
+    React.useState<null | HTMLElement>(null);
   const openToken = Boolean(tokenAnchorEl);
-  const [tokenomicsAnchorEl, setAnchorElForTokenomics] = React.useState<null | HTMLElement>(null);
+  const [tokenomicsAnchorEl, setAnchorElForTokenomics] =
+    React.useState<null | HTMLElement>(null);
   const openTokenomics = Boolean(tokenomicsAnchorEl);
-  const [anchorElForProfile, setAnchorElForProfile] = React.useState<null | HTMLElement>(null);
+  const [marketplaceAnchorEl, setAnchorElForMarketplace] =
+    React.useState<null | HTMLElement>(null);
+  const openMarketplace = Boolean(marketplaceAnchorEl);
+  const [anchorElForProfile, setAnchorElForProfile] =
+    React.useState<null | HTMLElement>(null);
   const openForProfile = Boolean(anchorElForProfile);
   const classes = useStyles();
   const navigate = useNavigate();
@@ -134,21 +162,32 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
       navigate("/create-collection");
     } else if (a === NFT_PAGE.CREATE_NFT) {
       navigate("/create-nft");
+    } else if (a === NFT_PAGE.APPROVE_NFT) {
+      navigate("/approve-nft");
     } else if (a === TOKENOMICS_PAGE.CREATE_TOKENOMICS) {
       navigate("/tokenomics");
     } else if (a === TOKENOMICS_PAGE.MANAGE_TOKENOMICS) {
       navigate("/vesting-list");
+    } else if (a === MARKETPLACE_PAGE.CREATE_MARKETPLACE) {
+      navigate("/create-marketplace");
+    } else if (a === MARKETPLACE_PAGE.LIST_MARKETPLACE) {
+      navigate("/marketplace")
     }
     setAnchorElForNFT(null);
     setAnchorElForToken(null);
     setAnchorElForTokenomics(null);
     setAnchorElForProfile(null);
+    setAnchorElForMarketplace(null);
   };
 
   const listMenuItem = (pages: object) => {
     const value = Object.values(pages);
     return value.map((a: any) => (
-      <MenuItem key={a} onClick={() => handleRouter(a)} className={classes.menuItem}>
+      <MenuItem
+        key={a}
+        onClick={() => handleRouter(a)}
+        className={classes.menuItem}
+      >
         {a}
       </MenuItem>
     ));
@@ -161,15 +200,26 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
           <Toolbar disableGutters>
             {/* ICON */}
             {/* <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} /> */}
-            <Typography variant="h5" noWrap component="a" href="" className={classes.appName} onClick={() => navigate("/")}>
+            <Typography
+              variant="h5"
+              noWrap
+              component="a"
+              href=""
+              className={classes.appName}
+              onClick={() => navigate("/")}
+            >
               {APP_NAME.CASPER}
             </Typography>
             <Box sx={{ flexGrow: 1, display: "flex" }}>
               <Button onClick={() => {}}>
-                <Typography className={classes.menuTitle}>{PAGES_NAME.STAKING}</Typography>
+                <Typography className={classes.menuTitle}>
+                  {PAGES_NAME.STAKING}
+                </Typography>
               </Button>
               <Button onClick={() => {}}>
-                <Typography className={classes.menuTitle}>{PAGES_NAME.DAO}</Typography>
+                <Typography className={classes.menuTitle}>
+                  {PAGES_NAME.DAO}
+                </Typography>
               </Button>
               <Box>
                 <Button
@@ -177,7 +227,9 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                   onMouseOver={(e: any) => handleClick(e, setAnchorElForNFT)}
                   onMouseOut={(e: any) => handleClick(e, setAnchorElForNFT)}
                 >
-                  <Typography className={classes.menuTitle}>{PAGES_NAME.NFT}</Typography>
+                  <Typography className={classes.menuTitle}>
+                    {PAGES_NAME.NFT}
+                  </Typography>
                 </Button>
                 <Menu
                   id="nftMenu"
@@ -204,8 +256,13 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                 </Menu>
               </Box>
               <Box>
-                <Button onClick={(e: any) => handleClick(e, setAnchorElForToken)} onMouseOver={(e: any) => handleClick(e, setAnchorElForToken)}>
-                  <Typography className={classes.menuTitle}>{PAGES_NAME.TOKEN}</Typography>
+                <Button
+                  onClick={(e: any) => handleClick(e, setAnchorElForToken)}
+                  onMouseOver={(e: any) => handleClick(e, setAnchorElForToken)}
+                >
+                  <Typography className={classes.menuTitle}>
+                    {PAGES_NAME.TOKEN}
+                  </Typography>
                 </Button>
                 <Menu
                   id="collectionMenu"
@@ -232,8 +289,15 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                 </Menu>
               </Box>
               <Box>
-                <Button onClick={(e: any) => handleClick(e, setAnchorElForTokenomics)} onMouseOver={(e: any) => handleClick(e, setAnchorElForTokenomics)}>
-                  <Typography className={classes.menuTitle}>{PAGES_NAME.TOKENOMICS}</Typography>
+                <Button
+                  onClick={(e: any) => handleClick(e, setAnchorElForTokenomics)}
+                  onMouseOver={(e: any) =>
+                    handleClick(e, setAnchorElForTokenomics)
+                  }
+                >
+                  <Typography className={classes.menuTitle}>
+                    {PAGES_NAME.TOKENOMICS}
+                  </Typography>
                 </Button>
                 <Menu
                   id="tokenomicsMenu"
@@ -259,11 +323,54 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                   {listMenuItem(TOKENOMICS_PAGE)}
                 </Menu>
               </Box>
+              <Box>
+                <Button
+                  onClick={(e: any) =>
+                    handleClick(e, setAnchorElForMarketplace)
+                  }
+                  onMouseOver={(e: any) =>
+                    handleClick(e, setAnchorElForMarketplace)
+                  }
+                >
+                  <Typography className={classes.menuTitle}>
+                    {PAGES_NAME.MARKETPLACE}
+                  </Typography>
+                </Button>
+                <Menu
+                  id="marketplaceMenu"
+                  anchorEl={marketplaceAnchorEl}
+                  open={openMarketplace}
+                  onClose={() => setAnchorElForMarketplace(null)}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  sx={{
+                    "& .MuiPaper-root": {
+                      background: "#0F1429",
+                      color: "#FFFFFF",
+                      border: "1px solid #FF0011",
+                    },
+                  }}
+                >
+                  {listMenuItem(MARKETPLACE_PAGE)}
+                </Menu>
+              </Box>
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Profile">
-                <IconButton onClick={(e: any) => handleClick(e, setAnchorElForProfile)} onMouseOver={(e: any) => handleClick(e, setAnchorElForProfile)} sx={{ p: 0 }}>
+                <IconButton
+                  onClick={(e: any) => handleClick(e, setAnchorElForProfile)}
+                  onMouseOver={(e: any) =>
+                    handleClick(e, setAnchorElForProfile)
+                  }
+                  sx={{ p: 0 }}
+                >
                   <Avatar alt="alt" src="" />
                 </IconButton>
               </Tooltip>
@@ -297,7 +404,9 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                       navigator.clipboard.writeText(publicKey);
                     }}
                   >
-                    <Typography>{publicKey.slice(0, 10) + "..." + publicKey.slice(-6)} </Typography>
+                    <Typography>
+                      {publicKey.slice(0, 10) + "..." + publicKey.slice(-6)}{" "}
+                    </Typography>
                   </MenuItem>
                 </Tooltip>
                 <MenuItem onClick={logout} className={classes.menuItem}>

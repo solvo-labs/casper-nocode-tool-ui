@@ -32,16 +32,18 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type Props = {
   onClick: any;
+
+  text?: string;
 };
 
-export const CreateCollectionCard: React.FC<Props> = ({ onClick }) => {
+export const CreateCollectionCard: React.FC<Props> = ({ onClick, text = "CREATE COLLECTION" }) => {
   const classes = useStyles();
   return (
     <CardActionArea>
       <Card className={classes.card} onClick={onClick}>
         <CardMedia component="img" height="200" image="../../public/image/collection-image.jpg" alt="green iguana" />
         <CardContent sx={{ height: "fullWidth" }}>
-          <p className={classes.title}>CREATE COLLECTION</p>
+          <p className={classes.title}>{text}</p>
         </CardContent>
       </Card>
     </CardActionArea>

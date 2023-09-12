@@ -8,6 +8,7 @@ export enum PAGES_NAME {
   NFT = "NFT",
   TOKEN = "TOKEN",
   TOKENOMICS = "TOKENOMICS",
+  MARKETPLACE = "MARKETPLACE"
 }
 
 export enum TOKEN_PAGE {
@@ -30,6 +31,12 @@ export enum NFT_PAGE {
   MY_COLLECTIONS = "My Collections",
   CREATE_NFT = "Create NFT",
   CREATE_COLLECTION = "Create Collection",
+  APPROVE_NFT = "Approve Nft"
+}
+
+export enum MARKETPLACE_PAGE {
+  LIST_MARKETPLACE = "List Marketplace",
+  CREATE_MARKETPLACE = "Create Marketplace",
 }
 
 export enum WALLETS_NAME {
