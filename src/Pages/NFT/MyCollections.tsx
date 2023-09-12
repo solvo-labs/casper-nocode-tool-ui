@@ -94,20 +94,6 @@ export const MyCollections = () => {
           My Collections
         </Typography>
         <Stack direction={"row"} spacing={2}>
-          {/* <CustomButtonText
-            disabled={false}
-            label="My NFTs"
-            onClick={() => {
-              navigate("/my-nfts");
-            }}
-          ></CustomButtonText> */}
-          {/* <CustomButtonText
-            disabled={false}
-            label="My Collections"
-            onClick={() => {
-              navigate("/my-collections");
-            }}
-          ></CustomButtonText> */}
           <CustomButton
             disabled={false}
             label="Mint NFT"

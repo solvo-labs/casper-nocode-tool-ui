@@ -1,4 +1,4 @@
-import { CircularProgress, Grid, Stack } from "@mui/material";
+import { CircularProgress, Divider, Grid, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { MarketplaceCard } from "../../components/MarketplaceCard";
 // @ts-ignore
@@ -16,10 +16,10 @@ const ListMarketplace = () => {
   useEffect(() => {
     const init = async () => {
       const data = await fetchMarketplaceNamedKeys(publicKey);
-
-      setLoading(false);
-      setMarketplace(data);
       console.log(data);
+      const filteredData = data.filter((dt) => dt.name === "marketplace_contract_hash");
+      setLoading(false);
+      setMarketplace(filteredData);
     };
 
     init();
@@ -44,8 +44,11 @@ const ListMarketplace = () => {
   return (
     <Grid>
       <Stack>
+        <h2>Active MarketPlace List</h2>
+        <Divider sx={{ backgroundColor: "red", marginBottom: " 1rem !important" }}></Divider>
+
         {marketplace.map((e: any) => (
-          <MarketplaceCard hash={e.key.slice(0, 20)} name={e.name} onClick={() => navigate("/marketplace/" + e.key)}></MarketplaceCard>
+          <MarketplaceCard hash={e.key} name={"Demo Marketplace"} onClick={() => navigate("/marketplace/" + e.key)}></MarketplaceCard>
         ))}
       </Stack>
     </Grid>
