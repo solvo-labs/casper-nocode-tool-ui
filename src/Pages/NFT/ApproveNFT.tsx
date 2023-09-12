@@ -98,10 +98,8 @@ const ApproveNFT = () => {
   useEffect(() => {
     const init = async () => {
       const data = await fetchMarketplaceNamedKeys(publicKey);
-
-      setLoading(false);
-      setMarketplace(data);
-      console.log(data);
+      const filteredData = data.filter((dt) => dt.name === "marketplace_contract_hash");
+      setMarketplace(filteredData);
     };
 
     init();
@@ -177,7 +175,7 @@ const ApproveNFT = () => {
         console.log(deploy);
 
         const deployJson = DeployUtil.deployToJson(deploy);
-        console.log(deployJson);
+
         try {
           const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
           let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
@@ -186,8 +184,10 @@ const ApproveNFT = () => {
           const response = await axios.post(SERVER_API + "deploy", data, {
             headers: { "Content-Type": "application/json" },
           });
+
           toastr.success(response.data, "Approve deployed successfully.");
-          console.log(response.data);
+          handleCloseNft();
+          navigate("/marketplace");
         } catch (error: any) {
           alert(error.message);
         }
@@ -219,7 +219,7 @@ const ApproveNFT = () => {
       <Grid container className={classes.container}>
         <Grid item>
           <Typography variant="h5" className={classes.title}>
-            Approve your NFT
+            Select Collection and Approve Your Nft
           </Typography>
         </Grid>
         <Grid container marginTop={"2rem"}>
@@ -242,7 +242,7 @@ const ApproveNFT = () => {
                   <Grid container>
                     {nftData.map((e: any, index: number) => (
                       <Grid item lg={4} md={4} sm={6} xs={6}>
-                        <NftCard description={e.description} name={e.name} imageURL={e.imageURL} onClick={handleOpenNft}></NftCard>
+                        <NftCard description={e.description} name={e.name} imageURL={e.imageURL} onClick={handleOpenNft} index={index + 1}></NftCard>
                         <Modal open={openApprove} onClose={handleCloseNft}>
                           <Box sx={style} display={"flex"} alignItems={"center"} justifyContent={"center"}>
                             <Stack spacing={"2rem"}>
@@ -252,7 +252,7 @@ const ApproveNFT = () => {
                                   {marketplace.map((mp: any) => {
                                     return (
                                       <MenuItem key={mp.key} value={mp.key}>
-                                        {mp.name + "(" + mp.key.slice(0, 12) + ")"}
+                                        {"Demo Marketplace" + "(" + mp.key.slice(0, 12) + ")"}
                                       </MenuItem>
                                     );
                                   })}

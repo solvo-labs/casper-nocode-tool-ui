@@ -48,20 +48,22 @@ const CollectionCard: React.FC<Props> = ({ title, symbol, contractHash, image, o
 export const CollectionCardAlternate: React.FC<Props> = ({ title, symbol, contractHash, image, onClick }) => {
   const classes = useStyles();
   return (
-    <CardActionArea>
-      <Card className={classes.alternateCard} onClick={onClick}>
-        <CardMedia component="img" height="100" image={image} alt="collection-image" />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {title}
-          </Typography>
-          <Typography variant="h6">{symbol}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {contractHash.slice(0, 20)}
-          </Typography>
-        </CardContent>
-      </Card>
-    </CardActionArea>
+    <>
+      <CardActionArea>
+        <Card className={classes.alternateCard} onClick={onClick}>
+          <CardMedia component="img" height="100" image={image} alt="collection-image" />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="div">
+              {title}
+            </Typography>
+            <Typography variant="h6">{symbol}</Typography>
+            <Typography variant="body2" color="text.secondary">
+              {contractHash.slice(0, 20)}
+            </Typography>
+          </CardContent>
+        </Card>
+      </CardActionArea>
+    </>
   );
 };
 

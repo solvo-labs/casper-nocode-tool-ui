@@ -20,6 +20,7 @@
     "@mui/styles": "^5.13.2",
     "@mui/x-date-pickers": "^6.12.1",
     "axios": "^1.4.0",
+    "buffer": "^6.0.3",
     "casper-js-sdk": "^2.15.2",
     "dayjs": "^1.11.9",
     "nft.storage": "^7.1.1",

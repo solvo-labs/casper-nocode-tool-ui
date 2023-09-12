@@ -1,4 +1,4 @@
-import { CircularProgress, Grid, Stack, Step, StepLabel, Stepper, Theme, Typography } from "@mui/material";
+import { CircularProgress, Divider, Grid, Stack, Step, StepLabel, Stepper, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { CustomButton } from "../../components/CustomButton";
@@ -8,12 +8,13 @@ import { FETCH_IMAGE_TYPE } from "../../utils/enum";
 // @ts-ignore
 import { Contracts, RuntimeArgs, DeployUtil, CLValueBuilder, CLPublicKey } from "casper-js-sdk";
 import { CollectionMetada, NFT } from "../../utils/types";
-import { useOutletContext, useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { CollectionCardAlternate } from "../../components/CollectionCard";
 import { NftCard } from "../../components/NftCard";
 import toastr from "toastr";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
+import { CustomInput } from "../../components/CustomInput";
 
 const steps = ["Select Collection", "Select the NFT to load"];
 
@@ -61,6 +62,8 @@ const AddNftToMarketplace = () => {
   const [nftData, setNftData] = useState<NFT[] | any>([]);
   const [selectedNftIndex, setSelectedNftIndex] = useState<number>();
   const [loading, setLoading] = useState<boolean>(true);
+  const [price, setPrice] = useState<number>(0);
+  const navigate = useNavigate();
 
   const isStepSkipped = (step: number) => {
     return skipped.has(step);
@@ -87,25 +90,37 @@ const AddNftToMarketplace = () => {
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
       const contract = new Contracts.Contract();
-      console.log(marketplaceHash);
-      console.log(selectedCollection);
-      console.log(selectedNftIndex);
 
       contract.setContractHash(marketplaceHash);
 
-      const args = RuntimeArgs.fromMap({
-        collection: CasperHelpers.stringToKey("b1acd833758036848ff21448621e9a545af5e96c9a6bf27a4103d59bb925867f"),
-        token_id: CLValueBuilder.u64(selectedNftIndex),
-        price: CLValueBuilder.u256(75 * 1_000_000_000),
+      const whitelistArgs = RuntimeArgs.fromMap({
+        collection: CasperHelpers.stringToKey(selectedCollection.slice(5)),
       });
 
-      console.log(args);
+      const deployWhitelist = contract.callEntrypoint("whitelist", whitelistArgs, ownerPublicKey, "casper-test", "10000000000");
+      const deployJsonWhitelist = DeployUtil.deployToJson(deployWhitelist);
+
+      try {
+        const sign = await provider.sign(JSON.stringify(deployJsonWhitelist), publicKey);
+        let signedDeploy = DeployUtil.setSignature(deployWhitelist, sign.signature, ownerPublicKey);
+        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+        const data = DeployUtil.deployToJson(signedDeploy.val);
+        const response = await axios.post(SERVER_API + "deploy", data, {
+          headers: { "Content-Type": "application/json" },
+        });
+        toastr.success(response.data, "Whitelist added successfully.");
+      } catch (error: any) {
+        alert(error.message);
+      }
+
+      const args = RuntimeArgs.fromMap({
+        collection: CasperHelpers.stringToKey(selectedCollection.slice(5)),
+        token_id: CLValueBuilder.u64(selectedNftIndex),
+        price: CLValueBuilder.u256(price * 1_000_000_000),
+      });
 
       const deploy = contract.callEntrypoint("add_listing", args, ownerPublicKey, "casper-test", "10000000000");
       const deployJson = DeployUtil.deployToJson(deploy);
-
-      console.log("dep", deploy);
-      console.log("dpjason", deployJson);
 
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
@@ -115,8 +130,9 @@ const AddNftToMarketplace = () => {
         const response = await axios.post(SERVER_API + "deploy", data, {
           headers: { "Content-Type": "application/json" },
         });
-        toastr.success(response.data, "Marketplace deployed successfully.");
-        console.log(response.data);
+        toastr.success(response.data, "Listing created successfully.");
+
+        navigate("/marketplace");
       } catch (error: any) {
         alert(error.message);
       }
@@ -178,6 +194,22 @@ const AddNftToMarketplace = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div
+        style={{
+          height: "50vh",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
+
   return (
     <Grid container className={classes.container}>
       <Grid item>
@@ -205,30 +237,19 @@ const AddNftToMarketplace = () => {
       </Grid>
 
       <Grid container justifyContent={"center"} marginY={"2rem"}></Grid>
-      {loading && (
-        <div
-          style={{
-            height: "50vh",
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <CircularProgress />
-        </div>
-      )}
+
       {activeStep === 0 && (
         <>
+          <h2 style={{ marginTop: 0 }}>Choose a collection</h2>
           <Grid container marginY={"2rem"}>
             {collections.map((e: any) => (
               <Grid item lg={3} md={3} sm={6} xs={6}>
                 <CollectionCardAlternate
                   image={e.image}
                   onClick={() => setSelectedCollection(e.contractHash)}
-                  title={e.collection_name}
+                  title={"Name: " + e.collection_name}
                   contractHash={e.contractHash}
-                  symbol={e.collection_symbol}
+                  symbol={""}
                 ></CollectionCardAlternate>
               </Grid>
             ))}
@@ -251,10 +272,9 @@ const AddNftToMarketplace = () => {
                   name={e.name}
                   imageURL={e.imageURL}
                   onClick={() => {
-                    const reindex = index + 1;
-                    setSelectedNftIndex(reindex);
-                    console.log(selectedNftIndex);
+                    setSelectedNftIndex(index);
                   }}
+                  index={index + 1}
                 ></NftCard>
               </Grid>
             ))}
@@ -276,8 +296,19 @@ const AddNftToMarketplace = () => {
             <Grid item className={classes.text}>
               <Typography>Nft Index: {selectedNftIndex}</Typography>
             </Grid>
+            <CustomInput
+              placeholder="Price (CSPR)"
+              label="Price (CSPR)"
+              id="price"
+              name="price"
+              type="text"
+              onChange={(e: any) => {
+                setPrice(e.target.value);
+              }}
+              value={price}
+            ></CustomInput>
             <Grid item className={classes.text}>
-              <CustomButton disabled={!(selectedCollection && selectedNftIndex)} label="Add" onClick={addListing}></CustomButton>
+              <CustomButton disabled={!(selectedCollection && selectedNftIndex && price > 0)} label="Create Listing" onClick={addListing}></CustomButton>
             </Grid>
           </Stack>
         </Grid>

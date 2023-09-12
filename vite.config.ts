@@ -7,26 +7,17 @@ import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfil
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
   const config = {
-    plugins: [react(), wasm()],
+    plugins: [
+      react(),
+      wasm(),
+      NodeGlobalsPolyfillPlugin({
+        buffer: true,
+      }),
+    ],
     base: "/",
   };
 
   if (command !== "serve") {
-  }
-
-  optimizeDeps: {
-    esbuildOptions: {
-      // Node.js global to browser globalThis
-      define: {
-        global: "globalThis";
-      }
-      // Enable esbuild polyfill plugins
-      plugins: [
-        NodeGlobalsPolyfillPlugin({
-          buffer: true,
-        }),
-      ];
-    }
   }
 
   return config;
