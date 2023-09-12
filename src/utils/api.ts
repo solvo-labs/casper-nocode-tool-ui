@@ -176,7 +176,6 @@ export const getNftCollection = async (contractHash: string) => {
 
 export const getNftMetadata = async (contractHash: string, index: string) => {
   const response = await axios.get<any>(SERVER_API + "getNftMetadata?contractHash=" + contractHash + "&index=" + index);
-
   return JSON.parse(response.data);
 };
 

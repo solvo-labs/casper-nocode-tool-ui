@@ -90,11 +90,9 @@ export const CreateNft = () => {
   }, []);
 
   const disable = useMemo(() => {
-    let hashLength = nftData.contractHash.length;
-    let hashCheck = nftData.contractHash.startsWith("hash-");
-    const disable = !(nftData.contractHash && nftData.tokenMetaData && hashCheck && hashLength == 69 && !fileLoading);
+    const disable = !(nftData.tokenMetaData && selectedCollection && !fileLoading);
     return disable;
-  }, [nftData, fileLoading]);
+  }, [nftData, fileLoading, selectedCollection]);
 
   const createNft = async () => {
     const contract = new Contracts.Contract();

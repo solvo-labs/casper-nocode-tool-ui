@@ -17,10 +17,11 @@ type Props = {
   name: string;
   description: string;
   imageURL: string;
+  index: number;
   onClick?: () => void;
 };
 
-export const NftCard: React.FC<Props> = ({ name, description, imageURL, onClick }) => {
+export const NftCard: React.FC<Props> = ({ name, description, imageURL, index, onClick }) => {
   const classes = useStyles();
   return (
     <CardActionArea>
@@ -28,10 +29,13 @@ export const NftCard: React.FC<Props> = ({ name, description, imageURL, onClick 
         <CardMedia component="img" height="250" image={imageURL} alt={name} />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            {name}
+            Name : {name}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {description}
+            Description : {description}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Index : {index}
           </Typography>
         </CardContent>
       </Card>

@@ -77,11 +77,6 @@ export const CreateCollection = () => {
     whiteListMode: 0,
     identifierMode: 0,
     metadataMutability: 1,
-    jsonSchema: {
-      name: "",
-      description: "",
-      imageURL: "",
-    },
     mintingMode: 0,
     burnMode: 0,
     holderMode: 2,
@@ -89,53 +84,17 @@ export const CreateCollection = () => {
     ownerReverseLookupMode: 0,
   });
 
-  const [publicKey, provider, collectionWasm] = useOutletContext<[publickey: string, provider: any, wasm: any, nftWasm: any, collectionWasm: any]>();
+  const [publicKey, provider, , , collectionWasm] = useOutletContext<[publickey: string, provider: any, wasm: any, nftWasm: any, collectionWasm: any]>();
   const navigate = useNavigate();
   const classes = useStyles();
-  const [file, setFile] = useState<any>();
-  const [fileLoading, setFileLoading] = useState<boolean>(false);
 
   const disable = useMemo(() => {
-    const disable = !(collectionData.name && collectionData.symbol && !fileLoading);
+    const disable = !(collectionData.name && collectionData.symbol);
     return disable;
-  }, [collectionData, fileLoading]);
-
-  useEffect(() => {
-    const storeImage = async () => {
-      if (file) {
-        setFileLoading(true);
-        const storage = new NFTStorage({
-          token: import.meta.env.VITE_NFT_STORAGE_API_KEY,
-        });
-        const fileCid = await storage.storeBlob(new Blob([file]));
-
-        const fileUrl = "https://ipfs.io/ipfs/" + fileCid;
-
-        const obj = {
-          image: fileUrl,
-        };
-        const metadata = new Blob([JSON.stringify(obj)], {
-          type: "application/json",
-        });
-        const metadataCid = await storage.storeBlob(metadata);
-        const metadataUrl = "https://ipfs.io/ipfs/" + metadataCid;
-        setCollectionData({
-          ...collectionData,
-          jsonSchema: {
-            ...collectionData.jsonSchema,
-            imageURL: metadataUrl,
-          },
-        });
-        setFileLoading(false);
-      }
-    };
-
-    storeImage();
-  }, [file]);
+  }, [collectionData]);
 
   const mintCollection = async () => {
     try {
-      console.log(collectionData);
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
       // contract
@@ -144,14 +103,22 @@ export const CreateCollection = () => {
       const args = RuntimeArgs.fromMap({
         collection_name: CLValueBuilder.string(collectionData.name),
         collection_symbol: CLValueBuilder.string(collectionData.symbol),
-        total_token_supply: CLValueBuilder.u64(collectionData.totalSupply),
+        total_token_supply: CLValueBuilder.u64(Number(collectionData.totalSupply)),
         ownership_mode: CLValueBuilder.u8(collectionData.ownershipMode),
         nft_kind: CLValueBuilder.u8(collectionData.kind),
         nft_metadata_kind: CLValueBuilder.u8(collectionData.nftMetadataKind),
         whitelist_mode: CLValueBuilder.u8(collectionData.whiteListMode),
         identifier_mode: CLValueBuilder.u8(collectionData.identifierMode),
         metadata_mutability: CLValueBuilder.u8(collectionData.metadataMutability),
-        json_schema: CLValueBuilder.string(JSON.stringify(collectionData.jsonSchema)),
+        json_schema: CLValueBuilder.string(
+          JSON.stringify({
+            properties: {
+              name: { name: "name", description: "", required: true },
+              description: { name: "description", description: "", required: true },
+              image: { name: "image", description: "", required: true },
+            },
+          })
+        ),
         minting_mode: CLValueBuilder.u8(collectionData.mintingMode),
         burn_mode: CLValueBuilder.u8(collectionData.burnMode),
         holder_mode: CLValueBuilder.u8(collectionData.holderMode),
@@ -262,69 +229,6 @@ export const CreateCollection = () => {
                 }}
                 value={collectionData.totalSupply}
               ></CustomInput>
-              <Typography sx={{ borderBottom: "1px solid #FF0011 !important" }} variant="button">
-                Metadata
-              </Typography>
-              <ImageUpload
-                loading={fileLoading}
-                file={file}
-                setFile={(data) => {
-                  setFile(data);
-                }}
-              ></ImageUpload>
-              <CustomInput
-                placeholder="Metadata Name"
-                label="Metadata Name"
-                id="metadataName"
-                name="metadataName"
-                type="text"
-                onChange={(e: any) => {
-                  setCollectionData({
-                    ...collectionData,
-                    jsonSchema: {
-                      ...collectionData.jsonSchema,
-
-                      name: e.target.value,
-                    },
-                  });
-                }}
-                value={collectionData.jsonSchema.name}
-              ></CustomInput>
-              <CustomInput
-                placeholder="Metadata Description"
-                label="Metadata Description"
-                id="metadataDescription"
-                name="metadataDescription"
-                type="text"
-                onChange={(e: any) => {
-                  setCollectionData({
-                    ...collectionData,
-                    jsonSchema: {
-                      ...collectionData.jsonSchema,
-                      description: e.target.value,
-                    },
-                  });
-                }}
-                value={collectionData.jsonSchema.description}
-              ></CustomInput>
-              {/* <CustomInput
-                placeholder="Image URL"
-                label="Collection Image URL"
-                id="imageURL"
-                name="imageURL"
-                type="text"
-                onChange={(e: any) => {
-                  setCollectionData({
-                    ...collectionData,
-                    jsonSchema: {
-                      ...collectionData.jsonSchema,
-                      imageURL: e.target.value,
-                    },
-                  });
-                }}
-                value={collectionData.jsonSchema.imageURL}
-              ></CustomInput> */}
-
               <Divider sx={{ backgroundColor: "red", marginTop: "3rem !important" }}></Divider>
 
               <FormControl fullWidth>
