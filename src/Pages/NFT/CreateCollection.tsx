@@ -5,7 +5,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
 import { Collection } from "../../utils/types";
-import { Divider, FormControl, Grid, InputLabel, MenuItem, Stack, Theme, Typography } from "@mui/material";
+import { CircularProgress, Divider, FormControl, Grid, InputLabel, MenuItem, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
@@ -85,6 +85,7 @@ export const CreateCollection = () => {
   const [publicKey, provider, , cep78Wasm] = useOutletContext<[publicKey: string, provider: any, cep18Wasm: ArrayBuffer, cep78Wasm: ArrayBuffer]>();
   const navigate = useNavigate();
   const classes = useStyles();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const disable = useMemo(() => {
     const disable = !(collectionData.name && collectionData.symbol);
@@ -92,6 +93,7 @@ export const CreateCollection = () => {
   }, [collectionData]);
 
   const mintCollection = async () => {
+    setLoading(true);
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
@@ -138,8 +140,6 @@ export const CreateCollection = () => {
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
 
-        // setActionLoader(true);
-
         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
@@ -153,13 +153,15 @@ export const CreateCollection = () => {
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-collections");
-        // setActionLoader(false);
+        setLoading(false);
       } catch (error: any) {
         alert(error.message);
+        setLoading(false);
       }
     } catch (error) {
       console.log(error);
       toastr.error("error");
+      setLoading(false);
     }
   };
 
@@ -167,6 +169,22 @@ export const CreateCollection = () => {
     const listItem = Object.values(value).filter((v) => isNaN(Number(v)));
     return listItem.map((keys: any, value: any) => <MenuItem value={value}>{keys}</MenuItem>);
   };
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          height: "50vh",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <div
