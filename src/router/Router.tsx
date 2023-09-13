@@ -26,6 +26,7 @@ import MarketplaceManager from "../Pages/Marketplace/MarketplaceManager";
 import ApproveNFT from "../Pages/NFT/ApproveNFT";
 import ListMarketplace from "../Pages/Marketplace/ListMarketplace";
 import AddNftToMarketplace from "../Pages/Marketplace/AddNftToMarketplace";
+import BuyNft from "../Pages/Marketplace/BuyNft";
 
 const Router: React.FC = () => {
   return (
@@ -60,6 +61,7 @@ const Router: React.FC = () => {
             <Route path="/create-marketplace" index element={<CreateMarketplace />} />
             <Route path="/marketplace/:marketplaceHash" index element={<MarketplaceManager />} />
             <Route path="/add-nft-to-marketplace/:marketplaceHash" index element={<AddNftToMarketplace />} />
+            <Route path="/buy-nft" index element={<BuyNft />} />
           </Route>
           <Route path="/login" index element={<Login />} />
         </Routes>

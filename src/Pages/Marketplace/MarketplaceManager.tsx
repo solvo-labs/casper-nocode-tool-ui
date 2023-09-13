@@ -2,11 +2,12 @@ import { CircularProgress, Grid, Stack, Theme, Typography } from "@mui/material"
 import { makeStyles } from "@mui/styles";
 import { CustomButton } from "../../components/CustomButton";
 import { NftCard } from "../../components/NftCard";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchMarketplaceData, getMarketplaceListing, getNftMetadata } from "../../utils/api";
-import { getMetadataImage } from "../../utils";
-import { FETCH_IMAGE_TYPE } from "../../utils/enum";
+import { fetchMarketplaceData, getMarketplaceListing } from "../../utils/api";
+// @ts-ignore
+import { Contracts, RuntimeArgs, DeployUtil, CLValueBuilder, CLPublicKey } from "casper-js-sdk";
+
 import { Listing, Marketplace } from "../../utils/types";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -33,7 +34,6 @@ const MarketplaceManager = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const { marketplaceHash } = useParams();
-  const [publicKey] = useOutletContext<[publickey: string]>();
 
   const [loading, setLoading] = useState<boolean>(true);
   const [marketplaceData, setMarketplaceData] = useState<Marketplace>({ contractHash: "", contractName: "", feeWallet: "", listingCount: 0 });
@@ -92,7 +92,7 @@ const MarketplaceManager = () => {
             <Grid item lg={3} md={4} sm={6} xs={6}>
               <NftCard description={lst.nftDescription} name={lst.nftName} imageURL={lst.nftImage} price={lst.price} index={0}></NftCard>
               <div style={{ display: "flex", alignItems: "center ", justifyContent: "center" }}>
-                <CustomButton onClick={undefined} label={"BUY THIS NFT"} disabled={false}></CustomButton>
+                <CustomButton onClick={undefined} label={lst.active ? "THIS NFT IS ON-SALE" : "THIS NFT WAS SOLD"} disabled={false}></CustomButton>
               </div>
             </Grid>
           );

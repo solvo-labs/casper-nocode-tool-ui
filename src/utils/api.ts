@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ERC20Token, Listing, NFT } from "./types";
+import { ERC20Token, Listing } from "./types";
 
 const api = "https://event-store-api-clarity-testnet.make.services/";
 export const SERVER_API = import.meta.env.DEV ? "http://localhost:1923/" : "https://18.185.15.120:8000/";
@@ -218,7 +218,13 @@ export const storeListing = async (marketplace: string, collection: string, toke
 };
 
 export const getMarketplaceListing = async (contractHash: string) => {
-  const response = await axios.get<Listing[]>(SERVER_API + "fetch_listing?contractHash=" + contractHash);
+  const response = await axios.get<Listing[]>(SERVER_API + "fetch_my_listing?contractHash=" + contractHash);
+
+  return response.data;
+};
+
+export const getAllListingForSale = async () => {
+  const response = await axios.get<Listing[]>(SERVER_API + "fetch_listing");
 
   return response.data;
 };

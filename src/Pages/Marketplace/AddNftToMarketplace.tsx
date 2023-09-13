@@ -111,7 +111,7 @@ const AddNftToMarketplace = () => {
       alert(error.message);
     }
   };
-  console.log(marketplaceData);
+
   const addListing = async () => {
     if (marketplaceHash) {
       try {
