@@ -4,10 +4,10 @@ import { CustomButton } from "../../components/CustomButton";
 import { NftCard } from "../../components/NftCard";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchMarketplaceData, getNftMetadata } from "../../utils/api";
+import { fetchMarketplaceData, getMarketplaceListing, getNftMetadata } from "../../utils/api";
 import { getMetadataImage } from "../../utils";
 import { FETCH_IMAGE_TYPE } from "../../utils/enum";
-import { Marketplace } from "../../utils/types";
+import { Listing, Marketplace } from "../../utils/types";
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleContainer: {
@@ -36,26 +36,22 @@ const MarketplaceManager = () => {
   const [publicKey] = useOutletContext<[publickey: string]>();
 
   const [loading, setLoading] = useState<boolean>(true);
-  const [nftData, setNftData] = useState<any>();
   const [marketplaceData, setMarketplaceData] = useState<Marketplace>({ contractHash: "", contractName: "", feeWallet: "", listingCount: 0 });
-
-  const demo = localStorage.getItem("listing");
-  const parsedData = JSON.parse(demo || "");
+  const [listings, setListings] = useState<Listing[]>([]);
 
   useEffect(() => {
-    if (parsedData && marketplaceHash) {
-      const init = async () => {
-        const nftdata = await getNftMetadata(parsedData.collection, parsedData.token_id);
-        const image = await getMetadataImage(nftdata, FETCH_IMAGE_TYPE.NFT);
+    const init = async () => {
+      if (marketplaceHash) {
+        const listingData = await getMarketplaceListing(marketplaceHash);
+        setListings(listingData);
         const marketplaceInfo = await fetchMarketplaceData(marketplaceHash);
-
         setMarketplaceData({ contractHash: marketplaceHash, contractName: marketplaceInfo.contractName, feeWallet: "", listingCount: parseInt(marketplaceInfo.listingCount.hex) });
-        setNftData({ ...nftdata, image });
-        setLoading(false);
-      };
 
-      init();
-    }
+        setLoading(false);
+      }
+    };
+
+    init();
   }, []);
 
   if (loading) {
@@ -91,12 +87,16 @@ const MarketplaceManager = () => {
         <Typography variant="h5">List of NFT's</Typography>
       </Grid>
       <Grid container>
-        <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard description={nftData.description} name={nftData.name} imageURL={nftData.image} price={parsedData.price} index={0}></NftCard>
-          <div style={{ display: "flex", alignItems: "center ", justifyContent: "center" }}>
-            <CustomButton onClick={undefined} label={"BUY THIS NFT"} disabled={false}></CustomButton>
-          </div>
-        </Grid>
+        {listings.map((lst) => {
+          return (
+            <Grid item lg={3} md={4} sm={6} xs={6}>
+              <NftCard description={lst.nftDescription} name={lst.nftName} imageURL={lst.nftImage} price={lst.price} index={0}></NftCard>
+              <div style={{ display: "flex", alignItems: "center ", justifyContent: "center" }}>
+                <CustomButton onClick={undefined} label={"BUY THIS NFT"} disabled={false}></CustomButton>
+              </div>
+            </Grid>
+          );
+        })}
       </Grid>
     </Grid>
   );

@@ -95,3 +95,16 @@ export type Marketplace = {
   feeWallet: string;
   listingCount: number;
 };
+
+export type Listing = {
+  marketplace: string;
+  collection_hash: string;
+  price: number;
+  tokenId: number;
+  nftName: string;
+  nftDescription: string;
+  nftImage: string;
+  listingIndex: number;
+  createdAt?: string;
+  active?: boolean;
+};
