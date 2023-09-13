@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 import { useNavigate, useOutletContext } from "react-router-dom";
@@ -24,8 +24,6 @@ import {
 } from "../../utils/enum";
 import { CustomSelect } from "../../components/CustomSelect";
 import toastr from "toastr";
-import { NFTStorage } from "nft.storage";
-import ImageUpload from "../../components/ImageUpload";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -84,7 +82,7 @@ export const CreateCollection = () => {
     ownerReverseLookupMode: 0,
   });
 
-  const [publicKey, provider, , , collectionWasm] = useOutletContext<[publickey: string, provider: any, wasm: any, nftWasm: any, collectionWasm: any]>();
+  const [publicKey, provider, , cep78Wasm] = useOutletContext<[publicKey: string, provider: any, cep18Wasm: ArrayBuffer, cep78Wasm: ArrayBuffer]>();
   const navigate = useNavigate();
   const classes = useStyles();
 
@@ -127,7 +125,7 @@ export const CreateCollection = () => {
       });
 
       const deploy = contract.install(
-        new Uint8Array(collectionWasm!),
+        new Uint8Array(cep78Wasm),
         args,
         "300000000000",
         ownerPublicKey,

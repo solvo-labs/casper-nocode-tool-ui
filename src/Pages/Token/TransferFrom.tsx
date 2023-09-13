@@ -91,7 +91,7 @@ const TransferFrom: React.FC = () => {
 
       const accountHash = ownerPublicKey.toAccountHashStr();
 
-      const { finalData } = await initTokens(accountHash);
+      const { finalData } = await initTokens(accountHash, publicKey);
 
       setTokens(finalData);
 

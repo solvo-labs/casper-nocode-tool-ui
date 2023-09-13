@@ -4,8 +4,7 @@ import { CustomButton } from "../../components/CustomButton";
 import { NftCard } from "../../components/NftCard";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchCep78NamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
-import { CollectionMetada } from "../../utils/types";
+import { getNftMetadata } from "../../utils/api";
 import { getMetadataImage } from "../../utils";
 import { FETCH_IMAGE_TYPE } from "../../utils/enum";
 

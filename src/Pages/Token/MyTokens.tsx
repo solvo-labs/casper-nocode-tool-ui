@@ -47,7 +47,7 @@ const MyTokens: React.FC = () => {
 
       const accountHash = ownerPublicKey.toAccountHashStr();
 
-      const { creatorTokens, finalData } = await initTokens(accountHash);
+      const { creatorTokens, finalData } = await initTokens(accountHash, publicKey);
 
       setData(creatorTokens);
 

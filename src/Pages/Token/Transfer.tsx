@@ -91,7 +91,7 @@ const Transfer: React.FC = () => {
 
       const accountHash = ownerPublicKey.toAccountHashStr();
 
-      const { finalData } = await initTokens(accountHash);
+      const { finalData } = await initTokens(accountHash, publicKey);
 
       const filteredFinalData = finalData.filter((fd) => fd.balance > 0);
 

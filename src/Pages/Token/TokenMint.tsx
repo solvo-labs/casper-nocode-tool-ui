@@ -72,7 +72,7 @@ const TokenMint: React.FC = () => {
   const classes = useStyles();
   const navigate = useNavigate();
 
-  const [publicKey, provider, wasm] = useOutletContext<[publickey: string, provider: any, wasm: any]>();
+  const [publicKey, provider, cep18Wasm] = useOutletContext<[publickey: string, provider: any, cep18Wasm: ArrayBuffer]>();
 
   const mintToken = async () => {
     try {
@@ -94,7 +94,7 @@ const TokenMint: React.FC = () => {
       });
       console.log("args", args);
 
-      const deploy = contract.install(new Uint8Array(wasm!), args, "150000000000", ownerPublicKey, "casper-test");
+      const deploy = contract.install(new Uint8Array(cep18Wasm), args, "150000000000", ownerPublicKey, "casper-test");
 
       const deployJson = DeployUtil.deployToJson(deploy);
       console.log("deployJson", deployJson);

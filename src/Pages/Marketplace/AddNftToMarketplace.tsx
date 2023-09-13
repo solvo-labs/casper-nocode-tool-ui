@@ -1,4 +1,4 @@
-import { CircularProgress, Divider, Grid, Stack, Step, StepLabel, Stepper, Theme, Typography } from "@mui/material";
+import { CircularProgress, Grid, Stack, Step, StepLabel, Stepper, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { CustomButton } from "../../components/CustomButton";
@@ -54,7 +54,7 @@ const AddNftToMarketplace = () => {
   const { marketplaceHash } = useParams();
   console.log(marketplaceHash);
 
-  const [publicKey, provider, , , , marketplaceWasm] = useOutletContext<[publicKey: string, provider: any, wasm: any, nftWasm: any, collectionWasm: any, marketplaceWasm: any]>();
+  const [publicKey, provider] = useOutletContext<[publicKey: string, provider: any]>();
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set<number>());
   const [collections, setCollections] = useState<CollectionMetada[] | any>([]);

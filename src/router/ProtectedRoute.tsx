@@ -23,11 +23,11 @@ const ProtectedRoute: React.FC = () => {
   const [connected, setConnected] = useState<boolean>(false);
   const [publicKey, setPublicKey] = useState<string>("");
   const [provider, setProvider] = useState<any>();
-  const [wasm, setWasm] = useState<any>();
-  const [nftWasm, setNftWasm] = useState<any>();
-  const [collectionWasm, setCollectionWasm] = useState<any>();
-  const [marketplaceWasm, setMarketplaceWasm] = useState<any>();
-  const [vestingWasm, setVestingWasm] = useState<any>();
+  const [cep18Wasm, setCep18Wasm] = useState<ArrayBuffer>();
+  const [cep78Wasm, setCep78Wasm] = useState<ArrayBuffer>();
+  const [marketplaceWasm, setMarketplaceWasm] = useState<ArrayBuffer>();
+  const [vestingWasm, setVestingWasm] = useState<ArrayBuffer>();
+  const [executeListingWasm, setExecuteListingWasm] = useState<ArrayBuffer>();
 
   useEffect(() => {
     const init = async () => {
@@ -37,22 +37,26 @@ const ProtectedRoute: React.FC = () => {
 
         const isConnected = await provider.isConnected();
 
-        const activePublicKey = await provider.getActivePublicKey();
+        if (isConnected) {
+          const activePublicKey = await provider.getActivePublicKey();
 
-        const wasm1 = await fetchContract("/cep18.wasm");
-        const wasm2 = await fetchContract("/cep47.wasm");
-        const colWasm = await fetchContract("/cep78.wasm");
-        const mrkplcWasm = await fetchContract("/marketplace.wasm");
-        const vstingWasm = await fetchContract("/vesting.wasm");
+          const cep18_contract = await fetchContract("/cep18.wasm");
+          const cep78_contract = await fetchContract("/cep78.wasm");
+          const marketplace_contract = await fetchContract("/marketplace.wasm");
+          const vesting_contract = await fetchContract("/vesting.wasm");
+          const execute_listing_contract = await fetchContract("/execute_listing_call.wasm");
 
-        setWasm(wasm1);
-        setNftWasm(wasm2);
-        setCollectionWasm(colWasm);
-        setMarketplaceWasm(mrkplcWasm);
-        setProvider(provider);
-        setPublicKey(activePublicKey);
-        setVestingWasm(vstingWasm);
-        setConnected(isConnected);
+          setCep18Wasm(cep18_contract);
+          setCep78Wasm(cep78_contract);
+          setMarketplaceWasm(marketplace_contract);
+          setVestingWasm(vesting_contract);
+          setExecuteListingWasm(execute_listing_contract);
+
+          setProvider(provider);
+          setPublicKey(activePublicKey);
+          setConnected(isConnected);
+        }
+
         setLoading(false);
       } catch {
         setConnected(false);
@@ -85,7 +89,7 @@ const ProtectedRoute: React.FC = () => {
         <Grid item lg={12} md={12} xs={12} height={"100vh"} paddingTop={{ xl: "12rem", lg: "12rem", md: "10rem", sm: "8rem", xs: "8rem" }}>
           <Grid container direction={"column"} spacing={0}>
             {/* <Grid item><DrawerAppBar /></Grid> */}
-            <Outlet context={[publicKey, provider, wasm, nftWasm, collectionWasm, marketplaceWasm, vestingWasm]} />
+            <Outlet context={[publicKey, provider, cep18Wasm, cep78Wasm, marketplaceWasm, vestingWasm, executeListingWasm]} />
           </Grid>
         </Grid>
       </Grid>

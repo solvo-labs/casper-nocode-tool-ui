@@ -30,20 +30,6 @@ const style = {
   color: "black",
   overflow: "scroll",
 };
-const nftModal = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  height: 200,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-  color: "black",
-  overflow: "scroll",
-};
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -75,7 +61,7 @@ const ApproveNFT = () => {
   const [selectedCollection, setSelectedCollection] = useState<string | null>("");
   const [nftData, setNftData] = useState<NFT[] | any>([]);
 
-  const [publicKey, provider, , , , marketplaceWasm] = useOutletContext<[publicKey: string, provider: any, wasm: any, nftWasm: any, collectionWasm: any, marketplaceWasm: any]>();
+  const [publicKey, provider] = useOutletContext<[publicKey: string, provider: any]>();
 
   const handleOpen = (contract: string) => {
     console.log(contract);

@@ -20,10 +20,11 @@ const useStyles = makeStyles((_theme: Theme) => ({
 }));
 
 const CreateMarketplace = () => {
-  const [publicKey, provider, , , , marketplaceWasm] = useOutletContext<[publicKey: string, provider: any, wasm: any, nftWasm: any, collectionWasm: any, marketplaceWasm: any]>();
+  const [publicKey, provider, , , marketplaceWasm] =
+    useOutletContext<[publicKey: string, provider: any, cep18Wasm: ArrayBuffer, cep78Wasm: ArrayBuffer, marketplaceWasm: ArrayBuffer]>();
   const classes = useStyles();
   const [checked, setChecked] = useState(false);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [feeWallet, setFeeWallet] = useState<string>("");
   const [marketplaceName, setMarketplaceName] = useState<string>("");
@@ -45,13 +46,11 @@ const CreateMarketplace = () => {
 
       const args = RuntimeArgs.fromMap({
         fee_wallet: CLValueBuilder.key(feewallet),
-        // marketplace_name: CLValueBuilder.string(ownerPublicKey),
+        contract_name: CLValueBuilder.string(marketplaceName),
       });
 
-      const deploy = contract.install(new Uint8Array(marketplaceWasm!), args, "300000000000", ownerPublicKey, "casper-test");
-      console.log("deploy", deploy);
+      const deploy = contract.install(new Uint8Array(marketplaceWasm), args, "300000000000", ownerPublicKey, "casper-test");
       const deployJson = DeployUtil.deployToJson(deploy);
-      console.log("deployjson", deployJson);
 
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
