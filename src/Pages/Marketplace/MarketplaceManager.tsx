@@ -90,7 +90,16 @@ const MarketplaceManager = () => {
         {listings.map((lst) => {
           return (
             <Grid item lg={3} md={4} sm={6} xs={6}>
-              <NftCard description={lst.nftDescription} name={lst.nftName} imageURL={lst.nftImage} price={lst.price} index={0}></NftCard>
+              <NftCard
+                description={lst.nftDescription}
+                name={lst.nftName}
+                imageURL={lst.nftImage}
+                price={lst.price}
+                index={0}
+                onClick={() => {
+                  window.open("https://testnet.cspr.live/contract/" + lst.marketplace.slice(5), "_blank");
+                }}
+              ></NftCard>
               <div style={{ display: "flex", alignItems: "center ", justifyContent: "center" }}>
                 <CustomButton onClick={undefined} label={lst.active ? "THIS NFT IS ON-SALE" : "THIS NFT WAS SOLD"} disabled={false}></CustomButton>
               </div>

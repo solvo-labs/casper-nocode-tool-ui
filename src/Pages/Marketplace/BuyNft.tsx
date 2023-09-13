@@ -129,7 +129,16 @@ const BuyNft = () => {
         {listings.map((lst) => {
           return (
             <Grid item lg={3} md={4} sm={6} xs={6}>
-              <NftCard description={lst.nftDescription} name={lst.nftName} imageURL={lst.nftImage} price={lst.price} index={0}></NftCard>
+              <NftCard
+                description={lst.nftDescription}
+                name={lst.nftName}
+                imageURL={lst.nftImage}
+                price={lst.price}
+                onClick={() => {
+                  window.open("https://testnet.cspr.live/contract/" + lst.marketplace.slice(5), "_blank");
+                }}
+                index={0}
+              ></NftCard>
               <div style={{ display: "flex", alignItems: "center ", justifyContent: "center" }}>
                 <CustomButton onClick={() => buyNft(lst)} label={"BUY THIS NFT"} disabled={false}></CustomButton>
               </div>
