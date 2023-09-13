@@ -70,6 +70,7 @@ const AddNftToMarketplace = () => {
   };
 
   const handleNext = () => {
+    toastr.info("Before listing, you must approve the marketplace for the NFT to be listed. Please make sure you do this");
     let newSkipped = skipped;
     if (isStepSkipped(activeStep)) {
       newSkipped = new Set(newSkipped.values());
@@ -287,7 +288,7 @@ const AddNftToMarketplace = () => {
                   onClick={() => {
                     setSelectedNftIndex(index);
                   }}
-                  index={index + 1}
+                  index={index}
                 ></NftCard>
               </Grid>
             ))}

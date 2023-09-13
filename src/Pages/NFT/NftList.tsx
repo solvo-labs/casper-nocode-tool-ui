@@ -104,7 +104,7 @@ export const NftList = () => {
       <Grid container className={classes.container}>
         {nftData.map((e: any, index: number) => (
           <Grid item lg={3} md={3} sm={4} xs={6}>
-            <NftCard description={e.description} name={e.name} imageURL={e.imageURL} index={index + 1}></NftCard>
+            <NftCard description={e.description} name={e.name} imageURL={e.imageURL} index={index}></NftCard>
           </Grid>
         ))}
         <Grid item lg={3} md={3} sm={4} xs={6}>
