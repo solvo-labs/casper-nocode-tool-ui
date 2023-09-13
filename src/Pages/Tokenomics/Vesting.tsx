@@ -181,8 +181,7 @@ export const Vesting = () => {
 
   const navigate = useNavigate();
 
-  const [publicKey, provider, , , , , vestingWasm] =
-    useOutletContext<[publicKey: string, provider: any, wasm: any, nftWasm: any, collectionWasm: any, marketplaceWasm: any, vestingWasm: any]>();
+  const [publicKey, provider, , , , vestingWasm] = useOutletContext<[publicKey: string, provider: any, cep18Wasm: any, cep78Wasm: any, marketplaceWasm: any, vestingWasm: any]>();
 
   const classes = useStyles();
 
@@ -204,15 +203,13 @@ export const Vesting = () => {
         contract_name: CLValueBuilder.string(queryParams.name),
         vesting_amount: CLValueBuilder.u256(Number(queryParams.amount) * Math.pow(10, 8)),
         cep18_contract_hash: CasperHelpers.stringToKey(queryParams.tokenid || ""),
-        start_date: CLValueBuilder.u64(vestParams.startDate.unix()),
+        start_date: CLValueBuilder.u64(vestParams.startDate.unix() * 1000),
         duration: CLValueBuilder.u64(1000),
         recipients: CLValueBuilder.list(recipientList),
         allocations: CLValueBuilder.list(allocation_list),
-        cliff_timestamp: CLValueBuilder.u64(vestParams.cliff?.unix() || 0),
+        cliff_timestamp: CLValueBuilder.u64(activateCliff ? (vestParams.cliff?.unix() || 0) * 1000 : 0),
         cliff_amount: CLValueBuilder.u256(vestParams.cliffAmount),
       });
-
-      localStorage.setItem("vesting", JSON.stringify({ queryParams, recipientList, allocation_list, vestParams }));
 
       const deploy = contract.install(new Uint8Array(vestingWasm!), args, "100000000000", ownerPublicKey, "casper-test");
 
