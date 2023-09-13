@@ -2,7 +2,7 @@ import { CircularProgress, Grid, Stack, Step, StepLabel, Stepper, Theme, Typogra
 import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { CustomButton } from "../../components/CustomButton";
-import { fetchCep78NamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
+import { fetchCep78NamedKeys, fetchMarketplaceData, getNftCollection, getNftMetadata, storeListing } from "../../utils/api";
 import { CasperHelpers, getMetadataImage } from "../../utils";
 import { FETCH_IMAGE_TYPE } from "../../utils/enum";
 // @ts-ignore
@@ -52,7 +52,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 const AddNftToMarketplace = () => {
   const classes = useStyles();
   const { marketplaceHash } = useParams();
-  console.log(marketplaceHash);
 
   const [publicKey, provider] = useOutletContext<[publicKey: string, provider: any]>();
   const [activeStep, setActiveStep] = useState(0);
@@ -60,9 +59,10 @@ const AddNftToMarketplace = () => {
   const [collections, setCollections] = useState<CollectionMetada[] | any>([]);
   const [selectedCollection, setSelectedCollection] = useState("");
   const [nftData, setNftData] = useState<NFT[] | any>([]);
-  const [selectedNftIndex, setSelectedNftIndex] = useState<number>();
+  const [selectedNftIndex, setSelectedNftIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [price, setPrice] = useState<number>(0);
+  const [marketplaceData, setMarketPlaceData] = useState<any>();
   const navigate = useNavigate();
 
   const isStepSkipped = (step: number) => {
@@ -86,60 +86,69 @@ const AddNftToMarketplace = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const addListing = async () => {
+  const addWhiteList = async (contract: any, ownerPublicKey: any) => {
+    contract.setContractHash(marketplaceHash);
+
+    const whitelistArgs = RuntimeArgs.fromMap({
+      collection: CasperHelpers.stringToKey(selectedCollection.slice(5)),
+    });
+
+    const deployWhitelist = contract.callEntrypoint("whitelist", whitelistArgs, ownerPublicKey, "casper-test", "10000000000");
+    const deployJsonWhitelist = DeployUtil.deployToJson(deployWhitelist);
+
     try {
-      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-      const contract = new Contracts.Contract();
-      localStorage.setItem("listing", JSON.stringify({ collection: selectedCollection, token_id: selectedNftIndex, price }));
-
-      contract.setContractHash(marketplaceHash);
-
-      const whitelistArgs = RuntimeArgs.fromMap({
-        collection: CasperHelpers.stringToKey(selectedCollection.slice(5)),
+      const sign = await provider.sign(JSON.stringify(deployJsonWhitelist), publicKey);
+      let signedDeploy = DeployUtil.setSignature(deployWhitelist, sign.signature, ownerPublicKey);
+      signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+      const data = DeployUtil.deployToJson(signedDeploy.val);
+      const response = await axios.post(SERVER_API + "deploy", data, {
+        headers: { "Content-Type": "application/json" },
       });
 
-      const deployWhitelist = contract.callEntrypoint("whitelist", whitelistArgs, ownerPublicKey, "casper-test", "10000000000");
-      const deployJsonWhitelist = DeployUtil.deployToJson(deployWhitelist);
-
+      toastr.success(response.data, "Whitelist added successfully.");
+    } catch (error: any) {
+      alert(error.message);
+    }
+  };
+  console.log(marketplaceData);
+  const addListing = async () => {
+    if (marketplaceHash) {
       try {
-        const sign = await provider.sign(JSON.stringify(deployJsonWhitelist), publicKey);
-        let signedDeploy = DeployUtil.setSignature(deployWhitelist, sign.signature, ownerPublicKey);
-        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-        const data = DeployUtil.deployToJson(signedDeploy.val);
-        const response = await axios.post(SERVER_API + "deploy", data, {
-          headers: { "Content-Type": "application/json" },
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+        const contract = new Contracts.Contract();
+
+        await addWhiteList(contract, ownerPublicKey);
+
+        const args = RuntimeArgs.fromMap({
+          collection: CasperHelpers.stringToKey(selectedCollection.slice(5)),
+          token_id: CLValueBuilder.u64(selectedNftIndex),
+          price: CLValueBuilder.u256(price * 1_000_000_000),
         });
-        toastr.success(response.data, "Whitelist added successfully.");
-      } catch (error: any) {
-        alert(error.message);
+
+        const deploy = contract.callEntrypoint("add_listing", args, ownerPublicKey, "casper-test", "10000000000");
+        const deployJson = DeployUtil.deployToJson(deploy);
+
+        try {
+          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+          const data = DeployUtil.deployToJson(signedDeploy.val);
+          const response = await axios.post(SERVER_API + "deploy", data, {
+            headers: { "Content-Type": "application/json" },
+          });
+          console.log(marketplaceHash, selectedCollection, selectedNftIndex, price, nftData[selectedNftIndex], Number(parseInt(marketplaceData.listingCount.hex)));
+          await storeListing(marketplaceHash, selectedCollection, selectedNftIndex, price, nftData[selectedNftIndex], Number(parseInt(marketplaceData.listingCount.hex)));
+
+          toastr.success(response.data, "Listing created successfully.");
+
+          navigate("/marketplace");
+        } catch (error: any) {
+          toastr.error(error.message);
+        }
+      } catch (error) {
+        console.log(error);
+        toastr.error("error");
       }
-
-      const args = RuntimeArgs.fromMap({
-        collection: CasperHelpers.stringToKey(selectedCollection.slice(5)),
-        token_id: CLValueBuilder.u64(selectedNftIndex),
-        price: CLValueBuilder.u256(price * 1_000_000_000),
-      });
-
-      const deploy = contract.callEntrypoint("add_listing", args, ownerPublicKey, "casper-test", "10000000000");
-      const deployJson = DeployUtil.deployToJson(deploy);
-
-      try {
-        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
-        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-        const data = DeployUtil.deployToJson(signedDeploy.val);
-        const response = await axios.post(SERVER_API + "deploy", data, {
-          headers: { "Content-Type": "application/json" },
-        });
-        toastr.success(response.data, "Listing created successfully.");
-
-        navigate("/marketplace");
-      } catch (error: any) {
-        alert(error.message);
-      }
-    } catch (error) {
-      console.log(error);
-      toastr.error("error");
     }
   };
 
@@ -159,6 +168,9 @@ const AddNftToMarketplace = () => {
         };
       });
 
+      const marketplaceData = await fetchMarketplaceData(marketplaceHash || "");
+
+      setMarketPlaceData(marketplaceData);
       setLoading(false);
       console.log(finalData);
       setCollections(finalData);

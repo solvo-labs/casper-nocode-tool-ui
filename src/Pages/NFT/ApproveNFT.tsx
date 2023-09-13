@@ -1,11 +1,11 @@
-import { Box, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Modal, Stack, Theme, Typography } from "@mui/material";
+import { Box, CircularProgress, Divider, FormControl, Grid, InputLabel, MenuItem, Modal, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useEffect, useState } from "react";
 import { fetchCep78NamedKeys, fetchMarketplaceNamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
 import { getMetadataImage } from "../../utils";
 import { FETCH_IMAGE_TYPE } from "../../utils/enum";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { CollectionMetada, Marketplace, NFT } from "../../utils/types";
+import { CollectionMetada, NFT } from "../../utils/types";
 import { CollectionCardAlternate } from "../../components/CollectionCard";
 // @ts-ignore
 import { CLPublicKey, Contracts, RuntimeArgs, CLValueBuilder, CLKey, CLByteArray, DeployUtil } from "casper-js-sdk";
@@ -23,12 +23,12 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 800,
   height: 600,
-  bgcolor: "background.paper",
+  bgcolor: "#0F1429",
   border: "2px solid #000",
   boxShadow: 24,
   p: 4,
   color: "black",
-  overflow: "scroll",
+  overflow: "auto",
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -56,7 +56,7 @@ const ApproveNFT = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [openApprove, setOpenApprove] = useState(false);
-  const [marketplace, setMarketplace] = useState<Marketplace[]>([]);
+  const [marketplace, setMarketplace] = useState<any>([]);
   const [selectedMarketplace, setSelectedMarketplace] = useState<string>();
   const [selectedCollection, setSelectedCollection] = useState<string | null>("");
   const [nftData, setNftData] = useState<NFT[] | any>([]);
@@ -84,7 +84,10 @@ const ApproveNFT = () => {
   useEffect(() => {
     const init = async () => {
       const data = await fetchMarketplaceNamedKeys(publicKey);
-      setMarketplace(filteredData);
+      const parsedData = data.map((dt) => {
+        return { ...dt, name: dt.name.substring(26) };
+      });
+      setMarketplace(parsedData);
     };
 
     init();
@@ -149,7 +152,6 @@ const ApproveNFT = () => {
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
         const marketplaceHash = selectedMarketplace.replace("hash-", "");
-        console.log(marketplaceHash);
 
         const args = RuntimeArgs.fromMap({
           operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(marketplaceHash, "hex")))),
@@ -221,9 +223,10 @@ const ApproveNFT = () => {
               ></CollectionCardAlternate>
               <Modal open={open} onClose={handleClose}>
                 <Box sx={style}>
-                  <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Approve {e.collection_name}'s NFT
+                  <Typography id="modal-modal-title" color={"white"} variant="h6" component="h2">
+                    Select {e.collection_name}'s NFT and Approve For Operator
                   </Typography>
+                  <Divider sx={{ background: "red", marginBottom: "1rem" }} />
                   <Grid container>
                     {nftData.map((e: any, index: number) => (
                       <Grid item lg={4} md={4} sm={6} xs={6}>
@@ -232,18 +235,20 @@ const ApproveNFT = () => {
                           <Box sx={style} display={"flex"} alignItems={"center"} justifyContent={"center"}>
                             <Stack spacing={"2rem"}>
                               <FormControl fullWidth>
-                                <InputLabel sx={{ color: "black" }}>Ownership Mode</InputLabel>
-                                <CustomSelect id="ownershipMode" value={selectedMarketplace} label="Ownership Mode" onChange={(e: any) => setSelectedMarketplace(e.target.value)}>
+                                <Typography display={"flex"} justifyContent={"center"} color={"white"} variant="h6" component="h2">
+                                  Select a Marketplace
+                                </Typography>
+                                <CustomSelect id="ownershipMode" value={selectedMarketplace} label="Marketplace" onChange={(e: any) => setSelectedMarketplace(e.target.value)}>
                                   {marketplace.map((mp: any) => {
                                     return (
                                       <MenuItem key={mp.key} value={mp.key}>
-                                        {"Demo Marketplace" + "(" + mp.key.slice(0, 12) + ")"}
+                                        {mp.name}
                                       </MenuItem>
                                     );
                                   })}
                                 </CustomSelect>
                               </FormControl>
-                              <Typography display={"flex"} justifyContent={"center"} variant="h6" component="h2">
+                              <Typography display={"flex"} justifyContent={"center"} color={"white"} variant="h6" component="h2">
                                 Are you sure you are about to approve now?
                               </Typography>
                               <Stack direction={"row"} spacing={"2rem"} justifyContent={"center"}>
