@@ -9,19 +9,19 @@ import { Marketplace } from "../../utils/types";
 
 const ListMarketplace = () => {
   const [publicKey] = useOutletContext<[publickey: string]>();
-  const [marketplace, setMarketplace] = useState<Marketplace[]>([]);
+  const [marketplaces, setMarketplaces] = useState<Marketplace[]>([]);
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const init = async () => {
       const data = await fetchMarketplaceNamedKeys(publicKey);
-      const finalData = data.map((dt) => {
-        return { ...dt, contractName: dt.name.substring(26) };
+      const finalData: Marketplace[] = data.map((dt) => {
+        return { contractHash: dt.key, contractName: dt.name.substring(26), listingCount: 0, feeWallet: "" };
       });
 
       setLoading(false);
-      setMarketplace(finalData);
+      setMarketplaces(finalData);
     };
 
     init();
@@ -49,8 +49,8 @@ const ListMarketplace = () => {
         <h2>Active MarketPlace List</h2>
         <Divider sx={{ backgroundColor: "red", marginBottom: " 1rem !important" }}></Divider>
 
-        {marketplace.map((e: any) => (
-          <MarketplaceCard hash={e.key} name={e.contractName} onClick={() => navigate("/marketplace/" + e.key)}></MarketplaceCard>
+        {marketplaces.map((e: Marketplace) => (
+          <MarketplaceCard hash={e.contractHash} name={e.contractName} onClick={() => navigate("/marketplace/" + e.contractHash)}></MarketplaceCard>
         ))}
       </Stack>
     </Grid>

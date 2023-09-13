@@ -90,6 +90,8 @@ export type CollectionMetada = {
 };
 
 export type Marketplace = {
-  name: string;
-  key: string;
+  contractHash: string;
+  contractName: string;
+  feeWallet: string;
+  listingCount: number;
 };

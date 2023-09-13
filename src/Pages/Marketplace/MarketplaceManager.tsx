@@ -4,9 +4,10 @@ import { CustomButton } from "../../components/CustomButton";
 import { NftCard } from "../../components/NftCard";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getNftMetadata } from "../../utils/api";
+import { fetchMarketplaceData, getNftMetadata } from "../../utils/api";
 import { getMetadataImage } from "../../utils";
 import { FETCH_IMAGE_TYPE } from "../../utils/enum";
+import { Marketplace } from "../../utils/types";
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleContainer: {
@@ -33,19 +34,22 @@ const MarketplaceManager = () => {
   const navigate = useNavigate();
   const { marketplaceHash } = useParams();
   const [publicKey] = useOutletContext<[publickey: string]>();
+
   const [loading, setLoading] = useState<boolean>(true);
   const [nftData, setNftData] = useState<any>();
-  // const [collections, setCollections] = useState<CollectionMetada[] | any>([]);
+  const [marketplaceData, setMarketplaceData] = useState<Marketplace>({ contractHash: "", contractName: "", feeWallet: "", listingCount: 0 });
 
   const demo = localStorage.getItem("listing");
   const parsedData = JSON.parse(demo || "");
 
   useEffect(() => {
-    if (parsedData) {
+    if (parsedData && marketplaceHash) {
       const init = async () => {
         const nftdata = await getNftMetadata(parsedData.collection, parsedData.token_id);
-        const image = await getMetadataImage(nftdata.imageURL, FETCH_IMAGE_TYPE.NFT);
+        const image = await getMetadataImage(nftdata, FETCH_IMAGE_TYPE.NFT);
+        const marketplaceInfo = await fetchMarketplaceData(marketplaceHash);
 
+        setMarketplaceData({ contractHash: marketplaceHash, contractName: marketplaceInfo.contractName, feeWallet: "", listingCount: parseInt(marketplaceInfo.listingCount.hex) });
         setNftData({ ...nftdata, image });
         setLoading(false);
       };
@@ -74,9 +78,11 @@ const MarketplaceManager = () => {
     <Grid container direction={"column"} className={classes.container}>
       <Grid item className={classes.container}>
         <Stack direction={"row"} justifyContent={"space-between"}>
-          <Typography variant="h4">Demo Marketplace</Typography>
+          <Typography variant="h4">
+            <b>{marketplaceData.contractName} </b>
+            Market List (Active List Count : {marketplaceData.listingCount})
+          </Typography>
           <Stack direction={"row"} spacing={2}>
-            <CustomButton disabled={false} label="Add Whitelist" onClick={() => {}}></CustomButton>
             <CustomButton disabled={false} label="Add NFT to Marketplace" onClick={() => navigate("/add-nft-to-marketplace/" + marketplaceHash)}></CustomButton>
           </Stack>
         </Stack>

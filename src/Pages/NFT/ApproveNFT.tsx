@@ -84,7 +84,6 @@ const ApproveNFT = () => {
   useEffect(() => {
     const init = async () => {
       const data = await fetchMarketplaceNamedKeys(publicKey);
-      const filteredData = data.filter((dt) => dt.name === "marketplace_contract_hash");
       setMarketplace(filteredData);
     };
 

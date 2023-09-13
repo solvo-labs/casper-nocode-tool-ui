@@ -1,7 +1,7 @@
 import { fetchIPFSImage } from "./api";
 import { FETCH_IMAGE_TYPE } from "./enum";
 // @ts-ignore
-import {CLValueBuilder} from "casper-js-sdk"
+import { CLValueBuilder } from "casper-js-sdk";
 
 export const fetchContract = async (path: string) => {
   try {
@@ -17,27 +17,24 @@ export const fetchContract = async (path: string) => {
 
 export const getMetadataImage = async (metadata: any, type: FETCH_IMAGE_TYPE) => {
   try {
-    let imageLink: string =
-      "../public/image/casper.png";
+    let imageLink: string = "../public/image/casper.png";
 
     if (type == FETCH_IMAGE_TYPE.COLLECTION) {
       const parsedData = JSON.parse(metadata);
-      if (
-        parsedData.imageURL &&
-        parsedData.imageURL.startsWith("https://ipfs.io/ipfs/")
-      ) {
+      if (parsedData.imageURL && parsedData.imageURL.startsWith("https://ipfs.io/ipfs/")) {
         const result = await fetchIPFSImage(parsedData.imageURL);
         imageLink = result;
       }
-    } else if (type == FETCH_IMAGE_TYPE.NFT) {
-      if (
-        metadata.imageURL &&
-        metadata.imageURL.startsWith("https://ipfs.io/ipfs/")
-      ) {
+    }
+
+    if (type == FETCH_IMAGE_TYPE.NFT) {
+      if (metadata.imageURL && metadata.imageURL.startsWith("https://ipfs.io/ipfs/")) {
+        console.log("here");
         const result = await fetchIPFSImage(metadata.imageURL);
         imageLink = result;
       }
     }
+
     return imageLink;
   } catch (error) {
     console.error("Error parsing JSON:", error);
@@ -46,15 +43,15 @@ export const getMetadataImage = async (metadata: any, type: FETCH_IMAGE_TYPE) =>
 };
 
 export class CasperHelpers {
-  static stringToKey(string:string) {
+  static stringToKey(string: string) {
     return CLValueBuilder.key(this.stringToKeyParameter(string));
   }
 
-  static stringToKeyParameter(string:string) {
+  static stringToKeyParameter(string: string) {
     return CLValueBuilder.byteArray(this.convertHashStrToHashBuff(string));
   }
 
-  static convertHashStrToHashBuff(hashStr:string) {
+  static convertHashStrToHashBuff(hashStr: string) {
     let hashHex = hashStr;
     if (hashStr.startsWith("hash-")) {
       hashHex = hashStr.slice(5);

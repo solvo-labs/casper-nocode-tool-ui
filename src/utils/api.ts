@@ -193,3 +193,9 @@ export const fetchIPFSImage = async (apiLink: string): Promise<string> => {
   const response = await axios.get<any>(apiLink);
   return response.data.image;
 };
+
+export const fetchMarketplaceData = async (contractHash: string) => {
+  const response = await axios.get(SERVER_API + "getMarketplace?contractHash=" + contractHash);
+
+  return { ...response.data, contractHash };
+};
