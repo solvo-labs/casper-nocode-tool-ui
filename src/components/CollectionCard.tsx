@@ -5,15 +5,17 @@ import { Card, CardActionArea, CardContent, CardMedia, Theme, Typography } from 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
     margin: "1rem",
-    maxHeight: "480px",
-    height: "400px",
+    height: "360px",
     [theme.breakpoints.down("xl")]: {
       // fontSize: "1rem",
     },
   },
   alternateCard: {
     margin: "1rem",
-    maxHeight: "400px",
+    minHeight: "300px",
+    [theme.breakpoints.down("md")]: {
+      maxHeight: "240px",
+    },
   },
 }));
 

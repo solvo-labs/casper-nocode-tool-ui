@@ -184,7 +184,7 @@ export const CreateNft = () => {
     return (
       <div
         style={{
-          height: "calc(100vh - 8rem)",
+          height: "50vh",
           width: "100%",
           display: "flex",
           justifyContent: "center",

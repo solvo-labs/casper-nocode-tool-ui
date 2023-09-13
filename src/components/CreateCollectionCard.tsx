@@ -5,7 +5,6 @@ import { Card, CardActionArea, CardContent, CardMedia, Theme } from "@mui/materi
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
     margin: "1rem",
-    maxHeight: "400px",
     height: "360px",
     backgroundColor: "#161D3B !important",
     color: "white !important",
@@ -22,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     [theme.breakpoints.down("xl")]: {
-      fontSize: "1rem",
+      fontSize: "1.1rem",
     },
     [theme.breakpoints.down("sm")]: {
       fontSize: ".9rem",
