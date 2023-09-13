@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Divider, FormControl, Grid, InputLabel, MenuItem, Modal, Stack, Theme, Typography } from "@mui/material";
+import { Box, CircularProgress, Divider, FormControl, Grid, MenuItem, Modal, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useEffect, useState } from "react";
 import { fetchCep78NamedKeys, fetchMarketplaceNamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
@@ -60,6 +60,7 @@ const ApproveNFT = () => {
   const [selectedMarketplace, setSelectedMarketplace] = useState<string>();
   const [selectedCollection, setSelectedCollection] = useState<string | null>("");
   const [nftData, setNftData] = useState<NFT[] | any>([]);
+  const [selectedTokenId, setSelectedTokenId] = useState<number>(0);
 
   const [publicKey, provider] = useOutletContext<[publicKey: string, provider: any]>();
 
@@ -155,7 +156,7 @@ const ApproveNFT = () => {
 
         const args = RuntimeArgs.fromMap({
           operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(marketplaceHash, "hex")))),
-          token_id: CLValueBuilder.u64(0),
+          token_id: CLValueBuilder.u64(selectedTokenId),
         });
 
         const deploy = contract.callEntrypoint("approve", args, ownerPublicKey, "casper-test", "10000000000");
@@ -230,7 +231,16 @@ const ApproveNFT = () => {
                   <Grid container>
                     {nftData.map((e: any, index: number) => (
                       <Grid item lg={4} md={4} sm={6} xs={6}>
-                        <NftCard description={e.description} name={e.name} imageURL={e.imageURL} onClick={handleOpenNft} index={index + 1}></NftCard>
+                        <NftCard
+                          description={e.description}
+                          name={e.name}
+                          imageURL={e.imageURL}
+                          onClick={() => {
+                            handleOpenNft();
+                            setSelectedTokenId(index);
+                          }}
+                          index={index}
+                        ></NftCard>
                         <Modal open={openApprove} onClose={handleCloseNft}>
                           <Box sx={style} display={"flex"} alignItems={"center"} justifyContent={"center"}>
                             <Stack spacing={"2rem"}>
@@ -238,7 +248,7 @@ const ApproveNFT = () => {
                                 <Typography display={"flex"} justifyContent={"center"} color={"white"} variant="h6" component="h2">
                                   Select a Marketplace
                                 </Typography>
-                                <CustomSelect id="ownershipMode" value={selectedMarketplace} label="Marketplace" onChange={(e: any) => setSelectedMarketplace(e.target.value)}>
+                                <CustomSelect id="marketplace" value={selectedMarketplace} label="Marketplace" onChange={(e: any) => setSelectedMarketplace(e.target.value)}>
                                   {marketplace.map((mp: any) => {
                                     return (
                                       <MenuItem key={mp.key} value={mp.key}>

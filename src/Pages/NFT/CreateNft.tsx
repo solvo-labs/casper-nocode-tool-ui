@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { useOutletContext, useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { SERVER_API, fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
 import axios from "axios";
 import toastr from "toastr";
@@ -70,6 +70,8 @@ export const CreateNft = () => {
   const [collections, setCollections] = useState<any>([]);
   const [selectedCollection, setSelectedCollection] = useState<any>();
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const init = async () => {
       const data = await fetchCep78NamedKeys(publicKey);
@@ -101,7 +103,7 @@ export const CreateNft = () => {
     contract.setContractHash(selectedCollection.contractHash);
 
     try {
-      console.log(nftData.tokenMetaData);
+      setLoading(true);
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
       const args = RuntimeArgs.fromMap({
@@ -130,13 +132,16 @@ export const CreateNft = () => {
         toastr.success(response.data, "Mint completed successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
-        // navigate("/my-tokens");
+        navigate("/my-collections");
         // setActionLoader(false);
+        setLoading(false);
       } catch (error: any) {
         alert(error.message);
+        setLoading(false);
       }
     } catch (error) {
       console.log(error);
+      setLoading(false);
       toastr.error("error");
     }
   };
