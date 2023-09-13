@@ -16,10 +16,12 @@ const ListMarketplace = () => {
   useEffect(() => {
     const init = async () => {
       const data = await fetchMarketplaceNamedKeys(publicKey);
-      console.log(data);
-      const filteredData = data.filter((dt) => dt.name === "marketplace_contract_hash");
+      const finalData = data.map((dt) => {
+        return { ...dt, contractName: dt.name.substring(26) };
+      });
+
       setLoading(false);
-      setMarketplace(filteredData);
+      setMarketplace(finalData);
     };
 
     init();
@@ -48,7 +50,7 @@ const ListMarketplace = () => {
         <Divider sx={{ backgroundColor: "red", marginBottom: " 1rem !important" }}></Divider>
 
         {marketplace.map((e: any) => (
-          <MarketplaceCard hash={e.key} name={"Demo Marketplace"} onClick={() => navigate("/marketplace/" + e.key)}></MarketplaceCard>
+          <MarketplaceCard hash={e.key} name={e.contractName} onClick={() => navigate("/marketplace/" + e.key)}></MarketplaceCard>
         ))}
       </Stack>
     </Grid>
