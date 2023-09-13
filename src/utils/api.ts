@@ -49,6 +49,16 @@ const fetchCep18NamedKeys = async (pubkey: string) => {
   return filteredNamedKeys;
 };
 
+export const fetchVestingNamedKeys = async (pubkey: string) => {
+  const namedKeys = await fetchNamedKeys(pubkey);
+
+  const filteredNamedKeys = namedKeys.filter((ky: NamedKey) => {
+    return ky.name.startsWith("vesting_contract_hash");
+  });
+
+  return filteredNamedKeys;
+};
+
 export const fetchCep78NamedKeys = async (pubkey: string) => {
   const namedKeys = await fetchNamedKeys(pubkey);
 
@@ -142,9 +152,9 @@ export const allTokensFromWallet = async (accountHash: string) => {
   return walletData;
 };
 
-export const initTokens = async (accountHash: string) => {
+export const initTokens = async (accountHash: string, pubkey: string) => {
   const walletData = await allTokensFromWallet(accountHash);
-  const creatorTokens = await listofCreatorERC20Tokens(accountHash);
+  const creatorTokens = await listofCreatorERC20Tokens(pubkey);
 
   let finalData: Token[] = [...walletData];
 

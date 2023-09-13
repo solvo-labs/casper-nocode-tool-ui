@@ -14,14 +14,14 @@ import { CustomButton } from "../../components/CustomButton";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
-    marginTop: "1rem",
     minWidth: "80vw",
     display: "flex",
     justifyContent: "center",
     [theme.breakpoints.down("md")]: {
       minWidth: "90vw",
-      marginTop: "3rem",
     },
+    marginTop: "0",
+    // marginBottom: "20rem !important",
   },
   selectorContainer: {
     minWidth: "30vw !important",
@@ -145,7 +145,7 @@ export const Tokenomics = () => {
     const init = async () => {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
       const accountHash = ownerPublicKey.toAccountHashStr();
-      const { finalData } = await initTokens(accountHash);
+      const { finalData } = await initTokens(accountHash, publicKey);
 
       const filteredFinalData = finalData.filter((fd) => fd.balance > 0);
 
@@ -155,8 +155,6 @@ export const Tokenomics = () => {
 
     init();
   }, []);
-
-  console.log("tokens", tokens);
 
   const disable = useMemo(() => {
     const lenghtControl = sections.every((e: any) => e.name.length > 0);

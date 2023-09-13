@@ -26,9 +26,9 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { makeStyles } from "@mui/styles";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { RecipientModal } from "../../utils/types";
-import { Durations, DurationsType, RecipientFormInput, UnlockSchedule, UnlockScheduleType, VestParamsData } from "../../lib/models/Vesting";
+import { Durations, DurationsType, RecipientFormInput, UnlockSchedule, VestParamsData } from "../../lib/models/Vesting";
 import dayjs from "dayjs";
 import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
@@ -37,6 +37,12 @@ import { CustomInput } from "../../components/CustomInput";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { CustomButton } from "../../components/CustomButton";
 import RecipientComponent from "../../components/RecipientComponent";
+// @ts-ignore
+import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
+import { CasperHelpers } from "../../utils";
+import axios from "axios";
+import { SERVER_API } from "../../utils/api";
+import toastr from "toastr";
 
 const useStyles = makeStyles((theme: Theme) => ({
   dateTimePicker: {
@@ -71,7 +77,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: "200px",
     paddingTop: "40px",
     paddingBottom: "40px",
     paddingRight: "20px",
@@ -172,7 +177,12 @@ export const Vesting = () => {
   });
   const [recipients, setRecipients] = useState<RecipientFormInput[]>([]);
   const [recipient, setRecipient] = useState<RecipientFormInput>(recipientDefaultState);
-  const [loading, ] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const navigate = useNavigate();
+
+  const [publicKey, provider, , , , , vestingWasm] =
+    useOutletContext<[publicKey: string, provider: any, wasm: any, nftWasm: any, collectionWasm: any, marketplaceWasm: any, vestingWasm: any]>();
 
   const classes = useStyles();
 
@@ -181,6 +191,62 @@ export const Vesting = () => {
     name: string;
     amount: string;
   }>();
+
+  const createVesting = async () => {
+    try {
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+      const contract = new Contracts.Contract();
+
+      const recipientList = recipients.map((rc) => CLValueBuilder.key(CLPublicKey.fromHex(rc.recipientAddress)));
+      const allocation_list = recipients.map((rc) => CLValueBuilder.u256(rc.amount * Math.pow(10, 8)));
+
+      const args = RuntimeArgs.fromMap({
+        contract_name: CLValueBuilder.string(queryParams.name),
+        vesting_amount: CLValueBuilder.u256(Number(queryParams.amount) * Math.pow(10, 8)),
+        cep18_contract_hash: CasperHelpers.stringToKey(queryParams.tokenid || ""),
+        start_date: CLValueBuilder.u64(vestParams.startDate.unix()),
+        duration: CLValueBuilder.u64(1000),
+        recipients: CLValueBuilder.list(recipientList),
+        allocations: CLValueBuilder.list(allocation_list),
+        cliff_timestamp: CLValueBuilder.u64(vestParams.cliff?.unix() || 0),
+        cliff_amount: CLValueBuilder.u256(vestParams.cliffAmount),
+      });
+
+      localStorage.setItem("vesting", JSON.stringify({ queryParams, recipientList, allocation_list, vestParams }));
+
+      const deploy = contract.install(new Uint8Array(vestingWasm!), args, "100000000000", ownerPublicKey, "casper-test");
+
+      const deployJson = DeployUtil.deployToJson(deploy);
+      console.log("deployJson", deployJson);
+
+      // signer logic
+      try {
+        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+        console.log("sign", sign);
+
+        true;
+
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+
+        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+        console.log("signedDeploy", signedDeploy);
+
+        const data = DeployUtil.deployToJson(signedDeploy.val);
+
+        const response = await axios.post(SERVER_API + "deploy", data, {
+          headers: { "Content-Type": "application/json" },
+        });
+        toastr.success(response.data, "Vesting deployed successfully.");
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
+
+        navigate("/tokenomics");
+      } catch (error: any) {
+        alert(error.message);
+      }
+    } catch (err: any) {
+      toastr.error(err);
+    }
+  };
 
   if (loading) {
     return (
@@ -274,7 +340,7 @@ export const Vesting = () => {
                 </FormControl>
               </Grid>
             </Grid>
-            <FormControl fullWidth>
+            {/* <FormControl fullWidth>
               <InputLabel id="selectLabel" sx={{ color: "white" }}>
                 Unlock Schedule
               </InputLabel>
@@ -298,7 +364,7 @@ export const Vesting = () => {
                   );
                 })}
               </Select>
-            </FormControl>
+            </FormControl> */}
             <FormControlLabel control={<Switch color="error" value={activateCliff} onChange={() => setActivateCliff(!activateCliff)} />} label="Activate Cliff" />
 
             {activateCliff && (
@@ -347,7 +413,7 @@ export const Vesting = () => {
           <CustomButton label="Add Recipient" disabled={false} onClick={() => setRecipientModal({ ...recipientModal, show: true })} />
         </Grid>
         <Grid item marginTop={2} marginBottom={5} display={"flex"} justifyContent={"center"} alignItems={"center"} flexDirection={"column"}>
-          <CustomButton label="Create Vesting Contract" disabled={vestParams.period <= 0 || recipients.length <= 0} onClick={() => {}} />
+          <CustomButton label="Create Vesting Contract" disabled={vestParams.period <= 0 || recipients.length <= 0} onClick={createVesting} />
         </Grid>
 
         <Modal
@@ -428,6 +494,7 @@ export const Vesting = () => {
                           <>
                             <ListItem
                               key={index}
+                              style={{ background: "white" }}
                               secondaryAction={
                                 <Button
                                   variant="contained"

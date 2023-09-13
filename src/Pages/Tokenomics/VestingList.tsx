@@ -22,9 +22,11 @@ import { makeStyles } from "@mui/styles";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import DoneIcon from "@mui/icons-material/Done";
 import PendingIcon from "@mui/icons-material/Pending";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { UnlockSchedule, UnlockScheduleType } from "../../lib/models/Vesting";
+import { fetchVestingNamedKeys } from "../../utils/api";
+import { useOutletContext } from "react-router-dom";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useStyles = makeStyles((_theme: Theme) => ({
@@ -91,15 +93,15 @@ const timestampToDate = (timestamp: number) => {
 
 export const VestingList = () => {
   const classes = useStyles();
+  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
 
-  // const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
-
-  const [loading, ] = useState<boolean>(false);
+  const [loading] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("1");
-  const [vestingList, ] = useState<[string, "Stream"][]>([]);
-  const [outgoingvestingList, ] = useState<[string, "Stream"][]>([]);
+  const [vestingList, setVestingList] = useState<[string, "Stream"][]>([]);
+  const [outgoingvestingList] = useState<[string, "Stream"][]>([]);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
+  const [finalData, setFinalData] = useState<any>();
 
   const getTimestamp = () => {
     return Math.floor(Date.now() / 1000);
@@ -114,7 +116,22 @@ export const VestingList = () => {
     setPage(0);
   };
 
-  const tableHeaders = ["Name", "Status", "Start", "End", "Last Withdrawn At", "Mint", "Period", "Withdrawn Amount", "Deposited Amount", "Cliff", "Cliff Amount", "Claim"];
+  useEffect(() => {
+    const init = async () => {
+      const data = await fetchVestingNamedKeys(publicKey);
+      console.log(data);
+
+      const storage = localStorage.getItem("vesting");
+
+      setFinalData(JSON.parse(storage!));
+
+      setVestingList([]);
+    };
+
+    init();
+  }, []);
+
+  const tableHeaders = ["Name", "Status", "Start", "End", "Token", "Withdrawn Amount", "Deposited Amount", "Cliff", "Cliff Amount", "Claim"];
 
   const getStatusIcon = (startDate: number, endDate: number) => {
     const timestamp = getTimestamp();
