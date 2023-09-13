@@ -4,8 +4,10 @@ import { CustomButton } from "../../components/CustomButton";
 import { NftCard } from "../../components/NftCard";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
+import { fetchCep78NamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
 import { CollectionMetada } from "../../utils/types";
+import { getMetadataImage } from "../../utils";
+import { FETCH_IMAGE_TYPE } from "../../utils/enum";
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleContainer: {
@@ -32,8 +34,26 @@ const MarketplaceManager = () => {
   const navigate = useNavigate();
   const { marketplaceHash } = useParams();
   const [publicKey] = useOutletContext<[publickey: string]>();
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [nftData, setNftData] = useState<any>();
   // const [collections, setCollections] = useState<CollectionMetada[] | any>([]);
+
+  const demo = localStorage.getItem("listing");
+  const parsedData = JSON.parse(demo || "");
+
+  useEffect(() => {
+    if (parsedData) {
+      const init = async () => {
+        const nftdata = await getNftMetadata(parsedData.collection, parsedData.token_id);
+        const image = await getMetadataImage(nftdata.imageURL, FETCH_IMAGE_TYPE.NFT);
+
+        setNftData({ ...nftdata, image });
+        setLoading(false);
+      };
+
+      init();
+    }
+  }, []);
 
   if (loading) {
     return (
@@ -63,37 +83,14 @@ const MarketplaceManager = () => {
         </Stack>
       </Grid>
       <Grid item marginTop={"2rem"}>
-        <Typography variant="h5">Non Approved NFT's</Typography>
+        <Typography variant="h5">List of NFT's</Typography>
       </Grid>
       <Grid container>
         <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
-        </Grid>
-        <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
-        </Grid>
-        <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
-        </Grid>
-        <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
-        </Grid>
-      </Grid>
-      <Grid item>
-        <Typography variant="h5">Listed NFT</Typography>
-      </Grid>
-      <Grid container>
-        <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
-        </Grid>
-        <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
-        </Grid>
-        <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
-        </Grid>
-        <Grid item lg={3} md={4} sm={6} xs={6}>
-          <NftCard description={"sadasd"} name={"asdasd"} imageURL={"asdas"} index={0}></NftCard>
+          <NftCard description={nftData.description} name={nftData.name} imageURL={nftData.image} price={parsedData.price} index={0}></NftCard>
+          <div style={{ display: "flex", alignItems: "center ", justifyContent: "center" }}>
+            <CustomButton onClick={undefined} label={"BUY THIS NFT"} disabled={false}></CustomButton>
+          </div>
         </Grid>
       </Grid>
     </Grid>

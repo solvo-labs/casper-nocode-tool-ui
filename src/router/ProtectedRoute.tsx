@@ -27,6 +27,7 @@ const ProtectedRoute: React.FC = () => {
   const [nftWasm, setNftWasm] = useState<any>();
   const [collectionWasm, setCollectionWasm] = useState<any>();
   const [marketplaceWasm, setMarketplaceWasm] = useState<any>();
+  const [vestingWasm, setVestingWasm] = useState<any>();
 
   useEffect(() => {
     const init = async () => {
@@ -40,8 +41,9 @@ const ProtectedRoute: React.FC = () => {
 
         const wasm1 = await fetchContract("/cep18.wasm");
         const wasm2 = await fetchContract("/cep47.wasm");
-        const colWasm = await fetchContract("/cep78.wasm")
+        const colWasm = await fetchContract("/cep78.wasm");
         const mrkplcWasm = await fetchContract("/marketplace.wasm");
+        const vstingWasm = await fetchContract("/vesting.wasm");
 
         setWasm(wasm1);
         setNftWasm(wasm2);
@@ -49,6 +51,7 @@ const ProtectedRoute: React.FC = () => {
         setMarketplaceWasm(mrkplcWasm);
         setProvider(provider);
         setPublicKey(activePublicKey);
+        setVestingWasm(vstingWasm);
         setConnected(isConnected);
         setLoading(false);
       } catch {
@@ -79,10 +82,10 @@ const ProtectedRoute: React.FC = () => {
     <div className={classes.main}>
       <Grid container spacing={0} className={classes.container} alignContent={"start"}>
         <TopBar publicKey={publicKey} />
-        <Grid item lg={12} md={12} xs={12} height={"100vh"} paddingTop={{xl:"12rem", lg: "12rem",  md:"10rem", sm:"8rem", xs: "8rem"}}>
-          <Grid container direction={"column"}  spacing={0}>
+        <Grid item lg={12} md={12} xs={12} height={"100vh"} paddingTop={{ xl: "12rem", lg: "12rem", md: "10rem", sm: "8rem", xs: "8rem" }}>
+          <Grid container direction={"column"} spacing={0}>
             {/* <Grid item><DrawerAppBar /></Grid> */}
-            <Outlet context={[publicKey, provider, wasm, nftWasm, collectionWasm, marketplaceWasm]} />
+            <Outlet context={[publicKey, provider, wasm, nftWasm, collectionWasm, marketplaceWasm, vestingWasm]} />
           </Grid>
         </Grid>
       </Grid>
