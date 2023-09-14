@@ -246,3 +246,9 @@ export const setVestingRecipients = async (contractHash: string) => {
 
   return response.data;
 };
+
+export const getVestingList = async (accountHash: string) => {
+  const response = await axios.get<any>(SERVER_API + "get_vesting_list?accountHash=" + accountHash);
+
+  return response.data;
+};

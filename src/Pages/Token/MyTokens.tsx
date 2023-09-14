@@ -101,7 +101,7 @@ const MyTokens: React.FC = () => {
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
-        marginTop: "8rem",
+        // marginTop: "8rem",
       }}
     >
       <h5 className={classes.title}>The Tokens I created</h5>

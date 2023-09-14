@@ -23,7 +23,7 @@ import PendingIcon from "@mui/icons-material/Pending";
 import { useEffect, useState } from "react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { UnlockSchedule, UnlockScheduleType } from "../../lib/models/Vesting";
-import { SERVER_API, contractHashToContractPackageHash, fetchVestingNamedKeys, getVestingDetails, setVestingRecipients } from "../../utils/api";
+import { SERVER_API, contractHashToContractPackageHash, fetchVestingNamedKeys, getVestingDetails, getVestingList, setVestingRecipients } from "../../utils/api";
 import { useOutletContext } from "react-router-dom";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
@@ -121,8 +121,9 @@ export const VestingList = () => {
   useEffect(() => {
     const init = async () => {
       try {
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
         let data = await fetchVestingNamedKeys(publicKey);
-        data = [data[1]];
 
         const vestingDetailsPromises = data.map((dt) => getVestingDetails(dt.key));
 
@@ -132,7 +133,12 @@ export const VestingList = () => {
           return { ...vestingDetails[index], key: dt.key };
         });
 
+        const accountHash: string = ownerPublicKey.toAccountHashStr();
+        const incomingVestingList = await getVestingList(accountHash.substring(13));
+
+        setVestingList(incomingVestingList);
         setOutgoingvestingList(finalData);
+
         setLoading(false);
       } catch (error) {
         toastr.error("Something went wrong");
@@ -143,6 +149,22 @@ export const VestingList = () => {
   }, []);
 
   const tableHeaders = ["Name", "Status", "Start", "End", "Period", "Cliff", "Token", "Vesting Amount", "Recipient Count", "Released", "Action"];
+  const tableHeadersIncoming = [
+    "Name",
+    "Status",
+    "Index",
+    "Contract",
+    "Release",
+    "End",
+    "Cliff",
+    "Token",
+    "Owner",
+    "Vesting Amount",
+    "Allocation",
+    "Claimed",
+    "Released",
+    "Action",
+  ];
 
   const getStatusIcon = (startDate: number, endDate: number) => {
     const timestamp = getTimestamp();
@@ -251,8 +273,45 @@ export const VestingList = () => {
     }
   };
 
+  const claimVesting = async (input: any) => {
+    setLoading(true);
+    const contract = new Contracts.Contract();
+
+    contract.setContractHash(input.v_contract);
+
+    const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+    const args = RuntimeArgs.fromMap({
+      cep18_contract_hash: CasperHelpers.stringToKey(input.v_token),
+      index: CLValueBuilder.i32(input.v_index),
+    });
+
+    const deploy = contract.callEntrypoint("claim", args, ownerPublicKey, "casper-test", "6000000000");
+
+    const deployJson = DeployUtil.deployToJson(deploy);
+
+    try {
+      const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+
+      let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+
+      signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+
+      const data = DeployUtil.deployToJson(signedDeploy.val);
+
+      const response = await axios.post(SERVER_API + "deploy", data, { headers: { "Content-Type": "application/json" } });
+      toastr.success(response.data, "Claimed successfully.");
+      window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
+
+      setLoading(false);
+    } catch (error: any) {
+      alert(error.message);
+      setLoading(false);
+    }
+  };
+
   // const tableHeaders = ["Name", "Status", "Start", "End", "Token", "Withdrawn Amount", "Deposited Amount", "Cliff", "Claim"];
-  const listVesting = (list: any, isOutgoing = false) => {
+  const listVesting = (list: any) => {
     return list?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((e: any, index: number) => (
       <TableRow className={classes.tableRow} key={index}>
         <TableCell>{e.contract_name}</TableCell>
@@ -274,11 +333,47 @@ export const VestingList = () => {
         <TableCell align="center">
           <CustomButton
             onClick={() => {
-              isOutgoing ? releaseVesting(e) : () => {};
+              releaseVesting(e);
             }}
-            label={isOutgoing ? "Release" : "Claim"}
-            disabled={false}
-            // disabled={isOutgoing && e.released}
+            label={"Release"}
+            disabled={e.released}
+          />
+        </TableCell>
+      </TableRow>
+    ));
+  };
+
+  //  const tableHeadersIncoming = ["Name", "Status", "Release", "End", "Cliff", "Token", "Vesting Amount", "Recipient Count", "Released", "Action"];
+  const listIncomingVesting = (list: any) => {
+    return list?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((e: any, index: number) => (
+      <TableRow className={classes.tableRow} key={index}>
+        <TableCell>{e.contract_name}</TableCell>
+        <TableCell align="center">{getStatusIcon(e.release_date.hex / 1000, e.end_date.hex / 1000)}</TableCell>
+        <TableCell>{e.v_index}</TableCell>
+        <TableCell>{e.v_contract}</TableCell>
+        <TableCell>{timestampToDate(e.release_date.hex / 1000)}</TableCell>
+        <TableCell>{timestampToDate(e.end_date.hex / 1000)}</TableCell>
+        <TableCell>{parseInt(e.cliff_timestamp.hex) + " sec"}</TableCell>
+        <TableCell>{e.v_token}</TableCell>
+        <TableCell>
+          {Object.values(e.owner)
+            .map((byte: any) => byte.toString(16).padStart(2, "0"))
+            .join("")}
+        </TableCell>
+
+        <TableCell>{parseInt(e.vesting_amount.hex)}</TableCell>
+        <TableCell>{parseInt(e.allocation)}</TableCell>
+        <TableCell>{parseInt(e.claimed_amount)}</TableCell>
+
+        <TableCell>{"TRUE"}</TableCell>
+
+        <TableCell align="center">
+          <CustomButton
+            onClick={() => {
+              claimVesting(e);
+            }}
+            label={"Claim"}
+            disabled={getTimestamp() < e.release_date.hex / 1000}
           />
         </TableCell>
       </TableRow>
@@ -342,7 +437,7 @@ export const VestingList = () => {
                         ))}
                       </TableRow>
                     </TableHead>
-                    <TableBody>{listVesting(outgoingvestingList, true)}</TableBody>
+                    <TableBody>{listVesting(outgoingvestingList)}</TableBody>
                   </Table>
                 </TableContainer>
               </Grid>
@@ -374,14 +469,14 @@ export const VestingList = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        {tableHeaders.map((header, index) => (
+                        {tableHeadersIncoming.map((header, index) => (
                           <TableCell key={index} className={classes.tableTitle}>
                             {header}
                           </TableCell>
                         ))}
                       </TableRow>
                     </TableHead>
-                    <TableBody>{listVesting(vestingList)}</TableBody>
+                    <TableBody>{listIncomingVesting(vestingList)}</TableBody>
                   </Table>
                 </TableContainer>
               </Grid>

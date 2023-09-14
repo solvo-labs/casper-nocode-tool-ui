@@ -220,8 +220,6 @@ export const Vesting = () => {
         cliff_timestamp: CLValueBuilder.u64(activateCliff ? vestParams.cliffDuration * vestParams.selectedCliffDuration * 1000 : 0),
       });
 
-      console.log(args);
-
       const deploy = contract.install(new Uint8Array(vestingWasm!), args, "120000000000", ownerPublicKey, "casper-test");
 
       const deployJson = DeployUtil.deployToJson(deploy);
@@ -247,7 +245,7 @@ export const Vesting = () => {
         toastr.success(response.data, "Vesting deployed successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
-        navigate("/tokenomics");
+        navigate("/vesting-list");
       } catch (error: any) {
         alert(error.message);
       }
