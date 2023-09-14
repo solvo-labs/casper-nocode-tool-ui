@@ -23,7 +23,7 @@ import PendingIcon from "@mui/icons-material/Pending";
 import { useEffect, useState } from "react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { UnlockSchedule, UnlockScheduleType } from "../../lib/models/Vesting";
-import { SERVER_API, contractHashToContractPackageHash, fetchErc20TokenMeta, fetchVestingNamedKeys, getVestingDetails } from "../../utils/api";
+import { SERVER_API, contractHashToContractPackageHash, fetchVestingNamedKeys, getVestingDetails, setVestingRecipients } from "../../utils/api";
 import { useOutletContext } from "react-router-dom";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
@@ -185,7 +185,7 @@ export const VestingList = () => {
     const tokenContract = uit32ArrayToHex(data.cep18_contract_hash);
     const contractPackageHash = await contractHashToContractPackageHash(tokenContract);
 
-    contract.setContractHash("hash-" + data.tokenContract);
+    contract.setContractHash("hash-" + tokenContract);
     const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
     const args = RuntimeArgs.fromMap({
@@ -215,12 +215,12 @@ export const VestingList = () => {
     }
   };
 
-  const releaseVesting = async (data: any) => {
+  const releaseVesting = async (input: any) => {
+    setLoading(true);
+    await transferTokenForVesting(input);
     const contract = new Contracts.Contract();
 
-    await transferTokenForVesting(data);
-
-    contract.setContractHash(data.key);
+    contract.setContractHash(input.key);
     const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
     const args = RuntimeArgs.fromMap({});
@@ -242,9 +242,12 @@ export const VestingList = () => {
       toastr.success(response.data, "Released successfully.");
       window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
-      // setActionLoader(false);
+      await setVestingRecipients(input.key);
+
+      setLoading(false);
     } catch (error: any) {
       alert(error.message);
+      setLoading(false);
     }
   };
 
@@ -274,7 +277,8 @@ export const VestingList = () => {
               isOutgoing ? releaseVesting(e) : () => {};
             }}
             label={isOutgoing ? "Release" : "Claim"}
-            disabled={isOutgoing && e.released}
+            disabled={false}
+            // disabled={isOutgoing && e.released}
           />
         </TableCell>
       </TableRow>

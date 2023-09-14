@@ -240,3 +240,9 @@ export const contractHashToContractPackageHash = async (contractHash: string) =>
 
   return response.data.contract_package_hash;
 };
+
+export const setVestingRecipients = async (contractHash: string) => {
+  const response = await axios.get<any>(SERVER_API + "set_vesting_recipients?contractHash=" + contractHash);
+
+  return response.data;
+};
