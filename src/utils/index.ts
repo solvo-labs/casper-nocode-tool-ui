@@ -59,3 +59,9 @@ export class CasperHelpers {
     return Buffer.from(hashHex, "hex");
   }
 }
+
+export const uit32ArrayToHex = (data: any) => {
+  return Object.values(data)
+    .map((byte: any) => byte.toString(16).padStart(2, "0"))
+    .join("");
+};

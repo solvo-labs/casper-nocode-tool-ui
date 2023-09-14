@@ -228,3 +228,15 @@ export const getAllListingForSale = async () => {
 
   return response.data;
 };
+
+export const getVestingDetails = async (contractHash: string) => {
+  const response = await axios.get<any>(SERVER_API + "get_vesting_contract?contractHash=" + contractHash);
+
+  return response.data;
+};
+
+export const contractHashToContractPackageHash = async (contractHash: string) => {
+  const response = await axios.get(api + "contracts/" + contractHash + "?fields=contract_package");
+
+  return response.data.contract_package_hash;
+};

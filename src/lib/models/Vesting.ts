@@ -9,12 +9,14 @@ export type VestParams = {
 
 export type VestParamsData = {
   startDate: Dayjs;
-  period: number;
-  cliff?: Dayjs;
-  cliffAmount?: number;
+
+  duration: number;
   selectedDuration: number;
+
   selectedUnlockSchedule: number;
-  automaticWithdraw: boolean;
+
+  selectedCliffDuration: number;
+  cliffDuration: number;
 };
 
 export type UnlockScheduleType = {
