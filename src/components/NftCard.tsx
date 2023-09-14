@@ -1,7 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import { Card, CardActionArea, CardContent, CardMedia, Theme, Typography } from "@mui/material";
-import { CustomButton } from "./CustomButton";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {

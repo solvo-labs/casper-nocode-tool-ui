@@ -61,7 +61,8 @@ const CreateMarketplace = () => {
           headers: { "Content-Type": "application/json" },
         });
         toastr.success(response.data, "Marketplace deployed successfully.");
-        console.log(response.data);
+
+        navigate("/marketplace");
       } catch (error: any) {
         alert(error.message);
         setLoading(false);

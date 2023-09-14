@@ -28,7 +28,7 @@ import { makeStyles } from "@mui/styles";
 import { useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { RecipientModal } from "../../utils/types";
-import { Durations, DurationsType, RecipientFormInput, UnlockSchedule, VestParamsData } from "../../lib/models/Vesting";
+import { Durations, DurationsType, RecipientFormInput, UnlockSchedule, UnlockScheduleType, VestParamsData } from "../../lib/models/Vesting";
 import dayjs from "dayjs";
 import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
@@ -177,7 +177,7 @@ export const Vesting = () => {
   });
   const [recipients, setRecipients] = useState<RecipientFormInput[]>([]);
   const [recipient, setRecipient] = useState<RecipientFormInput>(recipientDefaultState);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -204,11 +204,11 @@ export const Vesting = () => {
         vesting_amount: CLValueBuilder.u256(Number(queryParams.amount) * Math.pow(10, 8)),
         cep18_contract_hash: CasperHelpers.stringToKey(queryParams.tokenid || ""),
         start_date: CLValueBuilder.u64(vestParams.startDate.unix() * 1000),
-        duration: CLValueBuilder.u64(1000),
+        duration: CLValueBuilder.u64(vestParams.selectedDuration * vestParams.selectedUnlockSchedule * 1000),
+        period: CLValueBuilder.u64(vestParams.period * 1000),
         recipients: CLValueBuilder.list(recipientList),
         allocations: CLValueBuilder.list(allocation_list),
         cliff_timestamp: CLValueBuilder.u64(activateCliff ? (vestParams.cliff?.unix() || 0) * 1000 : 0),
-        cliff_amount: CLValueBuilder.u256(vestParams.cliffAmount),
       });
 
       const deploy = contract.install(new Uint8Array(vestingWasm!), args, "100000000000", ownerPublicKey, "casper-test");
@@ -337,7 +337,7 @@ export const Vesting = () => {
                 </FormControl>
               </Grid>
             </Grid>
-            {/* <FormControl fullWidth>
+            <FormControl fullWidth>
               <InputLabel id="selectLabel" sx={{ color: "white" }}>
                 Unlock Schedule
               </InputLabel>
@@ -361,7 +361,7 @@ export const Vesting = () => {
                   );
                 })}
               </Select>
-            </FormControl> */}
+            </FormControl>
             <FormControlLabel control={<Switch color="error" value={activateCliff} onChange={() => setActivateCliff(!activateCliff)} />} label="Activate Cliff" />
 
             {activateCliff && (
