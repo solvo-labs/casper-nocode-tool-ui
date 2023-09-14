@@ -53,7 +53,6 @@ const ImageUpload: React.FC<Props> = ({ file, setFile, loading }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleClearButtonClick = () => {
-    console.log("silindi", file);
     setFile(null);
     inputRef.current!.value = "";
   };
@@ -63,9 +62,6 @@ const ImageUpload: React.FC<Props> = ({ file, setFile, loading }) => {
     if (event.target.files) {
       const file = event.target.files[0];
       setFile(file);
-      console.log("eklendi", file);
-
-      // createUri();
     }
   };
 
