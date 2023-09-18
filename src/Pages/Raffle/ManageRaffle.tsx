@@ -130,47 +130,47 @@ const ManageRaffle = () => {
   const handleClose = () => setOpen(false);
   const classes = useStyles();
 
-//   useEffect(() => {
-//     const init = async () => {
-//       const data = await fetchCep78NamedKeys(publicKey);
+  useEffect(() => {
+    const init = async () => {
+      const data = await fetchCep78NamedKeys(publicKey);
 
-//       const promises = data.map((data) => getNftCollection(data.key));
+      const promises = data.map((data) => getNftCollection(data.key));
 
-//       const result = await Promise.all(promises);
+      const result = await Promise.all(promises);
 
-//       setLoading(false);
-//       console.log(result);
-//       setCollections(result);
-//     };
+      setLoading(false);
+      console.log(result);
+      setCollections(result);
+    };
 
-//     init();
-//   }, []);
+    init();
+  }, []);
 
-//   useEffect(() => {
-//     const init = async () => {
-//       setLoadingNft(true);
-//       if (selectedCollection?.contractHash) {
-//         const nftCollection = await getNftCollection(
-//           selectedCollection?.contractHash
-//         );
-//         const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
+  useEffect(() => {
+    const init = async () => {
+      setLoadingNft(true);
+      if (selectedCollection?.contractHash) {
+        const nftCollection = await getNftCollection(
+          selectedCollection?.contractHash
+        );
+        const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
 
-//         let promises = [];
-//         for (let index = 0; index < nftCount; index++) {
-//           promises.push(
-//             getNftMetadata(selectedCollection.contractHash, index.toString())
-//           );
-//         }
+        let promises = [];
+        for (let index = 0; index < nftCount; index++) {
+          promises.push(
+            getNftMetadata(selectedCollection.contractHash, index.toString())
+          );
+        }
 
-//         const nftMetas = await Promise.all(promises);
-//         setNfts(nftMetas);
-//         console.log(nftMetas);
-//         setLoadingNft(false);
-//       }
-//     };
+        const nftMetas = await Promise.all(promises);
+        setNfts(nftMetas);
+        console.log(nftMetas);
+        setLoadingNft(false);
+      }
+    };
 
-//     init();
-//   }, [selectedCollection]);
+    init();
+  }, [selectedCollection]);
 
   return (
     <Grid container className={classes.container}>
