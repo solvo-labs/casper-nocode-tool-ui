@@ -81,7 +81,7 @@ export type NFT = {
 export type CollectionMetada = {
   name: string;
   symbol: string;
-  hash: string;
+  contractHash: string;
   json_schema: {
     name: string;
     description: string;
@@ -108,3 +108,11 @@ export type Listing = {
   createdAt?: string;
   active?: boolean;
 };
+
+export type Raffle = {
+  collectionHash: string;
+  nftIndex: number;
+  start: number;
+  end: number;
+  price: number;
+}
