@@ -4,8 +4,8 @@ const Main: React.FC = () => {
   return (
     <div
       style={{
-        height: "calc(100vh - 8rem)",
-        width: "100%",
+        height: "50vh",
+        width: "100vw",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
