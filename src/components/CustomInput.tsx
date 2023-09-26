@@ -8,9 +8,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     [theme.breakpoints.down("sm")]: {
       minWidth: "300px",
     },
-    //   "& .MuiInputBase-input.Mui-disabled": {
-    //     WebkitTextFillColor: "gray",
-    // },
     "& input.Mui-disabled": {
       border: "1px solid gray",
       borderRadius: "16px",
@@ -18,7 +15,20 @@ const useStyles = makeStyles((theme: Theme) => ({
       labelColor: "gray",
     },
     "& .MuiInputLabel-root.Mui-disabled": { color: "gray" },
+    // "& .MuiInputLabel-root": {
+    //   color: "white",
+    // },
   },
+  light: {
+    "& .MuiInputLabel-root": {
+      color: "black",
+    },
+  },
+  dark:{
+    "& .MuiInputLabel-root": {
+      color: "white",
+    },
+  }
 }));
 
 type Props = {
@@ -31,6 +41,7 @@ type Props = {
   onChange: any;
   disable?: boolean;
   required?: boolean;
+  floor?: "light" | "dark";
 };
 
 export const CustomInput: React.FC<Props> = ({
@@ -43,19 +54,14 @@ export const CustomInput: React.FC<Props> = ({
   onChange,
   disable = false,
   required,
+    floor,
 }) => {
   const classes = useStyles();
 
   return (
     <TextField
-      className={classes.input}
+      className={floor=="light" ? (classes.input, classes.light) : (classes.input, classes.dark)}
       sx={{
-        input: {
-          color: "#FFFFFF",
-        },
-        label: {
-          color: "#FFFFFF",
-        },
         "& .MuiInputLabel-root.Mui-focused": {
           color: "#FF0011",
         },
