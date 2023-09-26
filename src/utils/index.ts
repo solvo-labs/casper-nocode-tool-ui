@@ -29,7 +29,6 @@ export const getMetadataImage = async (metadata: any, type: FETCH_IMAGE_TYPE) =>
 
     if (type == FETCH_IMAGE_TYPE.NFT) {
       if (metadata.imageURL && metadata.imageURL.startsWith("https://ipfs.io/ipfs/")) {
-        console.log("here");
         const result = await fetchIPFSImage(metadata.imageURL);
         imageLink = result;
       }
