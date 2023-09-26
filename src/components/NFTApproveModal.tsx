@@ -164,7 +164,7 @@ export const ApproveNFTModal: React.FC<ApproveModal> = ({listSelected, selected,
                                 {approveOperatorType == "raffle" && (
                                     <FormControl>
                                         <CustomSelect
-                                            id="raflle"
+                                            id="raffle"
                                             value={selected ? selected : "default"}
                                             label="Raffles"
                                             onChange={(e: any) => selectedOnChange(e.target.value)}
@@ -269,7 +269,7 @@ export const ApproveNFTModalonRaffePage: React.FC<ApproveNFTonRafflePage> = ({op
                                     }}
                                 >
                                     <MenuItem
-                                        key={"default"}
+                                        key={-1}
                                         value={-1}
                                             onChange={(event:any) =>
                                         nftOnChange(event.target.value)
