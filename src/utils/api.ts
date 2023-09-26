@@ -2,7 +2,8 @@ import axios from "axios";
 import { ERC20Token, Listing } from "./types";
 
 const api = "https://event-store-api-clarity-testnet.make.services/";
-export const SERVER_API = import.meta.env.DEV ? "http://localhost:3000/api/" : "https://18.185.15.120:8000/";
+// export const SERVER_API = import.meta.env.DEV ? "http://localhost:3000/api" : "https://18.185.15.120:8000/";
+export const SERVER_API = "https://casperdev.dappend.com/api/";
 
 // https://event-store-api-clarity-testnet.make.services/accounts/5e542e3bfacb53152a07322519eedd6f6cad1689508d588051603459b4b12590/erc20-tokens
 
@@ -225,6 +226,30 @@ export const getMarketplaceListing = async (contractHash: string) => {
 
 export const getAllListingForSale = async () => {
   const response = await axios.get<Listing[]>(SERVER_API + "fetch_listing");
+
+  return response.data;
+};
+
+export const getVestingDetails = async (contractHash: string) => {
+  const response = await axios.get<any>(SERVER_API + "get_vesting_contract?contractHash=" + contractHash);
+
+  return response.data;
+};
+
+export const contractHashToContractPackageHash = async (contractHash: string) => {
+  const response = await axios.get(api + "contracts/" + contractHash + "?fields=contract_package");
+
+  return response.data.contract_package_hash;
+};
+
+export const setVestingRecipients = async (contractHash: string) => {
+  const response = await axios.get<any>(SERVER_API + "set_vesting_recipients?contractHash=" + contractHash);
+
+  return response.data;
+};
+
+export const getVestingList = async (accountHash: string) => {
+  const response = await axios.get<any>(SERVER_API + "get_vesting_list?accountHash=" + accountHash);
 
   return response.data;
 };
