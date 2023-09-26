@@ -1,6 +1,6 @@
 //@ts-ignore
 import { CLPublicKey } from "casper-js-sdk";
-import { Token, initTokens } from "../../utils/api";
+import { Token, fetchErc20TokenDetails, fetchVestingNamedKeys, getVestingDetails, initTokens } from "../../utils/api";
 import { Section } from "../../utils/types";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
@@ -11,6 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import TokenSelector from "../../components/TokenSelector";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
+import { uit32ArrayToHex } from "../../utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -72,6 +73,7 @@ export const Tokenomics = () => {
       isOldSection: false,
     },
   ]);
+  const [supply, setSupply] = useState<number>();
 
   const navigate = useNavigate();
 
@@ -89,29 +91,29 @@ export const Tokenomics = () => {
     if (selectedToken) {
       // const totalBalance = selectedToken.amount / Math.pow(10, selectedToken.decimal);
 
-      const availableBalance = selectedToken.balance! - sections.reduce((acc, cur) => acc + cur.amount, 0);
+      const availableBalance = supply! / Math.pow(10, selectedToken.decimals) - sections.reduce((acc, cur) => acc + cur.amount, 0);
 
-      const availablePercent = (availableBalance / Number(selectedToken.balance)) * 100;
+      const availablePercent = (availableBalance / Number(supply! / Math.pow(10, selectedToken.decimals))) * 100;
 
       return { availableBalance, availablePercent };
     }
-  }, [sections, selectedToken]);
+  }, [sections, selectedToken, supply]);
 
   const sectionSetter = (e: React.ChangeEvent<HTMLInputElement>, index: number, key: keyof Section) => {
     const newSection = [...sections];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-    if (selectedToken) {
+    if (selectedToken && supply) {
       let targetValue: any;
-      const supply = selectedToken.balance || 0;
+      let supplyCalc = supply / Math.pow(10, selectedToken.decimals);
 
       switch (key) {
         case "amount":
           targetValue = +e.target.value;
 
           // eslint-disable-next-line no-case-declarations
-          const newPercent: number = +((targetValue / supply) * 100).toFixed(2);
+          const newPercent: number = +((targetValue / supplyCalc!) * 100).toFixed(2);
           newSection[index] = {
             ...newSection[index],
             [key]: targetValue,
@@ -122,7 +124,7 @@ export const Tokenomics = () => {
           targetValue = +e.target.value;
 
           // eslint-disable-next-line no-case-declarations
-          const newAmount: number = (supply / 100) * targetValue;
+          const newAmount: number = (supplyCalc! / 100) * targetValue;
           newSection[index] = {
             ...newSection[index],
             amount: newAmount,
@@ -141,10 +143,41 @@ export const Tokenomics = () => {
     setSections(newSection);
   };
 
+  const fetchHistory = async (newToken: Token) => {
+    try {
+      setLoading(true);
+      let data = await fetchVestingNamedKeys(publicKey);
+
+      const vestingDetailsPromises = data.map((dt) => getVestingDetails(dt.key));
+
+      const vestingDetails = await Promise.all(vestingDetailsPromises);
+
+      const vestingHistory = vestingDetails.filter((vd) => uit32ArrayToHex(vd.cep18_contract_hash) === newToken.contractHash.substring(5));
+      const tokenSupply = (await fetchErc20TokenDetails(newToken.contractHash || "")).total_supply;
+      setSupply(parseInt(tokenSupply.hex));
+
+      const oldSections: Section[] = vestingHistory.map((ol) => {
+        console.log(parseInt(ol.vesting_amount.hex) / parseInt(tokenSupply.hex));
+        return {
+          name: ol.contract_name,
+          amount: parseInt(ol.vesting_amount.hex) / Math.pow(10, newToken.decimals),
+          percent: (parseInt(ol.vesting_amount.hex) / parseInt(tokenSupply.hex)) * 100,
+          isOldSection: true,
+        };
+      });
+
+      setSections([...sections, ...oldSections]);
+      setLoading(false);
+    } catch (error) {
+      toastr.error("Something went wrong");
+    }
+  };
+
   useEffect(() => {
     const init = async () => {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
       const accountHash = ownerPublicKey.toAccountHashStr();
+
       const { finalData } = await initTokens(accountHash, publicKey);
 
       const filteredFinalData = finalData.filter((fd) => fd.balance > 0);
@@ -188,7 +221,14 @@ export const Tokenomics = () => {
               <Divider sx={{ marginTop: "1rem", background: "white" }}></Divider>
             </Grid>
             <Grid item>
-              <TokenSelector selectedToken={selectedToken} setSelectedToken={(data) => setSelectedToken(data)} tokens={tokens}></TokenSelector>
+              <TokenSelector
+                selectedToken={selectedToken}
+                setSelectedToken={(data) => {
+                  fetchHistory(data);
+                  setSelectedToken(data);
+                }}
+                tokens={tokens}
+              ></TokenSelector>
             </Grid>
           </Stack>
         </Grid>

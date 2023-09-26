@@ -28,7 +28,7 @@ import { makeStyles } from "@mui/styles";
 import { useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { RecipientModal } from "../../utils/types";
-import { Durations, DurationsType, RecipientFormInput, UnlockSchedule, VestParamsData } from "../../lib/models/Vesting";
+import { Durations, DurationsType, RecipientFormInput, UnlockSchedule, UnlockScheduleType, VestParamsData } from "../../lib/models/Vesting";
 import dayjs from "dayjs";
 import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
@@ -159,15 +159,24 @@ const recipientDefaultState = {
   recipientAddress: "",
 };
 
+// startDate: Dayjs;
+
+// duration: number;
+// selectedDuration: number;
+
+// selectedUnlockSchedule: number;
+
+// selectedCliffDuration: number;
+// cliffDuration: number;
+
 export const Vesting = () => {
   const [vestParams, setVestParams] = useState<VestParamsData>({
     startDate: dayjs().add(1, "h"),
-    cliff: dayjs().add(3, "day"),
-    cliffAmount: 0,
-    period: 1,
+    duration: 1,
     selectedDuration: Durations.DAY,
     selectedUnlockSchedule: UnlockSchedule.HOURLY,
-    automaticWithdraw: true,
+    cliffDuration: 1,
+    selectedCliffDuration: Durations.DAY,
   });
 
   const [activateCliff, setActivateCliff] = useState<boolean>(false);
@@ -177,7 +186,7 @@ export const Vesting = () => {
   });
   const [recipients, setRecipients] = useState<RecipientFormInput[]>([]);
   const [recipient, setRecipient] = useState<RecipientFormInput>(recipientDefaultState);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -204,14 +213,14 @@ export const Vesting = () => {
         vesting_amount: CLValueBuilder.u256(Number(queryParams.amount) * Math.pow(10, 8)),
         cep18_contract_hash: CasperHelpers.stringToKey(queryParams.tokenid || ""),
         start_date: CLValueBuilder.u64(vestParams.startDate.unix() * 1000),
-        duration: CLValueBuilder.u64(1000),
+        duration: CLValueBuilder.u64(vestParams.duration * vestParams.selectedDuration * 1000),
+        period: CLValueBuilder.u64(vestParams.selectedUnlockSchedule * 1000),
         recipients: CLValueBuilder.list(recipientList),
         allocations: CLValueBuilder.list(allocation_list),
-        cliff_timestamp: CLValueBuilder.u64(activateCliff ? (vestParams.cliff?.unix() || 0) * 1000 : 0),
-        cliff_amount: CLValueBuilder.u256(vestParams.cliffAmount),
+        cliff_timestamp: CLValueBuilder.u64(activateCliff ? vestParams.cliffDuration * vestParams.selectedCliffDuration * 1000 : 0),
       });
 
-      const deploy = contract.install(new Uint8Array(vestingWasm!), args, "100000000000", ownerPublicKey, "casper-test");
+      const deploy = contract.install(new Uint8Array(vestingWasm!), args, "120000000000", ownerPublicKey, "casper-test");
 
       const deployJson = DeployUtil.deployToJson(deploy);
       console.log("deployJson", deployJson);
@@ -236,7 +245,7 @@ export const Vesting = () => {
         toastr.success(response.data, "Vesting deployed successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
-        navigate("/tokenomics");
+        navigate("/vesting-list");
       } catch (error: any) {
         alert(error.message);
       }
@@ -299,9 +308,9 @@ export const Vesting = () => {
                     id="name"
                     name="name"
                     type="text"
-                    value={vestParams.period}
+                    value={vestParams.duration}
                     onChange={(e: any) => {
-                      setVestParams({ ...vestParams, period: e.target.value });
+                      setVestParams({ ...vestParams, duration: e.target.value });
                     }}
                     disable={false}
                   ></CustomInput>
@@ -322,7 +331,6 @@ export const Vesting = () => {
                         selectedDuration: Number(e.target.value),
                       });
                     }}
-                    // className="abc"
                     className={classes.select}
                     id={"durations"}
                   >
@@ -337,7 +345,7 @@ export const Vesting = () => {
                 </FormControl>
               </Grid>
             </Grid>
-            {/* <FormControl fullWidth>
+            <FormControl fullWidth>
               <InputLabel id="selectLabel" sx={{ color: "white" }}>
                 Unlock Schedule
               </InputLabel>
@@ -361,46 +369,58 @@ export const Vesting = () => {
                   );
                 })}
               </Select>
-            </FormControl> */}
+            </FormControl>
             <FormControlLabel control={<Switch color="error" value={activateCliff} onChange={() => setActivateCliff(!activateCliff)} />} label="Activate Cliff" />
 
             {activateCliff && (
               <>
                 <FormControl fullWidth>
-                  <CustomInput
-                    label="Cliff Amount (Optional)"
-                    name="cliffAmount"
-                    onChange={(e: any) =>
-                      setVestParams({
-                        ...vestParams,
-                        cliffAmount: e.target.value,
-                      })
-                    }
-                    placeholder={"Cliff Amount"}
-                    type="text"
-                    value={vestParams.cliffAmount || 0}
-                    disable={false}
-                    required={false}
-                    id=""
-                  />
-                </FormControl>
-                <FormControl fullWidth>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    {
-                      <DateTimePicker
-                        className={classes.dateTimePicker}
-                        defaultValue={vestParams.cliff}
-                        disablePast
-                        label="Cliff Date"
-                        minDate={vestParams.startDate}
-                        onChange={(value: dayjs.Dayjs | null) => {
-                          if (value) {
-                            setVestParams({ ...vestParams, cliff: value });
-                          }
-                        }}
-                      />
-                    }
-                  </LocalizationProvider>
+                  <Grid container>
+                    <Grid item xs={3}>
+                      <FormControl fullWidth>
+                        <CustomInput
+                          placeholder="Cliff Duration"
+                          label="Cliff Duration"
+                          id="cliffDuration"
+                          name="cliffDuration"
+                          type="text"
+                          value={vestParams.cliffDuration}
+                          onChange={(e: any) => {
+                            setVestParams({ ...vestParams, cliffDuration: e.target.value });
+                          }}
+                          disable={false}
+                        ></CustomInput>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={1}></Grid>
+                    <Grid item xs={8}>
+                      <FormControl fullWidth>
+                        <InputLabel sx={{ color: "white" }} id="selectLabel">
+                          Durations
+                        </InputLabel>
+                        <Select
+                          value={vestParams.selectedCliffDuration.toString()}
+                          label="Durations"
+                          onChange={(e: SelectChangeEvent<string>) => {
+                            setVestParams({
+                              ...vestParams,
+                              selectedCliffDuration: Number(e.target.value),
+                            });
+                          }}
+                          className={classes.select}
+                          id={"durations"}
+                        >
+                          {Object.keys(Durations).map((tk) => {
+                            return (
+                              <MenuItem key={tk} value={Durations[tk as keyof DurationsType]}>
+                                {tk}
+                              </MenuItem>
+                            );
+                          })}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  </Grid>
                 </FormControl>
               </>
             )}
@@ -410,7 +430,7 @@ export const Vesting = () => {
           <CustomButton label="Add Recipient" disabled={false} onClick={() => setRecipientModal({ ...recipientModal, show: true })} />
         </Grid>
         <Grid item marginTop={2} marginBottom={5} display={"flex"} justifyContent={"center"} alignItems={"center"} flexDirection={"column"}>
-          <CustomButton label="Create Vesting Contract" disabled={vestParams.period <= 0 || recipients.length <= 0} onClick={createVesting} />
+          <CustomButton label="Create Vesting Contract" disabled={vestParams.duration <= 0 || recipients.length <= 0} onClick={createVesting} />
         </Grid>
 
         <Modal

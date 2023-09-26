@@ -17,7 +17,7 @@ export const fetchContract = async (path: string) => {
 
 export const getMetadataImage = async (metadata: any, type: FETCH_IMAGE_TYPE) => {
   try {
-    let imageLink: string = "../public/image/casper.png";
+    let imageLink: string = "images/casper.png";
 
     if (type == FETCH_IMAGE_TYPE.COLLECTION) {
       const parsedData = JSON.parse(metadata);
@@ -37,7 +37,7 @@ export const getMetadataImage = async (metadata: any, type: FETCH_IMAGE_TYPE) =>
     return imageLink;
   } catch (error) {
     console.error("Error parsing JSON:", error);
-    return "../public/image/casper.png";
+    return "images/casper.png";
   }
 };
 
@@ -58,3 +58,9 @@ export class CasperHelpers {
     return Buffer.from(hashHex, "hex");
   }
 }
+
+export const uit32ArrayToHex = (data: any) => {
+  return Object.values(data)
+    .map((byte: any) => byte.toString(16).padStart(2, "0"))
+    .join("");
+};
