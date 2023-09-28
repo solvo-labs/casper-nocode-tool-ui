@@ -70,20 +70,7 @@ export const Stake = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [validators, setValidators] = useState<any[]>([]);
   const [selectedValidator, setSelectedValidator] = useState<any>();
-  const [publicKey, provider, , , , , , , delegateWasm] =
-    useOutletContext<
-      [
-        publickey: string,
-        provider: any,
-        cep18Wasm: ArrayBuffer,
-        cep78Wasm: ArrayBuffer,
-        marketplaceWasm: ArrayBuffer,
-        vestingWasm: ArrayBuffer,
-        executeListingWasm: ArrayBuffer,
-        raffleWasm: ArrayBuffer,
-        delegateWasm: ArrayBuffer
-      ]
-    >();
+  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
 
   useEffect(() => {
     getValidators()
@@ -103,6 +90,7 @@ export const Stake = () => {
       if (amount) {
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
         const contract = new Contracts.Contract();
+        contract.setContractHash("hash-93d923e336b20a4c4ca14d592b60e5bd3fe330775618290104f9beb326db7ae2");
 
         // parameters
         const args = RuntimeArgs.fromMap({
@@ -111,7 +99,7 @@ export const Stake = () => {
           delegator: CLValueBuilder.key(ownerPublicKey),
         });
 
-        const deploy = contract.install(new Uint8Array(delegateWasm), args, "100000000000", ownerPublicKey, "casper-test");
+        const deploy = contract.callEntrypoint("delegate", args, ownerPublicKey, "casper-test", "1000000000");
 
         const deployJson = DeployUtil.deployToJson(deploy);
         console.log("deployJson", deployJson);
