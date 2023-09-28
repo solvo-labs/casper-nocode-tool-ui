@@ -8,12 +8,12 @@ import {
     Modal,
     RadioGroup, SelectChangeEvent,
     Stack,
-    Theme,
+    Theme, Tooltip,
     Typography
 } from "@mui/material";
 import {NftCard} from "./NftCard.tsx";
 import {makeStyles} from "@mui/styles";
-import { CollectionMetada, NFT} from "../utils/types.ts";
+import {CollectionMetada, Marketplace, NFT, RaffleMetadata} from "../utils/types.ts";
 import { CustomButton } from "./CustomButton.tsx";
 import React from "react";
 import { CustomSelect } from "./CustomSelect.tsx";
@@ -56,15 +56,16 @@ type ListNFTModalProps = {
     handleOpenApprove?: any;
 }
 type ApproveModal = {
-    listSelected: any[] | undefined;
     selected: string | undefined;
     selectedOnChange: (param: string) => void;
-    // marketplace: any;
+    marketplaces: Marketplace[] | undefined;
+    raffles: RaffleMetadata[] | undefined;
     open: boolean;
     handleClose: () => void;
     approve: () => void;
     approveOperatorType: string;
     approveOperatorOnChange: (param: string) => void;
+    disable: boolean;
 }
 
 const useStyles = makeStyles((_theme: Theme) => ({
@@ -121,7 +122,7 @@ export const ListNFTModal: React.FC<ListNFTModalProps> = ({collection,open,handl
         </Modal>
     );
 }
-export const ApproveNFTModal: React.FC<ApproveModal> = ({listSelected, selected,selectedOnChange,open,handleClose,approve,approveOperatorType,approveOperatorOnChange}) => {
+export const ApproveNFTModal: React.FC<ApproveModal> = ({selected, marketplaces, raffles,selectedOnChange,open,handleClose,approve,approveOperatorType,approveOperatorOnChange, disable}) => {
     const classes = useStyles();
 
     return(
@@ -136,28 +137,33 @@ export const ApproveNFTModal: React.FC<ApproveModal> = ({listSelected, selected,
                         <Grid item marginTop={"2rem"} display={"flex"} justifyContent={"center"}>
                             <Stack spacing={"2rem"}>
                                 <FormControl>
-                                    <FormLabel sx={{ color: "white" }}>Which one would you like to use for approval?</FormLabel>
+                                    <FormLabel sx={{display:"flex", justifyContent:"center", color: "white" }}>Which one would you like to use for approval?</FormLabel>
                                     <RadioGroup row sx={{display:"flex", justifyContent:"center", marginTop:"1rem"}}>
-                                        <FormControlLabel value="marketplace" control={<CustomRadioButton />} label="Marketplace" onClick={(e:any) => approveOperatorOnChange(e.target.value)}/>
-                                        <FormControlLabel value="raffle" control={<CustomRadioButton />} label="Raffle" onClick={(e:any) => approveOperatorOnChange(e.target.value)}/>
+                                        <FormControlLabel value="marketplace" control={<CustomRadioButton />} label="Marketplace" onClick={(e:any) => {
+                                            approveOperatorOnChange(e.target.value);
+                                            selectedOnChange("default");
+                                        }}/>
+                                        <FormControlLabel value="raffle" control={<CustomRadioButton />} label="Raffle" onClick={(e:any) => {
+                                            approveOperatorOnChange(e.target.value);
+                                            selectedOnChange("default");
+                                        }}/>
                                     </RadioGroup>
                                 </FormControl>
                                 {approveOperatorType == "marketplace" && (
                                     <FormControl>
                                         <CustomSelect
-                                            id="marketplace"
-                                            value={selected ? selected : "default"}
+                                            id="marketplaces"
                                             label="Marketplaces"
-                                            onChange={(e: any) => selectedOnChange(e.target.value)}
-                                        >
-                                            <MenuItem value={"default"}>Select Marketplace</MenuItem>
-                                            {/*{listSelected && listSelected.map((mp: any) => {*/}
-                                            {/*    return (*/}
-                                            {/*        <MenuItem key={mp.key} value={mp.key}>*/}
-                                            {/*            {mp.name}*/}
-                                            {/*        </MenuItem>*/}
-                                            {/*    );*/}
-                                            {/*})}*/}
+                                            value={selected ? selected : "default"}
+                                            onChange={(event: SelectChangeEvent) => selectedOnChange(event.target.value)}>
+                                            <MenuItem key={"default"} value={"default"}>Select Marketplace</MenuItem>
+                                            {marketplaces && marketplaces.map((mp: any, index: number) => {
+                                                return (
+                                                    <MenuItem key={mp.key} value={mp.contractHash}>
+                                                        {(mp.contractName ? mp.contractName : "nameless") + "[" +index+ "]" }
+                                                    </MenuItem>
+                                                );
+                                            })}
                                         </CustomSelect>
                                     </FormControl>
                                 )}
@@ -167,22 +173,22 @@ export const ApproveNFTModal: React.FC<ApproveModal> = ({listSelected, selected,
                                             id="raffle"
                                             value={selected ? selected : "default"}
                                             label="Raffles"
-                                            onChange={(e: any) => selectedOnChange(e.target.value)}
+                                            onChange={(event: SelectChangeEvent) => selectedOnChange(event.target.value)}
                                         >
                                             <MenuItem value={"default"}>Select Raffle</MenuItem>
-                                            {/*{listSelected && listSelected.map((mp: any) => {*/}
-                                            {/*    return (*/}
-                                            {/*        <MenuItem key={mp.key} value={mp.key}>*/}
-                                            {/*            {mp.name}*/}
-                                            {/*        </MenuItem>*/}
-                                            {/*    );*/}
-                                            {/*})}*/}
+                                            {raffles && raffles.map((rf: any, index: number) => {
+                                                return (
+                                                    <MenuItem key={index} value={rf.key}>
+                                                        {rf.name}
+                                                    </MenuItem>
+                                                );
+                                            })}
                                         </CustomSelect>
                                     </FormControl>
                                 )}
                                 <Stack direction={"row"} spacing={"2rem"} justifyContent={"center"}>
-                                    <CustomButton disabled={false} label="Deny" onClick={handleClose}></CustomButton>
-                                    <CustomButton disabled={false} label="Confirm" onClick={approve}></CustomButton>
+                                    <CustomButton disabled={false} label="Back" onClick={handleClose}></CustomButton>
+                                    <CustomButton disabled={disable} label="Confirm" onClick={approve}></CustomButton>
                                 </Stack>
                             </Stack>
                         </Grid>
@@ -204,9 +210,10 @@ type ApproveNFTonRafflePage = {
     selectedNFTIndex: number | undefined;
     nftOnChange: (param: number) => void;
     approve: () => void;
+    selectedRaffle: RaffleMetadata;
 }
 
-export const ApproveNFTModalonRaffePage: React.FC<ApproveNFTonRafflePage> = ({open,handleClose, loadingCollection, loadingNFT, collections,nfts, selectedCollection, selectedNFTIndex, collectionOnChange, nftOnChange, approve}) => {
+export const ApproveNFTModalonRaffePage: React.FC<ApproveNFTonRafflePage> = ({open,handleClose, loadingCollection, loadingNFT, collections,nfts, selectedCollection, selectedNFTIndex, collectionOnChange, nftOnChange, approve,selectedRaffle}) => {
     const classes = useStyles();
 
     return(
@@ -232,6 +239,10 @@ export const ApproveNFTModalonRaffePage: React.FC<ApproveNFTonRafflePage> = ({op
                             </Typography>
                         </Grid>
                         <Stack direction={"column"} spacing={4}>
+                            <Typography>Operator: {selectedRaffle.name}</Typography>
+                            <Tooltip title={selectedRaffle.key}>
+                            <Typography>Hash: {selectedRaffle.key.slice(0,30)}</Typography>
+                            </Tooltip>
                             <CustomSelect
                                 value={selectedCollection?.contractHash || "default"}
                                 id="customselect"
