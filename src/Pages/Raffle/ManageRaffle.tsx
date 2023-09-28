@@ -1,5 +1,5 @@
 import {
-  Box,
+  Box, CircularProgress,
   Grid,
   IconButton,
   Menu,
@@ -11,34 +11,31 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
+  TableHead, TablePagination,
   TableRow,
   Theme,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import { CustomButton } from "../../components/CustomButton";
 import { makeStyles } from "@mui/styles";
 import {
-  fetchCep78NamedKeys,
+  fetchCep78NamedKeys, fetchRaffleNamedKeys,
   getNftCollection,
   getNftMetadata, SERVER_API,
 } from "../../utils/api";
-import {useNavigate, useOutletContext} from "react-router-dom";
-import {CollectionMetada, NFT, Raffle} from "../../utils/types";
+import {CollectionMetada, NFT, Raffle, RaffleMetadata} from "../../utils/types";
 import moment from "moment";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CreateRaffleModal from "../../components/CreateRaffleModal.tsx";
-import {CollectionCardAlternate} from "../../components/CollectionCard.tsx";
-import {getMetadataImage} from "../../utils";
-import {FETCH_IMAGE_TYPE} from "../../utils/enum.ts";
+import {CasperHelpers} from "../../utils";
 // @ts-ignore
 import {CLByteArray, CLKey, CLPublicKey, CLValueBuilder, Contracts, DeployUtil, RuntimeArgs} from "casper-js-sdk";
 import axios from "axios";
-import toastr from "toastr";
 import {ApproveNFTModalonRaffePage} from "../../components/NFTApproveModal.tsx";
-import approve from "../Token/Approve.tsx";
+import {useOutletContext} from "react-router-dom";
+import toastr from "toastr";
 
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -83,12 +80,13 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const ManageRaffle = () => {
   const classes = useStyles();
-  const navigate = useNavigate();
-  const [publicKey, provider] = useOutletContext<[publicKey: string, provider: any]>();
+  // const navigate = useNavigate();
+  const [publicKey, provider, , , , , , raffleWasm] = useOutletContext<[publicKey: string, provider: any, cep18Wasm :any, cep78Wasm: any, marketplaceWasm:any, vestingWasm:any, executeListingWasm:any,  raffleWasm: any]>();
 
   const [raffleOpen, setRaffleOpen] = useState<boolean>(false);
   const [approveModal, setApproveModal] = useState<boolean>(false);
 
+  const [loading, setLoading] = useState<boolean>(true);
   const [loadingCollection, setLoadingCollection] = useState<boolean>(false);
   const [loadingNFT, setLoadingNFT] = useState<boolean>(true);
 
@@ -101,19 +99,28 @@ const ManageRaffle = () => {
   const raffleMoreOpen = Boolean(raffleMore);
 
 
+
   const [selectedCollection, setSelectedCollection] =
     useState<CollectionMetada>();
-  const [selectedTokenId, setSelectedTokenId] = useState<number | undefined>();
+  const [selectedTokenId, setSelectedTokenId] = useState<number>();
+  // const [clickedRaffle, setClickedRaffle] = useState<RaffleMetadata>();
+  // const [selectedOperatorHash, setSelectedOperatorHash] = useState<string>();
 
   // const [listOfApprovable, setListOfApprovable] = useState<any[]>();
 
+  const [raffles, setRaffles] = useState<RaffleMetadata[] | undefined>();
+
   const [raffle, setRaffle] = useState<Raffle>({
+    name: "",
     collectionHash: "",
-    nftIndex: 0,
+    nftIndex: -1,
     start: moment().unix(),
     end: moment().unix(),
     price: 0,
   });
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>, state: any) => {
     state(event.currentTarget);
@@ -132,33 +139,42 @@ const ManageRaffle = () => {
   };
   const handleClose = (state:any) => state(false);
 
-  const fetchNft = async (contract: string) => {
-    setLoadingNFT(true);
-    if (contract) {
-      const nftCollection = await getNftCollection(contract);
-
-      const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
-
-      let promises = [];
-      for (let index = 0; index < nftCount; index++) {
-        promises.push(getNftMetadata(contract, index.toString()));
-      }
-
-      const nftMetas= await Promise.all(promises);
-      const imagePromises = nftMetas.map((e: any) => getMetadataImage(e, FETCH_IMAGE_TYPE.NFT));
-      const images = await Promise.all(imagePromises);
-
-      const finalData = nftMetas.map((e: any, index: number) => {
-        return {
-          ...e,
-          imageURL: images[index],
-        };
-      });
-
-      nfts(finalData);
-      setLoadingNFT(false);
-    }
+  const handleChangePage = (_event: unknown, newPage: number) => {
+    setPage(newPage);
   };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
+  // const fetchNft = async (contract: string) => {
+  //   setLoadingNFT(true);
+  //   if (contract) {
+  //     const nftCollection = await getNftCollection(contract);
+  //
+  //     const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
+  //
+  //     let promises = [];
+  //     for (let index = 0; index < nftCount; index++) {
+  //       promises.push(getNftMetadata(contract, index.toString()));
+  //     }
+  //
+  //     const nftMetas= await Promise.all(promises);
+  //     const imagePromises = nftMetas.map((e: any) => getMetadataImage(e, FETCH_IMAGE_TYPE.NFT));
+  //     const images = await Promise.all(imagePromises);
+  //
+  //     const finalData = nftMetas.map((e: any, index: number) => {
+  //       return {
+  //         ...e,
+  //         imageURL: images[index],
+  //       };
+  //     });
+  //
+  //     nfts(finalData);
+  //     setLoadingNFT(false);
+  //   }
+  // };
 
   // const approve = async () => {
   //   try {
@@ -200,6 +216,47 @@ const ManageRaffle = () => {
   //   }
   // };
 
+  const install = async () => {
+    try {
+      if (!disable) {
+
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+        const contract = new Contracts.Contract();
+
+        const args = RuntimeArgs.fromMap({
+          name: CLValueBuilder.string(raffle.name),
+          start_date: CLValueBuilder.u64(raffle.start * 1000),
+          end_date: CLValueBuilder.u64(raffle.end * 1000),
+          collection: CasperHelpers.stringToKey(raffle.collectionHash),
+          nft_index: CLValueBuilder.u64(raffle.nftIndex),
+          price: CLValueBuilder.u512(raffle.price * 1000000000),
+        });
+
+        const deploy = contract.install(new Uint8Array(raffleWasm), args,"100000000000", ownerPublicKey, "casper-test")
+        const deployJson = DeployUtil.deployToJson(deploy);
+
+        try {
+          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+          const data = DeployUtil.deployToJson(signedDeploy.val);
+          const response = await axios.post(SERVER_API + "deploy", data, {
+            headers: { "Content-Type": "application/json" },
+          });
+          toastr.success(response.data, "Marketplace deployed successfully.");
+          // navigate("/marketplace");
+        } catch (error: any) {
+          alert(error.message);
+          // setLoading(false);
+        }
+      }
+
+
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
   useEffect(() => {
     setLoadingCollection(true);
     const init = async () => {
@@ -210,7 +267,6 @@ const ManageRaffle = () => {
       const result = await Promise.all(promises);
 
       setLoadingCollection(false);
-      console.log(result);
       setCollections(result);
     };
 
@@ -220,28 +276,63 @@ const ManageRaffle = () => {
   useEffect(() => {
     const init = async () => {
       setLoadingNFT(true);
-      if (selectedCollection?.contractHash) {
+      if (raffle.collectionHash && raffle.collectionHash != "") {
         const nftCollection = await getNftCollection(
-          selectedCollection?.contractHash
+          raffle.collectionHash
         );
         const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
 
         let promises = [];
         for (let index = 0; index < nftCount; index++) {
           promises.push(
-            getNftMetadata(selectedCollection.contractHash, index.toString())
+            getNftMetadata(raffle.collectionHash, index.toString())
           );
         }
 
         const nftMetas = await Promise.all(promises);
         setNfts(nftMetas);
-        console.log(nftMetas);
         setLoadingNFT(false);
       }
     };
 
     init();
-  }, [selectedCollection]);
+  }, [raffle.collectionHash]);
+
+  useEffect(() => {
+    const init = async () => {
+      const data = await fetchRaffleNamedKeys(publicKey);
+      setRaffles(data);
+      setLoading(false);
+    };
+    init();
+  }, []);
+
+  const disable = useMemo(() => {
+    const time: boolean = !(raffle.start >= raffle.end);
+    const collection: boolean = !(raffle.collectionHash == "");
+    const nft: boolean = !(raffle.nftIndex < 0)
+    const price: boolean = !(raffle.price <= 0);
+    const name: boolean = !(!raffle.name.length || raffle.name.startsWith(" "));
+    const disable = !(name && price && time && collection && nft);
+    return disable;
+  }, [raffle]);
+
+
+  if (loading) {
+    return (
+        <div
+            style={{
+              height: "50vh",
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+        >
+          <CircularProgress />
+        </div>
+    );
+  }
 
   return (
     <Grid container className={classes.container}>
@@ -256,23 +347,17 @@ const ManageRaffle = () => {
         ></CustomButton>
         <CreateRaffleModal
             raffle={raffle}
+            createRaffle={() => install()}
+            raffleOnChange={setRaffle}
             open={raffleOpen}
             onClose={() => handleClose(setRaffleOpen)}
             loadingCollection={loadingCollection}
             loadingNFT={loadingNFT}
             collections={collections}
             nfts={nfts}
-            selectedCollection={selectedCollection ? selectedCollection : undefined}
-            selectedNFTIndex={selectedTokenId}
-            collectionOnChange={setCollections}
-            raffleOnChange={setRaffle}
-            nftOnChange={setNfts}
+            disable={disable}
         ></CreateRaffleModal>
-
       </Stack>
-
-
-
       <Grid
         container
         width={"100%"}
@@ -301,12 +386,12 @@ const ManageRaffle = () => {
                         </TableCell>
                         <TableCell key="symbol" align="left">
                           <Typography fontWeight="bold" color="#0f1429">
-                            Start
+                            Raffle Hash
                           </Typography>
                         </TableCell>
                         <TableCell key="decimal" align="left">
                           <Typography fontWeight="bold" color="#0f1429">
-                            End
+                            End-Start
                           </Typography>
                         </TableCell>
                         <TableCell key="nft-id" align="left">
@@ -319,11 +404,6 @@ const ManageRaffle = () => {
                             Price
                           </Typography>
                         </TableCell>
-                        <TableCell key="raffle-price" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            Status
-                          </Typography>
-                        </TableCell>
                         <TableCell key="raffle-actions" align="left">
                           <Typography fontWeight="bold" color="#0f1429">
                             Actions
@@ -332,137 +412,91 @@ const ManageRaffle = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {/* {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                    return (
+                     {raffles && raffles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((raffle:RaffleMetadata, index:number) => {
+                       return (
                       <TableRow
                         style={{ cursor: "pointer" }}
-                        onClick={() => window.open("https://testnet.cspr.live/contract/" + row.contractHash.slice(5), "_blank")}
+                        onClick={() => {}}
                         hover
                         role="checkbox"
                         tabIndex={-1}
                         key={index}
                       >
                         <TableCell align="left">
-                          <Typography color="#0f1429">{row.name}</Typography>
+                          <Typography color="#0f1429">{raffle.name}</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">{row.symbol}</Typography>
+                          <Typography color="#0f1429">{raffle.key.slice(0,15)}</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">{parseInt(row.decimals.hex, 16)}</Typography>
+                          <Typography color="#0f1429">asdasdasd</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">{parseInt(row.total_supply.hex, 16) / Math.pow(10, parseInt(row.decimals.hex, 16))}</Typography>
+                          <Typography color="#0f1429">asdasd</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">{parseInt(row.enable_mint_burn.hex, 16) ? "TRUE" : "FALSE"}</Typography>
+                          <Typography color="#0f1429">asdasd</Typography>
                         </TableCell>
+                          <TableCell align="left">
+                              <IconButton onClick={(e:any) => {
+                                handleMenuClick(e, setRaffleMore);
+                              }}>
+                                <MoreVertIcon></MoreVertIcon>
+                              </IconButton>
+                              <Menu
+                                  anchorEl={raffleMore}
+                                  open={raffleMoreOpen}
+                                  onClose={() => handleMenuClose(setRaffleMore)}
+                                  anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'left',
+                                  }}
+                                  transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'left',
+                                  }}
+                              >
+                                <MenuItem onClick={() => {
+                                  handleOpen(setApproveModal);
+                                  handleMenuClose(setRaffleMore);
+                                  // setSelectedOperatorHash(row.key);
+                                  console.log(index);
+                                  console.log(raffle);
+                                }}>Approve NFT</MenuItem>
+                                <MenuItem onClick={() => handleMenuClose(setRaffleMore)}>Deposit NFT</MenuItem>
+                                <MenuItem onClick={() => handleMenuClose(setRaffleMore)}>Detail Raffle</MenuItem>
+                              </Menu>
+                                <ApproveNFTModalonRaffePage
+                                    open={approveModal}
+                                    handleClose={() => handleClose(setApproveModal)}
+                                    loadingCollection={loadingCollection}
+                                    loadingNFT={loadingNFT}
+                                    collections={collections}
+                                    nfts={nfts}
+                                    selectedCollection={selectedCollection ? selectedCollection : undefined}
+                                    selectedNFTIndex={selectedTokenId}
+                                    collectionOnChange={setSelectedCollection}
+                                    nftOnChange={setSelectedTokenId}
+                                    approve={()=> {
+                                      console.log(raffle.key)}}
+                                    selectedRaffle={raffle}
+                                ></ApproveNFTModalonRaffePage>
+                          </TableCell>
                       </TableRow>
                     );
-                  })} */}
-                      <TableRow
-                        style={{ cursor: "pointer" }}
-                        onClick={() => {}}
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                      >
-                        <TableCell align="left">
-                          <Typography color="#0f1429">hahah</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">hahah</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">hahah</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">hahah</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">hahah</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">hahah</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                            <IconButton onClick={(e:any) => handleMenuClick(e,setRaffleMore)}>
-                              <MoreVertIcon></MoreVertIcon>
-                            </IconButton>
-                            <Menu
-                                anchorEl={raffleMore}
-                                open={raffleMoreOpen}
-                                onClose={() => handleMenuClose(setRaffleMore)}
-                                anchorOrigin={{
-                                  vertical: 'top',
-                                  horizontal: 'left',
-                                }}
-                                transformOrigin={{
-                                  vertical: 'top',
-                                  horizontal: 'left',
-                                }}
-                            >
-                              <MenuItem onClick={() => {
-                                handleOpen(setApproveModal);
-                                handleMenuClose(setRaffleMore);
-                              }}>Approve NFT</MenuItem>
-                              <MenuItem onClick={() => handleMenuClose(setRaffleMore)}>Deposit NFT</MenuItem>
-                              <MenuItem onClick={() => handleMenuClose(setRaffleMore)}>Detail Raffle</MenuItem>
-                            </Menu>
-                              <ApproveNFTModalonRaffePage
-                                  open={approveModal}
-                                  handleClose={() => handleClose(setApproveModal)}
-                                  loadingCollection={loadingCollection}
-                                  loadingNFT={loadingNFT}
-                                  collections={collections}
-                                  nfts={nfts}
-                                  selectedCollection={selectedCollection ? selectedCollection : undefined}
-                                  selectedNFTIndex={selectedTokenId}
-                                  collectionOnChange={setSelectedCollection}
-                                  nftOnChange={setSelectedTokenId}
-                                  approve={()=> {
-                                    console.log(selectedTokenId)}}
-                              ></ApproveNFTModalonRaffePage>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow
-                        style={{ cursor: "pointer" }}
-                        onClick={() => {}}
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                      >
-                        <TableCell align="left">
-                          <Typography color="#0f1429">hahah</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">hahah</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">hahah</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">hahah</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">hahah</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">hahah</Typography>
-                        </TableCell>
-                      </TableRow>
+                  })}
                     </TableBody>
                   </Table>
                 </TableContainer>
-                {/* <TablePagination
+                <TablePagination
               rowsPerPageOptions={[1, 5, 10]}
               component="div"
-              count={data.length}
+              count={raffles?.length ? raffles.length : 0}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
-            /> */}
+            />
               </Paper>
             </Grid>
 
