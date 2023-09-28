@@ -7,7 +7,7 @@ import { CustomButton } from "../../components/CustomButton";
 import { SERVER_API, getValidators } from "../../utils/api";
 import toastr from "toastr";
 // @ts-ignore
-import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
+import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder, CLPublicKeyTag } from "casper-js-sdk";
 import { useOutletContext } from "react-router-dom";
 import axios from "axios";
 
@@ -91,15 +91,15 @@ export const Stake = () => {
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
         const contract = new Contracts.Contract();
         contract.setContractHash("hash-93d923e336b20a4c4ca14d592b60e5bd3fe330775618290104f9beb326db7ae2");
-
+        console.log(selectedValidator.public_key);
         // parameters
         const args = RuntimeArgs.fromMap({
-          validator: CLValueBuilder.key(CLPublicKey.fromHex(selectedValidator.public_key)),
+          validator: CLValueBuilder.publicKey(Buffer.from(selectedValidator.public_key.substring(2), "hex"), CLPublicKeyTag.ED25519),
           amount: CLValueBuilder.u512(amount * 1000000000),
-          delegator: CLValueBuilder.key(ownerPublicKey),
+          delegator: CLValueBuilder.publicKey(Buffer.from(publicKey.substring(2), "hex"), CLPublicKeyTag.SECP256K1),
         });
 
-        const deploy = contract.callEntrypoint("delegate", args, ownerPublicKey, "casper-test", "1000000000");
+        const deploy = contract.callEntrypoint("delegate", args, ownerPublicKey, "casper-test", "2500000000");
 
         const deployJson = DeployUtil.deployToJson(deploy);
         console.log("deployJson", deployJson);
