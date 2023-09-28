@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Autocomplete, CircularProgress, FormControl, Grid, Stack, TextField, Theme, Typography } from "@mui/material";
 
 import { makeStyles } from "@mui/styles";
-import { CustomSelect } from "../../components/CustomSelect";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
-import { getValidators } from "../../utils/api";
+import { SERVER_API, getValidators } from "../../utils/api";
 import toastr from "toastr";
+// @ts-ignore
+import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
+import { useOutletContext } from "react-router-dom";
+import axios from "axios";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -67,6 +70,20 @@ export const Stake = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [validators, setValidators] = useState<any[]>([]);
   const [selectedValidator, setSelectedValidator] = useState<any>();
+  const [publicKey, provider, , , , , , , delegateWasm] =
+    useOutletContext<
+      [
+        publickey: string,
+        provider: any,
+        cep18Wasm: ArrayBuffer,
+        cep78Wasm: ArrayBuffer,
+        marketplaceWasm: ArrayBuffer,
+        vestingWasm: ArrayBuffer,
+        executeListingWasm: ArrayBuffer,
+        raffleWasm: ArrayBuffer,
+        delegateWasm: ArrayBuffer
+      ]
+    >();
 
   useEffect(() => {
     getValidators()
@@ -80,6 +97,54 @@ export const Stake = () => {
         setLoading(false);
       });
   }, []);
+
+  const stake = async () => {
+    try {
+      if (amount) {
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+        const contract = new Contracts.Contract();
+
+        // parameters
+        const args = RuntimeArgs.fromMap({
+          validator: CLValueBuilder.key(CLPublicKey.fromHex(selectedValidator.public_key)),
+          amount: CLValueBuilder.u512(amount * 1000000000),
+          delegator: CLValueBuilder.key(ownerPublicKey),
+        });
+
+        const deploy = contract.install(new Uint8Array(delegateWasm), args, "100000000000", ownerPublicKey, "casper-test");
+
+        const deployJson = DeployUtil.deployToJson(deploy);
+        console.log("deployJson", deployJson);
+
+        // signer logic
+        try {
+          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+          console.log("sign", sign);
+
+          setLoading(true);
+
+          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+
+          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+          console.log("signedDeploy", signedDeploy);
+
+          const data = DeployUtil.deployToJson(signedDeploy.val);
+
+          const response = await axios.post(SERVER_API + "deploy", data, {
+            headers: { "Content-Type": "application/json" },
+          });
+          toastr.success(response.data, "Delegate created successfully.");
+          window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
+
+          setLoading(false);
+        } catch (error: any) {
+          alert(error.message);
+        }
+      }
+    } catch (err: any) {
+      toastr.error(err);
+    }
+  };
 
   if (loading) {
     return (
@@ -96,7 +161,6 @@ export const Stake = () => {
       </div>
     );
   }
-  console.log(validators[0]);
 
   return (
     <div
@@ -118,9 +182,8 @@ export const Stake = () => {
               <Autocomplete
                 disablePortal
                 id="combo-box-demo"
-                options={validators.map((vl) => {
+                options={validators.map((vl, index) => {
                   const pubkey: string = vl.public_key;
-
                   return {
                     label:
                       pubkey.substring(0, 20) +
@@ -136,8 +199,17 @@ export const Stake = () => {
                       ", Stake Amount : " +
                       vl.bid.staked_amount / 1000000000 +
                       " CSPR",
+
+                    value: index,
                   };
                 })}
+                onChange={(_event, value) => {
+                  if (value) {
+                    setSelectedValidator(validators[value.value]);
+                  } else {
+                    setSelectedValidator(undefined);
+                  }
+                }}
                 sx={{ width: "100%", color: "white", border: "border 4px solid white !important" }}
                 renderInput={(params) => <TextField {...params} label="Validator" />}
               />
@@ -151,9 +223,9 @@ export const Stake = () => {
                 onChange={(e: any) => setAmount(e.target.value)}
               />
 
-              <FormControl fullWidth margin="dense">
+              <FormControl fullWidth>
                 <Grid item>
-                  <CustomButton onClick={() => {}} disabled={!amount || amount <= 499} label="Delegate" fullWidth />
+                  <CustomButton onClick={stake} disabled={!amount || amount <= 499} label="Delegate" fullWidth />
                 </Grid>
               </FormControl>
             </Stack>
