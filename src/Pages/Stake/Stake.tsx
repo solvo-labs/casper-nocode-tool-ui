@@ -69,13 +69,29 @@ export const Stake = () => {
   const [amount, setAmount] = useState<number>();
   const [loading, setLoading] = useState<boolean>(true);
   const [validators, setValidators] = useState<any[]>([]);
+  const [delegations, setDelegations] = useState<any[]>([]);
   const [selectedValidator, setSelectedValidator] = useState<any>();
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
 
   useEffect(() => {
     getValidators()
       .then((data) => {
-        setValidators(data);
+        const filteredData = data.filter((dt: any) => dt.bid.delegators.length < 1200);
+        setValidators(filteredData);
+
+        let myActiveDelegations: any[] = [];
+
+        for (let dt of data) {
+          const delegators = dt.bid.delegators;
+
+          const findMe = delegators.filter((dl: any) => dl.public_key === publicKey);
+
+          if (findMe.length > 0) {
+            myActiveDelegations = [...myActiveDelegations, ...findMe];
+          }
+        }
+
+        setDelegations(myActiveDelegations);
       })
       .catch((err) => {
         toastr.error(err);
