@@ -52,6 +52,7 @@ const style = {
 
 type Props = {
     raffle:Raffle;
+    createRaffle: () => void;
     raffleOnChange: (param: Raffle) => void;
     open: boolean;
     onClose: () => void;
@@ -59,12 +60,9 @@ type Props = {
     loadingNFT: boolean;
     collections: CollectionMetada[];
     nfts: NFT[];
-    selectedCollection: CollectionMetada | undefined;
-    collectionOnChange: (param: CollectionMetada) => void;
-    selectedNFTIndex: number | undefined;
-    nftOnChange: (param: number) => void;
+    disable: boolean;
 }
-const CreateRaffleModal: React.FC<Props> = ({raffle,open, onClose, loadingCollection, loadingNFT, collections, nfts, selectedCollection,selectedNFTIndex, raffleOnChange , collectionOnChange, nftOnChange}) => {
+const CreateRaffleModal: React.FC<Props> = ({raffle, createRaffle,open, onClose, loadingCollection, loadingNFT, collections, nfts, raffleOnChange, disable}) => {
     const classes = useStyles();
 
     return(
@@ -88,15 +86,27 @@ const CreateRaffleModal: React.FC<Props> = ({raffle,open, onClose, loadingCollec
                             Create New Raffle
                         </Typography>
                     <Stack marginTop={"2rem"} spacing={4}>
+                        <CustomInput
+                            label="Name"
+                            name="name"
+                            onChange={(e: any) =>
+                                raffleOnChange({ ...raffle, name: e.target.value })
+                            }
+                            placeholder="Name"
+                            type="text"
+                            value={raffle.name ? raffle.name : ""}
+                            disable={false}
+                            floor={"light"}
+                        ></CustomInput>
                         <CustomSelect
-                            value={selectedCollection?.contractHash || "default"}
-                            id="customselect"
+                            value={raffle.collectionHash? raffle.collectionHash : "default"}
+                            id="collectionHash"
                             onChange={(event: SelectChangeEvent) => {
                                 const data = collections.find(
                                     (tk: any) => tk.contractHash === event.target.value
                                 );
                                 // @ts-ignore
-                                collectionOnChange(data);
+                                raffleOnChange({...raffle, collectionHash: data.contractHash, nftIndex: -1});
                             }}
                         >
                             <MenuItem value="default">
@@ -111,32 +121,28 @@ const CreateRaffleModal: React.FC<Props> = ({raffle,open, onClose, loadingCollec
                             })}
                         </CustomSelect>
                         {loadingNFT ? (
-                            selectedCollection && (
+                            raffle.collectionHash && (
                                 <div>
                                     <LinearProgress />
                                 </div>
                             )
                         ) : (
                             <CustomSelect
-                                value={selectedNFTIndex ? selectedNFTIndex : "default"}
+                                value={raffle.nftIndex ? raffle.nftIndex : -1}
                                 id="customselect"
                                 onChange={(event: any) => {
-                                    nftOnChange(event.target.value);
+                                    raffleOnChange({...raffle, nftIndex: event.target.value})
                                 }}
                             >
                                 <MenuItem
-                                    key={"default"}
-                                    value={"default"}
-                                //     onChange={() =>
-                                        // setSelectedNFTIndex(undefined)
-                                // }
-                                >
+                                    key={-1}
+                                    value={-1}>
                                     <em>Select a NFT</em>
                                 </MenuItem>
                                 {nfts.map((nft: any, index: number) => {
                                     return (
                                         <MenuItem key={index} value={index}>
-                                            {nft.name}
+                                            {"["+index+ "] " + nft.name}
                                         </MenuItem>
                                     );
                                 })}
@@ -146,11 +152,11 @@ const CreateRaffleModal: React.FC<Props> = ({raffle,open, onClose, loadingCollec
                             label="Price"
                             name="price"
                             onChange={(e: any) =>
-                                raffleOnChange({ ...raffle, price: e.target.value })
+                                raffleOnChange({ ...raffle, price: Number(e.target.value) })
                             }
                             placeholder="Price"
                             type="number"
-                            value={raffle.price}
+                            value={raffle.price ? raffle.price : 0}
                             disable={false}
                             floor={"light"}
                         ></CustomInput>
@@ -177,9 +183,9 @@ const CreateRaffleModal: React.FC<Props> = ({raffle,open, onClose, loadingCollec
                         </Grid>
                         <Grid item display={"flex"} justifyContent={"center"}>
                             <CustomButton
-                                disabled={false}
+                                disabled={disable}
                                 label="Create Raffle"
-                                onClick={() => console.log(raffle)}
+                                onClick={createRaffle}
                             ></CustomButton>
                         </Grid>
                     </Stack>
