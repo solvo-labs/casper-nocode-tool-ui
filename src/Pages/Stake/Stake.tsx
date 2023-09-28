@@ -167,7 +167,53 @@ export const Stake = () => {
     }
   };
 
-  console.log(delegations);
+  const unStake = async (value: any) => {
+    try {
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+      const contract = new Contracts.Contract();
+
+      contract.setContractHash("hash-93d923e336b20a4c4ca14d592b60e5bd3fe330775618290104f9beb326db7ae2");
+
+      // parameters
+      const args = RuntimeArgs.fromMap({
+        validator: CLValueBuilder.publicKey(Buffer.from(value.delegatee.substring(2), "hex"), CLPublicKeyTag.ED25519),
+        amount: CLValueBuilder.u512(value.staked_amount),
+        delegator: CLValueBuilder.publicKey(Buffer.from(publicKey.substring(2), "hex"), CLPublicKeyTag.SECP256K1),
+      });
+
+      const deploy = contract.callEntrypoint("undelegate", args, ownerPublicKey, "casper-test", "2500000000");
+
+      const deployJson = DeployUtil.deployToJson(deploy);
+      console.log("deployJson", deployJson);
+
+      // signer logic
+      try {
+        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+        console.log("sign", sign);
+
+        setLoading(true);
+
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+
+        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+        console.log("signedDeploy", signedDeploy);
+
+        const data = DeployUtil.deployToJson(signedDeploy.val);
+
+        const response = await axios.post(SERVER_API + "deploy", data, {
+          headers: { "Content-Type": "application/json" },
+        });
+        toastr.success(response.data, "Unstake completed successfully.");
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
+
+        setLoading(false);
+      } catch (error: any) {
+        alert(error.message);
+      }
+    } catch (err: any) {
+      toastr.error(err);
+    }
+  };
 
   if (loading) {
     return (
@@ -255,8 +301,12 @@ export const Stake = () => {
           </Grid>
         </Grid>
 
-        <Grid item className={classes.center}>
-          <Typography variant="h6">Active Delegations</Typography>
+        <Grid container className={classes.center} marginTop={"2rem"} marginBottom={"1rem"}>
+          <Grid item>
+            <Typography className={classes.title} variant="h5">
+              ACTIVE DELEGATIONS
+            </Typography>
+          </Grid>
         </Grid>
         <List sx={{ width: "100%", border: "1px solid red", borderRadius: "8px", marginTop: "1rem" }}>
           <>
@@ -296,7 +346,7 @@ export const Stake = () => {
                 key={value}
                 secondaryAction={
                   <IconButton edge="end" aria-label="comments">
-                    <CustomButton style={{ marginRight: "5px " }} onClick={stake} disabled={false} label="UnStake" fullWidth />
+                    <CustomButton style={{ marginRight: "5px " }} onClick={() => unStake(value)} disabled={false} label="UnStake" fullWidth />
                     <CustomButton onClick={stake} disabled={false} label="Stake" fullWidth />
                   </IconButton>
                 }
