@@ -110,9 +110,17 @@ export type Listing = {
 };
 
 export type Raffle = {
+  name: string;
   collectionHash: string;
   nftIndex: number;
   start: number;
   end: number;
   price: number;
+};
+
+export type RaffleMetadata = {
+  key: string;
+  name: string;
 }
+
+
