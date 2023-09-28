@@ -1,5 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Autocomplete, CircularProgress, FormControl, Grid, Stack, TextField, Theme, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Checkbox,
+  CircularProgress,
+  Divider,
+  FormControl,
+  Grid,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Stack,
+  TextField,
+  Theme,
+  Typography,
+} from "@mui/material";
 
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
@@ -150,6 +167,8 @@ export const Stake = () => {
     }
   };
 
+  console.log(delegations);
+
   if (loading) {
     return (
       <div
@@ -235,6 +254,89 @@ export const Stake = () => {
             </Stack>
           </Grid>
         </Grid>
+
+        <Grid item className={classes.center}>
+          <Typography variant="h6">Active Delegations</Typography>
+        </Grid>
+        <List sx={{ width: "100%", border: "1px solid red", borderRadius: "8px", marginTop: "1rem" }}>
+          <>
+            <ListItem dense>
+              <ListItemText
+                id="default"
+                primary={
+                  <>
+                    <Typography sx={{ padding: "4px 8px", marginRight: "4rem" }}>Stake Pool</Typography>
+                  </>
+                }
+              />
+              <ListItemText
+                id="default"
+                primary={
+                  <>
+                    <Typography>Stake Amount</Typography>
+                  </>
+                }
+              />
+              <ListItemText
+                id="default"
+                primary={
+                  <>
+                    <Typography>Fee Rate</Typography>
+                  </>
+                }
+              />
+            </ListItem>
+          </>
+          {delegations.map((value, index) => {
+            const labelId = `checkbox-list-label-${index}`;
+            const delegationRate = validators.find((vl) => vl.public_key === value.delegatee).bid.delegation_rate;
+
+            return (
+              <ListItem
+                key={value}
+                secondaryAction={
+                  <IconButton edge="end" aria-label="comments">
+                    <CustomButton style={{ marginRight: "5px " }} onClick={stake} disabled={false} label="UnStake" fullWidth />
+                    <CustomButton onClick={stake} disabled={false} label="Stake" fullWidth />
+                  </IconButton>
+                }
+                style={{ padding: "0.5rem" }}
+                disablePadding
+              >
+                <ListItem dense>
+                  <ListItemText
+                    id={labelId}
+                    primary={
+                      <>
+                        <Typography sx={{ marginRight: "1rem" }}>{value.delegatee}</Typography>
+                      </>
+                    }
+                  />
+                </ListItem>
+                <ListItem dense>
+                  <ListItemText
+                    id={labelId}
+                    primary={
+                      <>
+                        <Typography>{value.staked_amount / 1000000000} CSPR</Typography>
+                      </>
+                    }
+                  />
+                </ListItem>
+                <ListItem dense>
+                  <ListItemText
+                    id={labelId}
+                    primary={
+                      <>
+                        <Typography>{delegationRate.toFixed(2)} %</Typography>
+                      </>
+                    }
+                  />
+                </ListItem>
+              </ListItem>
+            );
+          })}
+        </List>
       </Grid>
     </div>
   );
