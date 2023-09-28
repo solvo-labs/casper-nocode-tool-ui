@@ -15,20 +15,20 @@ const useStyles = makeStyles((theme: Theme) => ({
       labelColor: "gray",
     },
     "& .MuiInputLabel-root.Mui-disabled": { color: "gray" },
-    // "& .MuiInputLabel-root": {
-    //   color: "white",
-    // },
-  },
-  light: {
-    "& .MuiInputLabel-root": {
-      color: "black",
-    },
-  },
-  dark:{
     "& .MuiInputLabel-root": {
       color: "white",
     },
-  }
+  },
+  light: {
+    "& .MuiInputLabel-root": {
+      color: "white",
+    },
+  },
+  dark: {
+    "& .MuiInputLabel-root": {
+      color: "white",
+    },
+  },
 }));
 
 type Props = {
@@ -44,28 +44,19 @@ type Props = {
   floor?: "light" | "dark";
 };
 
-export const CustomInput: React.FC<Props> = ({
-  placeholder,
-  label,
-  id,
-  name,
-  type,
-  value,
-  onChange,
-  disable = false,
-  required,
-    floor,
-}) => {
+export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, type, value, onChange, disable = false, required, floor }) => {
   const classes = useStyles();
 
   return (
     <TextField
-      className={floor=="light" ? (classes.input, classes.light) : (classes.input, classes.dark)}
+      className={floor == "light" ? (classes.input, classes.light) : (classes.input, classes.dark)}
       sx={{
         "& .MuiInputLabel-root.Mui-focused": {
           color: "#FF0011",
         },
-        "& .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input": {},
+        "& .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input": {
+          color: "white",
+        },
         "& .css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root": {
           transform: "translate(14px, 12px) scale(1)",
         },
