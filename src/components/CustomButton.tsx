@@ -47,13 +47,14 @@ type Props = {
   onClick: any;
   label: string;
   disabled: boolean;
+  fullWidth?: boolean;
 };
 
-export const CustomButton: React.FC<Props> = ({ onClick, label, disabled }) => {
+export const CustomButton: React.FC<Props> = ({ onClick, label, disabled, fullWidth = false }) => {
   const classes = useStyles();
 
   return (
-    <Button variant="contained" className={classes.button} onClick={onClick} disabled={disabled}>
+    <Button variant="contained" className={classes.button} onClick={onClick} disabled={disabled} fullWidth={fullWidth}>
       {label}
     </Button>
   );
