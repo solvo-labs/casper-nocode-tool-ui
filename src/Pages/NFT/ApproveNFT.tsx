@@ -1,11 +1,17 @@
 import { CircularProgress, Grid, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useEffect, useState } from "react";
-import { fetchCep78NamedKeys, fetchMarketplaceNamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
+import {useEffect, useMemo, useState} from "react";
+import {
+  fetchCep78NamedKeys,
+  fetchMarketplaceNamedKeys,
+  fetchRaffleNamedKeys,
+  getNftCollection,
+  getNftMetadata
+} from "../../utils/api";
 import { getMetadataImage } from "../../utils";
 import { FETCH_IMAGE_TYPE } from "../../utils/enum";
-import { useNavigate, useOutletContext } from "react-router-dom";
-import { CollectionMetada, NFT } from "../../utils/types";
+import { useOutletContext } from "react-router-dom";
+import {CollectionMetada, Marketplace, NFT, RaffleMetadata} from "../../utils/types";
 import { CollectionCardAlternate } from "../../components/CollectionCard";
 // @ts-ignore
 import { CLPublicKey, Contracts, RuntimeArgs, CLValueBuilder, CLKey, CLByteArray, DeployUtil } from "casper-js-sdk";
@@ -50,7 +56,9 @@ const ApproveNFT = () => {
 
   const [approveOperatorType, setApproveOperatorType] = useState<string>("default");
   const [selectedOperatorHash, setSelectedOperatorHash] = useState<string>();
-  const [listOfApprovable, setListOfApprovable] = useState<any[]>();
+
+  const [marketplaces, setMarketplaces] = useState<Marketplace[]>();
+  const [raffles, setRaffles] = useState<RaffleMetadata[]>();
 
   const handleOpenNFT = (contract: string) => {
     setSelectedCollection(contract);
@@ -69,19 +77,9 @@ const ApproveNFT = () => {
   const handleCloseApprove = () => {
     setOpenApprove(false);
     setOpenNFT(true);
+    setSelectedOperatorHash(undefined);
+    setApproveOperatorType("");
   };
-
-  // useEffect(() => {
-  //   const init = async () => {
-  //     const data = await fetchMarketplaceNamedKeys(publicKey);
-  //     const parsedData = data.map((dt) => {
-  //       return { ...dt, name: dt.name.substring(26) };
-  //     });
-  //     setListOfApprovable(parsedData);
-  //   };
-  //
-  //   init();
-  // }, [approveOperatorType]);
 
   useEffect(() => {
     const init = async () => {
@@ -134,17 +132,42 @@ const ApproveNFT = () => {
     }
   };
 
+  useEffect(() => {
+    const init = async () => {
+      const data = await fetchMarketplaceNamedKeys(publicKey);
+      const finalData: Marketplace[] = data.map((dt) => {
+        return { contractHash: dt.key, contractName: dt.name.substring(26), listingCount: 0, feeWallet: "" };
+      });
+
+      setMarketplaces(finalData);
+      console.log(finalData);
+    };
+
+    init();
+  }, []);
+
+useEffect(() => {
+    const init = async () => {
+      const data = await fetchRaffleNamedKeys(publicKey);
+      console.log(data);
+      setRaffles(data);
+    };
+
+    init();
+  }, []);
+
   const approve = async () => {
+    setLoading(true)
     try {
       if (selectedOperatorHash) {
         const contract = new Contracts.Contract();
         contract.setContractHash(selectedCollection);
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
-        const marketplaceHash = selectedOperatorHash.replace("hash-", "");
+        const operatorHash = selectedOperatorHash.replace("hash-", "");
 
         const args = RuntimeArgs.fromMap({
-          operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(marketplaceHash, "hex")))),
+          operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(operatorHash, "hex")))),
           token_id: CLValueBuilder.u64(selectedTokenId),
         });
 
@@ -162,11 +185,18 @@ const ApproveNFT = () => {
             headers: { "Content-Type": "application/json" },
           });
 
+          setSelectedOperatorHash("default");
+          setApproveOperatorType("");
+          setLoading(false);
+          setOpenNFT(false);
+          setOpenApprove(false);
+
           toastr.success(response.data, "Approve deployed successfully.");
-          handleOpenApprove();
-          // navigate("/marketplace");
         } catch (error: any) {
           alert(error.message);
+          setLoading(false);
+          setSelectedOperatorHash("default");
+          setApproveOperatorType("");
         }
       }
     } catch (error) {
@@ -174,6 +204,11 @@ const ApproveNFT = () => {
       toastr.error("error");
     }
   };
+
+  const disable = useMemo(() => {
+    const disable = !(selectedOperatorHash != "default" && approveOperatorType);
+    return disable;
+  }, [selectedOperatorHash, approveOperatorType]);
 
   if (loading) {
     return (
@@ -221,14 +256,16 @@ const ApproveNFT = () => {
                   selectedNFTIndex={setSelectedTokenId}
               ></ListNFTModal>
               <ApproveNFTModal
-                  listSelected={listOfApprovable}
                   selected={selectedOperatorHash}
+                  marketplaces={marketplaces}
+                  raffles={raffles}
                   selectedOnChange={setSelectedOperatorHash}
                   open={openApprove}
                   handleClose={handleCloseApprove}
-                  approve={() => {}}
+                  approve={approve}
                   approveOperatorType={approveOperatorType}
                   approveOperatorOnChange={setApproveOperatorType}
+                  disable={disable}
               ></ApproveNFTModal>
             </Grid>
           ))}
