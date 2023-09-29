@@ -152,7 +152,7 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
       navigate("/buy-nft");
     } else if (a === RAFFLE_PAGE.MANAGE_RAFFLE) {
       navigate("/manage-raffle");
-    } 
+    }
 
     setAnchorElForNFT(null);
     setAnchorElForToken(null);
@@ -182,8 +182,12 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
               {APP_NAME.CASPER}
             </Typography>
             <Box sx={{ flexGrow: 1, display: "flex" }}>
-              <Button onClick={() => {}}>
-                <Typography className={classes.menuTitle}>{PAGES_NAME.STAKING}</Typography>
+              <Button
+                onClick={() => {
+                  navigate("/stake");
+                }}
+              >
+                <Typography className={classes.menuTitle}>{PAGES_NAME.STAKE}</Typography>
               </Button>
               <Button onClick={() => {}}>
                 <Typography className={classes.menuTitle}>{PAGES_NAME.DAO}</Typography>

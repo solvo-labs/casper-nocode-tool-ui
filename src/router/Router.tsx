@@ -28,6 +28,7 @@ import ListMarketplace from "../Pages/Marketplace/ListMarketplace";
 import AddNftToMarketplace from "../Pages/Marketplace/AddNftToMarketplace";
 import BuyNft from "../Pages/Marketplace/BuyNft";
 import ManageRaffle from "../Pages/Raffle/ManageRaffle";
+import { Stake } from "../Pages/Stake/Stake";
 
 const Router: React.FC = () => {
   return (
@@ -64,7 +65,11 @@ const Router: React.FC = () => {
             <Route path="/add-nft-to-marketplace/:marketplaceHash" index element={<AddNftToMarketplace />} />
             <Route path="/buy-nft" index element={<BuyNft />} />
             {/* RAFFLE */}
-            <Route path="/manage-raffle" index element={<ManageRaffle/>}></Route>
+            <Route path="/manage-raffle" index element={<ManageRaffle />} />
+
+            {/* STAKE */}
+
+            <Route path="/stake" index element={<Stake />} />
           </Route>
           <Route path="/login" index element={<Login />} />
         </Routes>

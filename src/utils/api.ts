@@ -1,5 +1,5 @@
 import axios from "axios";
-import {ERC20Token, Listing, RaffleNamedKeys} from "./types";
+import { ERC20Token, Listing, RaffleNamedKeys } from "./types";
 
 const api = "https://event-store-api-clarity-testnet.make.services/";
 export const SERVER_API = import.meta.env.DEV ? "http://localhost:3000/api/" : "https://18.185.15.120:8000/";
@@ -86,12 +86,11 @@ export const fetchRaffleNamedKeys = async (pubkey: string) => {
     return ky.name.startsWith("raffles_contract_hash");
   });
 
-  const finalData: RaffleNamedKeys[] = filteredNamedKeys.map((rf:RaffleNamedKeys) => {
+  const finalData: RaffleNamedKeys[] = filteredNamedKeys.map((rf: RaffleNamedKeys) => {
     let newName: string;
-    if (rf.name.startsWith("raffles_contract_hash_"))
-    {
-      newName = rf.name.replace("raffles_contract_hash_","").slice(0,-14);
-      return {name: newName, key: rf.key}
+    if (rf.name.startsWith("raffles_contract_hash_")) {
+      newName = rf.name.replace("raffles_contract_hash_", "").slice(0, -14);
+      return { name: newName, key: rf.key };
     }
     return { name: rf.name, key: rf.key };
   });
@@ -272,7 +271,6 @@ export const getVestingList = async (accountHash: string) => {
   return response.data;
 };
 
-
 export const getRaffleDetails = async (contractHash: string) => {
   const response = await axios.get<any>(SERVER_API + "get_raffle?contractHash=" + contractHash);
 
@@ -286,6 +284,12 @@ export const getRaffleDetails = async (contractHash: string) => {
   //     end_date: raffle.end_date.toNumber(),
   //   }
   // });
+
+  return response.data;
+};
+
+export const getValidators = async () => {
+  const response = await axios.get(SERVER_API + "validators");
 
   return response.data;
 };
