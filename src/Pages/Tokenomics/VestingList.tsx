@@ -28,7 +28,7 @@ import { useOutletContext } from "react-router-dom";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 import axios from "axios";
-import { CasperHelpers, uit32ArrayToHex } from "../../utils";
+import { CasperHelpers, uint32ArrayToHex } from "../../utils";
 import toastr from "toastr";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -204,7 +204,7 @@ export const VestingList = () => {
 
   const transferTokenForVesting = async (data: any) => {
     const contract = new Contracts.Contract();
-    const tokenContract = uit32ArrayToHex(data.cep18_contract_hash);
+    const tokenContract = uint32ArrayToHex(data.cep18_contract_hash);
     const contractPackageHash = await contractHashToContractPackageHash(data.key);
 
     contract.setContractHash("hash-" + tokenContract);
