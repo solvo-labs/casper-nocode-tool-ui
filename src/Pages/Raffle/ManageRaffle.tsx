@@ -50,7 +50,7 @@ import axios from "axios";
 import {ApproveNFTModalonRaffePage} from "../../components/NFTApproveModal.tsx";
 import {useOutletContext} from "react-router-dom";
 import toastr from "toastr";
-const STORE_CONTRACT_HASH = "hash-7be3d9e95092a14c593a91110d54a3460cc6f52eb350c9af5eeb0725a216270e";
+const STORE_CONTRACT_HASH = "7be3d9e95092a14c593a91110d54a3460cc6f52eb350c9af5eeb0725a216270e";
 
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -96,7 +96,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ManageRaffle = () => {
   const classes = useStyles();
   // const navigate = useNavigate();
-  const [publicKey, provider, , , , , , raffleWasm] = useOutletContext<[publicKey: string, provider: any, cep18Wasm :any, cep78Wasm: any, marketplaceWasm:any, vestingWasm:any, executeListingWasm:any,  raffleWasm: any]>();
+  const [publicKey, provider, , , , , , raffleWasm, buyTicketWasm] = useOutletContext<[publicKey: string, provider: any, cep18Wasm :any, cep78Wasm: any, marketplaceWasm:any, vestingWasm:any, executeListingWasm:any,  raffleWasm: any, buyTicketWasm: any
+  ]>();
 
   const [raffleOpen, setRaffleOpen] = useState<boolean>(false);
   const [approveModal, setApproveModal] = useState<boolean>(false);
@@ -233,7 +234,6 @@ const ManageRaffle = () => {
     try {
       if (clickedRaffle?.key) {
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-        console.log(clickedRaffle)
 
         const contract = new Contracts.Contract();
         contract.setContractHash(clickedRaffle.key);
@@ -242,7 +242,6 @@ const ManageRaffle = () => {
         const args = RuntimeArgs.fromMap({});
 
         const deploy = contract.callEntrypoint("deposit", args, ownerPublicKey, "casper-test", "5000000000");
-        console.log(deploy);
 
         const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -251,7 +250,6 @@ const ManageRaffle = () => {
           let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
           signedDeploy = DeployUtil.validateDeploy(signedDeploy);
           const data = DeployUtil.deployToJson(signedDeploy.val);
-          console.log("data", data)
           const response = await axios.post(SERVER_API + "deploy", data, {
             headers: { "Content-Type": "application/json" },
           });
@@ -267,6 +265,43 @@ const ManageRaffle = () => {
       console.log(error);
       toastr.error("error");
     }
+  };
+
+  const buy_ticket = async () => {
+      try {
+        if (clickedRaffle){
+          const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+        const contract = new Contracts.Contract();
+        const args = RuntimeArgs.fromMap({
+          // raffle_contract_hash: CasperHelpers.stringToKey("61b408af2f990fc16476e93bcdc6727e2b79879f3abded73e64ae4dff39e46cd"),
+          raffle_contract_hash: new CLAccountHash(Buffer.from(clickedRaffle?.key.substring(5), "hex")),
+          amount: CLValueBuilder.u512(clickedRaffle.price),
+        });
+
+          const deploy = contract.install(new Uint8Array(buyTicketWasm), args, "10000000000", ownerPublicKey, "casper-test");
+
+          const deployJson = DeployUtil.deployToJson(deploy);
+
+          try {
+            const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+            let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+            signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+            const data = DeployUtil.deployToJson(signedDeploy.val);
+            const response = await axios.post(SERVER_API + "deploy", data, {
+              headers: { "Content-Type": "application/json" },
+            });
+
+            toastr.success(response.data, "Deposit successfully.");
+            setLoading(false);
+            // navigate("/marketplace");
+          } catch (error: any) {
+            alert(error.message);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+        toastr.error("error");
+      }
   };
 
 
@@ -380,8 +415,7 @@ const ManageRaffle = () => {
         }
       });
 
-
-      const rafflesData = await getAllRafflesForJoin(STORE_CONTRACT_HASH);
+      const rafflesData = await getAllRafflesForJoin("hash-" + STORE_CONTRACT_HASH);
 
       const finalJoinData:any[] = rafflesData.map((raffle:RaffleMetadata, index:number) => {
         return {
@@ -444,7 +478,7 @@ const ManageRaffle = () => {
         ></CustomButton>
         <CreateRaffleModal
             raffle={raffle}
-            createRaffle={() => install()}
+            createRaffle={install}
             raffleOnChange={setRaffle}
             open={raffleOpen}
             onClose={() => handleClose(setRaffleOpen)}
@@ -532,12 +566,11 @@ const ManageRaffle = () => {
                           <Typography color="#0f1429">{raffle.nft_index}</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">{raffle.price / Math.pow(10,9)}</Typography>
+                          <Typography color="#0f1429">{raffle.price / Math.pow(10,9)} CSPR</Typography>
                         </TableCell>
                           <TableCell align="left">
                               <IconButton onClick={(e:any) => {
                                 handleMenuClick(e, setRaffleMore);
-                                // console.log(raffle)
                                 setClickedRaffle(raffle);
                               }}>
                                 <MoreVertIcon></MoreVertIcon>
@@ -697,8 +730,8 @@ const ManageRaffle = () => {
                               <TableCell align="left">
                                <CustomButton
                                    disabled={false}
-                                   label="join raffle"
-                                   onClick={()=>{}}
+                                   label="buy ticket"
+                                   onClick={buy_ticket}
                                ></CustomButton>
                               </TableCell>
                             </TableRow>
