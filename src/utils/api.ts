@@ -276,6 +276,11 @@ export const getRaffleDetails = async (contractHash: string) => {
   return response.data;
 };
 
+export const getAllRafflesForJoin = async (contractHash: string) => {
+  const response = await axios.get<any>(SERVER_API + "get_all_raffles?contractHash=" + contractHash);
+  return response.data;
+}
+
 export const getValidators = async () => {
   const response = await axios.get(SERVER_API + "validators");
 
