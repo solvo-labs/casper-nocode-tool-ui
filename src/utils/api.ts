@@ -273,18 +273,6 @@ export const getVestingList = async (accountHash: string) => {
 
 export const getRaffleDetails = async (contractHash: string) => {
   const response = await axios.get<any>(SERVER_API + "get_raffle?contractHash=" + contractHash);
-
-  // let finalData: any[] = response.data.map((raffle:any) => {
-  //   return {
-  //     collection: raffle.collection,
-  //     name: raffle.name,
-  //     owner: raffle.owner,
-  //     nft_index: raffle.nft_index.toNumber(),
-  //     start_date: raffle.start_date.toNumber(),
-  //     end_date: raffle.end_date.toNumber(),
-  //   }
-  // });
-
   return response.data;
 };
 
