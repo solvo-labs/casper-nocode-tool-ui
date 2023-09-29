@@ -53,7 +53,7 @@ export const CollectionCardAlternate: React.FC<Props> = ({ title, symbol, contra
     <>
       <CardActionArea>
         <Card className={classes.alternateCard} onClick={onClick}>
-          <CardMedia component="img" height="100" image={image} alt="collection-image" />
+          <CardMedia component="img" height="160" image={image} alt="collection-image" />
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">
               {title}
