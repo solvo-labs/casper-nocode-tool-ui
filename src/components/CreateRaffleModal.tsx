@@ -128,7 +128,7 @@ const CreateRaffleModal: React.FC<Props> = ({raffle, createRaffle,open, onClose,
                             )
                         ) : (
                             <CustomSelect
-                                value={raffle.nftIndex ? raffle.nftIndex : -1}
+                                value={raffle.nftIndex}
                                 id="customselect"
                                 onChange={(event: any) => {
                                     raffleOnChange({...raffle, nftIndex: event.target.value})
