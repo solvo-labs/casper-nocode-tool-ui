@@ -3,7 +3,7 @@ import {
     CircularProgress,
     FormControl, FormControlLabel,
     FormLabel,
-    Grid, LinearProgress,
+    Grid,
     MenuItem,
     Modal,
     RadioGroup, SelectChangeEvent,
@@ -36,7 +36,7 @@ const style = {
 const style2 = {
     position: "absolute" as "absolute",
     transform: "translate(-50%, -50%)",
-    width: 400,
+    width: 600,
     top: "50%",
     left: "50%",
     backgroundColor: "#0F1429",
@@ -201,38 +201,17 @@ export const ApproveNFTModal: React.FC<ApproveModal> = ({selected, marketplaces,
 type ApproveNFTonRafflePage = {
     open: boolean;
     handleClose: () => void;
-    loadingCollection: boolean;
-    loadingNFT: boolean;
-    collections: CollectionMetada[];
-    nfts: NFT[];
-    selectedCollection: CollectionMetada | undefined;
-    collectionOnChange: (param: CollectionMetada) => void;
-    selectedNFTIndex: number | undefined;
-    nftOnChange: (param: number) => void;
     approve: () => void;
     selectedRaffle?: RaffleMetadata | undefined;
 }
 
-export const ApproveNFTModalonRaffePage: React.FC<ApproveNFTonRafflePage> = ({open,handleClose, loadingCollection, loadingNFT, collections,nfts, selectedCollection, selectedNFTIndex, collectionOnChange, nftOnChange, approve,selectedRaffle}) => {
+export const ApproveNFTModalonRaffePage: React.FC<ApproveNFTonRafflePage> = ({open,handleClose,  approve,selectedRaffle}) => {
     const classes = useStyles();
 
     return(
         <Modal className={classes.modalStyle} open={open} onClose={handleClose}>
             <Box sx={style2}>
-                {loadingCollection ? (
-                    <div
-                        style={{
-                            height: "40vh",
-                            width: "100%",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                        }}
-                    >
-                        <CircularProgress />
-                    </div>
-                ) : (
-                    <Grid container direction={"column"}>
+                <Grid container direction={"column"}>
                         <Grid item marginBottom={"2rem"}>
                             <Typography className={classes.title} variant="h6" display={"flex"}>
                                 Select  NFT and Approve For Operator
@@ -241,62 +220,10 @@ export const ApproveNFTModalonRaffePage: React.FC<ApproveNFTonRafflePage> = ({op
                         <Stack direction={"column"} spacing={4}>
                             <Typography>Operator: { selectedRaffle?.name }</Typography>
                             <Tooltip title={selectedRaffle?.key}>
-                            <Typography>Hash: {selectedRaffle?.key.slice(0,30)}</Typography>
+                                <Typography>Raffle Contract Hash: {selectedRaffle?.key.slice(0,30)}</Typography>
                             </Tooltip>
-                            <CustomSelect
-                                value={selectedCollection?.contractHash || "default"}
-                                id="customselect"
-                                onChange={(event: SelectChangeEvent) => {
-                                    const data = collections.find(
-                                        (tk: any) => tk.contractHash === event.target.value
-                                    );
-                                    // @ts-ignore
-                                    collectionOnChange(data);
-                                }}
-                            >
-                                <MenuItem value="default">
-                                    <em>Select a Collection</em>
-                                </MenuItem>
-                                {collections.map((tk: any) => {
-                                    return (
-                                        <MenuItem key={tk.contractHash} value={tk.contractHash}>
-                                            {tk.collection_name}
-                                        </MenuItem>
-                                    );
-                                })}
-                            </CustomSelect>
-                            {loadingNFT ? (
-                                selectedCollection && (
-                                    <div>
-                                        <LinearProgress />
-                                    </div>
-                                )
-                            ) : (
-                                <CustomSelect
-                                    value={selectedNFTIndex != -1 ? selectedNFTIndex : -1}
-                                    id="customselect"
-                                    onChange={(event: any) => {
-                                        nftOnChange(event.target.value);
-                                    }}
-                                >
-                                    <MenuItem
-                                        key={-1}
-                                        value={-1}
-                                            onChange={(event:any) =>
-                                        nftOnChange(event.target.value)
-                                        }
-                                    >
-                                        <em>Select a NFT</em>
-                                    </MenuItem>
-                                    {nfts.map((nft: any, index: number) => {
-                                        return (
-                                            <MenuItem key={index} value={index}>
-                                                {"["+index+"] " + nft.name}
-                                            </MenuItem>
-                                        );
-                                    })}
-                                </CustomSelect>
-                            )}
+                            <Typography>NFT Collection: { selectedRaffle?.collection.slice(0,30) }</Typography>
+                            <Typography>NFT Index: { selectedRaffle?.nft_index }</Typography>
                             <Grid item display={"flex"} justifyContent={"center"}>
                                 <CustomButton
                                     label={"Approve NFT"}
@@ -304,8 +231,7 @@ export const ApproveNFTModalonRaffePage: React.FC<ApproveNFTonRafflePage> = ({op
                                 ></CustomButton>
                             </Grid>
                         </Stack>
-                    </Grid>
-                )}
+                </Grid>
             </Box>
         </Modal>
     );
