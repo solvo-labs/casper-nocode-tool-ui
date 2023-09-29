@@ -103,14 +103,11 @@ const ManageRaffle = () => {
   const [raffleMore, setRaffleMore] = useState<null | HTMLElement>(null);
   const raffleMoreOpen = Boolean(raffleMore);
 
-
-
-  const [selectedCollection, setSelectedCollection] =
-    useState<CollectionMetada>();
-  const [selectedTokenId, setSelectedTokenId] = useState<number>();
-
   const [clickedRaffle, setClickedRaffle] = useState<RaffleMetadata>();
   // const [selectedOperatorHash, setSelectedOperatorHash] = useState<string>();
+
+  const [selectedCollection, setSelectedCollection] =
+      useState<CollectionMetada>();
 
   // const [listOfApprovable, setListOfApprovable] = useState<any[]>();
 
@@ -182,45 +179,91 @@ const ManageRaffle = () => {
   //   }
   // };
 
-  // const approve = async () => {
-  //   try {
-  //     if (selectedHash) {
-  //       const contract = new Contracts.Contract();
-  //       contract.setContractHash(selectedCollection);
-  //       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-  //
-  //       const marketplaceHash = selectedHash.replace("hash-", "");
-  //
-  //       const args = RuntimeArgs.fromMap({
-  //         operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(marketplaceHash, "hex")))),
-  //         token_id: CLValueBuilder.u64(selectedTokenId),
-  //       });
-  //
-  //       const deploy = contract.callEntrypoint("approve", args, ownerPublicKey, "casper-test", "10000000000");
-  //       console.log(deploy);
-  //
-  //       const deployJson = DeployUtil.deployToJson(deploy);
-  //
-  //       try {
-  //         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-  //         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
-  //         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-  //         const data = DeployUtil.deployToJson(signedDeploy.val);
-  //         const response = await axios.post(SERVER_API + "deploy", data, {
-  //           headers: { "Content-Type": "application/json" },
-  //         });
-  //
-  //         toastr.success(response.data, "Approve deployed successfully.");
-  //         navigate("/marketplace");
-  //       } catch (error: any) {
-  //         alert(error.message);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toastr.error("error");
-  //   }
-  // };
+  const approve = async () => {
+    setLoading(true);
+    try {
+      if (clickedRaffle?.key) {
+        const contract = new Contracts.Contract();
+        contract.setContractHash("hash-" + clickedRaffle.collection);
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+        const raffleHash = clickedRaffle.key.replace("hash-", "");
+
+        const args = RuntimeArgs.fromMap({
+          operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(raffleHash, "hex")))),
+          token_id: CLValueBuilder.u64(clickedRaffle.nft_index),
+        });
+
+        const deploy = contract.callEntrypoint("approve", args, ownerPublicKey, "casper-test", "2500000000");
+        console.log(deploy);
+
+        const deployJson = DeployUtil.deployToJson(deploy);
+
+        try {
+          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+          const data = DeployUtil.deployToJson(signedDeploy.val);
+          const response = await axios.post(SERVER_API + "deploy", data, {
+            headers: { "Content-Type": "application/json" },
+          });
+
+          toastr.success(response.data, "Approve deployed successfully.");
+          setApproveModal(false);
+          setLoading(false);
+          // navigate("/marketplace");
+        } catch (error: any) {
+          alert(error.message);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toastr.error("error");
+    }
+  };
+
+
+  const deposit = async () => {
+    setLoading(true);
+    try {
+      if (clickedRaffle?.key) {
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+        console.log(clickedRaffle)
+
+        const contract = new Contracts.Contract();
+        contract.setContractHash(clickedRaffle.key);
+
+
+        const args = RuntimeArgs.fromMap({});
+
+        const deploy = contract.callEntrypoint("deposit", args, ownerPublicKey, "casper-test", "5000000000");
+        console.log(deploy);
+
+        const deployJson = DeployUtil.deployToJson(deploy);
+
+        try {
+          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+          const data = DeployUtil.deployToJson(signedDeploy.val);
+          console.log("data", data)
+          const response = await axios.post(SERVER_API + "deploy", data, {
+            headers: { "Content-Type": "application/json" },
+          });
+
+          toastr.success(response.data, "Deposit successfully.");
+          setLoading(false);
+          // navigate("/marketplace");
+        } catch (error: any) {
+          alert(error.message);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toastr.error("error");
+    }
+  };
+
 
   const install = async () => {
     setLoading(true);
@@ -299,6 +342,7 @@ const ManageRaffle = () => {
         }
 
         const nftMetas = await Promise.all(promises);
+        // console.log(nftMetas)
         setNfts(nftMetas);
         setLoadingNFT(false);
       }
@@ -336,12 +380,12 @@ const ManageRaffle = () => {
     const init = async () => {
 
       const data = await fetchRaffleNamedKeys(publicKey);
-      console.log(data);
+      // console.log(data);
 
       const raffleDetailsPromises = data.map((rf:any) => getRaffleDetails(rf.key));
 
       const raffleDetails = await Promise.all(raffleDetailsPromises);
-      console.log(raffleDetails)
+      // console.log(raffleDetails)
 
      const finalData:any[] = raffleDetails.map((raffle:RaffleMetadata, index) => {
         return {
@@ -356,7 +400,7 @@ const ManageRaffle = () => {
         }
       });
 
-      console.log(finalData);
+      // console.log(finalData);
       setRaffles(finalData);
       setLoading(false);
 
@@ -496,7 +540,7 @@ const ManageRaffle = () => {
                           <TableCell align="left">
                               <IconButton onClick={(e:any) => {
                                 handleMenuClick(e, setRaffleMore);
-                                console.log(raffle)
+                                // console.log(raffle)
                                 setClickedRaffle(raffle);
                               }}>
                                 <MoreVertIcon></MoreVertIcon>
@@ -518,25 +562,19 @@ const ManageRaffle = () => {
                                   handleOpen(setApproveModal);
                                   handleMenuClose(setRaffleMore);
                                   // setSelectedOperatorHash(row.key);
-                                  console.log(index);
-                                  console.log(raffle);
+                                  // console.log(index);
+                                  // console.log(raffle);
                                 }}>Approve NFT</MenuItem>
-                                <MenuItem onClick={() => handleMenuClose(setRaffleMore)}>Deposit NFT</MenuItem>
+                                <MenuItem onClick={() => {
+                                  handleMenuClose(setRaffleMore);
+                                  deposit();
+                                }}>Deposit NFT</MenuItem>
                                 <MenuItem onClick={() => handleMenuClose(setRaffleMore)}>Detail Raffle</MenuItem>
                               </Menu>
                                 <ApproveNFTModalonRaffePage
                                     open={approveModal}
                                     handleClose={() => handleClose(setApproveModal)}
-                                    loadingCollection={loadingCollection}
-                                    loadingNFT={loadingNFT}
-                                    collections={collections}
-                                    nfts={nfts}
-                                    selectedCollection={selectedCollection ? selectedCollection : undefined}
-                                    selectedNFTIndex={selectedTokenId}
-                                    collectionOnChange={setSelectedCollection}
-                                    nftOnChange={setSelectedTokenId}
-                                    approve={()=> {
-                                      console.log(raffle.name)}}
+                                    approve={approve}
                                     selectedRaffle={clickedRaffle}
                                 ></ApproveNFTModalonRaffePage>
                           </TableCell>
