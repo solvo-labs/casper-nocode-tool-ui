@@ -74,7 +74,7 @@ const MarketplaceManager = () => {
     <Grid container direction={"column"} className={classes.container}>
       <Grid item className={classes.container}>
         <Stack direction={"row"} justifyContent={"space-between"}>
-          <Typography variant="h4">
+          <Typography variant="h5">
             <b>{marketplaceData.contractName} </b>
             Market List (Active List Count : {marketplaceData.listingCount})
           </Typography>
@@ -84,7 +84,7 @@ const MarketplaceManager = () => {
         </Stack>
       </Grid>
       <Grid item marginTop={"2rem"}>
-        <Typography variant="h5">List of NFT's</Typography>
+        <Typography variant="h6">List of NFT's</Typography>
       </Grid>
       <Grid container>
         {listings.map((lst) => {

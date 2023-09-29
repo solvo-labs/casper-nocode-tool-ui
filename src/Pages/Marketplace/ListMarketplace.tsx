@@ -20,8 +20,8 @@ const ListMarketplace = () => {
         return { contractHash: dt.key, contractName: dt.name.substring(26), listingCount: 0, feeWallet: "" };
       });
 
-      setLoading(false);
       setMarketplaces(finalData);
+      setLoading(false);
     };
 
     init();
