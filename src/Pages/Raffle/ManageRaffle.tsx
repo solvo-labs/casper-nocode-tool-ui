@@ -250,15 +250,15 @@ const ManageRaffle = () => {
     }
   };
 
-  const buy_ticket = async () => {
+  const buy_ticket = async (raffle: RaffleMetadata) => {
     try {
-      if (clickedRaffle) {
+      if (raffle) {
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
         const contract = new Contracts.Contract();
         const args = RuntimeArgs.fromMap({
           // raffle_contract_hash: CasperHelpers.stringToKey("61b408af2f990fc16476e93bcdc6727e2b79879f3abded73e64ae4dff39e46cd"),
-          raffle_contract_hash: new CLAccountHash(Buffer.from(clickedRaffle?.key.substring(5), "hex")),
-          amount: CLValueBuilder.u512(clickedRaffle.price),
+          raffle_contract_hash: new CLAccountHash(Buffer.from(raffle?.key.substring(5), "hex")),
+          amount: CLValueBuilder.u512(raffle.price),
         });
 
         const deploy = contract.install(new Uint8Array(buyTicketWasm), args, "10000000000", ownerPublicKey, "casper-test");
@@ -692,8 +692,7 @@ const ManageRaffle = () => {
                                   disabled={false}
                                   label="buy ticket"
                                   onClick={() => {
-                                    setClickedRaffle(raffle);
-                                    buy_ticket();
+                                    buy_ticket(raffle);
                                   }}
                                 ></CustomButton>
                               </TableCell>
