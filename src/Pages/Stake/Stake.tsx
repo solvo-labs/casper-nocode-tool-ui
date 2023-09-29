@@ -1,22 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  Autocomplete,
-  Checkbox,
-  CircularProgress,
-  Divider,
-  FormControl,
-  Grid,
-  IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Stack,
-  TextField,
-  Theme,
-  Typography,
-} from "@mui/material";
+import { useEffect, useState } from "react";
+import { Autocomplete, CircularProgress, FormControl, Grid, IconButton, List, ListItem, ListItemText, Stack, TextField, Theme, Typography } from "@mui/material";
 
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
