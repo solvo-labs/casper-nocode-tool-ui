@@ -124,6 +124,7 @@ export type RaffleNamedKeys = {
 }
 
 export type RaffleMetadata = {
+  key: string;
   collection: string;
   nft_index: number;
   owner: string;
