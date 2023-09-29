@@ -118,9 +118,19 @@ export type Raffle = {
   price: number;
 };
 
-export type RaffleMetadata = {
+export type RaffleNamedKeys = {
   key: string;
   name: string;
+}
+
+export type RaffleMetadata = {
+  collection: string;
+  nft_index: number;
+  owner: string;
+  name: string;
+  start_date: number;
+  end_date: number;
+  price: number;
 }
 
 
