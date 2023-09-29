@@ -59,7 +59,7 @@ export class CasperHelpers {
   }
 }
 
-export const uit32ArrayToHex = (data: any) => {
+export const uint32ArrayToHex = (data: any) => {
   return Object.values(data)
     .map((byte: any) => byte.toString(16).padStart(2, "0"))
     .join("");

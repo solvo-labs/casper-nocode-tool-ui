@@ -1,5 +1,6 @@
 import {
-  Box, CircularProgress,
+  Box,
+  CircularProgress,
   Grid,
   IconButton,
   Menu,
@@ -11,31 +12,36 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead, TablePagination,
+  TableHead,
+  TablePagination,
   TableRow,
   Theme,
   Typography,
 } from "@mui/material";
 import React, {useEffect, useMemo, useState} from "react";
-import { CustomButton } from "../../components/CustomButton";
-import { makeStyles } from "@mui/styles";
+import {CustomButton} from "../../components/CustomButton";
+import {makeStyles} from "@mui/styles";
 import {
-  fetchCep78NamedKeys, fetchRaffleNamedKeys,
+  fetchCep78NamedKeys,
+  fetchRaffleNamedKeys,
   getNftCollection,
-  getNftMetadata, SERVER_API,
+  getNftMetadata,
+  getRaffleDetails,
+  SERVER_API,
 } from "../../utils/api";
-import {CollectionMetada, NFT, Raffle, RaffleMetadata} from "../../utils/types";
+import {CollectionMetada, NFT, Raffle} from "../../utils/types";
 import moment from "moment";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
+import {TabContext, TabList, TabPanel} from "@mui/lab";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CreateRaffleModal from "../../components/CreateRaffleModal.tsx";
-import {CasperHelpers} from "../../utils";
+import {CasperHelpers, getMetadataImage, uint32ArrayToHex} from "../../utils";
 // @ts-ignore
 import {CLByteArray, CLKey, CLPublicKey, CLValueBuilder, Contracts, DeployUtil, RuntimeArgs} from "casper-js-sdk";
 import axios from "axios";
 import {ApproveNFTModalonRaffePage} from "../../components/NFTApproveModal.tsx";
 import {useOutletContext} from "react-router-dom";
 import toastr from "toastr";
+import {FETCH_IMAGE_TYPE} from "../../utils/enum.ts";
 
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -103,12 +109,13 @@ const ManageRaffle = () => {
   const [selectedCollection, setSelectedCollection] =
     useState<CollectionMetada>();
   const [selectedTokenId, setSelectedTokenId] = useState<number>();
+
   // const [clickedRaffle, setClickedRaffle] = useState<RaffleMetadata>();
   // const [selectedOperatorHash, setSelectedOperatorHash] = useState<string>();
 
   // const [listOfApprovable, setListOfApprovable] = useState<any[]>();
 
-  const [raffles, setRaffles] = useState<RaffleMetadata[] | undefined>();
+  const [raffles, setRaffles] = useState<any[] | undefined>();
 
   const [raffle, setRaffle] = useState<Raffle>({
     name: "",
@@ -217,6 +224,7 @@ const ManageRaffle = () => {
   // };
 
   const install = async () => {
+    setLoading(true);
     try {
       if (!disable) {
 
@@ -243,11 +251,13 @@ const ManageRaffle = () => {
           const response = await axios.post(SERVER_API + "deploy", data, {
             headers: { "Content-Type": "application/json" },
           });
-          toastr.success(response.data, "Marketplace deployed successfully.");
+          toastr.success(response.data, "Raffle deployed successfully.");
+          setRaffleOpen(false);
+          setLoading(false);
           // navigate("/marketplace");
         } catch (error: any) {
           alert(error.message);
-          // setLoading(false);
+          setLoading(false);
         }
       }
 
@@ -300,9 +310,36 @@ const ManageRaffle = () => {
 
   useEffect(() => {
     const init = async () => {
+
       const data = await fetchRaffleNamedKeys(publicKey);
-      setRaffles(data);
+      // console.log(data);
+
+      const raffleDetailsPromises = data.map((rf:any) => getRaffleDetails(rf.key));
+
+      const raffleDetails = await Promise.all(raffleDetailsPromises);
+
+      console.log(raffleDetails);
+
+
+     const finalData:any[] = raffleDetails.map((raffle:any) => {
+        return {
+          collection: uint32ArrayToHex(raffle.collection),
+          name: raffle.name,
+          owner: uint32ArrayToHex(raffle.owner),
+          nft_index: Number(raffle.nft_index.hex),
+          start_date: Number(raffle.start_date.hex),
+          end_date: Number(raffle.end_date.hex),
+          price: Number(raffle.price.hex),
+        }
+       // console.log(raffle.collection;
+      });
+
+      // operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(operatorHash, "hex")))),
+
+      console.log("finalcutdownnnn",   finalData);
+      setRaffles(raffleDetails);
       setLoading(false);
+
     };
     init();
   }, []);
@@ -313,8 +350,7 @@ const ManageRaffle = () => {
     const nft: boolean = !(raffle.nftIndex < 0)
     const price: boolean = !(raffle.price <= 0);
     const name: boolean = !(!raffle.name.length || raffle.name.startsWith(" "));
-    const disable = !(name && price && time && collection && nft);
-    return disable;
+    return !(name && price && time && collection && nft);
   }, [raffle]);
 
 
@@ -412,79 +448,181 @@ const ManageRaffle = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                     {raffles && raffles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((raffle:RaffleMetadata, index:number) => {
-                       return (
+                  {/*   {raffles && raffles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((raffle:any, index:number) => {*/}
+                  {/*     return (*/}
+                  {/*    <TableRow*/}
+                  {/*      style={{ cursor: "pointer" }}*/}
+                  {/*      onClick={() => {}}*/}
+                  {/*      hover*/}
+                  {/*      role="checkbox"*/}
+                  {/*      tabIndex={-1}*/}
+                  {/*      key={index}*/}
+                  {/*    >*/}
+                  {/*      <TableCell align="left">*/}
+                  {/*        <Typography color="#0f1429">{raffle.name}</Typography>*/}
+                  {/*      </TableCell>*/}
+                  {/*      <TableCell align="left">*/}
+                  {/*        <Typography color="#0f1429">{raffle.end_date.toString()}</Typography>*/}
+                  {/*      </TableCell>*/}
+                  {/*      <TableCell align="left">*/}
+                  {/*        <Typography color="#0f1429">{raffle.start_date.toString()}</Typography>*/}
+                  {/*      </TableCell>*/}
+                  {/*      <TableCell align="left">*/}
+                  {/*        <Typography color="#0f1429">asdasd</Typography>*/}
+                  {/*      </TableCell>*/}
+                  {/*      <TableCell align="left">*/}
+                  {/*        <Typography color="#0f1429">asdasd</Typography>*/}
+                  {/*      </TableCell>*/}
+                  {/*        <TableCell align="left">*/}
+                  {/*            <IconButton onClick={(e:any) => {*/}
+                  {/*              handleMenuClick(e, setRaffleMore);*/}
+                  {/*            }}>*/}
+                  {/*              <MoreVertIcon></MoreVertIcon>*/}
+                  {/*            </IconButton>*/}
+                  {/*            <Menu*/}
+                  {/*                anchorEl={raffleMore}*/}
+                  {/*                open={raffleMoreOpen}*/}
+                  {/*                onClose={() => handleMenuClose(setRaffleMore)}*/}
+                  {/*                anchorOrigin={{*/}
+                  {/*                  vertical: 'top',*/}
+                  {/*                  horizontal: 'left',*/}
+                  {/*                }}*/}
+                  {/*                transformOrigin={{*/}
+                  {/*                  vertical: 'top',*/}
+                  {/*                  horizontal: 'left',*/}
+                  {/*                }}*/}
+                  {/*            >*/}
+                  {/*              <MenuItem onClick={() => {*/}
+                  {/*                handleOpen(setApproveModal);*/}
+                  {/*                handleMenuClose(setRaffleMore);*/}
+                  {/*                // setSelectedOperatorHash(row.key);*/}
+                  {/*                console.log(index);*/}
+                  {/*                console.log(raffle);*/}
+                  {/*              }}>Approve NFT</MenuItem>*/}
+                  {/*              <MenuItem onClick={() => handleMenuClose(setRaffleMore)}>Deposit NFT</MenuItem>*/}
+                  {/*              <MenuItem onClick={() => handleMenuClose(setRaffleMore)}>Detail Raffle</MenuItem>*/}
+                  {/*            </Menu>*/}
+                  {/*              <ApproveNFTModalonRaffePage*/}
+                  {/*                  open={approveModal}*/}
+                  {/*                  handleClose={() => handleClose(setApproveModal)}*/}
+                  {/*                  loadingCollection={loadingCollection}*/}
+                  {/*                  loadingNFT={loadingNFT}*/}
+                  {/*                  collections={collections}*/}
+                  {/*                  nfts={nfts}*/}
+                  {/*                  selectedCollection={selectedCollection ? selectedCollection : undefined}*/}
+                  {/*                  selectedNFTIndex={selectedTokenId}*/}
+                  {/*                  collectionOnChange={setSelectedCollection}*/}
+                  {/*                  nftOnChange={setSelectedTokenId}*/}
+                  {/*                  approve={()=> {*/}
+                  {/*                    console.log(raffle.name)}}*/}
+                  {/*                  selectedRaffle={raffle}*/}
+                  {/*              ></ApproveNFTModalonRaffePage>*/}
+                  {/*        </TableCell>*/}
+                  {/*    </TableRow>*/}
+                  {/*  );*/}
+                  {/*})}*/}
                       <TableRow
-                        style={{ cursor: "pointer" }}
-                        onClick={() => {}}
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                        key={index}
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {}}
+                          hover
+                          role="checkbox"
+                          tabIndex={-1}
                       >
                         <TableCell align="left">
-                          <Typography color="#0f1429">{raffle.name}</Typography>
+                          <Typography color="#0f1429">hahah</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">{raffle.key.slice(0,15)}</Typography>
+                          <Typography color="#0f1429">hahah</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">asdasdasd</Typography>
+                          <Typography color="#0f1429">hahah</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">asdasd</Typography>
+                          <Typography color="#0f1429">hahah</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">asdasd</Typography>
+                          <Typography color="#0f1429">hahah</Typography>
                         </TableCell>
-                          <TableCell align="left">
-                              <IconButton onClick={(e:any) => {
-                                handleMenuClick(e, setRaffleMore);
-                              }}>
-                                <MoreVertIcon></MoreVertIcon>
-                              </IconButton>
-                              <Menu
-                                  anchorEl={raffleMore}
-                                  open={raffleMoreOpen}
-                                  onClose={() => handleMenuClose(setRaffleMore)}
-                                  anchorOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'left',
-                                  }}
-                                  transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'left',
-                                  }}
-                              >
-                                <MenuItem onClick={() => {
-                                  handleOpen(setApproveModal);
-                                  handleMenuClose(setRaffleMore);
-                                  // setSelectedOperatorHash(row.key);
-                                  console.log(index);
-                                  console.log(raffle);
-                                }}>Approve NFT</MenuItem>
-                                <MenuItem onClick={() => handleMenuClose(setRaffleMore)}>Deposit NFT</MenuItem>
-                                <MenuItem onClick={() => handleMenuClose(setRaffleMore)}>Detail Raffle</MenuItem>
-                              </Menu>
-                                <ApproveNFTModalonRaffePage
-                                    open={approveModal}
-                                    handleClose={() => handleClose(setApproveModal)}
-                                    loadingCollection={loadingCollection}
-                                    loadingNFT={loadingNFT}
-                                    collections={collections}
-                                    nfts={nfts}
-                                    selectedCollection={selectedCollection ? selectedCollection : undefined}
-                                    selectedNFTIndex={selectedTokenId}
-                                    collectionOnChange={setSelectedCollection}
-                                    nftOnChange={setSelectedTokenId}
-                                    approve={()=> {
-                                      console.log(raffle.key)}}
-                                    selectedRaffle={raffle}
-                                ></ApproveNFTModalonRaffePage>
-                          </TableCell>
+                        <TableCell align="left">
+                          <Typography color="#0f1429">hahah</Typography>
+                        </TableCell>
+                        <TableCell align="center">
+                          <CustomButton
+                              label="buy ticket"
+                              disabled={false}
+                              onClick={() => {}}
+                          ></CustomButton>
+                        </TableCell>
                       </TableRow>
-                    );
-                  })}
+                      <TableRow
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {}}
+                          hover
+                          role="checkbox"
+                          tabIndex={-1}
+                      >
+                        <TableCell align="left">
+                          <Typography color="#0f1429">hahah</Typography>
+                        </TableCell>
+                        <TableCell align="left">
+                          <Typography color="#0f1429">hahah</Typography>
+                        </TableCell>
+                        <TableCell align="left">
+                          <Typography color="#0f1429">hahah</Typography>
+                        </TableCell>
+                        <TableCell align="left">
+                          <Typography color="#0f1429">hahah</Typography>
+                        </TableCell>
+                        <TableCell align="left">
+                          <Typography color="#0f1429">hahah</Typography>
+                        </TableCell>
+                        <TableCell align="left">
+                          <Typography color="#0f1429">hahah</Typography>
+                        </TableCell>
+                        <IconButton onClick={(e:any) => {
+                          handleMenuClick(e, setRaffleMore);
+                        }}>
+                          <MoreVertIcon></MoreVertIcon>
+                        </IconButton>
+                        <Menu
+                            anchorEl={raffleMore}
+                            open={raffleMoreOpen}
+                            onClose={() => handleMenuClose(setRaffleMore)}
+                            anchorOrigin={{
+                              vertical: 'top',
+                              horizontal: 'left',
+                            }}
+                            transformOrigin={{
+                              vertical: 'top',
+                              horizontal: 'left',
+                            }}
+                        >
+                          <MenuItem onClick={() => {
+                            handleOpen(setApproveModal);
+                            handleMenuClose(setRaffleMore);
+                            // setSelectedOperatorHash(row.key);
+                            // console.log(index);
+                            console.log(raffle);
+                          }}>Approve NFT</MenuItem>
+                          <MenuItem onClick={() => handleMenuClose(setRaffleMore)}>Deposit NFT</MenuItem>
+                          <MenuItem onClick={() => handleMenuClose(setRaffleMore)}>Detail Raffle</MenuItem>
+                        </Menu>
+                        <ApproveNFTModalonRaffePage
+                            open={approveModal}
+                            handleClose={() => handleClose(setApproveModal)}
+                            loadingCollection={loadingCollection}
+                            loadingNFT={loadingNFT}
+                            collections={collections}
+                            nfts={nfts}
+                            selectedCollection={selectedCollection ? selectedCollection : undefined}
+                            selectedNFTIndex={selectedTokenId}
+                            collectionOnChange={setSelectedCollection}
+                            nftOnChange={setSelectedTokenId}
+                            approve={()=> {
+                              console.log(raffle.name)}}
+                            // selectedRaffle={raffles ? raffles[0] : undefined}
+                        ></ApproveNFTModalonRaffePage>
+                      </TableRow>
                     </TableBody>
                   </Table>
                 </TableContainer>

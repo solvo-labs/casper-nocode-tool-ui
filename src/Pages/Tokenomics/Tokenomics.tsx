@@ -11,7 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import TokenSelector from "../../components/TokenSelector";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
-import { uit32ArrayToHex } from "../../utils";
+import { uint32ArrayToHex } from "../../utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -152,7 +152,7 @@ export const Tokenomics = () => {
 
       const vestingDetails = await Promise.all(vestingDetailsPromises);
 
-      const vestingHistory = vestingDetails.filter((vd) => uit32ArrayToHex(vd.cep18_contract_hash) === newToken.contractHash.substring(5));
+      const vestingHistory = vestingDetails.filter((vd) => uint32ArrayToHex(vd.cep18_contract_hash) === newToken.contractHash.substring(5));
       const tokenSupply = (await fetchErc20TokenDetails(newToken.contractHash || "")).total_supply;
       setSupply(parseInt(tokenSupply.hex));
 

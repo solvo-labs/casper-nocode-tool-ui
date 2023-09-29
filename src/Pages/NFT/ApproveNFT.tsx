@@ -11,7 +11,7 @@ import {
 import { getMetadataImage } from "../../utils";
 import { FETCH_IMAGE_TYPE } from "../../utils/enum";
 import { useOutletContext } from "react-router-dom";
-import {CollectionMetada, Marketplace, NFT, RaffleMetadata} from "../../utils/types";
+import {CollectionMetada, Marketplace, NFT, RaffleNamedKeys} from "../../utils/types";
 import { CollectionCardAlternate } from "../../components/CollectionCard";
 // @ts-ignore
 import { CLPublicKey, Contracts, RuntimeArgs, CLValueBuilder, CLKey, CLByteArray, DeployUtil } from "casper-js-sdk";
@@ -58,7 +58,7 @@ const ApproveNFT = () => {
   const [selectedOperatorHash, setSelectedOperatorHash] = useState<string>();
 
   const [marketplaces, setMarketplaces] = useState<Marketplace[]>();
-  const [raffles, setRaffles] = useState<RaffleMetadata[]>();
+  const [raffles, setRaffles] = useState<RaffleNamedKeys[]>();
 
   const handleOpenNFT = (contract: string) => {
     setSelectedCollection(contract);

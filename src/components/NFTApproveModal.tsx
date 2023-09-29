@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import {NftCard} from "./NftCard.tsx";
 import {makeStyles} from "@mui/styles";
-import {CollectionMetada, Marketplace, NFT, RaffleMetadata} from "../utils/types.ts";
+import {CollectionMetada, Marketplace, NFT, RaffleNamedKeys} from "../utils/types.ts";
 import { CustomButton } from "./CustomButton.tsx";
 import React from "react";
 import { CustomSelect } from "./CustomSelect.tsx";
@@ -59,7 +59,7 @@ type ApproveModal = {
     selected: string | undefined;
     selectedOnChange: (param: string) => void;
     marketplaces: Marketplace[] | undefined;
-    raffles: RaffleMetadata[] | undefined;
+    raffles: RaffleNamedKeys[] | undefined;
     open: boolean;
     handleClose: () => void;
     approve: () => void;
@@ -210,7 +210,7 @@ type ApproveNFTonRafflePage = {
     selectedNFTIndex: number | undefined;
     nftOnChange: (param: number) => void;
     approve: () => void;
-    selectedRaffle: RaffleMetadata;
+    selectedRaffle?: RaffleNamedKeys;
 }
 
 export const ApproveNFTModalonRaffePage: React.FC<ApproveNFTonRafflePage> = ({open,handleClose, loadingCollection, loadingNFT, collections,nfts, selectedCollection, selectedNFTIndex, collectionOnChange, nftOnChange, approve,selectedRaffle}) => {
@@ -239,10 +239,10 @@ export const ApproveNFTModalonRaffePage: React.FC<ApproveNFTonRafflePage> = ({op
                             </Typography>
                         </Grid>
                         <Stack direction={"column"} spacing={4}>
-                            <Typography>Operator: {selectedRaffle.name}</Typography>
-                            <Tooltip title={selectedRaffle.key}>
-                            <Typography>Hash: {selectedRaffle.key.slice(0,30)}</Typography>
-                            </Tooltip>
+                            {/*<Typography>Operator: {selectedRaffle.name}</Typography>*/}
+                            {/*<Tooltip title={selectedRaffle.key}>*/}
+                            {/*<Typography>Hash: {selectedRaffle.key.slice(0,30)}</Typography>*/}
+                            {/*</Tooltip>*/}
                             <CustomSelect
                                 value={selectedCollection?.contractHash || "default"}
                                 id="customselect"
