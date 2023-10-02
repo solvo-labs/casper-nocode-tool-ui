@@ -474,10 +474,12 @@ const ManageRaffle = () => {
           start_date: Number(raffle.start_date.hex),
           end_date: Number(raffle.end_date.hex),
           price: Number(raffle.price.hex),
+          claimed: raffle.claimed,
         };
       });
 
       const lastData = finalJoinData.filter((raffle: any) => {
+        console.log(raffle);
         if (raffle.claimed) {
           return !raffle.claimed;
         }
