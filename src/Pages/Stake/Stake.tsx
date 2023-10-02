@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Autocomplete, CircularProgress, FormControl, Grid, IconButton, List, ListItem, ListItemText, Stack, TextField, Theme, Typography } from "@mui/material";
+import { Autocomplete, Box, CircularProgress, FormControl, Grid, IconButton, List, ListItem, ListItemText, Stack, TextField, Theme, Typography } from "@mui/material";
 
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
@@ -258,24 +258,31 @@ export const Stake = () => {
                 options={validators.map((vl, index) => {
                   const pubkey: string = vl.public_key;
                   return {
-                    label:
-                      pubkey.substring(0, 20) +
-                      "..." +
-                      pubkey.substring(pubkey.length - 10) +
-                      "" +
-                      ", Fee : " +
-                      vl.bid.delegation_rate +
-                      "%" +
-                      "(" +
-                      vl.bid.delegators.length +
-                      " delegator)" +
-                      ", Stake Amount : " +
-                      vl.bid.staked_amount / 1000000000 +
-                      " CSPR",
-
+                    label: pubkey.substring(0, 10) + "..." + pubkey.substring(pubkey.length - 10),
+                    fee: vl.bid.delegation_rate + "%" + "(" + vl.bid.delegators.length + " delegator)",
+                    amount: vl.bid.staked_amount / 1000000000 + " CSPR",
                     value: index,
                   };
                 })}
+                getOptionLabel={(option) => option.label}
+                renderOption={(props, option) => (
+                  <div>
+                    <Box component="li" sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }} {...props}>
+                      <div style={{ flex: 1 }}>
+                        {option.value === 0 && <div>Validators</div>}
+                        <div style={{ fontFamily: "monospace" }}>{option.label} </div>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        {option.value === 0 && <div>Fee</div>}
+                        <div style={{ fontFamily: "monospace" }}>{option.fee} </div>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        {option.value === 0 && <div>Stake Amount</div>}
+                        <div style={{ fontFamily: "monospace" }}>{option.amount} </div>
+                      </div>
+                    </Box>
+                  </div>
+                )}
                 onChange={(_event, value) => {
                   if (value) {
                     setSelectedValidator(validators[value.value]);
@@ -284,7 +291,9 @@ export const Stake = () => {
                   }
                 }}
                 className={classes.autocompleteStyles}
-                renderInput={(params) => <TextField {...params} label="Validator" />}
+                renderInput={(params) => {
+                  return <TextField {...params} label="Validator" />;
+                }}
               />
               <CustomInput
                 placeholder="Amount (min 500 CSPR)"
@@ -295,7 +304,6 @@ export const Stake = () => {
                 value={amount || ""}
                 onChange={(e: any) => setAmount(e.target.value)}
               />
-
               <FormControl fullWidth>
                 <Grid item>
                   <CustomButton onClick={stake} disabled={!amount || amount <= 499} label="Delegate" fullWidth />
