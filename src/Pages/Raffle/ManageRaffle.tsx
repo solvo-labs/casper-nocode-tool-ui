@@ -23,7 +23,7 @@ import { CustomButton } from "../../components/CustomButton";
 import { makeStyles } from "@mui/styles";
 import { fetchCep78NamedKeys, fetchRaffleNamedKeys, getAllRafflesForJoin, getNftCollection, getNftMetadata, getRaffleDetails, SERVER_API } from "../../utils/api";
 import { CollectionMetada, NFT, Raffle, RaffleMetadata } from "../../utils/types";
-import moment from "moment";
+import moment, { now } from "moment";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CreateRaffleModal from "../../components/CreateRaffleModal.tsx";
@@ -186,7 +186,6 @@ const ManageRaffle = () => {
         });
 
         const deploy = contract.callEntrypoint("approve", args, ownerPublicKey, "casper-test", "2500000000");
-        console.log(deploy);
 
         const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -276,10 +275,81 @@ const ManageRaffle = () => {
 
           toastr.success(response.data, "Deposit successfully.");
           setLoading(false);
-          // navigate("/marketplace");
         } catch (error: any) {
           alert(error.message);
         }
+      }
+    } catch (error) {
+      console.log(error);
+      toastr.error("error");
+    }
+  };
+
+  const draw = async (raffle: RaffleMetadata) => {
+    setLoading(true);
+    try {
+      const contract = new Contracts.Contract();
+      contract.setContractHash(raffle.key);
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+      const args = RuntimeArgs.fromMap({});
+
+      const deploy = contract.callEntrypoint("draw", args, ownerPublicKey, "casper-test", "5000000000");
+      console.log(deploy);
+
+      const deployJson = DeployUtil.deployToJson(deploy);
+
+      try {
+        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+        const data = DeployUtil.deployToJson(signedDeploy.val);
+        const response = await axios.post(SERVER_API + "deploy", data, {
+          headers: { "Content-Type": "application/json" },
+        });
+
+        toastr.success(response.data, "Approve deployed successfully.");
+        setApproveModal(false);
+        setLoading(false);
+        // navigate("/marketplace");
+      } catch (error: any) {
+        alert(error.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toastr.error("error");
+    }
+  };
+
+  const claim = async (raffle: RaffleMetadata) => {
+    setLoading(true);
+    try {
+      const contract = new Contracts.Contract();
+      contract.setContractHash(raffle.key);
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+      const args = RuntimeArgs.fromMap({});
+
+      const deploy = contract.callEntrypoint("claim", args, ownerPublicKey, "casper-test", "5000000000");
+      console.log(deploy);
+
+      const deployJson = DeployUtil.deployToJson(deploy);
+
+      try {
+        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+        const data = DeployUtil.deployToJson(signedDeploy.val);
+        const response = await axios.post(SERVER_API + "deploy", data, {
+          headers: { "Content-Type": "application/json" },
+        });
+
+        toastr.success(response.data, "Approve deployed successfully.");
+        setApproveModal(false);
+        setLoading(false);
+        // navigate("/marketplace");
+      } catch (error: any) {
+        alert(error.message);
       }
     } catch (error) {
       console.log(error);
@@ -397,6 +467,7 @@ const ManageRaffle = () => {
         return {
           key: raffle.key,
           collection: uint32ArrayToHex(raffle.collection),
+          winner_account: raffle.winner_account,
           name: raffle.name,
           owner: uint32ArrayToHex(raffle.owner),
           nft_index: Number(raffle.nft_index.hex),
@@ -406,7 +477,18 @@ const ManageRaffle = () => {
         };
       });
 
-      const lastData = finalJoinData.filter((raffle: RaffleMetadata) => raffle.owner != accountHash);
+      const lastData = finalJoinData.filter((raffle: any) => {
+        if (raffle.claimed) {
+          return !raffle.claimed;
+        }
+
+        if (raffle.winner_account) {
+          return raffle.winner_account === accountHash;
+        }
+
+        return raffle.owner != accountHash && moment.unix(raffle.end_date).unix() > Date.now();
+      });
+
       setJoinableRaffle(lastData);
 
       setRaffles(finalData);
@@ -566,6 +648,16 @@ const ManageRaffle = () => {
                                     Deposit NFT
                                   </MenuItem>
                                   <MenuItem onClick={() => handleMenuClose(setRaffleMore)}>Detail Raffle</MenuItem>
+                                  {moment.unix(raffle.end_date).unix() < Date.now() && (
+                                    <MenuItem
+                                      onClick={() => {
+                                        handleMenuClose(setRaffleMore);
+                                        draw(raffle);
+                                      }}
+                                    >
+                                      Draw
+                                    </MenuItem>
+                                  )}
                                 </Menu>
                                 <ApproveNFTModalonRaffePage
                                   open={approveModal}
@@ -625,11 +717,6 @@ const ManageRaffle = () => {
                             Price
                           </Typography>
                         </TableCell>
-                        <TableCell key="raffle-price" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            Status
-                          </Typography>
-                        </TableCell>
                         <TableCell key="raffle-actions" align="center">
                           <Typography fontWeight="bold" color="#0f1429">
                             Actions
@@ -685,18 +772,28 @@ const ManageRaffle = () => {
                               <TableCell align="left">
                                 <Typography color="#0f1429">{raffle.price / Math.pow(10, 9)}</Typography>
                               </TableCell>
-                              <TableCell align="left">
-                                <Typography color="#0f1429">ON GOING</Typography>
-                              </TableCell>
-                              <TableCell align="left">
-                                <CustomButton
-                                  disabled={false}
-                                  label="buy ticket"
-                                  onClick={() => {
-                                    buy_ticket(raffle);
-                                  }}
-                                ></CustomButton>
-                              </TableCell>
+
+                              {moment.unix(raffle.end_date).unix() < Date.now() ? (
+                                <TableCell align="left">
+                                  <CustomButton
+                                    disabled={false}
+                                    label="Claim"
+                                    onClick={() => {
+                                      claim(raffle);
+                                    }}
+                                  ></CustomButton>
+                                </TableCell>
+                              ) : (
+                                <TableCell align="left">
+                                  <CustomButton
+                                    disabled={false}
+                                    label="buy ticket"
+                                    onClick={() => {
+                                      buy_ticket(raffle);
+                                    }}
+                                  ></CustomButton>
+                                </TableCell>
+                              )}
                             </TableRow>
                           );
                         })}

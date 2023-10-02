@@ -132,6 +132,8 @@ export type RaffleMetadata = {
   start_date: NumberMeta;
   end_date: NumberMeta;
   price: NumberMeta;
+  claimed?: boolean;
+  winner_account?: string;
 };
 
 export type NumberMeta = { hex: string; type: string };
