@@ -62,6 +62,27 @@ const useStyles = makeStyles((theme: Theme) => ({
       color: "#FF0011",
     },
   },
+  autocompleteStyles: {
+    "& .MuiAutocomplete-inputRoot .MuiInputBase-input": {
+      color: "white",
+    },
+    "& .MuiAutocomplete-inputRoot .MuiOutlinedInput-notchedOutline": {
+      borderColor: "white !important",
+      borderRadius: "16px !important",
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "#FF0011 !important",
+    },
+    "& .MuiInputLabel-root": {
+      color: "white !important",
+    },
+    "& .MuiAutocomplete-popupIndicator": {
+      color: "white !important",
+    },
+    "& .MuiAutocomplete-inputRoot.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "#FF0011 !important",
+    },
+  },
 }));
 
 export const Stake = () => {
@@ -262,7 +283,7 @@ export const Stake = () => {
                     setSelectedValidator(undefined);
                   }
                 }}
-                sx={{ width: "100%", color: "white", border: "border 4px solid white !important" }}
+                className={classes.autocompleteStyles}
                 renderInput={(params) => <TextField {...params} label="Validator" />}
               />
               <CustomInput
