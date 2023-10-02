@@ -632,7 +632,7 @@ const ManageRaffle = () => {
                                 <Typography color="#0f1429">{raffle.price / Math.pow(10, 9)} CSPR</Typography>
                               </TableCell>
                               <TableCell align="left">
-                                <Typography color="#0f1429">{raffle.claimed ? <CheckIcon /> : <CloseIcon />}</Typography>
+                                <Typography color="#0f1429">{raffle.claimed ? <CheckIcon color="success" /> : <CloseIcon color="error" />}</Typography>
                               </TableCell>
                               <TableCell align="left">
                                 <IconButton
