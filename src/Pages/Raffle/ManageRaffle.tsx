@@ -34,7 +34,7 @@ import axios from "axios";
 import { ApproveNFTModalonRaffePage } from "../../components/NFTApproveModal.tsx";
 import { useOutletContext } from "react-router-dom";
 import toastr from "toastr";
-const STORE_CONTRACT_HASH = "7be3d9e95092a14c593a91110d54a3460cc6f52eb350c9af5eeb0725a216270e";
+const STORE_CONTRACT_HASH = "0e8a259118fe08bb895a7fcecd559b8f4a845827ab1a39b86b084add10371f03";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
