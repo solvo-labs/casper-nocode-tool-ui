@@ -503,7 +503,7 @@ const ManageRaffle = () => {
           return raffle.winner_account === accountHash;
         }
 
-        return raffle.owner != accountHash && moment.unix(raffle.end_date).unix() > Date.now();
+        return raffle.owner != accountHash && moment.unix(raffle.end_date).unix() <= Date.now();
       });
 
       setJoinableRaffle(lastData);
