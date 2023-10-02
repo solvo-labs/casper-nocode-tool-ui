@@ -247,7 +247,7 @@ export const ApproveNFTModalonRaffePage: React.FC<ApproveNFTonRafflePage> = ({ o
               <Typography>Raffle Contract Hash: {selectedRaffle?.key.slice(0, 30)}</Typography>
             </Tooltip>
             <Typography>NFT Collection: {selectedRaffle?.collection.slice(0, 30)}</Typography>
-            <Typography>NFT Index: {Number(selectedRaffle?.nft_index.hex)}</Typography>
+            <Typography>NFT Index: {selectedRaffle?.nft_index as unknown as number}</Typography>
             <Grid item display={"flex"} justifyContent={"center"}>
               <CustomButton label={"Approve NFT"} onClick={approve} disabled={false}></CustomButton>
             </Grid>

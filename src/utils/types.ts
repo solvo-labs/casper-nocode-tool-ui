@@ -134,4 +134,4 @@ export type RaffleMetadata = {
   price: NumberMeta;
 };
 
-export type NumberMeta = { hex: string; isBigNumber: boolean };
+export type NumberMeta = { hex: string; type: string };

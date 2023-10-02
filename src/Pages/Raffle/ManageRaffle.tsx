@@ -378,6 +378,7 @@ const ManageRaffle = () => {
       const raffleDetails = await Promise.all(raffleDetailsPromises);
 
       const finalData: any[] = raffleDetails.map((raffle: RaffleMetadata) => {
+        console.log(raffle);
         return {
           key: raffle.key,
           collection: uint32ArrayToHex(raffle.collection),
