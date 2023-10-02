@@ -152,7 +152,7 @@ const ManageRaffle = () => {
   };
 
   const handleChangeRowsPerPage2 = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
+    setRowsPerPage2(+event.target.value);
     setPage2(0);
   };
 
