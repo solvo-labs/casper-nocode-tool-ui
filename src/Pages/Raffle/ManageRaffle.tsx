@@ -34,6 +34,8 @@ import axios from "axios";
 import { ApproveNFTModalonRaffePage } from "../../components/NFTApproveModal.tsx";
 import { useOutletContext } from "react-router-dom";
 import toastr from "toastr";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
 const STORE_CONTRACT_HASH = "0e8a259118fe08bb895a7fcecd559b8f4a845827ab1a39b86b084add10371f03";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -116,6 +118,9 @@ const ManageRaffle = () => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+  const [page2, setPage2] = React.useState(0);
+  const [rowsPerPage2, setRowsPerPage2] = React.useState(5);
+
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>, state: any) => {
     state(event.currentTarget);
   };
@@ -140,6 +145,15 @@ const ManageRaffle = () => {
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
+  };
+
+  const handleChangePage2 = (_event: unknown, newPage: number) => {
+    setPage2(newPage);
+  };
+
+  const handleChangeRowsPerPage2 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value);
+    setPage2(0);
   };
 
   // const fetchNft = async (contract: string) => {
@@ -458,6 +472,7 @@ const ManageRaffle = () => {
           start_date: Number(raffle.start_date.hex),
           end_date: Number(raffle.end_date.hex),
           price: Number(raffle.price.hex),
+          claimed: raffle.claimed,
         };
       });
 
@@ -584,6 +599,11 @@ const ManageRaffle = () => {
                             Price
                           </Typography>
                         </TableCell>
+                        <TableCell key="raffle-price" align="left">
+                          <Typography fontWeight="bold" color="#0f1429">
+                            Claimed
+                          </Typography>
+                        </TableCell>
                         <TableCell key="raffle-actions" align="left">
                           <Typography fontWeight="bold" color="#0f1429">
                             Actions
@@ -612,7 +632,11 @@ const ManageRaffle = () => {
                                 <Typography color="#0f1429">{raffle.price / Math.pow(10, 9)} CSPR</Typography>
                               </TableCell>
                               <TableCell align="left">
+                                <Typography color="#0f1429">{raffle.claimed ? <CheckIcon /> : <CloseIcon />}</Typography>
+                              </TableCell>
+                              <TableCell align="left">
                                 <IconButton
+                                  disabled={raffle.claimed}
                                   onClick={(e: any) => {
                                     handleMenuClick(e, setRaffleMore);
                                     setClickedRaffle(raffle);
@@ -727,34 +751,6 @@ const ManageRaffle = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {/* {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                    return (
-                      <TableRow
-                        style={{ cursor: "pointer" }}
-                        onClick={() => window.open("https://testnet.cspr.live/contract/" + row.contractHash.slice(5), "_blank")}
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                        key={index}
-                      >
-                        <TableCell align="left">
-                          <Typography color="#0f1429">{row.name}</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">{row.symbol}</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">{parseInt(row.decimals.hex, 16)}</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">{parseInt(row.total_supply.hex, 16) / Math.pow(10, parseInt(row.decimals.hex, 16))}</Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          <Typography color="#0f1429">{parseInt(row.enable_mint_burn.hex, 16) ? "TRUE" : "FALSE"}</Typography>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })} */}
                       {joinableRaffle &&
                         joinableRaffle.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((raffle: any, index: number) => {
                           return (
@@ -802,19 +798,18 @@ const ManageRaffle = () => {
                     </TableBody>
                   </Table>
                 </TableContainer>
-                {/* <TablePagination
-              rowsPerPageOptions={[1, 5, 10]}
-              component="div"
-              count={data.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            /> */}
+                <TablePagination
+                  rowsPerPageOptions={[1, 5, 10]}
+                  component="div"
+                  count={joinableRaffle?.length || 0}
+                  rowsPerPage={rowsPerPage2}
+                  page={page2}
+                  onPageChange={handleChangePage2}
+                  onRowsPerPageChange={handleChangeRowsPerPage2}
+                />
               </Paper>
             </Grid>
           </TabPanel>
-          {/* <TabPanel value="3">Item Three</TabPanel> */}
         </TabContext>
       </Grid>
     </Grid>
