@@ -23,7 +23,7 @@ import { CustomButton } from "../../components/CustomButton";
 import { makeStyles } from "@mui/styles";
 import { fetchCep78NamedKeys, fetchRaffleNamedKeys, getAllRafflesForJoin, getNftCollection, getNftMetadata, getRaffleDetails, SERVER_API } from "../../utils/api";
 import { CollectionMetada, NFT, Raffle, RaffleMetadata } from "../../utils/types";
-import moment, { now } from "moment";
+import moment from "moment";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CreateRaffleModal from "../../components/CreateRaffleModal.tsx";
