@@ -121,17 +121,17 @@ export type Raffle = {
 export type RaffleNamedKeys = {
   key: string;
   name: string;
-}
+};
 
 export type RaffleMetadata = {
   key: string;
   collection: string;
-  nft_index: number;
+  nft_index: NumberMeta;
   owner: string;
   name: string;
-  start_date: number;
-  end_date: number;
-  price: number;
-}
+  start_date: NumberMeta;
+  end_date: NumberMeta;
+  price: NumberMeta;
+};
 
-
+export type NumberMeta = { hex: string; isBigNumber: boolean };

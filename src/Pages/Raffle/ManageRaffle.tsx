@@ -377,7 +377,7 @@ const ManageRaffle = () => {
 
       const raffleDetails = await Promise.all(raffleDetailsPromises);
 
-      const finalData: any[] = raffleDetails.map((raffle: RaffleMetadata, index: number) => {
+      const finalData: any[] = raffleDetails.map((raffle: RaffleMetadata) => {
         return {
           key: raffle.key,
           collection: uint32ArrayToHex(raffle.collection),
@@ -392,7 +392,7 @@ const ManageRaffle = () => {
 
       const rafflesData = await getAllRafflesForJoin("hash-" + STORE_CONTRACT_HASH);
 
-      const finalJoinData: any[] = rafflesData.map((raffle: RaffleMetadata, index: number) => {
+      const finalJoinData: any[] = rafflesData.map((raffle: RaffleMetadata) => {
         return {
           key: raffle.key,
           collection: uint32ArrayToHex(raffle.collection),
