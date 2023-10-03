@@ -144,6 +144,7 @@ export type RaffleMetadata = {
   claimed?: boolean;
   winner_account?: string;
   status: RAFFLE_STATUS;
+  cancelable: boolean;
 };
 
 export type NumberMeta = { hex: string; type: string };

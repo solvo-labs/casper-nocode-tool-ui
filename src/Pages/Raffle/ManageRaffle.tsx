@@ -384,6 +384,43 @@ const ManageRaffle = () => {
     }
   };
 
+  const cancel = async () => {
+    setLoading(true);
+    try {
+      const contract = new Contracts.Contract();
+      contract.setContractHash(clickedRaffle?.key);
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+      const args = RuntimeArgs.fromMap({});
+
+      const deploy = contract.callEntrypoint("cancel", args, ownerPublicKey, "casper-test", "5000000000");
+      console.log(deploy);
+
+      const deployJson = DeployUtil.deployToJson(deploy);
+
+      try {
+        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+        const data = DeployUtil.deployToJson(signedDeploy.val);
+        const response = await axios.post(SERVER_API + "deploy", data, {
+          headers: { "Content-Type": "application/json" },
+        });
+
+        toastr.success(response.data, "Approve deployed successfully.");
+        setApproveModal(false);
+        setLoading(false);
+        // navigate("/marketplace");
+      } catch (error: any) {
+        alert(error.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toastr.error("error");
+      setLoading(false);
+    }
+  };
+
   const install = async () => {
     setLoading(true);
     try {
@@ -488,6 +525,7 @@ const ManageRaffle = () => {
           price: Number(raffle.price.hex),
           claimed: raffle.claimed,
           status: raffle.status,
+          cancelable: raffle.cancelable,
         };
       });
 
@@ -505,6 +543,7 @@ const ManageRaffle = () => {
           end_date: Number(raffle.end_date.hex),
           price: Number(raffle.price.hex),
           claimed: raffle.claimed,
+          status: raffle.status,
         };
       });
 
@@ -710,6 +749,7 @@ const ManageRaffle = () => {
                                   sx={{ zIndex: 999 }}
                                 >
                                   <MenuItem
+                                    disabled={clickedRaffle?.status !== RAFFLE_STATUS.WAITING_DEPOSIT}
                                     onClick={() => {
                                       handleMenuClose(setRaffleMore);
                                       handleOpen(setApproveModal);
@@ -719,7 +759,7 @@ const ManageRaffle = () => {
                                   </MenuItem>
 
                                   <MenuItem
-                                    disabled={moment.unix(raffle.end_date).unix() > Date.now()}
+                                    disabled={clickedRaffle?.status !== RAFFLE_STATUS.WAITING_DRAW}
                                     onClick={() => {
                                       handleMenuClose(setRaffleMore);
                                       draw();
@@ -727,15 +767,18 @@ const ManageRaffle = () => {
                                   >
                                     Draw
                                   </MenuItem>
+
+                                  <MenuItem
+                                    disabled={!clickedRaffle?.cancelable}
+                                    onClick={() => {
+                                      handleMenuClose(setRaffleMore);
+                                      cancel();
+                                    }}
+                                  >
+                                    Cancel
+                                  </MenuItem>
                                 </Menu>
-                                <ApproveNFTModalonRaffePage
-                                  open={approveModal}
-                                  handleClose={() => handleClose(setApproveModal)}
-                                  approve={() => {
-                                    approve();
-                                  }}
-                                  selectedRaffle={clickedRaffle}
-                                />
+                                <ApproveNFTModalonRaffePage open={approveModal} handleClose={() => handleClose(setApproveModal)} approve={approve} selectedRaffle={clickedRaffle} />
                               </TableCell>
                             </TableRow>
                           );
