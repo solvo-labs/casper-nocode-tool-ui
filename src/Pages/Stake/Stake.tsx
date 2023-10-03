@@ -1,5 +1,24 @@
 import { useEffect, useState } from "react";
-import { Autocomplete, Box, CircularProgress, FormControl, Grid, IconButton, List, ListItem, ListItemText, Stack, TextField, Theme, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  Grid,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Stack,
+  TextField,
+  Theme,
+  Typography,
+} from "@mui/material";
 
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
@@ -67,7 +86,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       color: "white",
     },
     "& .MuiAutocomplete-inputRoot .MuiOutlinedInput-notchedOutline": {
-      borderColor: "white !important",
+      borderColor: "#bfbfbf !important",
       borderRadius: "16px !important",
     },
     "& .MuiInputLabel-root.Mui-focused": {
@@ -77,9 +96,12 @@ const useStyles = makeStyles((theme: Theme) => ({
       color: "white !important",
     },
     "& .MuiAutocomplete-popupIndicator": {
-      color: "white !important",
+      color: "#bfbfbf !important",
     },
     "& .MuiAutocomplete-inputRoot.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "#FF0011 !important",
+    },
+    "& .MuiAutocomplete-inputRoot:hover .MuiOutlinedInput-notchedOutline": {
       borderColor: "#FF0011 !important",
     },
   },
@@ -92,6 +114,8 @@ export const Stake = () => {
   const [validators, setValidators] = useState<any[]>([]);
   const [delegations, setDelegations] = useState<any[]>([]);
   const [selectedValidator, setSelectedValidator] = useState<any>();
+  const [modal, setModal] = useState<boolean>(false);
+  const [value, setValue] = useState<object>({});
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
 
   useEffect(() => {
@@ -168,6 +192,22 @@ export const Stake = () => {
       }
     } catch (err: any) {
       toastr.error(err);
+    }
+  };
+
+  const closeModal = () => {
+    setModal(false);
+  };
+
+  const openModal = (value: any) => {
+    setModal(true);
+    setValue(value);
+  };
+
+  const handleConfirm = () => {
+    closeModal();
+    if (value) {
+      unStake(value);
     }
   };
 
@@ -358,7 +398,7 @@ export const Stake = () => {
                 key={value}
                 secondaryAction={
                   <IconButton edge="end" aria-label="comments">
-                    <CustomButton style={{ marginRight: "5px " }} onClick={() => unStake(value)} disabled={false} label="UnStake" fullWidth />
+                    <CustomButton style={{ marginRight: "5px " }} onClick={() => openModal(value)} disabled={false} label="UnStake" fullWidth />
                     <CustomButton onClick={stake} disabled={false} label="Stake" fullWidth />
                   </IconButton>
                 }
@@ -400,6 +440,30 @@ export const Stake = () => {
           })}
         </List>
       </Grid>
+      <Dialog open={modal} onClose={() => setModal(false)}>
+        <DialogTitle>UNSTAKE APPROVAL</DialogTitle>
+        <DialogContent>
+          <p>Are you sure you want to continue to unstake?</p>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              closeModal();
+            }}
+            color="secondary"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              handleConfirm();
+            }}
+            color="primary"
+          >
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
