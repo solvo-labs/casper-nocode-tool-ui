@@ -36,7 +36,8 @@ import { useOutletContext } from "react-router-dom";
 import toastr from "toastr";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
-const STORE_CONTRACT_HASH = "0e8a259118fe08bb895a7fcecd559b8f4a845827ab1a39b86b084add10371f03";
+
+const STORE_CONTRACT_HASH = "6cbf0ee026d1d6ebc0364308213ce859895278f73bb15744b5089f8335adb8c8";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -216,6 +217,8 @@ const ManageRaffle = () => {
           toastr.success(response.data, "Approve deployed successfully.");
           setApproveModal(false);
           setLoading(false);
+
+          deposit();
           // navigate("/marketplace");
         } catch (error: any) {
           alert(error.message);
@@ -669,6 +672,7 @@ const ManageRaffle = () => {
                                     vertical: "top",
                                     horizontal: "left",
                                   }}
+                                  sx={{ zIndex: 999 }}
                                 >
                                   <MenuItem
                                     onClick={() => {
@@ -676,28 +680,18 @@ const ManageRaffle = () => {
                                       handleOpen(setApproveModal);
                                     }}
                                   >
-                                    Approve NFT
-                                  </MenuItem>
-                                  <MenuItem
-                                    onClick={() => {
-                                      handleMenuClose(setRaffleMore);
-                                      deposit();
-                                    }}
-                                  >
                                     Deposit NFT
                                   </MenuItem>
-                                  <MenuItem onClick={() => handleMenuClose(setRaffleMore)}>Detail Raffle</MenuItem>
-                                  {moment.unix(raffle.end_date).unix() < Date.now() && (
-                                    <MenuItem
-                                      onClick={() => {
-                                        console.log("deppp", raffle);
-                                        handleMenuClose(setRaffleMore);
-                                        draw();
-                                      }}
-                                    >
-                                      Draw
-                                    </MenuItem>
-                                  )}
+
+                                  <MenuItem
+                                    disabled={moment.unix(raffle.end_date).unix() > Date.now()}
+                                    onClick={() => {
+                                      handleMenuClose(setRaffleMore);
+                                      draw();
+                                    }}
+                                  >
+                                    Draw
+                                  </MenuItem>
                                 </Menu>
                                 <ApproveNFTModalonRaffePage
                                   open={approveModal}
