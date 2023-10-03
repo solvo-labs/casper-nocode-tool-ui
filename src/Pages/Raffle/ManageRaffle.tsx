@@ -272,6 +272,7 @@ const ManageRaffle = () => {
   const buy_ticket = async (raffle: any) => {
     try {
       if (raffle) {
+        setLoading(true);
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
         const contract = new Contracts.Contract();
         const args = RuntimeArgs.fromMap({
