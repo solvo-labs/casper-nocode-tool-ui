@@ -190,6 +190,9 @@ export const Stake = () => {
           alert(error.message);
         }
       }
+      setTimeout(() => {
+        window.location.reload();
+      }, 30000);
     } catch (err: any) {
       toastr.error(err);
     }
