@@ -3,9 +3,10 @@ export enum APP_NAME {
 }
 
 export enum PAGES_NAME {
-  STAKING = "STAKING",
+  STAKE = "STAKE",
   DAO = "DAO",
   NFT = "NFT",
+  RAFFLE = "RAFFLE",
   TOKEN = "TOKEN",
   TOKENOMICS = "TOKENOMICS",
   MARKETPLACE = "MARKETPLACE",
@@ -32,6 +33,11 @@ export enum NFT_PAGE {
   CREATE_NFT = "Create NFT",
   CREATE_COLLECTION = "Create Collection",
   APPROVE_NFT = "Approve Nft",
+}
+
+export enum RAFFLE_PAGE {
+  MANAGE_RAFFLE = "Manage Raffle",
+  CLAIM_RAFFLE = "Claim Raffle",
 }
 
 export enum MARKETPLACE_PAGE {

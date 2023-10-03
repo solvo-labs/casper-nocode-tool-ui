@@ -1,9 +1,9 @@
 import axios from "axios";
-import { ERC20Token, Listing } from "./types";
+import { ERC20Token, Listing, RaffleNamedKeys } from "./types";
 
 const api = "https://event-store-api-clarity-testnet.make.services/";
-// export const SERVER_API = import.meta.env.DEV ? "http://localhost:3000/api" : "https://18.185.15.120:8000/";
-export const SERVER_API = "https://casperdev.dappend.com/api/";
+export const SERVER_API = import.meta.env.DEV ? "http://localhost:3000/api/" : "https://18.185.15.120:8000/";
+// export const SERVER_API = "https://casperdev.dappend.com/api/";
 
 // https://event-store-api-clarity-testnet.make.services/accounts/5e542e3bfacb53152a07322519eedd6f6cad1689508d588051603459b4b12590/erc20-tokens
 
@@ -78,6 +78,23 @@ export const fetchMarketplaceNamedKeys = async (pubkey: string) => {
   });
 
   return filteredNamedKeys;
+};
+export const fetchRaffleNamedKeys = async (pubkey: string) => {
+  const namedKeys = await fetchNamedKeys(pubkey);
+
+  const filteredNamedKeys = namedKeys.filter((ky) => {
+    return ky.name.startsWith("raffles_contract_hash");
+  });
+
+  const finalData: RaffleNamedKeys[] = filteredNamedKeys.map((rf: RaffleNamedKeys) => {
+    let newName: string;
+    if (rf.name.startsWith("raffles_contract_hash_")) {
+      newName = rf.name.replace("raffles_contract_hash_", "").slice(0, -14);
+      return { name: newName, key: rf.key };
+    }
+    return { name: rf.name, key: rf.key };
+  });
+  return finalData;
 };
 
 export const fetchErc20TokenDetails = async (contractHash: string) => {
@@ -250,6 +267,22 @@ export const setVestingRecipients = async (contractHash: string) => {
 
 export const getVestingList = async (accountHash: string) => {
   const response = await axios.get<any>(SERVER_API + "get_vesting_list?accountHash=" + accountHash);
+
+  return response.data;
+};
+
+export const getRaffleDetails = async (contractHash: string) => {
+  const response = await axios.get<any>(SERVER_API + "get_raffle?contractHash=" + contractHash);
+  return response.data;
+};
+
+export const getAllRafflesForJoin = async (contractHash: string) => {
+  const response = await axios.get<any>(SERVER_API + "get_all_raffles?contractHash=" + contractHash);
+  return response.data;
+};
+
+export const getValidators = async () => {
+  const response = await axios.get(SERVER_API + "validators");
 
   return response.data;
 };

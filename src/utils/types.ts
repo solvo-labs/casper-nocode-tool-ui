@@ -81,7 +81,7 @@ export type NFT = {
 export type CollectionMetada = {
   name: string;
   symbol: string;
-  hash: string;
+  contractHash: string;
   json_schema: {
     name: string;
     description: string;
@@ -108,3 +108,32 @@ export type Listing = {
   createdAt?: string;
   active?: boolean;
 };
+
+export type Raffle = {
+  name: string;
+  collectionHash: string;
+  nftIndex: number;
+  start: number;
+  end: number;
+  price: number;
+};
+
+export type RaffleNamedKeys = {
+  key: string;
+  name: string;
+};
+
+export type RaffleMetadata = {
+  key: string;
+  collection: string;
+  nft_index: NumberMeta;
+  owner: string;
+  name: string;
+  start_date: NumberMeta;
+  end_date: NumberMeta;
+  price: NumberMeta;
+  claimed?: boolean;
+  winner_account?: string;
+};
+
+export type NumberMeta = { hex: string; type: string };

@@ -216,6 +216,7 @@ export const CreateCollection = () => {
                   });
                 }}
                 value={collectionData.name}
+                floor={"dark"}
               ></CustomInput>
               <CustomInput
                 placeholder="Symbol"
@@ -244,6 +245,7 @@ export const CreateCollection = () => {
                   });
                 }}
                 value={collectionData.totalSupply}
+                floor={"dark"}
               ></CustomInput>
               <Divider sx={{ backgroundColor: "red", marginTop: "3rem !important" }}></Divider>
 

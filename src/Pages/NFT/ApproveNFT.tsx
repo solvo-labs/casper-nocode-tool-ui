@@ -1,35 +1,25 @@
-import { Box, CircularProgress, Divider, FormControl, Grid, MenuItem, Modal, Stack, Theme, Typography } from "@mui/material";
+import { CircularProgress, Grid, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useEffect, useState } from "react";
-import { fetchCep78NamedKeys, fetchMarketplaceNamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
+import {useEffect, useMemo, useState} from "react";
+import {
+  fetchCep78NamedKeys,
+  fetchMarketplaceNamedKeys,
+  fetchRaffleNamedKeys,
+  getNftCollection,
+  getNftMetadata
+} from "../../utils/api";
 import { getMetadataImage } from "../../utils";
 import { FETCH_IMAGE_TYPE } from "../../utils/enum";
-import { useNavigate, useOutletContext } from "react-router-dom";
-import { CollectionMetada, NFT } from "../../utils/types";
+import { useOutletContext } from "react-router-dom";
+import {CollectionMetada, Marketplace, NFT, RaffleNamedKeys} from "../../utils/types";
 import { CollectionCardAlternate } from "../../components/CollectionCard";
 // @ts-ignore
 import { CLPublicKey, Contracts, RuntimeArgs, CLValueBuilder, CLKey, CLByteArray, DeployUtil } from "casper-js-sdk";
-import { NftCard } from "../../components/NftCard";
-import { CustomButton } from "../../components/CustomButton";
 import toastr from "toastr";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
-import { CustomSelect } from "../../components/CustomSelect";
+import {ApproveNFTModal, ListNFTModal} from "../../components/NFTApproveModal.tsx";
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 800,
-  height: 600,
-  bgcolor: "#0F1429",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-  color: "black",
-  overflow: "auto",
-};
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -47,52 +37,49 @@ const useStyles = makeStyles((theme: Theme) => ({
     position: "relative",
     borderBottom: "1px solid #FF0011 !important",
   },
+  modalStyle: { backgroundColor: "rgba(0, 0, 0, 0.75)" },
 }));
 
 const ApproveNFT = () => {
   const classes = useStyles();
+  const [publicKey, provider] = useOutletContext<[publicKey: string, provider: any]>();
+  // const navigate = useNavigate();
   const [collections, setCollections] = useState<CollectionMetada[] | any>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-  const [openApprove, setOpenApprove] = useState(false);
-  const [marketplace, setMarketplace] = useState<any>([]);
-  const [selectedMarketplace, setSelectedMarketplace] = useState<string>();
-  const [selectedCollection, setSelectedCollection] = useState<string | null>("");
   const [nftData, setNftData] = useState<NFT[] | any>([]);
+  const [selectedCollection, setSelectedCollection] = useState<string | null>("");
   const [selectedTokenId, setSelectedTokenId] = useState<number>(0);
 
-  const [publicKey, provider] = useOutletContext<[publicKey: string, provider: any]>();
+  const [loadingNFT, setLoadingNFT] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [openNFT, setOpenNFT] = useState(false);
+  const [openApprove, setOpenApprove] = useState(false);
 
-  const handleOpen = (contract: string) => {
-    console.log(contract);
+  const [approveOperatorType, setApproveOperatorType] = useState<string>("default");
+  const [selectedOperatorHash, setSelectedOperatorHash] = useState<string>();
+
+  const [marketplaces, setMarketplaces] = useState<Marketplace[]>();
+  const [raffles, setRaffles] = useState<RaffleNamedKeys[]>();
+
+  const handleOpenNFT = (contract: string) => {
     setSelectedCollection(contract);
     fetchNft(contract);
-    setOpen(true);
+    setOpenNFT(true);
   };
-  const handleClose = () => {
-    setOpen(false);
+  const handleCloseNFT = () => {
+    setOpenNFT(false);
     // setSelectedCollection(null);
   };
 
-  const handleOpenNft = () => {
+  const handleOpenApprove = () => {
     setOpenApprove(true);
+    setOpenNFT(false);
   };
-  const handleCloseNft = () => {
+  const handleCloseApprove = () => {
     setOpenApprove(false);
+    setOpenNFT(true);
+    setSelectedOperatorHash(undefined);
+    setApproveOperatorType("");
   };
-
-  useEffect(() => {
-    const init = async () => {
-      const data = await fetchMarketplaceNamedKeys(publicKey);
-      const parsedData = data.map((dt) => {
-        return { ...dt, name: dt.name.substring(26) };
-      });
-      setMarketplace(parsedData);
-    };
-
-    init();
-  }, []);
 
   useEffect(() => {
     const init = async () => {
@@ -118,7 +105,7 @@ const ApproveNFT = () => {
   }, []);
 
   const fetchNft = async (contract: string) => {
-    setLoading(true);
+    setLoadingNFT(true);
     if (contract) {
       const nftCollection = await getNftCollection(contract);
 
@@ -129,7 +116,7 @@ const ApproveNFT = () => {
         promises.push(getNftMetadata(contract, index.toString()));
       }
 
-      const nftMetas = await Promise.all(promises);
+      const nftMetas= await Promise.all(promises);
       const imagePromises = nftMetas.map((e: any) => getMetadataImage(e, FETCH_IMAGE_TYPE.NFT));
       const images = await Promise.all(imagePromises);
 
@@ -141,21 +128,46 @@ const ApproveNFT = () => {
       });
 
       setNftData(finalData);
-      setLoading(false);
+      setLoadingNFT(false);
     }
   };
 
+  useEffect(() => {
+    const init = async () => {
+      const data = await fetchMarketplaceNamedKeys(publicKey);
+      const finalData: Marketplace[] = data.map((dt) => {
+        return { contractHash: dt.key, contractName: dt.name.substring(26), listingCount: 0, feeWallet: "" };
+      });
+
+      setMarketplaces(finalData);
+      console.log(finalData);
+    };
+
+    init();
+  }, []);
+
+useEffect(() => {
+    const init = async () => {
+      const data = await fetchRaffleNamedKeys(publicKey);
+      console.log(data);
+      setRaffles(data);
+    };
+
+    init();
+  }, []);
+
   const approve = async () => {
+    setLoading(true)
     try {
-      if (selectedMarketplace) {
+      if (selectedOperatorHash) {
         const contract = new Contracts.Contract();
         contract.setContractHash(selectedCollection);
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
-        const marketplaceHash = selectedMarketplace.replace("hash-", "");
+        const operatorHash = selectedOperatorHash.replace("hash-", "");
 
         const args = RuntimeArgs.fromMap({
-          operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(marketplaceHash, "hex")))),
+          operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(operatorHash, "hex")))),
           token_id: CLValueBuilder.u64(selectedTokenId),
         });
 
@@ -173,11 +185,18 @@ const ApproveNFT = () => {
             headers: { "Content-Type": "application/json" },
           });
 
+          setSelectedOperatorHash("default");
+          setApproveOperatorType("");
+          setLoading(false);
+          setOpenNFT(false);
+          setOpenApprove(false);
+
           toastr.success(response.data, "Approve deployed successfully.");
-          handleCloseNft();
-          navigate("/marketplace");
         } catch (error: any) {
           alert(error.message);
+          setLoading(false);
+          setSelectedOperatorHash("default");
+          setApproveOperatorType("");
         }
       }
     } catch (error) {
@@ -186,11 +205,16 @@ const ApproveNFT = () => {
     }
   };
 
+  const disable = useMemo(() => {
+    const disable = !(selectedOperatorHash != "default" && approveOperatorType);
+    return disable;
+  }, [selectedOperatorHash, approveOperatorType]);
+
   if (loading) {
     return (
       <div
         style={{
-          height: "50vh",
+          height: "60vh",
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -216,63 +240,33 @@ const ApproveNFT = () => {
               <CollectionCardAlternate
                 image={e.image}
                 onClick={() => {
-                  handleOpen(e.contractHash);
+                  handleOpenNFT(e.contractHash);
                 }}
                 title={e.collection_name}
                 contractHash={e.contractHash}
                 symbol={e.collection_symbol}
               ></CollectionCardAlternate>
-              <Modal open={open} onClose={handleClose}>
-                <Box sx={style}>
-                  <Typography id="modal-modal-title" color={"white"} variant="h6" component="h2">
-                    Select {e.collection_name}'s NFT and Approve For Operator
-                  </Typography>
-                  <Divider sx={{ background: "red", marginBottom: "1rem" }} />
-                  <Grid container>
-                    {nftData.map((e: any, index: number) => (
-                      <Grid item lg={4} md={4} sm={6} xs={6}>
-                        <NftCard
-                          description={e.description}
-                          name={e.name}
-                          imageURL={e.imageURL}
-                          onClick={() => {
-                            handleOpenNft();
-                            setSelectedTokenId(index);
-                          }}
-                          index={index}
-                        ></NftCard>
-                        <Modal open={openApprove} onClose={handleCloseNft}>
-                          <Box sx={style} display={"flex"} alignItems={"center"} justifyContent={"center"}>
-                            <Stack spacing={"2rem"}>
-                              <FormControl fullWidth>
-                                <Typography display={"flex"} justifyContent={"center"} color={"white"} variant="h6" component="h2">
-                                  Select a Marketplace
-                                </Typography>
-                                <CustomSelect id="marketplace" value={selectedMarketplace} label="Marketplace" onChange={(e: any) => setSelectedMarketplace(e.target.value)}>
-                                  {marketplace.map((mp: any) => {
-                                    return (
-                                      <MenuItem key={mp.key} value={mp.key}>
-                                        {mp.name}
-                                      </MenuItem>
-                                    );
-                                  })}
-                                </CustomSelect>
-                              </FormControl>
-                              <Typography display={"flex"} justifyContent={"center"} color={"white"} variant="h6" component="h2">
-                                Are you sure you are about to approve now?
-                              </Typography>
-                              <Stack direction={"row"} spacing={"2rem"} justifyContent={"center"}>
-                                <CustomButton disabled={false} label="Deny" onClick={handleCloseNft}></CustomButton>
-                                <CustomButton disabled={false} label="Confirm" onClick={approve}></CustomButton>
-                              </Stack>
-                            </Stack>
-                          </Box>
-                        </Modal>
-                      </Grid>
-                    ))}
-                  </Grid>
-                </Box>
-              </Modal>
+              <ListNFTModal
+                  collection={e}
+                  open={openNFT}
+                  handleClose={handleCloseNFT}
+                  loading={loadingNFT}
+                  nfts={nftData}
+                  handleOpenApprove={handleOpenApprove}
+                  selectedNFTIndex={setSelectedTokenId}
+              ></ListNFTModal>
+              <ApproveNFTModal
+                  selected={selectedOperatorHash}
+                  marketplaces={marketplaces}
+                  raffles={raffles}
+                  selectedOnChange={setSelectedOperatorHash}
+                  open={openApprove}
+                  handleClose={handleCloseApprove}
+                  approve={approve}
+                  approveOperatorType={approveOperatorType}
+                  approveOperatorOnChange={setApproveOperatorType}
+                  disable={disable}
+              ></ApproveNFTModal>
             </Grid>
           ))}
         </Grid>

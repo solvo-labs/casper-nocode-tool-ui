@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
-import { APP_NAME, MARKETPLACE_PAGE, NFT_PAGE, PAGES_NAME, TOKEN_PAGE, TOKENOMICS_PAGE } from "../utils/enum";
+import { APP_NAME, MARKETPLACE_PAGE, NFT_PAGE, PAGES_NAME, RAFFLE_PAGE, TOKEN_PAGE, TOKENOMICS_PAGE } from "../utils/enum";
 import { AppBar, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -52,6 +52,8 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
   const openTokenomics = Boolean(tokenomicsAnchorEl);
   const [marketplaceAnchorEl, setAnchorElForMarketplace] = React.useState<null | HTMLElement>(null);
   const openMarketplace = Boolean(marketplaceAnchorEl);
+  const [raffleAnchorEl, setAnchorElForRaffle] = React.useState<null | HTMLElement>(null);
+  const openRaffle = Boolean(raffleAnchorEl);
   const [anchorElForProfile, setAnchorElForProfile] = React.useState<null | HTMLElement>(null);
   const openForProfile = Boolean(anchorElForProfile);
   const classes = useStyles();
@@ -148,6 +150,8 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
       navigate("/marketplace");
     } else if (a === MARKETPLACE_PAGE.BUY_NFT) {
       navigate("/buy-nft");
+    } else if (a === RAFFLE_PAGE.MANAGE_RAFFLE) {
+      navigate("/manage-raffle");
     }
 
     setAnchorElForNFT(null);
@@ -155,6 +159,7 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
     setAnchorElForTokenomics(null);
     setAnchorElForProfile(null);
     setAnchorElForMarketplace(null);
+    setAnchorElForRaffle(null);
   };
 
   const listMenuItem = (pages: object) => {
@@ -177,8 +182,12 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
               {APP_NAME.CASPER}
             </Typography>
             <Box sx={{ flexGrow: 1, display: "flex" }}>
-              <Button onClick={() => {}}>
-                <Typography className={classes.menuTitle}>{PAGES_NAME.STAKING}</Typography>
+              <Button
+                onClick={() => {
+                  navigate("/stake");
+                }}
+              >
+                <Typography className={classes.menuTitle}>{PAGES_NAME.STAKE}</Typography>
               </Button>
               <Button onClick={() => {}}>
                 <Typography className={classes.menuTitle}>{PAGES_NAME.DAO}</Typography>
@@ -213,6 +222,38 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                   }}
                 >
                   {listMenuItem(NFT_PAGE)}
+                </Menu>
+              </Box>
+              <Box>
+                <Button
+                  onClick={(e: any) => handleClick(e, setAnchorElForRaffle)}
+                  onMouseOver={(e: any) => handleClick(e, setAnchorElForRaffle)}
+                  onMouseOut={(e: any) => handleClick(e, setAnchorElForRaffle)}
+                >
+                  <Typography className={classes.menuTitle}>{PAGES_NAME.RAFFLE}</Typography>
+                </Button>
+                <Menu
+                  id="raffleMenu"
+                  anchorEl={raffleAnchorEl}
+                  open={openRaffle}
+                  onClose={() => setAnchorElForRaffle(null)}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  sx={{
+                    "& .MuiPaper-root": {
+                      background: "#0F1429",
+                      color: "#FFFFFF",
+                      border: "1px solid #FF0011",
+                    },
+                  }}
+                >
+                  {listMenuItem(RAFFLE_PAGE)}
                 </Menu>
               </Box>
               <Box>

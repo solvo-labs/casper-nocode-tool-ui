@@ -29,7 +29,6 @@ export const getMetadataImage = async (metadata: any, type: FETCH_IMAGE_TYPE) =>
 
     if (type == FETCH_IMAGE_TYPE.NFT) {
       if (metadata.imageURL && metadata.imageURL.startsWith("https://ipfs.io/ipfs/")) {
-        console.log("here");
         const result = await fetchIPFSImage(metadata.imageURL);
         imageLink = result;
       }
@@ -60,7 +59,7 @@ export class CasperHelpers {
   }
 }
 
-export const uit32ArrayToHex = (data: any) => {
+export const uint32ArrayToHex = (data: any) => {
   return Object.values(data)
     .map((byte: any) => byte.toString(16).padStart(2, "0"))
     .join("");
