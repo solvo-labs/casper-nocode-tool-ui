@@ -821,6 +821,11 @@ const ManageRaffle = () => {
                             End
                           </Typography>
                         </TableCell>
+                        <TableCell key="collection" align="left">
+                          <Typography fontWeight="bold" color="#0f1429">
+                            Collection
+                          </Typography>
+                        </TableCell>
                         <TableCell key="nft-id" align="left">
                           <Typography fontWeight="bold" color="#0f1429">
                             NFT ID
@@ -851,6 +856,9 @@ const ManageRaffle = () => {
                               </TableCell>
                               <TableCell align="left">
                                 <Typography color="#0f1429">{moment.unix(raffle.end_date / 1000).format("MM/DD/YYYY h:mm A")}</Typography>
+                              </TableCell>{" "}
+                              <TableCell align="left">
+                                <Typography color="#0f1429">{raffle.collection.substring(0, 10) + "..." + raffle.collection.substring(54)}</Typography>
                               </TableCell>
                               <TableCell align="left">
                                 <Typography color="#0f1429">{raffle.nft_index}</Typography>
@@ -858,7 +866,6 @@ const ManageRaffle = () => {
                               <TableCell align="left">
                                 <Typography color="#0f1429">{raffle.price / Math.pow(10, 9)}</Typography>
                               </TableCell>
-
                               {moment.unix(raffle.end_date).unix() < Date.now() ? (
                                 <TableCell align="left">
                                   <CustomButton disabled={false} label="Claim" onClick={claim}></CustomButton>
