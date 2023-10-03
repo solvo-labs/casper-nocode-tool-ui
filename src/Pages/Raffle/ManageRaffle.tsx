@@ -101,12 +101,12 @@ const ManageRaffle = () => {
   const [raffleMore, setRaffleMore] = useState<null | HTMLElement>(null);
   const raffleMoreOpen = Boolean(raffleMore);
 
-  const [clickedRaffle, setClickedRaffle] = useState<RaffleMetadata>();
   const [joinableRaffle, setJoinableRaffle] = useState<RaffleMetadata[]>();
+  const [clickedRaffle, setClickedRaffle] = useState<RaffleMetadata>();
 
   const [raffles, setRaffles] = useState<any[] | undefined>();
 
-  const [raffle, setRaffle] = useState<Raffle>({
+  const [raffleData, setRaffleData] = useState<Raffle>({
     name: "",
     collectionHash: "",
     nftIndex: -1,
@@ -124,6 +124,7 @@ const ManageRaffle = () => {
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>, state: any) => {
     state(event.currentTarget);
   };
+
   const handleMenuClose = (state: any) => {
     state(null);
   };
@@ -218,6 +219,7 @@ const ManageRaffle = () => {
           // navigate("/marketplace");
         } catch (error: any) {
           alert(error.message);
+          setLoading(false);
         }
       }
     } catch (error) {
@@ -260,10 +262,11 @@ const ManageRaffle = () => {
     } catch (error) {
       console.log(error);
       toastr.error("error");
+      setLoading(false);
     }
   };
 
-  const buy_ticket = async (raffle: RaffleMetadata) => {
+  const buy_ticket = async (raffle: any) => {
     try {
       if (raffle) {
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
@@ -291,55 +294,61 @@ const ManageRaffle = () => {
           setLoading(false);
         } catch (error: any) {
           alert(error.message);
+          setLoading(false);
         }
       }
     } catch (error) {
       console.log(error);
       toastr.error("error");
+      setLoading(false);
     }
   };
 
-  const draw = async (raffle: RaffleMetadata) => {
+  const draw = async () => {
     setLoading(true);
     try {
-      const contract = new Contracts.Contract();
-      contract.setContractHash(raffle.key);
-      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+      if (clickedRaffle) {
+        const contract = new Contracts.Contract();
+        contract.setContractHash(clickedRaffle.key);
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
-      const args = RuntimeArgs.fromMap({});
+        const args = RuntimeArgs.fromMap({});
 
-      const deploy = contract.callEntrypoint("draw", args, ownerPublicKey, "casper-test", "5000000000");
-      console.log(deploy);
+        const deploy = contract.callEntrypoint("draw", args, ownerPublicKey, "casper-test", "5000000000");
+        console.log(deploy);
 
-      const deployJson = DeployUtil.deployToJson(deploy);
+        const deployJson = DeployUtil.deployToJson(deploy);
 
-      try {
-        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
-        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-        const data = DeployUtil.deployToJson(signedDeploy.val);
-        const response = await axios.post(SERVER_API + "deploy", data, {
-          headers: { "Content-Type": "application/json" },
-        });
+        try {
+          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+          const data = DeployUtil.deployToJson(signedDeploy.val);
+          const response = await axios.post(SERVER_API + "deploy", data, {
+            headers: { "Content-Type": "application/json" },
+          });
 
-        toastr.success(response.data, "Approve deployed successfully.");
-        setApproveModal(false);
-        setLoading(false);
-        // navigate("/marketplace");
-      } catch (error: any) {
-        alert(error.message);
+          toastr.success(response.data, "Approve deployed successfully.");
+          setApproveModal(false);
+          setLoading(false);
+          // navigate("/marketplace");
+        } catch (error: any) {
+          alert(error.message);
+          setLoading(false);
+        }
       }
     } catch (error) {
       console.log(error);
       toastr.error("error");
+      setLoading(false);
     }
   };
 
-  const claim = async (raffle: RaffleMetadata) => {
+  const claim = async () => {
     setLoading(true);
     try {
       const contract = new Contracts.Contract();
-      contract.setContractHash(raffle.key);
+      contract.setContractHash(clickedRaffle?.key);
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
       const args = RuntimeArgs.fromMap({});
@@ -368,6 +377,7 @@ const ManageRaffle = () => {
     } catch (error) {
       console.log(error);
       toastr.error("error");
+      setLoading(false);
     }
   };
 
@@ -379,12 +389,12 @@ const ManageRaffle = () => {
         const contract = new Contracts.Contract();
 
         const args = RuntimeArgs.fromMap({
-          name: CLValueBuilder.string(raffle.name),
-          start_date: CLValueBuilder.u64(raffle.start * 1000),
-          end_date: CLValueBuilder.u64(raffle.end * 1000),
-          collection: CasperHelpers.stringToKey(raffle.collectionHash),
-          nft_index: CLValueBuilder.u64(raffle.nftIndex),
-          price: CLValueBuilder.u512(raffle.price * 1000000000),
+          name: CLValueBuilder.string(raffleData.name),
+          start_date: CLValueBuilder.u64(raffleData.start * 1000),
+          end_date: CLValueBuilder.u64(raffleData.end * 1000),
+          collection: CasperHelpers.stringToKey(raffleData.collectionHash),
+          nft_index: CLValueBuilder.u64(raffleData.nftIndex),
+          price: CLValueBuilder.u512(raffleData.price * 1000000000),
           storage_key: new CLAccountHash(Buffer.from(STORE_CONTRACT_HASH, "hex")),
         });
 
@@ -408,7 +418,9 @@ const ManageRaffle = () => {
           setLoading(false);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
+      setLoading(false);
+      toastr.error(error);
       console.log(error);
     }
   };
@@ -431,13 +443,13 @@ const ManageRaffle = () => {
   useEffect(() => {
     const init = async () => {
       setLoadingNFT(true);
-      if (raffle.collectionHash && raffle.collectionHash != "") {
-        const nftCollection = await getNftCollection(raffle.collectionHash);
+      if (raffleData.collectionHash && raffleData.collectionHash != "") {
+        const nftCollection = await getNftCollection(raffleData.collectionHash);
         const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
 
         let promises = [];
         for (let index = 0; index < nftCount; index++) {
-          promises.push(getNftMetadata(raffle.collectionHash, index.toString()));
+          promises.push(getNftMetadata(raffleData.collectionHash, index.toString()));
         }
 
         const nftMetas = await Promise.all(promises);
@@ -447,7 +459,7 @@ const ManageRaffle = () => {
     };
 
     init();
-  }, [raffle.collectionHash]);
+  }, [raffleData.collectionHash]);
 
   useEffect(() => {
     const init = async () => {
@@ -462,7 +474,6 @@ const ManageRaffle = () => {
       const raffleDetails = await Promise.all(raffleDetailsPromises);
 
       const finalData: any[] = raffleDetails.map((raffle: RaffleMetadata) => {
-        console.log(raffle);
         return {
           key: raffle.key,
           collection: uint32ArrayToHex(raffle.collection),
@@ -494,7 +505,6 @@ const ManageRaffle = () => {
       });
 
       const lastData = finalJoinData.filter((raffle: any) => {
-        console.log(raffle);
         if (raffle.claimed) {
           return !raffle.claimed;
         }
@@ -515,13 +525,13 @@ const ManageRaffle = () => {
   }, []);
 
   const disable = useMemo(() => {
-    const time: boolean = !(raffle.start >= raffle.end);
-    const collection: boolean = !(raffle.collectionHash == "");
-    const nft: boolean = !(raffle.nftIndex < 0);
-    const price: boolean = !(raffle.price <= 0);
-    const name: boolean = !(!raffle.name.length || raffle.name.startsWith(" "));
+    const time: boolean = !(raffleData.start >= raffleData.end);
+    const collection: boolean = !(raffleData.collectionHash == "");
+    const nft: boolean = !(raffleData.nftIndex < 0);
+    const price: boolean = !(raffleData.price <= 0);
+    const name: boolean = !(!raffleData.name.length || raffleData.name.startsWith(" "));
     return !(name && price && time && collection && nft);
-  }, [raffle]);
+  }, [raffleData]);
 
   if (loading) {
     return (
@@ -547,9 +557,9 @@ const ManageRaffle = () => {
         </Typography>
         <CustomButton disabled={false} label="Create new Raffle" onClick={() => handleOpen(setRaffleOpen)}></CustomButton>
         <CreateRaffleModal
-          raffle={raffle}
+          raffle={raffleData}
           createRaffle={install}
-          raffleOnChange={setRaffle}
+          raffleOnChange={setRaffleData}
           open={raffleOpen}
           onClose={() => handleClose(setRaffleOpen)}
           loadingCollection={loadingCollection}
@@ -599,7 +609,7 @@ const ManageRaffle = () => {
                             Price
                           </Typography>
                         </TableCell>
-                        <TableCell key="raffle-price" align="left">
+                        <TableCell key="claimed" align="left">
                           <Typography fontWeight="bold" color="#0f1429">
                             Claimed
                           </Typography>
@@ -615,7 +625,7 @@ const ManageRaffle = () => {
                       {raffles &&
                         raffles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((raffle: any, index: number) => {
                           return (
-                            <TableRow style={{ cursor: "pointer" }} onClick={() => {}} hover role="checkbox" tabIndex={-1} key={index}>
+                            <TableRow style={{ cursor: "pointer" }} key={index}>
                               <TableCell align="left">
                                 <Typography color="#0f1429">{raffle.name}</Typography>
                               </TableCell>
@@ -638,16 +648,19 @@ const ManageRaffle = () => {
                                 <IconButton
                                   disabled={raffle.claimed}
                                   onClick={(e: any) => {
-                                    handleMenuClick(e, setRaffleMore);
                                     setClickedRaffle(raffle);
+                                    handleMenuClick(e, setRaffleMore);
                                   }}
                                 >
-                                  <MoreVertIcon></MoreVertIcon>
+                                  <MoreVertIcon />
                                 </IconButton>
                                 <Menu
                                   anchorEl={raffleMore}
                                   open={raffleMoreOpen}
-                                  onClose={() => handleMenuClose(setRaffleMore)}
+                                  onClose={() => {
+                                    setClickedRaffle(undefined);
+                                    handleMenuClose(setRaffleMore);
+                                  }}
                                   anchorOrigin={{
                                     vertical: "top",
                                     horizontal: "left",
@@ -659,8 +672,8 @@ const ManageRaffle = () => {
                                 >
                                   <MenuItem
                                     onClick={() => {
-                                      handleOpen(setApproveModal);
                                       handleMenuClose(setRaffleMore);
+                                      handleOpen(setApproveModal);
                                     }}
                                   >
                                     Approve NFT
@@ -677,8 +690,9 @@ const ManageRaffle = () => {
                                   {moment.unix(raffle.end_date).unix() < Date.now() && (
                                     <MenuItem
                                       onClick={() => {
+                                        console.log("deppp", raffle);
                                         handleMenuClose(setRaffleMore);
-                                        draw(raffle);
+                                        draw();
                                       }}
                                     >
                                       Draw
@@ -688,9 +702,11 @@ const ManageRaffle = () => {
                                 <ApproveNFTModalonRaffePage
                                   open={approveModal}
                                   handleClose={() => handleClose(setApproveModal)}
-                                  approve={approve}
+                                  approve={() => {
+                                    approve();
+                                  }}
                                   selectedRaffle={clickedRaffle}
-                                ></ApproveNFTModalonRaffePage>
+                                />
                               </TableCell>
                             </TableRow>
                           );
@@ -773,13 +789,7 @@ const ManageRaffle = () => {
 
                               {moment.unix(raffle.end_date).unix() < Date.now() ? (
                                 <TableCell align="left">
-                                  <CustomButton
-                                    disabled={false}
-                                    label="Claim"
-                                    onClick={() => {
-                                      claim(raffle);
-                                    }}
-                                  ></CustomButton>
+                                  <CustomButton disabled={false} label="Claim" onClick={claim}></CustomButton>
                                 </TableCell>
                               ) : (
                                 <TableCell align="left">
