@@ -22,7 +22,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { CustomButton } from "../../components/CustomButton";
 import { makeStyles } from "@mui/styles";
 import { fetchCep78NamedKeys, fetchRaffleNamedKeys, getAllRafflesForJoin, getNftCollection, getNftMetadata, getRaffleDetails, SERVER_API } from "../../utils/api";
-import { CollectionMetada, NFT, Raffle, RaffleMetadata } from "../../utils/types";
+import { CollectionMetada, NFT, RAFFLE_STATUS, Raffle, RaffleMetadata } from "../../utils/types";
 import moment from "moment";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -487,6 +487,7 @@ const ManageRaffle = () => {
           end_date: Number(raffle.end_date.hex),
           price: Number(raffle.price.hex),
           claimed: raffle.claimed,
+          status: raffle.status,
         };
       });
 
@@ -535,6 +536,32 @@ const ManageRaffle = () => {
     const name: boolean = !(!raffleData.name.length || raffleData.name.startsWith(" "));
     return !(name && price && time && collection && nft);
   }, [raffleData]);
+
+  const getStatus = (status: number) => {
+    if (status === RAFFLE_STATUS.WAITING_DEPOSIT) {
+      return "Waiting Deposit";
+    }
+
+    if (status === RAFFLE_STATUS.ONGOING) {
+      return "Ongoing";
+    }
+
+    if (status === RAFFLE_STATUS.FINISHED) {
+      return "Finished";
+    }
+
+    if (status === RAFFLE_STATUS.WAITING_DRAW) {
+      return "Waiting Draw";
+    }
+
+    if (status === RAFFLE_STATUS.WAITING_CLAIM) {
+      return "Waiting Claim";
+    }
+
+    if (status === RAFFLE_STATUS.COMPLETED) {
+      return "Completed";
+    }
+  };
 
   if (loading) {
     return (
@@ -612,6 +639,11 @@ const ManageRaffle = () => {
                             Price
                           </Typography>
                         </TableCell>
+                        <TableCell key="status" align="left">
+                          <Typography fontWeight="bold" color="#0f1429">
+                            Status
+                          </Typography>
+                        </TableCell>
                         <TableCell key="claimed" align="left">
                           <Typography fontWeight="bold" color="#0f1429">
                             Claimed
@@ -643,6 +675,9 @@ const ManageRaffle = () => {
                               </TableCell>
                               <TableCell align="left">
                                 <Typography color="#0f1429">{raffle.price / Math.pow(10, 9)} CSPR</Typography>
+                              </TableCell>
+                              <TableCell align="left">
+                                <Typography color="#0f1429">{getStatus(raffle.status)}</Typography>
                               </TableCell>
                               <TableCell align="left">
                                 <Typography color="#0f1429">{raffle.claimed ? <CheckIcon color="success" /> : <CloseIcon color="error" />}</Typography>
