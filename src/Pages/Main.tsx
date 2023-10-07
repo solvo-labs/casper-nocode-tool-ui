@@ -1,15 +1,17 @@
-import { CircularProgress, Divider, Grid, Table, TableBody, TableCell, TableHead, TablePagination, TableRow } from "@mui/material";
+import { CircularProgress, Divider, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import casperWalletIcon from "../assets/casper-wallet-icon.svg";
 import copyIcon from "../assets/copy-icon.png";
 import casperLogo from "../assets/cspr_logo.svg";
 import { makeStyles } from "@mui/styles";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { fetchCep78NamedKeys, getNftCollection, getBalance, fetchAmount } from "../utils/api";
+import { fetchCep78NamedKeys, getNftCollection, getBalance, fetchAmount, initTokens } from "../utils/api";
 import { CollectionMetada } from "../utils/types";
 import { getMetadataImage } from "../utils";
 import CollectionCard from "../components/CollectionCard";
-import { FETCH_IMAGE_TYPE } from "../utils/enum";
+import { FETCH_IMAGE_TYPE, MY_ERC20TOKEN } from "../utils/enum";
+// @ts-ignore
+import { CLPublicKey } from "casper-js-sdk";
 
 const useStyles = makeStyles(() => ({
   card: {
@@ -18,7 +20,6 @@ const useStyles = makeStyles(() => ({
     background: "linear-gradient(109deg, rgba(255, 255, 255, 0.40) 2.16%, rgba(255, 255, 255, 0.10) 100%) !important",
     boxShadow: "0px 4px 24px -1px rgba(0, 0, 0, 0.20) !important",
     backdropFilter: "blur(20px) !important",
-    // marginLeft: "40px !important",
     paddingRight: "20px !important",
     paddingLeft: "20px !important",
     paddingTop: "40px !important",
@@ -30,7 +31,6 @@ const useStyles = makeStyles(() => ({
     background: "linear-gradient(109deg, rgba(255, 255, 255, 0.40) 2.16%, rgba(255, 255, 255, 0.10) 100%) !important",
     boxShadow: "0px 4px 24px -1px rgba(0, 0, 0, 0.20) !important",
     backdropFilter: "blur(20px) !important",
-    // marginLeft: "40px !important",
     paddingRight: "20px !important",
     paddingLeft: "20px !important",
     paddingTop: "40px !important",
@@ -110,6 +110,10 @@ const useStyles = makeStyles(() => ({
       background: "#BF000C",
     },
   },
+  tableContainer: {
+    borderTopLeftRadius: "1rem",
+    borderTopRightRadius: "1rem",
+  },
 }));
 
 const Main: React.FC = () => {
@@ -121,6 +125,9 @@ const Main: React.FC = () => {
   const [balance, setBalance] = useState<any>(null);
   const [CSPRPrice, setCSPRPrice] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const [myTokenList, setMyTokenList] = useState<any>([]);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -153,6 +160,12 @@ const Main: React.FC = () => {
         const csprPriceData = await fetchAmount();
         setCSPRPrice(csprPriceData);
 
+        // Fetch all Token data
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+        const accountHash = ownerPublicKey.toAccountHashStr();
+        const { finalData: allData } = await initTokens(accountHash, publicKey);
+        setMyTokenList(allData);
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -162,72 +175,17 @@ const Main: React.FC = () => {
     fetchData();
   }, [publicKey]);
 
-  // useEffect(() => {
-  //   const init = async () => {
-  //     const data = await fetchCep78NamedKeys(publicKey);
-
-  //     const promises = data.map((data) => getNftCollection(data.key));
-
-  //     const result = await Promise.all(promises);
-  //     const imagePromises = result.map((e: any) => getMetadataImage(e.json_schema, FETCH_IMAGE_TYPE.COLLECTION));
-  //     const images = await Promise.all(imagePromises);
-  //     const finalData = result.map((e: any, index: number) => {
-  //       return {
-  //         ...e,
-  //         image: images[index],
-  //       };
-  //     });
-
-  //     setLoading(false);
-  //     console.log(finalData);
-  //     setCollections(finalData);
-  //   };
-
-  //   init();
-  // }, []);
-
-  // useEffect(() => {
-  //   const balance = async () => {
-  //     const data = await getBalance(publicKey);
-  //     console.log("data", data);
-  //     setBalance(data);
-  //   };
-
-  //   balance();
-  // }, []);
-
-  // useEffect(() => {
-  //   const amount = async () => {
-  //     const data = await fetchAmount();
-  //     console.log(data);
-  //     setCSPRPrice(data);
-  //   };
-
-  //   amount();
-  // }, []);
-
-  const tableData = [
-    { name: "Deneme", symbol: "Örnek 1", decimal: 8, balance: 20 },
-    { name: "Deneme", symbol: "Örnek 2", decimal: 8, balance: 20 },
-    { name: "Deneme", symbol: "Örnek 3", decimal: 8, balance: 20 },
-    { name: "Deneme", symbol: "Örnek 4", decimal: 8, balance: 20 },
-    { name: "Deneme", symbol: "Örnek 5", decimal: 8, balance: 20 },
-  ];
-
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
-  const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+  const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value);
     setPage(0);
   };
 
-  const handleCopyClick = () => {
-    const textToCopy = "Hf8SzL3ztwWk594B7Kwo";
+  const handleCopyClick = (publicKey: string) => {
+    const textToCopy = publicKey;
     navigator.clipboard.writeText(textToCopy).then(() => {
       setIsCopied(true);
 
@@ -262,9 +220,9 @@ const Main: React.FC = () => {
             <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
               <span className={classes.walletPublicKey}>{`${publicKey.replace(/^(.{4})(.*)(.{4})$/, "$1****$3")}`}</span>
               <img
-                onClick={handleCopyClick}
+                onClick={() => handleCopyClick(publicKey)}
                 className={`${classes.copyAnimationStart} ${isCopied ? classes.copyAnimationEnd : ""}`}
-                style={{ marginLeft: "5px", width: "20px" }}
+                style={{ marginLeft: "5px", width: "20px", cursor: "pointer" }}
                 src={copyIcon}
                 alt="copy icon"
               />
@@ -273,14 +231,24 @@ const Main: React.FC = () => {
           <div className={classes.walletSection}>
             <div className={classes.walletBalance}>Balance:</div>
             <div className={classes.walletCSPR} style={{ marginBottom: "10px !important" }}>
-              {parseInt(balance.hex) / Math.pow(10, 9)} CSPR
+              {(parseInt(balance.hex) / Math.pow(10, 9)).toLocaleString("en-US", {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              })}{" "}
+              CSPR
             </div>
           </div>
           <div className={classes.walletSection} style={{ justifyContent: "flex-end !important", marginBottom: "40px" }}>
             <div></div>
-            <div className={classes.walletCSPR}>${CSPRPrice}</div>
+            <div className={classes.walletCSPR}>
+              $
+              {(CSPRPrice * (parseInt(balance.hex) / Math.pow(10, 9))).toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </div>
           </div>
-          <Divider sx={{ backgroundColor: "red !important", marginBottom: "40px !important" }}></Divider>
+          <Divider sx={{ backgroundColor: "gray !important", marginBottom: "40px !important" }}></Divider>
           <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", marginBottom: "20px" }}>
             <img src={casperLogo} alt="casper logo" />
             <div className={classes.walletBalance} style={{ marginLeft: "10px" }}>
@@ -292,7 +260,7 @@ const Main: React.FC = () => {
           </div>
           <div className={classes.walletSection}>
             <div className={classes.walletBalance}>CSPR/USD:</div>
-            <div className={classes.walletCSPR}>$0.03115</div>
+            <div className={classes.walletCSPR}>${CSPRPrice.toFixed(4)}</div>
           </div>
         </div>
       </Grid>
@@ -301,52 +269,75 @@ const Main: React.FC = () => {
           <div className={classes.walletBalance} style={{ paddingLeft: "1rem", paddingBottom: "1rem" }}>
             My Tokens
           </div>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell className={classes.headerText} style={{ textAlign: "left" }}>
-                  Name
-                </TableCell>
-                <TableCell className={classes.headerText} style={{ textAlign: "left" }}>
-                  Symbol
-                </TableCell>
-                <TableCell className={classes.headerText} style={{ textAlign: "center" }}>
-                  Decimal
-                </TableCell>
-                <TableCell className={classes.headerText} style={{ textAlign: "center" }}>
-                  Balance
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {tableData.map((row, index: number) => (
-                <TableRow key={index}>
-                  <TableCell className={classes.tableStr} style={{ textAlign: "left" }}>
-                    {row.name}
-                  </TableCell>
-                  <TableCell className={classes.tableStr} style={{ textAlign: "left" }}>
-                    {row.symbol}
-                  </TableCell>
-                  <TableCell className={classes.tableInt} style={{ textAlign: "center" }}>
-                    {row.decimal}
-                  </TableCell>
-                  <TableCell className={classes.tableInt} style={{ textAlign: "center" }}>
-                    {row.balance}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={tableData.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            sx={{ color: "#fff !important", "& .MuiSvgIcon-root": { fill: "#fff !important" } }}
-          />
+          {
+            <div>
+              <TableContainer className={classes.tableContainer}>
+                <Table stickyHeader aria-label="sticky table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell key="name" align="left">
+                        <Typography fontWeight="bold" color="#0f1429">
+                          {MY_ERC20TOKEN.NAME}
+                        </Typography>
+                      </TableCell>
+                      <TableCell key="symbol" align="left">
+                        <Typography fontWeight="bold" color="#0f1429">
+                          {MY_ERC20TOKEN.SYMBOL}
+                        </Typography>
+                      </TableCell>
+                      <TableCell key="decimal" align="center">
+                        <Typography fontWeight="bold" color="#0f1429">
+                          {MY_ERC20TOKEN.DECIMAL}
+                        </Typography>
+                      </TableCell>
+                      <TableCell key="balance" align="center">
+                        <Typography fontWeight="bold" color="#0f1429">
+                          {MY_ERC20TOKEN.BALANCE}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {myTokenList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: any, index: number) => {
+                      return (
+                        <TableRow
+                          hover
+                          role="checkbox"
+                          onClick={() => window.open("https://testnet.cspr.live/contract/" + row.contractHash, "_blank")}
+                          tabIndex={-1}
+                          key={index}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <TableCell align="left">
+                            <Typography className={classes.tableStr}>{row.name}</Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography className={classes.tableStr}>{row.symbol}</Typography>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Typography className={classes.tableInt}>{row.decimals}</Typography>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Typography className={classes.tableInt}>{row.balance}</Typography>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[1, 5, 10]}
+                component="div"
+                count={myTokenList.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                sx={{ color: "#fff !important", "& .MuiSvgIcon-root": { fill: "#fff !important" } }}
+              />
+            </div>
+          }
         </div>
       </Grid>
       <Grid item xs={3}>
@@ -372,7 +363,7 @@ const Main: React.FC = () => {
           </div>
           <div>
             <Grid container width={"100%"} justifyContent={"flex-start"}>
-              {collections.concat(collections).map((e: any, index: number) => (
+              {collections.slice(0, 6).map((e: any, index: number) => (
                 <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
                   <CollectionCard
                     image={e.image}
@@ -380,6 +371,12 @@ const Main: React.FC = () => {
                     title={e.collection_name}
                     contractHash={e.contractHash}
                     symbol={e.collection_symbol}
+                    cardHeight={"180px"}
+                    mediaHeight={"100px"}
+                    cardContentPadding={"5px"}
+                    cardContentTitle={"14px"}
+                    cardContentSymbol={"14px"}
+                    cardContentContractHash={"12px"}
                   ></CollectionCard>
                 </Grid>
               ))}

@@ -115,6 +115,12 @@ export const MyCollections = () => {
           {collections.map((e: any, index: number) => (
             <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
               <CollectionCard
+                cardHeight={"360px"}
+                mediaHeight={"200px"}
+                cardContentPadding={"1rem"}
+                cardContentTitle={"24px"}
+                cardContentSymbol={"20px"}
+                cardContentContractHash={"14px"}
                 image={e.image}
                 onClick={() => navigate("/nft-list/" + e.contractHash)}
                 title={e.collection_name}
