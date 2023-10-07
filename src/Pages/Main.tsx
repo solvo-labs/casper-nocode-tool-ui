@@ -212,7 +212,7 @@ const Main: React.FC = () => {
   }
 
   return (
-    <Grid container spacing={2} style={{ width: "100vw" }}>
+    <Grid container spacing={2} style={{ width: "100vw", padding: "30px" }}>
       <Grid item xs={3}>
         <div className={classes.card} style={{ width: "370px !important", height: "375px !important" }}>
           <div className={classes.walletSection} style={{ marginBottom: "55px" }}>
@@ -264,8 +264,8 @@ const Main: React.FC = () => {
           </div>
         </div>
       </Grid>
-      <Grid item xs={6} style={{ display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
-        <div className={classes.tableCard} style={{ width: "585px", height: "375px !important" }}>
+      <Grid item xs={6} style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+        <div className={classes.tableCard} style={{ width: "585px", height: "375px !important", marginBottom: "30px" }}>
           <div className={classes.walletBalance} style={{ paddingLeft: "1rem", paddingBottom: "1rem" }}>
             My Tokens
           </div>
@@ -339,24 +339,6 @@ const Main: React.FC = () => {
             </div>
           }
         </div>
-      </Grid>
-      <Grid item xs={3}>
-        <div className={classes.buttonCard} style={{ width: "250px !important" }}>
-          <div className={classes.walletBalance} style={{ marginBottom: "20px" }}>
-            Wanna create a new Token?
-          </div>
-          <button
-            onClick={() => {
-              navigate("/token");
-            }}
-            className={classes.button}
-          >
-            Create Token
-          </button>
-        </div>
-      </Grid>
-      <Grid item xs={3}></Grid>
-      <Grid item xs={6} style={{ display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
         <div className={classes.tableCard} style={{ width: "585px", height: "375px !important" }}>
           <div className={classes.walletBalance} style={{ paddingLeft: "1rem", paddingBottom: "1rem" }}>
             My Collections
@@ -385,7 +367,20 @@ const Main: React.FC = () => {
         </div>
       </Grid>
       <Grid item xs={3}>
-        <div className={classes.buttonCard} style={{ width: "250px !important" }}>
+        <div className={`${classes.buttonCard}`} style={{ width: "250px !important", marginBottom: "30px" }}>
+          <div className={classes.walletBalance} style={{ marginBottom: "20px" }}>
+            Wanna create a new Token?
+          </div>
+          <button
+            onClick={() => {
+              navigate("/token");
+            }}
+            className={classes.button}
+          >
+            Create Token
+          </button>
+        </div>
+        <div className={`${classes.buttonCard}`} style={{ width: "250px !important" }}>
           <div className={classes.walletBalance} style={{ marginBottom: "20px" }}>
             Wanna create a new NFT?
           </div>
