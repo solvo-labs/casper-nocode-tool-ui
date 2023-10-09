@@ -3,13 +3,6 @@ import { makeStyles } from "@mui/styles";
 import { Card, CardActionArea, CardContent, CardMedia, Theme, Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
-  card: {
-    margin: "1rem",
-    height: "360px",
-    [theme.breakpoints.down("xl")]: {
-      // fontSize: "1rem",
-    },
-  },
   alternateCard: {
     margin: "1rem",
     minHeight: "300px",
@@ -25,22 +18,35 @@ type Props = {
   image: string;
   contractHash: string;
   onClick: () => void;
+  cardHeight: string;
+  mediaHeight: string;
+  cardContentPadding: string;
+  cardContentTitle: string;
+  cardContentSymbol: string;
+  cardContentContractHash: string;
 };
 
-const CollectionCard: React.FC<Props> = ({ title, symbol, contractHash, image, onClick }) => {
-  const classes = useStyles();
+const CollectionCard: React.FC<Props> = ({
+  title,
+  symbol,
+  contractHash,
+  image,
+  onClick,
+  cardHeight,
+  mediaHeight,
+  cardContentPadding,
+  cardContentTitle,
+  cardContentSymbol,
+  cardContentContractHash,
+}) => {
   return (
     <CardActionArea>
-      <Card className={classes.card} onClick={onClick}>
-        <CardMedia component="img" height="200" image={image} alt="collection-image" />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {title}
-          </Typography>
-          <Typography variant="h6">{symbol}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {contractHash.slice(0, 20)}
-          </Typography>
+      <Card style={{ height: `${cardHeight}`, margin: "1rem" }} onClick={onClick}>
+        <CardMedia component="img" height={mediaHeight} image={image} alt="collection-image" />
+        <CardContent style={{ padding: `${cardContentPadding}` }}>
+          <div style={{ fontSize: `${cardContentTitle}`, marginBottom: "5px", fontWeight: "700" }}>{title}</div>
+          <div style={{ fontSize: `${cardContentSymbol}`, marginBottom: "5px" }}>{symbol}</div>
+          <div style={{ fontSize: `${cardContentContractHash}` }}>{contractHash.slice(0, 20)}</div>
         </CardContent>
       </Card>
     </CardActionArea>

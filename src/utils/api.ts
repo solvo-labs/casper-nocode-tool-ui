@@ -29,6 +29,11 @@ export const fetchErc20Tokens = async (accountHash: string): Promise<ERC20TokenI
   return response.data.data;
 };
 
+export const fetchAmount = async () => {
+  const response = await axios.get(api + "rates/1/amount");
+  return response.data.data;
+};
+
 type NamedKey = {
   name: string;
   key: string;
@@ -283,6 +288,12 @@ export const getAllRafflesForJoin = async (contractHash: string) => {
 
 export const getValidators = async () => {
   const response = await axios.get(SERVER_API + "validators");
+
+  return response.data;
+};
+
+export const getBalance = async (publicKey: string) => {
+  const response = await axios.get(SERVER_API + "getBalance?publickey=" + publicKey);
 
   return response.data;
 };
