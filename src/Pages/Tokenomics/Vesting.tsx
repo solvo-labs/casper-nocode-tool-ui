@@ -187,6 +187,7 @@ export const Vesting = () => {
   const [recipients, setRecipients] = useState<RecipientFormInput[]>([]);
   const [recipient, setRecipient] = useState<RecipientFormInput>(recipientDefaultState);
   const [loading] = useState<boolean>(false);
+  const [vestingLoading, setVestingLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -201,6 +202,7 @@ export const Vesting = () => {
   }>();
 
   const createVesting = async () => {
+    setVestingLoading(true);
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
       const contract = new Contracts.Contract();
@@ -220,7 +222,7 @@ export const Vesting = () => {
         cliff_timestamp: CLValueBuilder.u64(activateCliff ? vestParams.cliffDuration * vestParams.selectedCliffDuration * 1000 : 0),
       });
 
-      const deploy = contract.install(new Uint8Array(vestingWasm!), args, "120000000000", ownerPublicKey, "casper-test");
+      const deploy = contract.install(new Uint8Array(vestingWasm!), args, "150000000000", ownerPublicKey, "casper-test");
 
       const deployJson = DeployUtil.deployToJson(deploy);
       console.log("deployJson", deployJson);
@@ -242,19 +244,21 @@ export const Vesting = () => {
         const response = await axios.post(SERVER_API + "deploy", data, {
           headers: { "Content-Type": "application/json" },
         });
+
+        setVestingLoading(false);
+        navigate("/vesting-list");
         toastr.success(response.data, "Vesting deployed successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
-
-        navigate("/vesting-list");
       } catch (error: any) {
-        alert(error.message);
+        setVestingLoading(false);
+        toastr.error("Vesting can not deployed success. Error: " + error);
       }
     } catch (err: any) {
       toastr.error(err);
     }
   };
 
-  if (loading) {
+  if (loading || vestingLoading) {
     return (
       <div
         style={{
@@ -508,7 +512,7 @@ export const Vesting = () => {
                       {recipients.map((value, index) => {
                         const labelId = `checkbox-list-secondary-label-${value}`;
                         return (
-                          <>
+                          <div key={index}>
                             <ListItem
                               key={index}
                               style={{ background: "white" }}
@@ -530,7 +534,11 @@ export const Vesting = () => {
                               disablePadding
                             >
                               <ListItemButton>
-                                <ListItemText style={{ color: "black" }} id={labelId} primary={"Address : " + value.recipientAddress + ", Amount : " + value.amount} />
+                                <ListItemText
+                                  style={{ color: "black", fontWeight: "bold" }}
+                                  id={labelId}
+                                  primary={"Address: " + value.recipientAddress.slice(0, 10) + "..." + value.recipientAddress.slice(-10) + ", Amount: " + value.amount}
+                                />
                               </ListItemButton>
                             </ListItem>
                             <Divider
@@ -540,7 +548,7 @@ export const Vesting = () => {
                                 background: "black",
                               }}
                             />
-                          </>
+                          </div>
                         );
                       })}
                     </List>

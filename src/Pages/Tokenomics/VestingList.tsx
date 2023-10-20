@@ -58,8 +58,8 @@ const useStyles = makeStyles((_theme: Theme) => ({
   paginatonContainer: {
     display: "flex !important",
     justifyContent: "end",
-    borderBottomLeftRadius: "8px",
-    borderBottomRightRadius: "8px",
+    borderBottomLeftRadius: "12px",
+    borderBottomRightRadius: "12px",
     backgroundColor: "#bf000c",
   },
   pagination: {
@@ -314,21 +314,32 @@ export const VestingList = () => {
   const listVesting = (list: any) => {
     return list?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((e: any, index: number) => (
       <TableRow className={classes.tableRow} key={index}>
-        <TableCell>{e.contract_name}</TableCell>
+        <TableCell align="center">{e.contract_name}</TableCell>
         <TableCell align="center">{getStatusIcon(e.release_date.hex / 1000, e.end_date.hex / 1000)}</TableCell>
-        <TableCell>{timestampToDate(e.start_date.hex / 1000)}</TableCell>
-        <TableCell>{timestampToDate(e.end_date.hex / 1000)}</TableCell>
-        <TableCell>{Object.keys(UnlockSchedule).find((key) => UnlockSchedule[key as keyof UnlockScheduleType] === e.period.hex / 1000)}</TableCell>
-        <TableCell>{parseInt(e.cliff_timestamp.hex) + " sec"}</TableCell>
-        <TableCell>
-          {Object.values(e.cep18_contract_hash)
+        <TableCell align="center">{timestampToDate(e.start_date.hex / 1000)}</TableCell>
+        <TableCell align="center">{timestampToDate(e.end_date.hex / 1000)}</TableCell>
+        <TableCell align="center">{Object.keys(UnlockSchedule).find((key) => UnlockSchedule[key as keyof UnlockScheduleType] === e.period.hex / 1000)}</TableCell>
+        <TableCell align="center">{parseInt(e.cliff_timestamp.hex) + " sec"}</TableCell>
+        <Tooltip
+          title={Object.values(e.cep18_contract_hash)
             .map((byte: any) => byte.toString(16).padStart(2, "0"))
             .join("")}
-        </TableCell>
-
-        <TableCell>{parseInt(e.vesting_amount.hex)}</TableCell>
-        <TableCell>{e.recipient_count}</TableCell>
-        <TableCell>{e.released ? "TRUE" : "FALSE"}</TableCell>
+        >
+          <TableCell align="center">
+            {Object.values(e.cep18_contract_hash)
+              .map((byte: any) => byte.toString(16).padStart(2, "0"))
+              .join("")
+              .slice(0, 5) +
+              "..." +
+              Object.values(e.cep18_contract_hash)
+                .map((byte: any) => byte.toString(16).padStart(2, "0"))
+                .join("")
+                .slice(-3)}
+          </TableCell>
+        </Tooltip>
+        <TableCell align="center">{parseInt(e.vesting_amount.hex)}</TableCell>
+        <TableCell align="center">{e.recipient_count}</TableCell>
+        <TableCell align="center">{e.released ? "TRUE" : "FALSE"}</TableCell>
 
         <TableCell align="center">
           <CustomButton
@@ -349,21 +360,21 @@ export const VestingList = () => {
       <TableRow className={classes.tableRow} key={index}>
         <TableCell>{e.contract_name}</TableCell>
         <TableCell align="center">{getStatusIcon(e.release_date.hex / 1000, e.end_date.hex / 1000)}</TableCell>
-        <TableCell>{e.v_index}</TableCell>
-        <TableCell>{e.v_contract}</TableCell>
-        <TableCell>{timestampToDate(e.release_date.hex / 1000)}</TableCell>
-        <TableCell>{timestampToDate(e.end_date.hex / 1000)}</TableCell>
-        <TableCell>{parseInt(e.cliff_timestamp.hex) + " sec"}</TableCell>
-        <TableCell>{e.v_token}</TableCell>
-        <TableCell>
+        <TableCell align="center">{e.v_index}</TableCell>
+        <TableCell align="center">{e.v_contract}</TableCell>
+        <TableCell align="center">{timestampToDate(e.release_date.hex / 1000)}</TableCell>
+        <TableCell align="center">{timestampToDate(e.end_date.hex / 1000)}</TableCell>
+        <TableCell align="center">{parseInt(e.cliff_timestamp.hex) + " sec"}</TableCell>
+        <TableCell align="center">{e.v_token}</TableCell>
+        <TableCell align="center">
           {Object.values(e.owner)
             .map((byte: any) => byte.toString(16).padStart(2, "0"))
             .join("")}
         </TableCell>
 
-        <TableCell>{parseInt(e.vesting_amount.hex)}</TableCell>
-        <TableCell>{parseInt(e.allocation)}</TableCell>
-        <TableCell>{parseInt(e.claimed_amount)}</TableCell>
+        <TableCell align="center">{parseInt(e.vesting_amount.hex)}</TableCell>
+        <TableCell align="center">{parseInt(e.allocation)}</TableCell>
+        <TableCell align="center">{parseInt(e.claimed_amount)}</TableCell>
 
         <TableCell>{"TRUE"}</TableCell>
 
@@ -384,7 +395,7 @@ export const VestingList = () => {
     return (
       <div
         style={{
-          height: "4rem",
+          height: "60vh",
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -426,12 +437,12 @@ export const VestingList = () => {
                 <Divider sx={{ marginTop: "1rem", background: "white" }} />
               </Grid>
               <Grid container marginTop={"2rem"}>
-                <TableContainer style={{ maxWidth: "100%" }}>
+                <TableContainer style={{ maxWidth: "100%", borderRadius: "12px 12px 0px 0px" }}>
                   <Table>
                     <TableHead>
                       <TableRow>
                         {tableHeaders.map((header, index) => (
-                          <TableCell key={index} className={classes.tableTitle}>
+                          <TableCell key={index} className={classes.tableTitle} align="center">
                             {header}
                           </TableCell>
                         ))}
@@ -465,7 +476,7 @@ export const VestingList = () => {
                 <Divider sx={{ marginTop: "1rem", background: "white" }} />
               </Grid>
               <Grid container marginTop={"2rem"}>
-                <TableContainer style={{ maxWidth: "100%" }}>
+                <TableContainer style={{ maxWidth: "100%", borderRadius: "12px 12px 0px 0px" }}>
                   <Table>
                     <TableHead>
                       <TableRow>

@@ -75,6 +75,7 @@ const TokenMint: React.FC = () => {
   const [publicKey, provider, cep18Wasm] = useOutletContext<[publickey: string, provider: any, cep18Wasm: ArrayBuffer]>();
 
   const mintToken = async () => {
+    setActionLoader(true);
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
       console.log("ownerPublicKey", ownerPublicKey);
@@ -122,9 +123,11 @@ const TokenMint: React.FC = () => {
         navigate("/my-tokens");
         setActionLoader(false);
       } catch (error: any) {
-        alert(error.message);
+        setActionLoader(false);
+        toastr.error("Something went wrong. Error: " + error);
       }
     } catch (err: any) {
+      setActionLoader(false);
       toastr.error(err);
     }
     // wallet
@@ -155,7 +158,7 @@ const TokenMint: React.FC = () => {
     return (
       <div
         style={{
-          height: "calc(100vh - 8rem)",
+          height: "calc(100vh - 12rem)",
           width: "100%",
           display: "flex",
           justifyContent: "center",

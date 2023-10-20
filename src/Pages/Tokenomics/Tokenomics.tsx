@@ -279,7 +279,7 @@ export const Tokenomics = () => {
                       </IconButton>
                     )}
                   </Grid>
-                  <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"} marginBottom={"10px !important"}>
+                  <Grid item display={"flex"} justifyContent={"center"} gap={2} alignItems={"center"}>
                     <CustomInput
                       id="Name"
                       label="Section Name"
