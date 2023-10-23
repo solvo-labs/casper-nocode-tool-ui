@@ -186,7 +186,7 @@ export const Vesting = () => {
   });
   const [recipients, setRecipients] = useState<RecipientFormInput[]>([]);
   const [recipient, setRecipient] = useState<RecipientFormInput>(recipientDefaultState);
-  const [loading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -202,6 +202,7 @@ export const Vesting = () => {
 
   const createVesting = async () => {
     try {
+      setLoading(true);
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
       const contract = new Contracts.Contract();
 
@@ -220,7 +221,7 @@ export const Vesting = () => {
         cliff_timestamp: CLValueBuilder.u64(activateCliff ? vestParams.cliffDuration * vestParams.selectedCliffDuration * 1000 : 0),
       });
 
-      const deploy = contract.install(new Uint8Array(vestingWasm!), args, "120000000000", ownerPublicKey, "casper-test");
+      const deploy = contract.install(new Uint8Array(vestingWasm!), args, "150000000000", ownerPublicKey, "casper-test");
 
       const deployJson = DeployUtil.deployToJson(deploy);
       console.log("deployJson", deployJson);
@@ -246,11 +247,14 @@ export const Vesting = () => {
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/vesting-list");
+        setLoading(false);
       } catch (error: any) {
         alert(error.message);
+        setLoading(false);
       }
     } catch (err: any) {
       toastr.error(err);
+      setLoading(false);
     }
   };
 

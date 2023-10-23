@@ -16,8 +16,6 @@ const TokenSelector: React.FC<Props> = ({ tokens, selectedToken, setSelectedToke
         id="selectLabel"
         style={{
           color: "#fff",
-          backgroundColor: "#FF3341",
-          borderRadius: "4px",
         }}
       >
         Select a Token
