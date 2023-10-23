@@ -159,16 +159,6 @@ const recipientDefaultState = {
   recipientAddress: "",
 };
 
-// startDate: Dayjs;
-
-// duration: number;
-// selectedDuration: number;
-
-// selectedUnlockSchedule: number;
-
-// selectedCliffDuration: number;
-// cliffDuration: number;
-
 export const Vesting = () => {
   const [vestParams, setVestParams] = useState<VestParamsData>({
     startDate: dayjs().add(1, "h"),
@@ -224,19 +214,16 @@ export const Vesting = () => {
       const deploy = contract.install(new Uint8Array(vestingWasm!), args, "150000000000", ownerPublicKey, "casper-test");
 
       const deployJson = DeployUtil.deployToJson(deploy);
-      console.log("deployJson", deployJson);
 
       // signer logic
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-        console.log("sign", sign);
 
         true;
 
         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-        console.log("signedDeploy", signedDeploy);
 
         const data = DeployUtil.deployToJson(signedDeploy.val);
 

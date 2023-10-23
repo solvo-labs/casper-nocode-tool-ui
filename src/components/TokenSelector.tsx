@@ -22,7 +22,7 @@ const TokenSelector: React.FC<Props> = ({ tokens, selectedToken, setSelectedToke
       </InputLabel>
       <CustomSelect
         value={selectedToken?.contractHash || ""}
-        label=" Token"
+        // label="Select a Token"
         onChange={(e: SelectChangeEvent<string>) => {
           const token = tokens.find((tkn: Token) => tkn.contractHash === e.target.value);
           if (token != undefined) {

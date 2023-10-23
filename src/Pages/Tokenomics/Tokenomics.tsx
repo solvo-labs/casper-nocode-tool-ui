@@ -102,8 +102,6 @@ export const Tokenomics = () => {
   const sectionSetter = (e: React.ChangeEvent<HTMLInputElement>, index: number, key: keyof Section) => {
     const newSection = [...sections];
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-
     if (selectedToken && supply) {
       let targetValue: any;
       let supplyCalc = supply / Math.pow(10, selectedToken.decimals);
@@ -112,7 +110,6 @@ export const Tokenomics = () => {
         case "amount":
           targetValue = +e.target.value;
 
-          // eslint-disable-next-line no-case-declarations
           const newPercent: number = +((targetValue / supplyCalc!) * 100).toFixed(2);
           newSection[index] = {
             ...newSection[index],
@@ -123,7 +120,6 @@ export const Tokenomics = () => {
         case "percent":
           targetValue = +e.target.value;
 
-          // eslint-disable-next-line no-case-declarations
           const newAmount: number = (supplyCalc! / 100) * targetValue;
           newSection[index] = {
             ...newSection[index],
@@ -220,7 +216,9 @@ export const Tokenomics = () => {
               <Typography variant="h5">Tokenomics</Typography>
               <Divider sx={{ marginTop: "1rem", background: "white" }}></Divider>
             </Grid>
+
             <Grid item>
+              <Typography marginBottom={"1.2rem"}>Please select a token for vesting. We will fetch vesting history for current token.</Typography>
               <TokenSelector
                 selectedToken={selectedToken}
                 setSelectedToken={(data) => {
@@ -228,7 +226,7 @@ export const Tokenomics = () => {
                   setSelectedToken(data);
                 }}
                 tokens={tokens}
-              ></TokenSelector>
+              />
             </Grid>
           </Stack>
         </Grid>
@@ -266,62 +264,65 @@ export const Tokenomics = () => {
           </CardContent>
           {selectedToken && (
             <Stack direction={"column"} justifyContent={"space-around"} spacing={2}>
-              {sections.map((section: Section, index: number) => (
-                <Stack display={"flex"} justifyContent={"center"} alignItems={"center"} direction={"row"} spacing={2} key={index}>
-                  <Grid item display={"flex"} alignContent={"center"}>
-                    {index > sections.length - 2 ? (
-                      <IconButton onClick={addInput} disabled={disable}>
-                        <AddIcon sx={{ color: "white" }}></AddIcon>
-                      </IconButton>
-                    ) : (
-                      <IconButton onClick={() => removeInput(index)} disabled={section.isOldSection}>
-                        <RemoveIcon sx={{ color: "red" }} />
-                      </IconButton>
+              {sections
+                .sort((a, b) => (a.isOldSection === b.isOldSection ? 0 : a.isOldSection ? -1 : 1))
+                .map((section: Section, index: number) => (
+                  <Stack display={"flex"} justifyContent={"center"} alignItems={"center"} direction={"row"} spacing={2} key={index}>
+                    <Grid item display={"flex"} alignContent={"center"}>
+                      {index > sections.length - 2 ? (
+                        <IconButton onClick={addInput} disabled={disable}>
+                          <AddIcon sx={{ color: "white" }}></AddIcon>
+                        </IconButton>
+                      ) : (
+                        !section.isOldSection && (
+                          <IconButton onClick={() => removeInput(index)} disabled={section.isOldSection}>
+                            <RemoveIcon sx={{ color: "red" }} />
+                          </IconButton>
+                        )
+                      )}
+                    </Grid>
+                    <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"} marginBottom={"10px !important"}>
+                      <CustomInput
+                        id="Name"
+                        label="Section Name"
+                        name="sectionName"
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => !section.isOldSection && sectionSetter(e, index, "name")}
+                        placeholder="Section Name"
+                        type="text"
+                        value={section.name}
+                      ></CustomInput>
+                      <CustomInput
+                        id="Percent"
+                        label="%"
+                        name="percent"
+                        value={section.percent}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => !section.isOldSection && sectionSetter(e, index, "percent")}
+                        type="text"
+                        placeholder={"percent"}
+                      ></CustomInput>
+                      <CustomInput
+                        id="Amount"
+                        label="Amount"
+                        placeholder="Amount"
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => !section.isOldSection && sectionSetter(e, index, "amount")}
+                        type="text"
+                        value={section.amount}
+                        name={"amount"}
+                      />
+                    </Grid>
+                    {!section.isOldSection && (
+                      <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"}>
+                        <CustomButton
+                          label="Vesting"
+                          disabled={section.name === "" || limits!.availableBalance < 0}
+                          onClick={() => {
+                            navigate("/create-vesting/" + selectedToken.contractHash + "/" + section.name + "/" + section.amount);
+                          }}
+                        />
+                      </Grid>
                     )}
-                  </Grid>
-                  <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"} marginBottom={"10px !important"}>
-                    <CustomInput
-                      id="Name"
-                      label="Section Name"
-                      name="sectionName"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => sectionSetter(e, index, "name")}
-                      placeholder="Section Name"
-                      type="text"
-                      disable={section.isOldSection}
-                      value={section.name}
-                    ></CustomInput>
-                    <CustomInput
-                      id="Percent"
-                      label="%"
-                      name="percent"
-                      value={section.percent}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => sectionSetter(e, index, "percent")}
-                      disable={section.isOldSection}
-                      type="text"
-                      placeholder={"percent"}
-                    ></CustomInput>
-                    <CustomInput
-                      id="Amount"
-                      label="Amount"
-                      placeholder="Amount"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => sectionSetter(e, index, "amount")}
-                      disable={section.isOldSection}
-                      type="text"
-                      value={section.amount}
-                      name={"amount"}
-                    />
-                  </Grid>
-                  <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"}>
-                    <CustomButton
-                      label="Vesting"
-                      disabled={section.isOldSection || section.name === "" || limits!.availableBalance < 0}
-                      onClick={() => {
-                        navigate("/create-vesting/" + selectedToken.contractHash + "/" + section.name + "/" + section.amount);
-                      }}
-                    />
-                  </Grid>
-                </Stack>
-              ))}
+                  </Stack>
+                ))}
             </Stack>
           )}
         </Grid>
