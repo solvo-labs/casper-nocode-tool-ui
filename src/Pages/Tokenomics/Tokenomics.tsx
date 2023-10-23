@@ -160,7 +160,6 @@ export const Tokenomics = () => {
       setSupply(parseInt(tokenSupply.hex));
 
       const oldSections: Section[] = vestingHistory.map((ol) => {
-        console.log(parseInt(ol.vesting_amount.hex) / parseInt(tokenSupply.hex));
         return {
           name: ol.contract_name,
           amount: parseInt(ol.vesting_amount.hex) / Math.pow(10, newToken.decimals),
