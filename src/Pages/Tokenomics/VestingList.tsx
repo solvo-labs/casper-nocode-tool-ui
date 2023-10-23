@@ -48,7 +48,10 @@ const useStyles = makeStyles((_theme: Theme) => ({
   },
   tableRow: {
     "&:nth-of-type(odd)": {
-      backgroundColor: "whitesmoke",
+      backgroundColor: "white",
+    },
+    "&:nth-of-type(even)": {
+      backgroundColor: "#dddddd",
     },
     // hide last border
     "&:last-child td, &:last-child th": {
