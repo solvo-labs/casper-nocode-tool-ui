@@ -104,7 +104,14 @@ export const Tokenomics = () => {
 
     if (selectedToken && supply) {
       let targetValue: any;
-      let supplyCalc = supply / Math.pow(10, selectedToken.decimals);
+
+      const sectionHistory = sections.filter((_sc, ind) => ind !== index);
+
+      const history = sectionHistory.reduce((acc, cur) => acc + cur.amount, 0);
+
+      const availableBalance = supply - history * Math.pow(10, selectedToken.decimals);
+
+      let supplyCalc = availableBalance / Math.pow(10, selectedToken.decimals);
 
       switch (key) {
         case "amount":
@@ -275,13 +282,13 @@ export const Tokenomics = () => {
                         </IconButton>
                       ) : (
                         !section.isOldSection && (
-                          <IconButton onClick={() => removeInput(index)} disabled={section.isOldSection}>
+                          <IconButton onClick={() => removeInput(index)}>
                             <RemoveIcon sx={{ color: "red" }} />
                           </IconButton>
                         )
                       )}
                     </Grid>
-                    <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"} marginBottom={"10px !important"}>
+                    <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"} marginBottom={"10px !important"} gap={2}>
                       <CustomInput
                         id="Name"
                         label="Section Name"
