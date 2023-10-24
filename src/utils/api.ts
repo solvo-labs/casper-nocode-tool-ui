@@ -2,7 +2,7 @@ import axios from "axios";
 import { ERC20Token, Listing, RaffleNamedKeys } from "./types";
 
 const api = "https://event-store-api-clarity-testnet.make.services/";
-export const SERVER_API = import.meta.env.DEV ? "http://localhost:3000/api/" : "https://18.185.15.120:8000/";
+export const SERVER_API = import.meta.env.DEV ? "http://localhost:3000/api/" : "https://casperdev.dappend.com/api/";
 // export const SERVER_API = "https://casperdev.dappend.com/api/";
 
 // https://event-store-api-clarity-testnet.make.services/accounts/5e542e3bfacb53152a07322519eedd6f6cad1689508d588051603459b4b12590/erc20-tokens
