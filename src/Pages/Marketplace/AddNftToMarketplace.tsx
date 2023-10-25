@@ -248,7 +248,7 @@ const AddNftToMarketplace = () => {
             {collections.map((e: any, index: number) => (
               <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
                 <CollectionCardAlternate
-                  image={"/public/" + e.image}
+                  image={"/images/casper.png"}
                   onClick={() => setSelectedCollection(e.contractHash)}
                   title={"Name: " + e.collection_name}
                   contractHash={e.contractHash}

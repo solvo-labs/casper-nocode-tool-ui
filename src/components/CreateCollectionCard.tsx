@@ -40,7 +40,7 @@ export const CreateCollectionCard: React.FC<Props> = ({ onClick, text = "CREATE 
   return (
     <CardActionArea>
       <Card className={classes.card} onClick={onClick}>
-        <CardMedia component="img" height="240" image="/public/images/collection-image.jpg" alt="add nft" />
+        <CardMedia component="img" height="240" image="/images/collection-image.jpg" alt="add nft" />
         <CardContent sx={{ height: "fullWidth" }}>
           <p className={classes.title}>{text}</p>
         </CardContent>
