@@ -109,7 +109,7 @@ export const ListNFTModal: React.FC<ListNFTModalProps> = ({ collection, open, ha
                   <NftCard
                     description={e.description}
                     name={e.name}
-                    imageURL={e.imageURL}
+                    asset={e.asset}
                     onClick={() => {
                       handleOpenApprove();
                       selectedNFTIndex(index);

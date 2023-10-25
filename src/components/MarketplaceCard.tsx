@@ -19,14 +19,14 @@ type Props = {
   // onClick: any;
   name: string;
   hash: string;
-  imageURL?: string;
+  asset?: string;
   onClick: () => void;
 };
 
 export const MarketplaceCard: React.FC<Props> = ({
   name,
   hash,
-  //   imageURL,
+  //   asset,
   onClick,
 }) => {
   const classes = useStyles();
@@ -34,7 +34,7 @@ export const MarketplaceCard: React.FC<Props> = ({
   return (
     <CardActionArea>
       <Card sx={{ display: "flex" }} className={classes.card} onClick={onClick}>
-        <CardMedia component="img" sx={{ height: "auto", width: 200 }} image="images/casper.png" alt={name} />
+        <CardMedia component="img" sx={{ height: "auto", width: 200 }} image="/images/casper.png" alt={name} />
         <Box sx={{ display: "flex", flexDirection: "column" }}>
           <CardContent sx={{ flex: "1 0 auto" }}>
             <Typography component="div" variant="h5">

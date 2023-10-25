@@ -2,8 +2,6 @@ import { CircularProgress, Grid, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useEffect, useMemo, useState } from "react";
 import { fetchCep78NamedKeys, fetchMarketplaceNamedKeys, fetchRaffleNamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
-import { getMetadataImage } from "../../utils";
-import { FETCH_IMAGE_TYPE } from "../../utils/enum";
 import { useOutletContext } from "react-router-dom";
 import { CollectionMetada, Marketplace, NFT, RaffleNamedKeys } from "../../utils/types";
 import { CollectionCardAlternate } from "../../components/CollectionCard";
@@ -81,17 +79,9 @@ const ApproveNFT = () => {
       const promises = data.map((data) => getNftCollection(data.key));
 
       const result = await Promise.all(promises);
-      const imagePromises = result.map((e: any) => getMetadataImage(e.json_schema, FETCH_IMAGE_TYPE.COLLECTION));
-      const images = await Promise.all(imagePromises);
-      const finalData = result.map((e: any, index: number) => {
-        return {
-          ...e,
-          image: images[index],
-        };
-      });
 
+      setCollections(result);
       setLoading(false);
-      setCollections(finalData);
     };
 
     init();
@@ -110,17 +100,8 @@ const ApproveNFT = () => {
       }
 
       const nftMetas = await Promise.all(promises);
-      const imagePromises = nftMetas.map((e: any) => getMetadataImage(e, FETCH_IMAGE_TYPE.NFT));
-      const images = await Promise.all(imagePromises);
 
-      const finalData = nftMetas.map((e: any, index: number) => {
-        return {
-          ...e,
-          imageURL: images[index],
-        };
-      });
-
-      setNftData(finalData);
+      setNftData(nftMetas);
       setLoadingNFT(false);
     }
   };

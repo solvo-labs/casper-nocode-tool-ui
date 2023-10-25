@@ -3,8 +3,7 @@ import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { CustomButton } from "../../components/CustomButton";
 import { fetchCep78NamedKeys, fetchMarketplaceData, getNftCollection, getNftMetadata, storeListing } from "../../utils/api";
-import { CasperHelpers, getMetadataImage } from "../../utils";
-import { FETCH_IMAGE_TYPE } from "../../utils/enum";
+import { CasperHelpers } from "../../utils";
 // @ts-ignore
 import { Contracts, RuntimeArgs, DeployUtil, CLValueBuilder, CLPublicKey } from "casper-js-sdk";
 import { CollectionMetada, NFT } from "../../utils/types";
@@ -160,21 +159,12 @@ const AddNftToMarketplace = () => {
       const promises = data.map((data) => getNftCollection(data.key));
 
       const result = await Promise.all(promises);
-      const imagePromises = result.map((e: any) => getMetadataImage(e.json_schema, FETCH_IMAGE_TYPE.COLLECTION));
-      const images = await Promise.all(imagePromises);
-      const finalData = result.map((e: any, index: number) => {
-        return {
-          ...e,
-          image: images[index],
-        };
-      });
 
       const marketplaceData = await fetchMarketplaceData(marketplaceHash || "");
 
       setMarketPlaceData(marketplaceData);
       setLoading(false);
-      console.log(finalData);
-      setCollections(finalData);
+      setCollections(result);
     };
 
     init();
@@ -193,17 +183,8 @@ const AddNftToMarketplace = () => {
       }
 
       const nftMetas = await Promise.all(promises);
-      const imagePromises = nftMetas.map((e: any) => getMetadataImage(e, FETCH_IMAGE_TYPE.NFT));
-      const images = await Promise.all(imagePromises);
 
-      const finalData = nftMetas.map((e: any, index: number) => {
-        return {
-          ...e,
-          imageURL: images[index],
-        };
-      });
-
-      setNftData(finalData);
+      setNftData(nftMetas);
       setLoading(false);
     }
   };
@@ -290,7 +271,7 @@ const AddNftToMarketplace = () => {
                 <NftCard
                   description={e.description}
                   name={e.name}
-                  imageURL={e.imageURL}
+                  asset={e.asset}
                   onClick={() => {
                     setSelectedNftIndex(index);
                   }}

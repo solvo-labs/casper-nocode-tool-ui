@@ -9,8 +9,6 @@ import { CustomButton } from "../../components/CustomButton";
 import { CreateCollectionCard } from "../../components/CreateCollectionCard";
 import CollectionCard from "../../components/CollectionCard";
 import { CollectionMetada } from "../../utils/types";
-import { getMetadataImage } from "../../utils";
-import { FETCH_IMAGE_TYPE } from "../../utils/enum";
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleContainer: {
@@ -40,8 +38,6 @@ export const MyCollections = () => {
   const [publicKey] = useOutletContext<[publickey: string]>();
   const [loading, setLoading] = useState<boolean>(true);
 
-  // const [imageLinks, setImageLinks] = useState<string[]>([]);
-
   // @to-do add collection model
   const [collections, setCollections] = useState<CollectionMetada[] | any>([]);
   const classes = useStyles();
@@ -54,18 +50,9 @@ export const MyCollections = () => {
       const promises = data.map((data) => getNftCollection(data.key));
 
       const result = await Promise.all(promises);
-      const imagePromises = result.map((e: any) => getMetadataImage(e.json_schema, FETCH_IMAGE_TYPE.COLLECTION));
-      const images = await Promise.all(imagePromises);
-      const finalData = result.map((e: any, index: number) => {
-        return {
-          ...e,
-          image: images[index],
-        };
-      });
 
+      setCollections(result);
       setLoading(false);
-      console.log(finalData);
-      setCollections(finalData);
     };
 
     init();
@@ -121,7 +108,7 @@ export const MyCollections = () => {
                 cardContentTitle={"24px"}
                 cardContentSymbol={"20px"}
                 cardContentContractHash={"14px"}
-                image={e.image}
+                image={"/images/casper.png"}
                 onClick={() => navigate("/nft-list/" + e.contractHash)}
                 title={e.collection_name}
                 contractHash={e.contractHash}
