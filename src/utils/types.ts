@@ -72,7 +72,7 @@ export type NFT = {
   tokenMetaData: {
     name: string;
     description: string;
-    imageURL: string;
+    asset: string;
   };
   mergable?: boolean;
   timeable?: boolean;
@@ -82,11 +82,6 @@ export type CollectionMetada = {
   name: string;
   symbol: string;
   contractHash: string;
-  json_schema: {
-    name: string;
-    description: string;
-    imageURL: string;
-  };
 };
 
 export type Marketplace = {

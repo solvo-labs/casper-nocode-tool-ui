@@ -132,7 +132,7 @@ const BuyNft = () => {
               <NftCard
                 description={lst.nftDescription}
                 name={lst.nftName}
-                imageURL={lst.nftImage}
+                asset={lst.nftImage}
                 price={lst.price}
                 onClick={() => {
                   window.open("https://testnet.cspr.live/contract/" + lst.marketplace.slice(5), "_blank");

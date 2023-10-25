@@ -4,9 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { CircularProgress, Grid, Stack, Theme, Typography } from "@mui/material";
 import { NftCard } from "../../components/NftCard";
 import { makeStyles } from "@mui/styles";
-import { getMetadataImage } from "../../utils";
 import { NFT } from "../../utils/types";
-import { FETCH_IMAGE_TYPE } from "../../utils/enum";
 import { CreateCollectionCard } from "../../components/CreateCollectionCard";
 // import { CollectionMetada } from "../../utils/types";
 
@@ -57,17 +55,8 @@ export const NftList = () => {
         }
 
         const nftMetas = await Promise.all(promises);
-        const imagePromises = nftMetas.map((e: any) => getMetadataImage(e, FETCH_IMAGE_TYPE.NFT));
-        const images = await Promise.all(imagePromises);
 
-        const finalData = nftMetas.map((e: any, index: number) => {
-          return {
-            ...e,
-            imageURL: images[index],
-          };
-        });
-
-        setNftData(finalData);
+        setNftData(nftMetas);
         setLoading(false);
       }
     };
@@ -106,7 +95,7 @@ export const NftList = () => {
       <Grid container className={classes.container}>
         {nftData.map((e: any, index: number) => (
           <Grid item xl={3} lg={4} md={4} sm={6} xs={6} key={index}>
-            <NftCard description={e.description} name={e.name} imageURL={e.imageURL} index={index}></NftCard>
+            <NftCard description={e.description} name={e.name} asset={e.asset} index={index}></NftCard>
           </Grid>
         ))}
         <Grid item xl={3} lg={4} md={4} sm={6} xs={6}>

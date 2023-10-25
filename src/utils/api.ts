@@ -212,11 +212,6 @@ export const getNftMetadata = async (contractHash: string, index: string) => {
   return JSON.parse(response.data);
 };
 
-export const fetchIPFSImage = async (apiLink: string): Promise<string> => {
-  const response = await axios.get<any>(apiLink);
-  return response.data.image;
-};
-
 export const fetchMarketplaceData = async (contractHash: string) => {
   const response = await axios.get(SERVER_API + "getMarketplace?contractHash=" + contractHash);
 
@@ -231,7 +226,7 @@ export const storeListing = async (marketplace: string, collection: string, toke
     price,
     nftName: nft.name,
     nftDescription: nft.description,
-    nftImage: nft.imageURL,
+    nftImage: nft.asset,
     listingIndex,
   };
 

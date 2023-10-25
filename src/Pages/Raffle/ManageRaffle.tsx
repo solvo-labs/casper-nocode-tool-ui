@@ -177,7 +177,7 @@ const ManageRaffle = () => {
   //     const finalData = nftMetas.map((e: any, index: number) => {
   //       return {
   //         ...e,
-  //         imageURL: images[index],
+  //         asset: images[index],
   //       };
   //     });
   //

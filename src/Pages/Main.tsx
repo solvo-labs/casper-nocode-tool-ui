@@ -7,9 +7,8 @@ import { makeStyles } from "@mui/styles";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { fetchCep78NamedKeys, getNftCollection, getBalance, fetchAmount, initTokens } from "../utils/api";
 import { CollectionMetada } from "../utils/types";
-import { getMetadataImage } from "../utils";
 import CollectionCard from "../components/CollectionCard";
-import { FETCH_IMAGE_TYPE, MY_ERC20TOKEN } from "../utils/enum";
+import { MY_ERC20TOKEN } from "../utils/enum";
 // @ts-ignore
 import { CLPublicKey } from "casper-js-sdk";
 
@@ -120,7 +119,7 @@ const Main: React.FC = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const [publicKey] = useOutletContext<[publickey: string]>();
-  const [collections, setCollections] = useState<CollectionMetada[] | any>([]);
+  const [collections, setCollections] = useState<CollectionMetada[]>([]);
   const [isCopied, setIsCopied] = useState(false);
   const [balance, setBalance] = useState<any>(null);
   const [CSPRPrice, setCSPRPrice] = useState<number>(0);
@@ -139,18 +138,8 @@ const Main: React.FC = () => {
         const collectionPromises = namedKeysData.map((data) => getNftCollection(data.key));
         const collectionsData = await Promise.all(collectionPromises);
 
-        // Fetch images for collections
-        const imagePromises = collectionsData.map((e: any) => getMetadataImage(e.json_schema, FETCH_IMAGE_TYPE.COLLECTION));
-        const images = await Promise.all(imagePromises);
-
-        // Combine collection data with images
-        const finalData = collectionsData.map((e: any, index: number) => ({
-          ...e,
-          image: images[index],
-        }));
-
         // Set collections state and loading to false
-        setCollections(finalData);
+        setCollections(collectionsData);
 
         // Fetch balance
         const balanceData = await getBalance(publicKey);
@@ -348,7 +337,7 @@ const Main: React.FC = () => {
               {collections.slice(0, 6).map((e: any, index: number) => (
                 <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
                   <CollectionCard
-                    image={e.image}
+                    image={"/images/casper.png"}
                     onClick={() => navigate("/nft-list/" + e.contractHash)}
                     title={e.collection_name}
                     contractHash={e.contractHash}

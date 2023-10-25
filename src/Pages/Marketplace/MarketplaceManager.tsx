@@ -101,7 +101,7 @@ const MarketplaceManager = () => {
                   <NftCard
                     description={lst.nftDescription}
                     name={lst.nftName}
-                    imageURL={lst.nftImage}
+                    asset={lst.nftImage}
                     price={lst.price}
                     index={0}
                     onClick={() => {

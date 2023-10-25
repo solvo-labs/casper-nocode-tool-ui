@@ -58,7 +58,7 @@ export const CreateNft = () => {
     tokenMetaData: {
       name: "",
       description: "",
-      imageURL: "",
+      asset: "",
     },
     mergable: true,
     timeable: true,
@@ -111,7 +111,7 @@ export const CreateNft = () => {
         token_meta_data: CLValueBuilder.string(JSON.stringify(nftData.tokenMetaData)),
       });
 
-      const deploy = contract.callEntrypoint("mint", args, ownerPublicKey, "casper-test", "2000000000");
+      const deploy = contract.callEntrypoint("mint", args, ownerPublicKey, "casper-test", "4000000000");
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -157,20 +157,11 @@ export const CreateNft = () => {
 
         const fileUrl = "https://ipfs.io/ipfs/" + fileCid;
 
-        const obj = {
-          image: fileUrl,
-        };
-
-        const metadata = new Blob([JSON.stringify(obj)], {
-          type: "application/json",
-        });
-        const metadataCid = await storage.storeBlob(metadata);
-        const metadataUrl = "https://ipfs.io/ipfs/" + metadataCid;
         setNftData({
           ...nftData,
           tokenMetaData: {
             ...nftData.tokenMetaData,
-            imageURL: metadataUrl,
+            asset: fileUrl,
           },
         });
         setFileLoading(false);

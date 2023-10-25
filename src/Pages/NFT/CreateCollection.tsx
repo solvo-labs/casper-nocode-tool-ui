@@ -110,20 +110,13 @@ export const CreateCollection = () => {
         whitelist_mode: CLValueBuilder.u8(collectionData.whiteListMode),
         identifier_mode: CLValueBuilder.u8(collectionData.identifierMode),
         metadata_mutability: CLValueBuilder.u8(collectionData.metadataMutability),
-        json_schema: CLValueBuilder.string(
-          JSON.stringify({
-            properties: {
-              name: { name: "name", description: "", required: true },
-              description: { name: "description", description: "", required: true },
-              image: { name: "image", description: "", required: true },
-            },
-          })
-        ),
+        json_schema: CLValueBuilder.string(JSON.stringify({})),
         minting_mode: CLValueBuilder.u8(collectionData.mintingMode),
         burn_mode: CLValueBuilder.u8(collectionData.burnMode),
         holder_mode: CLValueBuilder.u8(collectionData.holderMode),
         named_key_convention: CLValueBuilder.u8(collectionData.namedKeyConventionMode),
         owner_reverse_lookup_mode: CLValueBuilder.u8(collectionData.namedKeyConventionMode),
+        events_mode: CLValueBuilder.u8(2),
       });
 
       const deploy = contract.install(

@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 type Props = {
   name: string;
   description: string;
-  imageURL: string;
+  asset: string;
   index: number;
   price?: number;
   chipTitle?: string;
@@ -25,12 +25,12 @@ type Props = {
   onClick?: () => void;
 };
 
-export const NftCard: React.FC<Props> = ({ name, description, imageURL, index, price, chipTitle, status, onClick }) => {
+export const NftCard: React.FC<Props> = ({ name, description, asset, index, price, chipTitle, status, onClick }) => {
   const classes = useStyles();
   return (
     <CardActionArea>
       <Card className={classes.card} onClick={onClick}>
-        <CardMedia component="img" height="250" image={imageURL} alt={name} />
+        <CardMedia component="img" height="250" image={asset} alt={name} />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             Name : {name}
