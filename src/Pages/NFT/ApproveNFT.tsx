@@ -1,25 +1,18 @@
 import { CircularProgress, Grid, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import {useEffect, useMemo, useState} from "react";
-import {
-  fetchCep78NamedKeys,
-  fetchMarketplaceNamedKeys,
-  fetchRaffleNamedKeys,
-  getNftCollection,
-  getNftMetadata
-} from "../../utils/api";
+import { useEffect, useMemo, useState } from "react";
+import { fetchCep78NamedKeys, fetchMarketplaceNamedKeys, fetchRaffleNamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
 import { getMetadataImage } from "../../utils";
 import { FETCH_IMAGE_TYPE } from "../../utils/enum";
 import { useOutletContext } from "react-router-dom";
-import {CollectionMetada, Marketplace, NFT, RaffleNamedKeys} from "../../utils/types";
+import { CollectionMetada, Marketplace, NFT, RaffleNamedKeys } from "../../utils/types";
 import { CollectionCardAlternate } from "../../components/CollectionCard";
 // @ts-ignore
 import { CLPublicKey, Contracts, RuntimeArgs, CLValueBuilder, CLKey, CLByteArray, DeployUtil } from "casper-js-sdk";
 import toastr from "toastr";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
-import {ApproveNFTModal, ListNFTModal} from "../../components/NFTApproveModal.tsx";
-
+import { ApproveNFTModal, ListNFTModal } from "../../components/NFTApproveModal.tsx";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -116,7 +109,7 @@ const ApproveNFT = () => {
         promises.push(getNftMetadata(contract, index.toString()));
       }
 
-      const nftMetas= await Promise.all(promises);
+      const nftMetas = await Promise.all(promises);
       const imagePromises = nftMetas.map((e: any) => getMetadataImage(e, FETCH_IMAGE_TYPE.NFT));
       const images = await Promise.all(imagePromises);
 
@@ -146,7 +139,7 @@ const ApproveNFT = () => {
     init();
   }, []);
 
-useEffect(() => {
+  useEffect(() => {
     const init = async () => {
       const data = await fetchRaffleNamedKeys(publicKey);
       console.log(data);
@@ -157,7 +150,7 @@ useEffect(() => {
   }, []);
 
   const approve = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       if (selectedOperatorHash) {
         const contract = new Contracts.Contract();
@@ -245,27 +238,33 @@ useEffect(() => {
                 title={e.collection_name}
                 contractHash={e.contractHash}
                 symbol={e.collection_symbol}
+                cardHeight={""}
+                mediaHeight={""}
+                cardContentPadding={""}
+                cardContentTitle={""}
+                cardContentSymbol={""}
+                cardContentContractHash={""}
               ></CollectionCardAlternate>
               <ListNFTModal
-                  collection={e}
-                  open={openNFT}
-                  handleClose={handleCloseNFT}
-                  loading={loadingNFT}
-                  nfts={nftData}
-                  handleOpenApprove={handleOpenApprove}
-                  selectedNFTIndex={setSelectedTokenId}
+                collection={e}
+                open={openNFT}
+                handleClose={handleCloseNFT}
+                loading={loadingNFT}
+                nfts={nftData}
+                handleOpenApprove={handleOpenApprove}
+                selectedNFTIndex={setSelectedTokenId}
               ></ListNFTModal>
               <ApproveNFTModal
-                  selected={selectedOperatorHash}
-                  marketplaces={marketplaces}
-                  raffles={raffles}
-                  selectedOnChange={setSelectedOperatorHash}
-                  open={openApprove}
-                  handleClose={handleCloseApprove}
-                  approve={approve}
-                  approveOperatorType={approveOperatorType}
-                  approveOperatorOnChange={setApproveOperatorType}
-                  disable={disable}
+                selected={selectedOperatorHash}
+                marketplaces={marketplaces}
+                raffles={raffles}
+                selectedOnChange={setSelectedOperatorHash}
+                open={openApprove}
+                handleClose={handleCloseApprove}
+                approve={approve}
+                approveOperatorType={approveOperatorType}
+                approveOperatorOnChange={setApproveOperatorType}
+                disable={disable}
               ></ApproveNFTModal>
             </Grid>
           ))}

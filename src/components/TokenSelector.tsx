@@ -16,15 +16,13 @@ const TokenSelector: React.FC<Props> = ({ tokens, selectedToken, setSelectedToke
         id="selectLabel"
         style={{
           color: "#fff",
-          backgroundColor: "#FF3341",
-          borderRadius: "4px",
         }}
       >
         Select a Token
       </InputLabel>
       <CustomSelect
         value={selectedToken?.contractHash || ""}
-        label=" Token"
+        // label="Select a Token"
         onChange={(e: SelectChangeEvent<string>) => {
           const token = tokens.find((tkn: Token) => tkn.contractHash === e.target.value);
           if (token != undefined) {

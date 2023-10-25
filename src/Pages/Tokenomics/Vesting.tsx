@@ -159,16 +159,6 @@ const recipientDefaultState = {
   recipientAddress: "",
 };
 
-// startDate: Dayjs;
-
-// duration: number;
-// selectedDuration: number;
-
-// selectedUnlockSchedule: number;
-
-// selectedCliffDuration: number;
-// cliffDuration: number;
-
 export const Vesting = () => {
   const [vestParams, setVestParams] = useState<VestParamsData>({
     startDate: dayjs().add(1, "h"),
@@ -186,7 +176,7 @@ export const Vesting = () => {
   });
   const [recipients, setRecipients] = useState<RecipientFormInput[]>([]);
   const [recipient, setRecipient] = useState<RecipientFormInput>(recipientDefaultState);
-  const [loading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [vestingLoading, setVestingLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
@@ -204,6 +194,7 @@ export const Vesting = () => {
   const createVesting = async () => {
     setVestingLoading(true);
     try {
+      setLoading(true);
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
       const contract = new Contracts.Contract();
 
@@ -225,19 +216,16 @@ export const Vesting = () => {
       const deploy = contract.install(new Uint8Array(vestingWasm!), args, "150000000000", ownerPublicKey, "casper-test");
 
       const deployJson = DeployUtil.deployToJson(deploy);
-      console.log("deployJson", deployJson);
 
       // signer logic
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-        console.log("sign", sign);
 
         true;
 
         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-        console.log("signedDeploy", signedDeploy);
 
         const data = DeployUtil.deployToJson(signedDeploy.val);
 
@@ -249,12 +237,16 @@ export const Vesting = () => {
         navigate("/vesting-list");
         toastr.success(response.data, "Vesting deployed successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
+
+        navigate("/vesting-list");
+        setLoading(false);
       } catch (error: any) {
-        setVestingLoading(false);
-        toastr.error("Vesting can not deployed success. Error: " + error);
+        alert(error.message);
+        setLoading(false);
       }
     } catch (err: any) {
       toastr.error(err);
+      setLoading(false);
     }
   };
 

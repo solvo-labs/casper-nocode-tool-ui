@@ -48,7 +48,10 @@ const useStyles = makeStyles((_theme: Theme) => ({
   },
   tableRow: {
     "&:nth-of-type(odd)": {
-      backgroundColor: "whitesmoke",
+      backgroundColor: "white",
+    },
+    "&:nth-of-type(even)": {
+      backgroundColor: "#dddddd",
     },
     // hide last border
     "&:last-child td, &:last-child th": {
@@ -205,7 +208,7 @@ export const VestingList = () => {
   const transferTokenForVesting = async (data: any) => {
     const contract = new Contracts.Contract();
     const tokenContract = uint32ArrayToHex(data.cep18_contract_hash);
-    const contractPackageHash = await contractHashToContractPackageHash(data.key);
+    const contractPackageHash = await contractHashToContractPackageHash(data.key.slice(5));
 
     contract.setContractHash("hash-" + tokenContract);
     const ownerPublicKey = CLPublicKey.fromHex(publicKey);

@@ -264,6 +264,12 @@ const AddNftToMarketplace = () => {
                   title={"Name: " + e.collection_name}
                   contractHash={e.contractHash}
                   symbol={""}
+                  cardHeight={""}
+                  mediaHeight={""}
+                  cardContentPadding={""}
+                  cardContentTitle={""}
+                  cardContentSymbol={""}
+                  cardContentContractHash={""}
                 ></CollectionCardAlternate>
               </Grid>
             ))}
