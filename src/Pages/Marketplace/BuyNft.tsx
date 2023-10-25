@@ -119,7 +119,9 @@ const BuyNft = () => {
     <Grid container direction={"column"} className={classes.container}>
       <Grid item className={classes.container}>
         <Stack direction={"row"} justifyContent={"space-between"}>
-          <Typography variant="h4">Nft List in Sale</Typography>
+          <Typography variant="h4" sx={{ borderBottom: "1px solid red" }}>
+            Nft List in Sale
+          </Typography>
         </Stack>
       </Grid>
       <Grid item marginTop={"2rem"}>
