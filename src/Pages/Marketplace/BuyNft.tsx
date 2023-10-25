@@ -128,9 +128,9 @@ const BuyNft = () => {
         <Typography variant="h5">List of NFT's</Typography>
       </Grid>
       <Grid container>
-        {listings.map((lst) => {
+        {listings.map((lst, index: number) => {
           return (
-            <Grid item lg={3} md={4} sm={6} xs={6}>
+            <Grid item lg={3} md={4} sm={6} xs={6} key={index}>
               <NftCard
                 description={lst.nftDescription}
                 name={lst.nftName}
