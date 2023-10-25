@@ -1,10 +1,10 @@
-import { CircularProgress, Grid, Stack, Step, StepLabel, Stepper, Theme, Typography } from "@mui/material";
+import { CircularProgress, Grid, IconButton, Stack, Step, StepLabel, Stepper, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { CustomButton } from "../../components/CustomButton";
 import { fetchCep78NamedKeys, fetchMarketplaceData, getNftCollection, getNftMetadata, storeListing } from "../../utils/api";
 import { CasperHelpers, getMetadataImage } from "../../utils";
-import { FETCH_IMAGE_TYPE } from "../../utils/enum";
+import { DONT_HAVE_ANYTHING, FETCH_IMAGE_TYPE } from "../../utils/enum";
 // @ts-ignore
 import { Contracts, RuntimeArgs, DeployUtil, CLValueBuilder, CLPublicKey } from "casper-js-sdk";
 import { CollectionMetada, NFT } from "../../utils/types";
@@ -15,6 +15,7 @@ import toastr from "toastr";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
 import { CustomInput } from "../../components/CustomInput";
+import CreatorRouter from "../../components/CreatorRouter";
 
 const steps = ["Select Collection", "Select the NFT to load"];
 
@@ -23,12 +24,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     maxWidth: "70vw",
     minWidth: "70vw",
     justifyContent: "center",
-    // marginTop: "4rem",
     marginBottom: "2rem",
     [theme.breakpoints.down("lg")]: {
       minWidth: "90vw",
       maxWidth: "90vw",
-      marginTop: "4rem",
     },
   },
   title: {
@@ -113,6 +112,7 @@ const AddNftToMarketplace = () => {
   };
 
   const addListing = async () => {
+    setLoading(true);
     if (marketplaceHash) {
       try {
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
@@ -141,14 +141,13 @@ const AddNftToMarketplace = () => {
           await storeListing(marketplaceHash, selectedCollection, selectedNftIndex, price, nftData[selectedNftIndex], Number(parseInt(marketplaceData.listingCount.hex)));
 
           toastr.success(response.data, "Listing created successfully.");
-
           navigate("/marketplace");
+          setLoading(false);
         } catch (error: any) {
-          toastr.error(error.message);
+          toastr.error("Error: " + error.message);
         }
       } catch (error) {
-        console.log(error);
-        toastr.error("error");
+        toastr.error("Error: " + error);
       }
     }
   };
@@ -204,6 +203,8 @@ const AddNftToMarketplace = () => {
       });
 
       setNftData(finalData);
+      console.log("nft", finalData);
+
       setLoading(false);
     }
   };
@@ -222,6 +223,14 @@ const AddNftToMarketplace = () => {
         <CircularProgress />
       </div>
     );
+  }
+
+  if (!collections.length) {
+    return <CreatorRouter explain={DONT_HAVE_ANYTHING.COLLECTION} handleOnClick={() => navigate("/create-collection")}></CreatorRouter>;
+  }
+
+  if (!nftData.length && activeStep == 1) {
+    return <CreatorRouter explain={DONT_HAVE_ANYTHING.NFT} handleOnClick={() => navigate("/create-nft")}></CreatorRouter>;
   }
 
   return (
@@ -256,10 +265,10 @@ const AddNftToMarketplace = () => {
         <>
           <h2 style={{ marginTop: 0 }}>Choose a collection</h2>
           <Grid container marginY={"2rem"}>
-            {collections.map((e: any) => (
-              <Grid item lg={3} md={3} sm={6} xs={6}>
+            {collections.map((e: any, index: number) => (
+              <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
                 <CollectionCardAlternate
-                  image={e.image}
+                  image={"/public/" + e.image}
                   onClick={() => setSelectedCollection(e.contractHash)}
                   title={"Name: " + e.collection_name}
                   contractHash={e.contractHash}
@@ -286,7 +295,7 @@ const AddNftToMarketplace = () => {
         <>
           <Grid container marginY={"2rem"}>
             {nftData.map((e: any, index: number) => (
-              <Grid item lg={3} md={3} sm={6} xs={6}>
+              <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
                 <NftCard
                   description={e.description}
                   name={e.name}
