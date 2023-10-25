@@ -246,6 +246,7 @@ export const CreateNft = () => {
                   });
                 }}
                 value={nftData.tokenMetaData.name}
+                disable={fileLoading}
               ></CustomInput>
               <CustomInput
                 placeholder="Metadata Description"
@@ -263,18 +264,21 @@ export const CreateNft = () => {
                   });
                 }}
                 value={nftData.tokenMetaData.description}
+                disable={fileLoading}
               ></CustomInput>
               <FormControlLabel
                 style={{ justifyContent: "start" }}
                 labelPlacement="start"
                 control={<Switch checked={nftData.mergable} color="error" onChange={() => setNftData({ ...nftData, mergable: !nftData.mergable })} />}
                 label="Mergeable NFT"
+                disabled={fileLoading}
               />
               <FormControlLabel
                 style={{ justifyContent: "start" }}
                 labelPlacement="start"
                 control={<Switch checked={nftData.timeable} color="error" onChange={() => setNftData({ ...nftData, timeable: !nftData.timeable })} />}
                 label="Timeable NFT"
+                disabled={fileLoading}
               />
 
               <Grid paddingTop={2} container justifyContent={"center"}>
