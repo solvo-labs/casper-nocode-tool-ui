@@ -10,7 +10,7 @@ import toastr from "toastr";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((_theme: Theme) => ({
   container: {
     // maxWidth: "40vw",
     // [theme.breakpoints.down("xl")]: {},
@@ -105,7 +105,7 @@ const CreateMarketplace = () => {
       </Grid>
       <Grid item width={"540px"} marginBottom={"1rem"}>
         <Typography variant="subtitle1" sx={{ overflowWrap: "break-word" }}>
-          What is fee wallet ? bla bla bla ...
+          Wallet information for transferring earned tokens in marketplace transactions
         </Typography>
       </Grid>
       <Stack spacing={4} display={"flex"}>

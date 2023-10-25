@@ -25,6 +25,7 @@ const CreatorRouter: React.FC<Props> = ({ explain, handleOnClick }) => {
                 transition: "0.1s ease-out",
                 display: "block",
                 margin: "auto",
+                cursor: "pointer",
                 ":hover": {
                   width: "72px",
                   height: "72px",
