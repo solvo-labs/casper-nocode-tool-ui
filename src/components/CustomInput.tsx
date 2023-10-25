@@ -27,6 +27,19 @@ const useStyles = makeStyles((theme: Theme) => ({
   dark: {
     "& .MuiInputLabel-root": {
       color: "white",
+      "&.Mui-disabled": {
+        color: "gray",
+      },
+    },
+    "& .MuiInputBase-input": {
+      "&.Mui-disabled": {
+        WebkitTextFillColor: "gray",
+      },
+    },
+    "& .MuiFormLabel-root-MuiInputLabel-root": {
+      "&.Mui-disabled": {
+        color: "gray !important",
+      },
     },
   },
 }));

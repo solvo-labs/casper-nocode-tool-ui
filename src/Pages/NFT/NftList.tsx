@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getNftCollection, getNftMetadata } from "../../utils/api";
 import { useNavigate, useParams } from "react-router-dom";
-import { CircularProgress, Grid, Theme, Typography } from "@mui/material";
+import { CircularProgress, Grid, Stack, Theme, Typography } from "@mui/material";
 import { NftCard } from "../../components/NftCard";
 import { makeStyles } from "@mui/styles";
 import { getMetadataImage } from "../../utils";
@@ -96,14 +96,16 @@ export const NftList = () => {
   return (
     <Grid container direction={"column"}>
       <Grid container className={classes.titleContainer}>
-        <Typography variant="h4" className={classes.title}>
-          {collectionData?.collection_name} Collection {parseInt(collectionData.number_of_minted_tokens.hex) + "/" + parseInt(collectionData.total_token_supply.hex)}
-        </Typography>
+        <Stack direction={"row"} spacing={2} display={"flex"} alignItems={"baseline"} className={classes.title}>
+          <Typography variant="h4">
+            <b>{collectionData?.collection_name}</b> Collection
+          </Typography>
+          <Typography variant="h6">({parseInt(collectionData.number_of_minted_tokens.hex) + "/" + parseInt(collectionData.total_token_supply.hex)})</Typography>
+        </Stack>
       </Grid>
-
       <Grid container className={classes.container}>
         {nftData.map((e: any, index: number) => (
-          <Grid item xl={3} lg={4} md={4} sm={6} xs={6}>
+          <Grid item xl={3} lg={4} md={4} sm={6} xs={6} key={index}>
             <NftCard description={e.description} name={e.name} imageURL={e.imageURL} index={index}></NftCard>
           </Grid>
         ))}

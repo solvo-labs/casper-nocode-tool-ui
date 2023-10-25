@@ -10,9 +10,10 @@ import toastr from "toastr";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
 
-const useStyles = makeStyles((_theme: Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   container: {
-    // wid
+    // maxWidth: "40vw",
+    // [theme.breakpoints.down("xl")]: {},
   },
   title: {
     marginBottom: "2rem !important",
@@ -64,12 +65,11 @@ const CreateMarketplace = () => {
 
         navigate("/marketplace");
       } catch (error: any) {
-        alert(error.message);
+        toastr.error("Error: " + error);
         setLoading(false);
       }
     } catch (error) {
-      console.log(error);
-      toastr.error("error");
+      toastr.error("Error: " + error);
       setLoading(false);
     }
   };
@@ -81,7 +81,7 @@ const CreateMarketplace = () => {
 
   if (loading) {
     return (
-      <div
+      <Stack
         style={{
           height: "50vh",
           width: "100%",
@@ -89,9 +89,12 @@ const CreateMarketplace = () => {
           justifyContent: "center",
           alignItems: "center",
         }}
+        direction={"column"}
+        spacing={"2rem"}
       >
+        <Typography>Marketplace is being created.</Typography>
         <CircularProgress />
-      </div>
+      </Stack>
     );
   }
 
@@ -100,8 +103,13 @@ const CreateMarketplace = () => {
       <Grid item className={classes.title}>
         <Typography variant="h4">Create your own Marketplace's</Typography>
       </Grid>
-      <Grid item>
-        <Stack spacing={4}>
+      <Grid item width={"540px"} marginBottom={"1rem"}>
+        <Typography variant="subtitle1" sx={{ overflowWrap: "break-word" }}>
+          What is fee wallet ? bla bla bla ...
+        </Typography>
+      </Grid>
+      <Stack spacing={4} display={"flex"}>
+        <Grid item>
           <CustomInput
             label="Fee wallet"
             name="feewallet"
@@ -110,34 +118,32 @@ const CreateMarketplace = () => {
             type="text"
             value={feeWallet}
             disable={disable}
+            floor="dark"
           ></CustomInput>
-          <Grid item>
-            <Stack direction={"row"} alignItems={"center"}>
-              <Checkbox
-                checked={checked}
-                onChange={handleChange}
-                sx={{
+          <Stack direction={"row"} alignItems={"center"}>
+            <Checkbox
+              checked={checked}
+              onChange={handleChange}
+              sx={{
+                color: "red",
+                "&.Mui-checked": {
                   color: "red",
-                  "&.Mui-checked": {
-                    color: "red",
-                  },
-                }}
-              />
-              <Typography>Use the wallet I logged into.</Typography>
-            </Stack>
-            {checked && <Typography>Used wallet address: {publicKey.slice(0, 10) + "..." + publicKey.slice(-10)}</Typography>}
-          </Grid>
-          <CustomInput
-            label="Marketplace Name"
-            name="marketplacename"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMarketplaceName(e.target.value)}
-            placeholder="Marketplace Name"
-            type="text"
-            value={marketplaceName}
-          ></CustomInput>
-          <CustomButton disabled={false} label="Create Marketplace" onClick={createMarketplace}></CustomButton>
-        </Stack>
-      </Grid>
+                },
+              }}
+            />
+            <Typography>I want to use the wallet address I logged in with.</Typography>
+          </Stack>
+        </Grid>
+        <CustomInput
+          label="Marketplace Name"
+          name="marketplacename"
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMarketplaceName(e.target.value)}
+          placeholder="Marketplace Name"
+          type="text"
+          value={marketplaceName}
+        ></CustomInput>
+        <CustomButton disabled={false} label="Create Marketplace" onClick={createMarketplace}></CustomButton>
+      </Stack>
     </Grid>
   );
 };
