@@ -60,7 +60,7 @@ const BuyNft = () => {
 
       const args = RuntimeArgs.fromMap({
         marketplace_contract_hash: CasperHelpers.stringToKey(listing.marketplace.slice(5)),
-        listing_id: CLValueBuilder.u64(listing.listingIndex),
+        listing_id: CLValueBuilder.u64(listing.listingIndex + 1),
         amount: CLValueBuilder.u512(listing.price * 1_000_000_000),
       });
 
