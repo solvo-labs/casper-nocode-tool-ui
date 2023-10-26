@@ -103,12 +103,12 @@ const CreateMarketplace = () => {
       <Grid item className={classes.title}>
         <Typography variant="h4">Create your own Marketplace's</Typography>
       </Grid>
-      <Grid item width={"540px"} marginBottom={"1rem"}>
-        <Typography variant="subtitle1" sx={{ overflowWrap: "break-word" }}>
-          Wallet information for transferring earned tokens in marketplace transactions
-        </Typography>
-      </Grid>
       <Stack spacing={4} display={"flex"}>
+        <Grid item width={"540px"}>
+          <Typography variant="subtitle1" sx={{ overflowWrap: "break-word" }}>
+            Wallet information for transferring earned tokens in marketplace transactions.
+          </Typography>
+        </Grid>
         <Grid item>
           <CustomInput
             label="Fee wallet"

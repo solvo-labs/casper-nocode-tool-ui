@@ -22,12 +22,12 @@ const steps = ["Select Collection", "Select the NFT to load"];
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
     maxWidth: "70vw",
-    minWidth: "70vw",
+    // minWidth: "70vw",
     justifyContent: "center",
     marginBottom: "2rem",
     [theme.breakpoints.down("lg")]: {
       minWidth: "90vw",
-      maxWidth: "90vw",
+      // maxWidth: "90vw",
     },
   },
   title: {
@@ -70,6 +70,8 @@ const AddNftToMarketplace = () => {
 
   const handleNext = () => {
     toastr.info("Before listing, you must approve the marketplace for the NFT to be listed. Please make sure you do this");
+    console.log(selectedNftIndex);
+
     let newSkipped = skipped;
     if (isStepSkipped(activeStep)) {
       newSkipped = new Set(newSkipped.values());
@@ -165,6 +167,7 @@ const AddNftToMarketplace = () => {
       setMarketPlaceData(marketplaceData);
       setLoading(false);
       setCollections(result);
+      console.log(result);
     };
 
     init();
@@ -183,6 +186,7 @@ const AddNftToMarketplace = () => {
       }
 
       const nftMetas = await Promise.all(promises);
+      console.log(nftMetas);
 
       setNftData(nftMetas);
       setLoading(false);
@@ -238,12 +242,13 @@ const AddNftToMarketplace = () => {
           })}
         </Stepper>
       </Grid>
-
-      <Grid container justifyContent={"center"} marginY={"2rem"}></Grid>
-
       {activeStep === 0 && (
-        <>
-          <h2 style={{ marginTop: 0 }}>Choose a collection</h2>
+        <Grid container marginTop={"4rem"} justifyContent={"center"}>
+          <Grid item>
+            <Typography variant="h4" fontWeight={"bold"}>
+              Choose a collection
+            </Typography>
+          </Grid>
           <Grid container marginY={"2rem"}>
             {collections.map((e: any, index: number) => (
               <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
@@ -269,10 +274,15 @@ const AddNftToMarketplace = () => {
               <CustomButton disabled={!selectedCollection} label={"Next"} onClick={handleNext}></CustomButton>
             </Stack>
           </Grid>
-        </>
+        </Grid>
       )}
       {activeStep === 1 && (
-        <>
+        <Grid container marginTop={"4rem"} justifyContent={"center"}>
+          <Grid item>
+            <Typography variant="h4" fontWeight={"bold"}>
+              Choose a collection
+            </Typography>
+          </Grid>
           <Grid container marginY={"2rem"}>
             {nftData.map((e: any, index: number) => (
               <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
@@ -291,34 +301,57 @@ const AddNftToMarketplace = () => {
           <Grid container width={"100%"}>
             <Stack width={"100%"} direction={"row"} justifyContent={"space-evenly"}>
               <CustomButton disabled={false} label="Back" onClick={handleBack}></CustomButton>
-              <CustomButton disabled={false} label={"Next"} onClick={handleNext}></CustomButton>
+              <CustomButton disabled={selectedNftIndex == undefined} label={"Next"} onClick={handleNext}></CustomButton>
             </Stack>
           </Grid>
-        </>
+        </Grid>
       )}
       {activeStep === steps.length && (
-        <Grid container direction={"column"} display={"flex"} justifyContent={"center"} justifyItems={"center"} alignContent={"center"}>
-          <Stack spacing={"2rem"}>
+        <Grid container>
+          <Stack spacing={"2rem"} width={"100%"}>
             <Grid item className={classes.text}>
-              <Typography>{selectedCollection}</Typography>
+              {collections.map((col: any) => {
+                if (col.contractHash == selectedCollection) {
+                  return (
+                    <Grid container marginTop={"2rem"} justifyContent={"center"}>
+                      <Typography variant="h5">
+                        Selected collection:{" "}
+                        <b>
+                          {col.collection_name} ({col.collection_symbol})
+                        </b>
+                      </Typography>
+                    </Grid>
+                  );
+                }
+              })}
             </Grid>
-            <Grid item className={classes.text}>
-              <Typography>Nft Index: {selectedNftIndex}</Typography>
+            <Grid container justifyContent={"center"}>
+              <Grid item lg={4} md={4} sm={6} xs={8}>
+                <NftCard
+                  asset={nftData[selectedNftIndex].asset}
+                  description={nftData[selectedNftIndex].description}
+                  index={selectedNftIndex}
+                  name={nftData[selectedNftIndex].name}
+                ></NftCard>
+              </Grid>
             </Grid>
-            <CustomInput
-              placeholder="Price (CSPR)"
-              label="Price (CSPR)"
-              id="price"
-              name="price"
-              type="text"
-              onChange={(e: any) => {
-                setPrice(e.target.value);
-              }}
-              value={price}
-            ></CustomInput>
-            <Grid item className={classes.text}>
+            <Grid display={"flex"} justifyContent={"center"}>
+              <CustomInput
+                placeholder="Price (CSPR)"
+                label="Price (CSPR)"
+                id="price"
+                name="price"
+                type="text"
+                onChange={(e: any) => {
+                  setPrice(e.target.value);
+                }}
+                value={price}
+              ></CustomInput>
+            </Grid>
+            <Stack direction={"row"} display={"flex"} justifyContent={"space-evenly"}>
+              <CustomButton disabled={false} label="Back" onClick={handleBack}></CustomButton>
               <CustomButton disabled={!(selectedCollection && selectedNftIndex !== undefined && price > 0)} label="Create Listing" onClick={addListing}></CustomButton>
-            </Grid>
+            </Stack>
           </Stack>
         </Grid>
       )}
