@@ -19,14 +19,17 @@ type Props = {
   description: string;
   asset: string;
   index: number;
+  owner: string;
+  amIOwner: boolean;
   price?: number;
   chipTitle?: string;
   status?: "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" | undefined;
   onClick?: () => void;
 };
 
-export const NftCard: React.FC<Props> = ({ name, description, asset, index, price, chipTitle, status, onClick }) => {
+export const NftCard: React.FC<Props> = ({ name, description, asset, index, owner, amIOwner = false, price, chipTitle, status, onClick }) => {
   const classes = useStyles();
+
   return (
     <CardActionArea>
       <Card className={classes.card} onClick={onClick}>
@@ -44,9 +47,15 @@ export const NftCard: React.FC<Props> = ({ name, description, asset, index, pric
             </>
           )}
           {!price && (
-            <Typography variant="body2" color="text.secondary">
-              Index : {index}
-            </Typography>
+            <>
+              <Typography variant="body2" color="text.secondary">
+                Index : {index}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Owner : {owner}
+              </Typography>
+              <Chip sx={{ marginTop: "0.5rem", fontSize: "1rem" }} label={amIOwner ? "My Nft" : "Rest of collection item"} color={amIOwner ? "success" : "warning"} size="small" />
+            </>
           )}
           {chipTitle && <Chip sx={{ marginTop: "1rem" }} label={chipTitle} color={status} size="small"></Chip>}
         </CardContent>

@@ -194,9 +194,10 @@ export const getNftCollection = async (contractHash: string, amICreator = true) 
   return { ...response.data, contractHash, amICreator };
 };
 
-export const getNftMetadata = async (contractHash: string, index: string) => {
+export const getNftMetadata = async (contractHash: string, index: string, accoutHash: string) => {
   const response = (await axios.get<any>(SERVER_API + "getNftMetadata?contractHash=" + contractHash + "&index=" + index)).data;
-  return { ...JSON.parse(response.metadata), owner: response.owner };
+
+  return { ...JSON.parse(response.metadata), owner: response.owner, isMyNft: response.owner === accoutHash };
 };
 
 export const fetchMarketplaceData = async (contractHash: string) => {
