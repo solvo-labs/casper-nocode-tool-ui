@@ -5,7 +5,7 @@ import { Card, CardActionArea, CardContent, CardMedia, Theme } from "@mui/materi
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
     margin: "1rem",
-    height: "26.5rem",
+    height: "360px",
     backgroundColor: "#161D3B !important",
     color: "white !important",
   },
@@ -33,13 +33,14 @@ type Props = {
   onClick: any;
 
   text?: string;
+  height?: string;
 };
 
-export const CreateCollectionCard: React.FC<Props> = ({ onClick, text = "CREATE COLLECTION" }) => {
+export const CreateCollectionCard: React.FC<Props> = ({ onClick, text = "CREATE COLLECTION", height }) => {
   const classes = useStyles();
   return (
     <CardActionArea>
-      <Card className={classes.card} onClick={onClick}>
+      <Card className={classes.card} onClick={onClick} style={height ? { height: height } : {}}>
         <CardMedia component="img" height="240" image="/images/collection-image.jpg" alt="add nft" />
         <CardContent sx={{ height: "fullWidth" }}>
           <p className={classes.title}>{text}</p>

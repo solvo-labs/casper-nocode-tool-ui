@@ -108,6 +108,7 @@ export const NftList = () => {
             onClick={() => {
               navigate("/create-nft/" + nftCollectionHash);
             }}
+            height={"26.25rem"}
           />
         </Grid>
       </Grid>
