@@ -4,7 +4,7 @@ import { CustomButton } from "../../components/CustomButton";
 import { NftCard } from "../../components/NftCard";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { SERVER_API, getAllListingForSale } from "../../utils/api";
+import { SERVER_API, getAllListingForSale, soldNft } from "../../utils/api";
 // @ts-ignore
 import { Contracts, RuntimeArgs, DeployUtil, CLValueBuilder, CLPublicKey } from "casper-js-sdk";
 
@@ -85,8 +85,10 @@ const BuyNft = () => {
           headers: { "Content-Type": "application/json" },
         });
         toastr.success(response.data, "Sold successfully.");
+
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
+        soldNft(listing.id || "");
         navigate("/buy-nft");
         setLoading(false);
       } catch (error: any) {

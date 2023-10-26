@@ -92,6 +92,7 @@ export type Marketplace = {
 };
 
 export type Listing = {
+  id?: string;
   marketplace: string;
   collection_hash: string;
   price: number;

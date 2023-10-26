@@ -295,3 +295,9 @@ export const getAllNftsByOwned = async (accountHash: string) => {
 
   return finalData;
 };
+
+export const soldNft = async (id: string) => {
+  const response = await axios.get(SERVER_API + "sold-nft?id=" + id);
+
+  return response.data;
+};
