@@ -382,7 +382,9 @@ export const VestingList = () => {
                   .slice(-3)}
             </TableCell>
           </Tooltip>
-          <TableCell align="center">{parseInt(e.vesting_amount.hex)}</TableCell>
+          <TableCell align="center">
+            {Number(parseInt(e.vesting_amount.hex)) / Math.pow(10, Number(parseInt(e.decimals.hex))) + " (" + e.token_symbol.toUpperCase() + ")"}
+          </TableCell>
           <TableCell align="center">{e.recipient_count}</TableCell>
           <TableCell align="center">{e.released ? "TRUE" : "FALSE"}</TableCell>
 
