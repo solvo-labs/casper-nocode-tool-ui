@@ -77,7 +77,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: "40px",
     paddingBottom: "40px",
     paddingRight: "20px",
     paddingLeft: "20px",
@@ -90,7 +89,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     [theme.breakpoints.down("sm")]: {
       minWidth: "80vw",
     },
-    paddingTop: "2rem",
     paddingBottom: "2rem",
     color: "#fff !important",
   },
@@ -269,15 +267,16 @@ export const Vesting = () => {
   return (
     <div className={classes.main}>
       <Grid container className={classes.container} direction={"column"}>
-        <Grid item className={classes.title}>
-          <Typography variant="h5" style={{ color: "white" }}>
+        <Grid item display={"flex"} justifyContent={"center"}>
+          <Typography variant="h5" style={{ color: "white", borderBottom: "1px solid red" }}>
             Vesting
           </Typography>
-          <Divider className={classes.divider} />
         </Grid>
         <Grid item marginTop={"1.2rem"}>
           <Stack direction={"column"} width={"100%"} spacing={4}>
-            <span>Token Total Balance : {queryParams.amount}</span>
+            <Typography>
+              Token Total Balance : <b>{queryParams.amount}</b>
+            </Typography>
             <FormControl fullWidth>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 {
@@ -422,13 +421,10 @@ export const Vesting = () => {
             )}
           </Stack>
         </Grid>
-        <Grid item marginTop={2} display={"flex"} justifyContent={"center"} alignItems={"center"} flexDirection={"column"}>
+        <Stack direction={"row"} marginTop={"2rem"} display={"flex"} justifyContent={"space-between"}>
           <CustomButton label="Add Recipient" disabled={false} onClick={() => setRecipientModal({ ...recipientModal, show: true })} />
-        </Grid>
-        <Grid item marginTop={2} marginBottom={5} display={"flex"} justifyContent={"center"} alignItems={"center"} flexDirection={"column"}>
           <CustomButton label="Create Vesting Contract" disabled={vestParams.duration <= 0 || recipients.length <= 0} onClick={createVesting} />
-        </Grid>
-
+        </Stack>
         <Modal
           className={classes.modal}
           open={recipientModal.show}

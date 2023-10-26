@@ -15,46 +15,45 @@ import { uint32ArrayToHex } from "../../utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
-    minWidth: "80vw",
-    display: "flex",
-    justifyContent: "center",
-    [theme.breakpoints.down("md")]: {
-      minWidth: "90vw",
-    },
-    marginTop: "0",
-    // marginBottom: "20rem !important",
-  },
-  selectorContainer: {
-    minWidth: "30vw !important",
-    maxWidth: "30vw !important",
-    textAlign: "center",
-    [theme.breakpoints.down("lg")]: {
-      minWidth: "40vw !important",
-    },
-    [theme.breakpoints.down("md")]: {
-      minWidth: "60vw !important",
-    },
-  },
-  titleContainer: {},
-  input: {
-    width: "100%",
-  },
-  itemContainer: {
-    marginTop: "2rem !important",
-  },
-  cardContainer: {
-    justifyContent: "center",
-    minWidth: "60vw !important",
-    maxWidth: "60vw !important",
+    maxWidth: "80vw !important",
+    width: "80vw !important",
     [theme.breakpoints.down("md")]: {
       minWidth: "90vw !important",
     },
   },
-  cardContent: {
-    display: "flex",
-    justifyContent: "center",
-    paddingBottom: "16px !important",
-  },
+  // selectorContainer: {
+  //   minWidth: "30vw !important",
+  //   maxWidth: "30vw !important",
+  //   textAlign: "center",
+  //   [theme.breakpoints.down("lg")]: {
+  //     minWidth: "40vw !important",
+  //   },
+  //   [theme.breakpoints.down("md")]: {
+  //     minWidth: "60vw !important",
+  //   },
+  // },
+  // titleContainer: {},
+  // input: {
+  //   width: "100%",
+  // },
+  // itemContainer: {
+  //   marginTop: "2rem !important",
+  // },
+  // cardContainer: {
+  //   display: "flex !important",
+  //   justifyContent: "center",
+  //   alignContent: "center !important",
+  //   // minWidth: "60vw !important",
+  //   maxWidth: "50vw !important",
+  //   [theme.breakpoints.down("md")]: {
+  //     minWidth: "90vw !important",
+  //   },
+  // },
+  // cardContent: {
+  //   display: "flex",
+  //   justifyContent: "center",
+  //   paddingBottom: "16px !important",
+  // },
 }));
 
 export const Tokenomics = () => {
@@ -214,125 +213,121 @@ export const Tokenomics = () => {
   }
 
   return (
-    <Stack spacing={4} display={"flex"} alignItems={"center"} width={"100%"}>
-      <Grid container className={classes.container}>
-        <Grid item>
-          <Stack spacing={4}>
-            <Grid item className={classes.selectorContainer}>
-              <Typography variant="h5">Tokenomics</Typography>
-              <Divider sx={{ marginTop: "1rem", background: "white" }}></Divider>
-            </Grid>
-
-            <Grid item>
-              <Typography marginBottom={"1.2rem"}>Please select a token for vesting. We will fetch vesting history for current token.</Typography>
-              <TokenSelector
-                selectedToken={selectedToken}
-                setSelectedToken={(data) => {
-                  fetchHistory(data);
-                  setSelectedToken(data);
-                }}
-                tokens={tokens}
-              />
-            </Grid>
-          </Stack>
-        </Grid>
+    <Grid container className={classes.container}>
+      <Grid item width={"100%"} display={"flex"} justifyContent={"center"}>
+        <Typography variant="h5" sx={{ borderBottom: "1px solid red" }}>
+          Tokenomics
+        </Typography>
       </Grid>
-      <Grid container className={classes.cardContainer}>
-        <Grid item>
-          <CardContent
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              marginBottom: "1rem",
+      <Stack spacing={8} marginTop={"2rem"} width={"100%"} alignItems={"center"}>
+        <Stack width={"60%"} display={"flex"}>
+          <Typography marginBottom={"1.2rem"}>Please select a token for vesting. We will fetch vesting history for current token.</Typography>
+          <TokenSelector
+            selectedToken={selectedToken}
+            setSelectedToken={(data) => {
+              fetchHistory(data);
+              setSelectedToken(data);
             }}
-          >
-            <Stack direction={"row"} justifyContent={"center"} spacing={4}>
-              {selectedToken && (
-                <>
-                  <Typography> Selected: {selectedToken?.name} </Typography>
-                  <Divider orientation="vertical" sx={{ marginTop: "1rem", background: "white" }} />
-                  {limits?.availableBalance ? (
+            tokens={tokens}
+          />
+        </Stack>
+        <Grid container justifyContent={"center"}>
+          <Grid item>
+            <CardContent
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: "1rem",
+              }}
+            >
+              <Stack direction={"row"} justifyContent={"center"} spacing={4}>
+                {selectedToken && (
+                  <>
+                    <Typography> Selected: {selectedToken?.name} </Typography>
+                    <Divider orientation="vertical" sx={{ marginTop: "1rem", background: "white" }} />
+                    {limits?.availableBalance ? (
+                      <Typography>
+                        Available balance: {limits.availableBalance} (%
+                        {limits.availablePercent.toFixed(2)})
+                      </Typography>
+                    ) : (
+                      <Typography>Available balance: {limits?.availableBalance} </Typography>
+                    )}
+                    <Divider orientation="vertical" sx={{ marginTop: "1rem", background: "white" }} />
                     <Typography>
-                      Available balance: {limits.availableBalance} (%
-                      {limits.availablePercent.toFixed(2)})
+                      Total Balance:
+                      {selectedToken?.balance}
                     </Typography>
-                  ) : (
-                    <Typography>Available balance: {limits?.availableBalance} </Typography>
-                  )}
-                  <Divider orientation="vertical" sx={{ marginTop: "1rem", background: "white" }} />
-                  <Typography>
-                    Total Balance:
-                    {selectedToken?.balance}
-                  </Typography>
-                </>
-              )}
-            </Stack>
-          </CardContent>
-          {selectedToken && (
-            <Stack direction={"column"} justifyContent={"space-around"} spacing={2}>
-              {sections
-                .sort((a, b) => (a.isOldSection === b.isOldSection ? 0 : a.isOldSection ? -1 : 1))
-                .map((section: Section, index: number) => (
-                  <Stack display={"flex"} justifyContent={"center"} alignItems={"center"} direction={"row"} spacing={2} key={index}>
-                    <Grid item display={"flex"} alignContent={"center"}>
-                      {index > sections.length - 2 ? (
-                        <IconButton onClick={addInput} disabled={disable}>
-                          <AddIcon sx={{ color: "white" }}></AddIcon>
-                        </IconButton>
-                      ) : (
-                        !section.isOldSection && (
-                          <IconButton onClick={() => removeInput(index)}>
-                            <RemoveIcon sx={{ color: "red" }} />
+                  </>
+                )}
+              </Stack>
+            </CardContent>
+            {selectedToken && (
+              <Stack direction={"column"} justifyContent={"space-around"} spacing={2}>
+                {sections
+                  .sort((a, b) => (a.isOldSection === b.isOldSection ? 0 : a.isOldSection ? -1 : 1))
+                  .map((section: Section, index: number) => (
+                    <Stack display={"flex"} justifyContent={"center"} alignItems={"center"} direction={"row"} spacing={2} key={index}>
+                      <Grid item display={"flex"} alignContent={"center"}>
+                        {index > sections.length - 2 ? (
+                          <IconButton onClick={addInput} disabled={disable}>
+                            <AddIcon sx={{ color: "white" }}></AddIcon>
                           </IconButton>
-                        )
-                      )}
-                    </Grid>
-                    <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"} marginBottom={"10px !important"} gap={2}>
-                      <CustomInput
-                        id="Name"
-                        label="Section Name"
-                        name="sectionName"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => !section.isOldSection && sectionSetter(e, index, "name")}
-                        placeholder="Section Name"
-                        type="text"
-                        value={section.name}
-                      ></CustomInput>
-                      <CustomInput
-                        id="Percent"
-                        label="%"
-                        name="percent"
-                        value={section.percent}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => !section.isOldSection && sectionSetter(e, index, "percent")}
-                        type="text"
-                        placeholder={"percent"}
-                      ></CustomInput>
-                      <CustomInput
-                        id="Amount"
-                        label="Amount"
-                        placeholder="Amount"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => !section.isOldSection && sectionSetter(e, index, "amount")}
-                        type="text"
-                        value={section.amount}
-                        name={"amount"}
-                      />
-                    </Grid>
-                    {!section.isOldSection && (
-                      <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"}>
-                        <CustomButton
-                          label="Vesting"
-                          disabled={section.name === "" || limits!.availableBalance < 0}
-                          onClick={() => {
-                            navigate("/create-vesting/" + selectedToken.contractHash + "/" + section.name + "/" + section.amount);
-                          }}
+                        ) : (
+                          !section.isOldSection && (
+                            <IconButton onClick={() => removeInput(index)}>
+                              <RemoveIcon sx={{ color: "red" }} />
+                            </IconButton>
+                          )
+                        )}
+                      </Grid>
+                      <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"} marginBottom={"10px !important"} gap={2}>
+                        <CustomInput
+                          id="Name"
+                          label="Section Name"
+                          name="sectionName"
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => !section.isOldSection && sectionSetter(e, index, "name")}
+                          placeholder="Section Name"
+                          type="text"
+                          value={section.name}
+                        ></CustomInput>
+                        <CustomInput
+                          id="Percent"
+                          label="%"
+                          name="percent"
+                          value={section.percent}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => !section.isOldSection && sectionSetter(e, index, "percent")}
+                          type="text"
+                          placeholder={"percent"}
+                        ></CustomInput>
+                        <CustomInput
+                          id="Amount"
+                          label="Amount"
+                          placeholder="Amount"
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => !section.isOldSection && sectionSetter(e, index, "amount")}
+                          type="text"
+                          value={section.amount}
+                          name={"amount"}
                         />
                       </Grid>
-                    )}
-                  </Stack>
-                ))}
-            </Stack>
-          )}
+                      {!section.isOldSection && (
+                        <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"}>
+                          <CustomButton
+                            label="Vesting"
+                            disabled={section.name === "" || limits!.availableBalance < 0}
+                            onClick={() => {
+                              navigate("/create-vesting/" + selectedToken.contractHash + "/" + section.name + "/" + section.amount);
+                            }}
+                          />
+                        </Grid>
+                      )}
+                    </Stack>
+                  ))}
+              </Stack>
+            )}
+          </Grid>
         </Grid>
-      </Grid>
-    </Stack>
+      </Stack>
+    </Grid>
   );
 };
