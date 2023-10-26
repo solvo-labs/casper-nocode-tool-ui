@@ -5,7 +5,7 @@ import { Card, CardActionArea, CardContent, CardMedia, Theme } from "@mui/materi
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
     margin: "1rem",
-    height: "360px",
+    height: "26.5rem",
     backgroundColor: "#161D3B !important",
     color: "white !important",
   },
