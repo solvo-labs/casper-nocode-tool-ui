@@ -30,6 +30,7 @@ import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from 
 import axios from "axios";
 import { CasperHelpers, uint32ArrayToHex } from "../../utils";
 import toastr from "toastr";
+import VestingDetailModal from "../../components/VestingDetailModal";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useStyles = makeStyles((_theme: Theme) => ({
@@ -56,6 +57,10 @@ const useStyles = makeStyles((_theme: Theme) => ({
     // hide last border
     "&:last-child td, &:last-child th": {
       border: 0,
+    },
+    "&:hover": {
+      backgroundColor: "#F5F5F5",
+      cursor: "pointer",
     },
   },
   paginatonContainer: {
@@ -107,6 +112,10 @@ export const VestingList = () => {
   const [outgoingvestingList, setOutgoingvestingList] = useState<any>([]);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
+
+  const [vestingOpen, setVestingOpen] = useState(false);
+  const handleOpen = (setState: any) => setState(true);
+  const handleClose = (setState: any) => setState(false);
 
   const getTimestamp = () => {
     return Math.floor(Date.now() / 1000);
@@ -316,44 +325,54 @@ export const VestingList = () => {
   // const tableHeaders = ["Name", "Status", "Start", "End", "Token", "Withdrawn Amount", "Deposited Amount", "Cliff", "Claim"];
   const listVesting = (list: any) => {
     return list?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((e: any, index: number) => (
-      <TableRow className={classes.tableRow} key={index}>
-        <TableCell align="center">{e.contract_name}</TableCell>
-        <TableCell align="center">{getStatusIcon(e.release_date.hex / 1000, e.end_date.hex / 1000)}</TableCell>
-        <TableCell align="center">{timestampToDate(e.start_date.hex / 1000)}</TableCell>
-        <TableCell align="center">{timestampToDate(e.end_date.hex / 1000)}</TableCell>
-        <TableCell align="center">{Object.keys(UnlockSchedule).find((key) => UnlockSchedule[key as keyof UnlockScheduleType] === e.period.hex / 1000)}</TableCell>
-        <TableCell align="center">{parseInt(e.cliff_timestamp.hex) + " sec"}</TableCell>
-        <Tooltip
-          title={Object.values(e.cep18_contract_hash)
-            .map((byte: any) => byte.toString(16).padStart(2, "0"))
-            .join("")}
+      <>
+        <TableRow
+          className={classes.tableRow}
+          key={index}
+          onClick={() => {
+            console.log(e);
+            handleOpen(setVestingOpen);
+          }}
         >
-          <TableCell align="center">
-            {Object.values(e.cep18_contract_hash)
+          <TableCell align="center">{e.contract_name}</TableCell>
+          <TableCell align="center">{getStatusIcon(e.release_date.hex / 1000, e.end_date.hex / 1000)}</TableCell>
+          <TableCell align="center">{timestampToDate(e.start_date.hex / 1000)}</TableCell>
+          <TableCell align="center">{timestampToDate(e.end_date.hex / 1000)}</TableCell>
+          <TableCell align="center">{Object.keys(UnlockSchedule).find((key) => UnlockSchedule[key as keyof UnlockScheduleType] === e.period.hex / 1000)}</TableCell>
+          <TableCell align="center">{parseInt(e.cliff_timestamp.hex) + " sec"}</TableCell>
+          <Tooltip
+            title={Object.values(e.cep18_contract_hash)
               .map((byte: any) => byte.toString(16).padStart(2, "0"))
-              .join("")
-              .slice(0, 5) +
-              "..." +
-              Object.values(e.cep18_contract_hash)
+              .join("")}
+          >
+            <TableCell align="center">
+              {Object.values(e.cep18_contract_hash)
                 .map((byte: any) => byte.toString(16).padStart(2, "0"))
                 .join("")
-                .slice(-3)}
-          </TableCell>
-        </Tooltip>
-        <TableCell align="center">{parseInt(e.vesting_amount.hex)}</TableCell>
-        <TableCell align="center">{e.recipient_count}</TableCell>
-        <TableCell align="center">{e.released ? "TRUE" : "FALSE"}</TableCell>
+                .slice(0, 5) +
+                "..." +
+                Object.values(e.cep18_contract_hash)
+                  .map((byte: any) => byte.toString(16).padStart(2, "0"))
+                  .join("")
+                  .slice(-3)}
+            </TableCell>
+          </Tooltip>
+          <TableCell align="center">{parseInt(e.vesting_amount.hex)}</TableCell>
+          <TableCell align="center">{e.recipient_count}</TableCell>
+          <TableCell align="center">{e.released ? "TRUE" : "FALSE"}</TableCell>
 
-        <TableCell align="center">
-          <CustomButton
-            onClick={() => {
-              releaseVesting(e);
-            }}
-            label={"Release"}
-            disabled={e.released}
-          />
-        </TableCell>
-      </TableRow>
+          <TableCell align="center">
+            <CustomButton
+              onClick={() => {
+                releaseVesting(e);
+              }}
+              label={"Release"}
+              disabled={e.released}
+            />
+          </TableCell>
+        </TableRow>
+        <VestingDetailModal handleClose={() => handleClose(setVestingOpen)} open={vestingOpen} vesting={e}></VestingDetailModal>
+      </>
     ));
   };
 
