@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Card, CardActionArea, CardContent, CardMedia, Theme, Typography } from "@mui/material";
+import { Card, CardActionArea, CardContent, CardMedia, Chip, Theme, Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
   alternateCard: {
@@ -24,6 +24,7 @@ type Props = {
   cardContentTitle: string;
   cardContentSymbol: string;
   cardContentContractHash: string;
+  amICreator?: boolean;
 };
 
 const CollectionCard: React.FC<Props> = ({
@@ -38,6 +39,7 @@ const CollectionCard: React.FC<Props> = ({
   cardContentTitle,
   cardContentSymbol,
   cardContentContractHash,
+  amICreator = false,
 }) => {
   return (
     <CardActionArea>
@@ -47,6 +49,7 @@ const CollectionCard: React.FC<Props> = ({
           <div style={{ fontSize: `${cardContentTitle}`, marginBottom: "5px", fontWeight: "700" }}>{title}</div>
           <div style={{ fontSize: `${cardContentSymbol}`, marginBottom: "5px" }}>{symbol}</div>
           <div style={{ fontSize: `${cardContentContractHash}` }}>{contractHash.slice(0, 20)}</div>
+          <Chip sx={{ marginTop: "1rem" }} label={amICreator ? "I'm owner" : "I'm a participant"} color={amICreator ? "success" : "warning"} size="small" />
         </CardContent>
       </Card>
     </CardActionArea>

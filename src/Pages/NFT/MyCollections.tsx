@@ -113,6 +113,7 @@ export const MyCollections = () => {
                 title={e.collection_name}
                 contractHash={e.contractHash}
                 symbol={e.collection_symbol}
+                amICreator={e.amICreator}
               ></CollectionCard>
             </Grid>
           ))}
