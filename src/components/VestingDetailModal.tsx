@@ -1,11 +1,13 @@
-import { Modal, Box, Typography, Stack } from "@mui/material";
+import { Modal, Box, Typography, Stack, CircularProgress, Avatar } from "@mui/material";
+import { VestingRecipient } from "../utils/types";
 
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 600,
+  height: 600,
   bgcolor: "#0F1429",
   color: "white",
   border: "1px solid red",
@@ -14,25 +16,52 @@ const style = {
   pt: 2,
   px: 4,
   pb: 3,
+  "&:focus": {
+    outline: "none",
+  },
 };
 
 type Props = {
   vesting: any;
   open: boolean;
+  loading: boolean;
+  recipients: VestingRecipient[];
   handleClose: () => void;
 };
 
-const VestingDetailModal: React.FC<Props> = ({ vesting, open, handleClose }) => {
+const VestingDetailModal: React.FC<Props> = ({ vesting, open, loading, recipients, handleClose }) => {
   return (
-    <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+    <Modal open={open} onClose={handleClose}>
       <Box sx={style}>
         <Typography variant="h4">{vesting.contract_name}</Typography>
-        <Typography variant="h6" marginTop={"0.5rem"}>
-          Partipiciant count: {vesting.recipient_count}
-        </Typography>
-        <Stack>
-          <Typography>{Number(parseInt(vesting.vesting_amount.hex))}</Typography>
-        </Stack>
+        {loading && (
+          <div style={{ display: "flex", height: "90%", width: "100%", justifyContent: "center", alignItems: "center" }}>
+            <CircularProgress></CircularProgress>
+          </div>
+        )}
+        {!loading && (
+          <div>
+            <Typography variant="h6" marginTop={"0.5rem"}>
+              Partipiciant count: {vesting.recipient_count}
+            </Typography>
+            <Stack marginTop={"2rem"} spacing={2} sx={{ overflowY: "scroll", height: "480px" }}>
+              {recipients.map((rcpt: VestingRecipient, index: number) => (
+                <Box
+                  display={"flex"}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                  sx={{ marginRight: "16px !important", border: "1px solid red", borderRadius: "12px", minHeight: "80px", ":hover": { bgcolor: "gray" } }}
+                >
+                  <Stack direction={"row"} spacing={2} alignItems={"center"}>
+                    <Avatar></Avatar>
+                    <Typography>{rcpt.recipient.slice(0, 10)} ...</Typography>
+                    <Typography>{rcpt.allocation}</Typography>
+                  </Stack>
+                </Box>
+              ))}
+            </Stack>
+          </div>
+        )}
       </Box>
     </Modal>
   );
