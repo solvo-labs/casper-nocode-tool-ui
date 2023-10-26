@@ -24,6 +24,7 @@ type Props = {
   cardContentTitle: string;
   cardContentSymbol: string;
   cardContentContractHash: string;
+  tokenCountText: string;
   amICreator?: boolean;
 };
 
@@ -39,6 +40,7 @@ const CollectionCard: React.FC<Props> = ({
   cardContentTitle,
   cardContentSymbol,
   cardContentContractHash,
+  tokenCountText,
   amICreator = false,
 }) => {
   return (
@@ -48,8 +50,9 @@ const CollectionCard: React.FC<Props> = ({
         <CardContent style={{ padding: `${cardContentPadding}` }}>
           <div style={{ fontSize: `${cardContentTitle}`, marginBottom: "5px", fontWeight: "700" }}>{title}</div>
           <div style={{ fontSize: `${cardContentSymbol}`, marginBottom: "5px" }}>{symbol}</div>
-          <div style={{ fontSize: `${cardContentContractHash}` }}>{contractHash.slice(0, 20)}</div>
-          <Chip sx={{ marginTop: "1rem" }} label={amICreator ? "I'm owner" : "I'm a participant"} color={amICreator ? "success" : "warning"} size="small" />
+          <div style={{ fontSize: `${cardContentContractHash}` }}>{contractHash.slice(0, 40)}</div>
+          <div style={{ fontSize: `${cardContentContractHash}`, fontWeight: "bold", marginTop: "0.5rem" }}>{tokenCountText}</div>
+          <Chip sx={{ marginTop: "0.5rem" }} label={amICreator ? "I'm owner" : "I'm a participant"} color={amICreator ? "success" : "warning"} size="small" />
         </CardContent>
       </Card>
     </CardActionArea>

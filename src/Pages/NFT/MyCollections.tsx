@@ -51,6 +51,8 @@ export const MyCollections = () => {
 
       const result = await Promise.all(promises);
 
+      console.log(result);
+
       setCollections(result);
       setLoading(false);
     };
@@ -114,6 +116,7 @@ export const MyCollections = () => {
                 contractHash={e.contractHash}
                 symbol={e.collection_symbol}
                 amICreator={e.amICreator}
+                tokenCountText={parseInt(e.number_of_minted_tokens.hex, 16) + " / " + parseInt(e.total_token_supply.hex, 16)}
               ></CollectionCard>
             </Grid>
           ))}
