@@ -31,6 +31,7 @@ import axios from "axios";
 import { CasperHelpers, uint32ArrayToHex } from "../../utils";
 import toastr from "toastr";
 import VestingDetailModal from "../../components/VestingDetailModal";
+import { VestingRecipient } from "../../utils/types";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useStyles = makeStyles((_theme: Theme) => ({
@@ -107,15 +108,26 @@ export const VestingList = () => {
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
 
   const [loading, setLoading] = useState<boolean>(true);
+  const [vestingModalLoading, setVestingModalLoading] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("1");
   const [vestingList, setVestingList] = useState<any>([]);
   const [outgoingvestingList, setOutgoingvestingList] = useState<any>([]);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
 
+  const [recipients, setRecipients] = useState<VestingRecipient[]>([]);
+
   const [vestingOpen, setVestingOpen] = useState(false);
-  const handleOpen = (setState: any) => setState(true);
-  const handleClose = (setState: any) => setState(false);
+  const [selectedVesting, setSelectedVesting] = useState<string>();
+  const handleOpen = (setState: any, key: string) => {
+    setState(true);
+    setSelectedVesting(key);
+    console.log(selectedVesting);
+  };
+  const handleClose = (setState: any) => {
+    setState(false);
+    // setSelectedVesting(undefined);
+  };
 
   const getTimestamp = () => {
     return Math.floor(Date.now() / 1000);
@@ -159,6 +171,19 @@ export const VestingList = () => {
 
     init();
   }, []);
+
+  useEffect(() => {
+    setVestingModalLoading(true);
+    const init = async () => {
+      if (selectedVesting) {
+        const recipientsData = await setVestingRecipients(selectedVesting);
+        setRecipients(recipientsData);
+        console.log(recipientsData);
+      }
+      setVestingModalLoading(false);
+    };
+    init();
+  }, [vestingOpen]);
 
   const tableHeaders = ["Name", "Status", "Start", "End", "Period", "Cliff", "Token", "Vesting Amount", "Recipient Count", "Released", "Action"];
   const tableHeadersIncoming = [
@@ -331,7 +356,7 @@ export const VestingList = () => {
           key={index}
           onClick={() => {
             console.log(e);
-            handleOpen(setVestingOpen);
+            handleOpen(setVestingOpen, e.key);
           }}
         >
           <TableCell align="center">{e.contract_name}</TableCell>
@@ -371,7 +396,13 @@ export const VestingList = () => {
             />
           </TableCell>
         </TableRow>
-        <VestingDetailModal handleClose={() => handleClose(setVestingOpen)} open={vestingOpen} vesting={e}></VestingDetailModal>
+        <VestingDetailModal
+          handleClose={() => handleClose(setVestingOpen)}
+          open={vestingOpen}
+          vesting={e}
+          loading={vestingModalLoading}
+          recipients={recipients}
+        ></VestingDetailModal>
       </>
     ));
   };
