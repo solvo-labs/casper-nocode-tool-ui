@@ -188,10 +188,10 @@ export const initTokens = async (accountHash: string, pubkey: string) => {
   return { creatorTokens, finalData };
 };
 
-export const getNftCollection = async (contractHash: string) => {
+export const getNftCollection = async (contractHash: string, amICreator = true) => {
   const response = await axios.get<any>(SERVER_API + "getCollection?contractHash=" + contractHash);
   // console.log("response", response.data.json_schema);
-  return { ...response.data, contractHash, amICreator: true };
+  return { ...response.data, contractHash, amICreator };
 };
 
 export const getNftMetadata = async (contractHash: string, index: string) => {

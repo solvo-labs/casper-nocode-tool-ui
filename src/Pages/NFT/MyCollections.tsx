@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 // @ts-ignore
 import { CLPublicKey } from "casper-js-sdk";
-import { fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
+import { fetchCep78NamedKeys, getAllNftsByOwned, getNftCollection } from "../../utils/api";
 import { CircularProgress, Grid, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomButton } from "../../components/CustomButton";
 import { CreateCollectionCard } from "../../components/CreateCollectionCard";
 import CollectionCard from "../../components/CollectionCard";
 import { CollectionMetada } from "../../utils/types";
+import { removeDuplicates } from "../../utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleContainer: {
@@ -45,15 +46,35 @@ export const MyCollections = () => {
 
   useEffect(() => {
     const init = async () => {
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+      const accountHash = ownerPublicKey.toAccountHashStr();
+
       const data = await fetchCep78NamedKeys(publicKey);
 
       const promises = data.map((data) => getNftCollection(data.key));
 
-      const result = await Promise.all(promises);
+      const ownedCollections = await Promise.all(promises);
 
-      console.log(result);
+      const incomingData = await getAllNftsByOwned(accountHash);
+      const incomingCollections = incomingData.map((ic: any) => "hash-" + ic.collection);
+      const uniqueIncomings = removeDuplicates(incomingCollections);
 
-      setCollections(result);
+      const missingCollectionPromises: any = [];
+
+      uniqueIncomings.forEach((uc) => {
+        if (ownedCollections.findIndex((oc: any) => oc.contractHash === uc) < 0) {
+          missingCollectionPromises.push(getNftCollection(uc, false));
+        }
+      });
+
+      if (missingCollectionPromises.length > 0) {
+        const missingCollections = await Promise.all(missingCollectionPromises);
+        setCollections([...ownedCollections, ...missingCollections]);
+      } else {
+        setCollections(ownedCollections);
+      }
+
       setLoading(false);
     };
 
