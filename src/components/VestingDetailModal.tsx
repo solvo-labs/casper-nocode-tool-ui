@@ -6,7 +6,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 600,
+  width: 960,
   height: 600,
   bgcolor: "#0F1429",
   color: "white",
@@ -54,8 +54,10 @@ const VestingDetailModal: React.FC<Props> = ({ vesting, open, loading, recipient
                 >
                   <Stack direction={"row"} spacing={2} alignItems={"center"}>
                     <Avatar></Avatar>
-                    <Typography>{rcpt.recipient.slice(0, 10)} ...</Typography>
-                    <Typography>{rcpt.allocation}</Typography>
+                    <Typography>hash-{rcpt.recipient}</Typography>
+                    <Typography fontWeight={"bold"} variant="h6">
+                      {rcpt.allocation / Math.pow(10, Number(parseInt(vesting.decimals.hex))) + " (" + vesting.token_symbol.toUpperCase() + ")"}
+                    </Typography>
                   </Stack>
                 </Box>
               ))}
