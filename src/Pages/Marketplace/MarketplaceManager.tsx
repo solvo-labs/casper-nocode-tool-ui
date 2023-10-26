@@ -3,8 +3,10 @@ import { makeStyles } from "@mui/styles";
 import { CustomButton } from "../../components/CustomButton";
 import { NftCard } from "../../components/NftCard";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchMarketplaceData, getMarketplaceListing } from "../../utils/api";
+import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
+
 // @ts-ignore
 import { Contracts, RuntimeArgs, DeployUtil, CLValueBuilder, CLPublicKey } from "casper-js-sdk";
 
@@ -18,13 +20,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   container: {
+    // display: "flex",
     maxWidth: "70vw",
     minWidth: "70vw",
     // marginTop: "4rem",
     marginBottom: "2rem",
     // backgroundColor: "darkgray",
     [theme.breakpoints.down("lg")]: {
-      maxWidth: "90vw",
+      minWidth: "90vw",
       //   marginTop: "4rem",
     },
   },
@@ -79,25 +82,50 @@ const MarketplaceManager = () => {
             </Typography>
             <Typography variant="subtitle1">(Active List Count: {marketplaceData.listingCount})</Typography>
           </Stack>
-          <Stack direction={"row"} spacing={2}>
-            <CustomButton disabled={false} label="Add NFT to Marketplace" onClick={() => navigate("/add-nft-to-marketplace/" + marketplaceHash)}></CustomButton>
-          </Stack>
+          {listings.length > 0 && (
+            <Stack direction={"row"} spacing={2}>
+              <CustomButton disabled={false} label="Add NFT to Marketplace" onClick={() => navigate("/add-nft-to-marketplace/" + marketplaceHash)}></CustomButton>
+            </Stack>
+          )}
         </Stack>
       </Grid>
-      {!listings.length && (
-        <Grid item marginTop={"4rem"}>
-          <Typography variant="h6">There are no listed NFTs</Typography>
-        </Grid>
+      {listings.length <= 0 && (
+        <Stack spacing={2} marginTop={"2rem"} display={"flex"} height={"50vh"} alignSelf={"center"} justifyContent={"center"} width={"80%"}>
+          <Grid item display={"flex"} justifyContent={"center"}>
+            <Typography variant="h4">You don't have any NFTs listed on this marketplace</Typography>
+          </Grid>
+          <Stack direction={"row"} display={"flex"} alignSelf={"flex-end"} alignItems={"center"} spacing={2}>
+            <Typography variant="body1">Let's add one.</Typography>
+            <div style={{ display: "flex", width: "72px", height: "72px" }}>
+              <ArrowCircleRightIcon
+                onClick={() => navigate("/add-nft-to-marketplace/" + marketplaceHash)}
+                sx={{
+                  color: "red",
+                  width: "64px",
+                  height: "64px",
+                  transition: "0.1s ease-out",
+                  display: "block",
+                  margin: "auto",
+                  cursor: "pointer",
+                  ":hover": {
+                    width: "72px",
+                    height: "72px",
+                  },
+                }}
+              ></ArrowCircleRightIcon>
+            </div>
+          </Stack>
+        </Stack>
       )}
-      {listings.length && (
-        <>
+      {listings.length > 0 && (
+        <Grid container>
           <Grid item marginTop={"4rem"}>
             <Typography variant="h6">List of NFT's</Typography>
           </Grid>
           <Grid container>
             {listings.map((lst, index: number) => {
               return (
-                <Grid item lg={3} md={4} sm={6} xs={6} key={index}>
+                <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
                   <NftCard
                     description={lst.nftDescription}
                     name={lst.nftName}
@@ -114,7 +142,7 @@ const MarketplaceManager = () => {
               );
             })}
           </Grid>
-        </>
+        </Grid>
       )}
     </Grid>
   );
