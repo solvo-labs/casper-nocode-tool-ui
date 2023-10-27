@@ -4,7 +4,7 @@ import { CustomButton } from "../../components/CustomButton";
 import { NftCard } from "../../components/NftCard";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { SERVER_API, getAllListingForSale, soldNft } from "../../utils/api";
+import { SERVER_API, contractHashToContractPackageHash, getAllListingForSale, soldNft } from "../../utils/api";
 // @ts-ignore
 import { Contracts, RuntimeArgs, DeployUtil, CLValueBuilder, CLPublicKey } from "casper-js-sdk";
 
@@ -47,10 +47,16 @@ const BuyNft = () => {
       const listingData = await getAllListingForSale();
       setListings(listingData);
       setLoading(false);
+      console.log(listingData);
     };
 
     init();
   }, []);
+
+  const detailPage = async (collectionHash: string, tokenId: number) => {
+    const data = await contractHashToContractPackageHash(collectionHash);
+    window.open("https://testnet.cspr.live/contracts/" + data + "/nfts/" + tokenId.toString(), "_blank");
+  };
 
   const buyNft = async (listing: Listing) => {
     try {
@@ -139,7 +145,7 @@ const BuyNft = () => {
                 asset={lst.nftImage}
                 price={lst.price}
                 onClick={() => {
-                  window.open("https://testnet.cspr.live/contract/" + lst.marketplace.slice(5), "_blank");
+                  detailPage(lst.collection_hash.slice(5), lst.tokenId);
                 }}
                 index={0}
               ></NftCard>
