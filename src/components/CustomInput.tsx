@@ -57,7 +57,7 @@ type Props = {
   floor?: "light" | "dark";
 };
 
-export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, type, value, onChange, disable = false, required, floor }) => {
+export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, type, value, onChange, disable = false, required }) => {
   const classes = useStyles();
 
   return (
