@@ -177,12 +177,15 @@ const AddNftToMarketplace = () => {
     setLoading(true);
     if (selectedCollection) {
       const nftCollection = await getNftCollection(selectedCollection);
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+      const accountHash = ownerPublicKey.toAccountHashStr();
 
       const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
 
       let promises = [];
       for (let index = 0; index < nftCount; index++) {
-        promises.push(getNftMetadata(selectedCollection, index.toString()));
+        promises.push(getNftMetadata(selectedCollection, index.toString(), accountHash.slice(13)));
       }
 
       const nftMetas = await Promise.all(promises);

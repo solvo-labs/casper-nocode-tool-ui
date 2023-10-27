@@ -348,6 +348,7 @@ const Main: React.FC = () => {
                     cardContentTitle={"14px"}
                     cardContentSymbol={"14px"}
                     cardContentContractHash={"12px"}
+                    tokenCountText={parseInt(e.number_of_minted_tokens.hex).toString() + "/" + parseInt(e.total_token_supply.hex).toString()}
                   ></CollectionCard>
                 </Grid>
               ))}

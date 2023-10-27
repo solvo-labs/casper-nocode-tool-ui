@@ -91,12 +91,15 @@ const ApproveNFT = () => {
     setLoadingNFT(true);
     if (contract) {
       const nftCollection = await getNftCollection(contract);
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+      const accountHash = ownerPublicKey.toAccountHashStr();
 
       const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
 
       let promises = [];
       for (let index = 0; index < nftCount; index++) {
-        promises.push(getNftMetadata(contract, index.toString()));
+        promises.push(getNftMetadata(contract, index.toString(), accountHash.slice(13)));
       }
 
       const nftMetas = await Promise.all(promises);
@@ -225,6 +228,7 @@ const ApproveNFT = () => {
                 cardContentTitle={""}
                 cardContentSymbol={""}
                 cardContentContractHash={""}
+                tokenCountText={parseInt(e.number_of_minted_tokens.hex).toString() + "/" + parseInt(e.total_token_supply.hex).toString()}
               ></CollectionCardAlternate>
               <ListNFTModal
                 collection={e}

@@ -487,10 +487,13 @@ const ManageRaffle = () => {
       if (raffleData.collectionHash && raffleData.collectionHash != "") {
         const nftCollection = await getNftCollection(raffleData.collectionHash);
         const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+        const accountHash = ownerPublicKey.toAccountHashStr();
 
         let promises = [];
         for (let index = 0; index < nftCount; index++) {
-          promises.push(getNftMetadata(raffleData.collectionHash, index.toString()));
+          promises.push(getNftMetadata(raffleData.collectionHash, index.toString(), accountHash.slice(13)));
         }
 
         const nftMetas = await Promise.all(promises);
