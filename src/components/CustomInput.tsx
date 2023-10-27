@@ -1,7 +1,6 @@
 import React from "react";
 import { TextField, Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-
 const useStyles = makeStyles((theme: Theme) => ({
   input: {
     maxHeight: "44px",
@@ -32,6 +31,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       },
     },
     "& .MuiInputBase-input": {
+      WebkitTextFillColor: "white",
       "&.Mui-disabled": {
         WebkitTextFillColor: "gray",
       },
@@ -57,20 +57,23 @@ type Props = {
   floor?: "light" | "dark";
 };
 
-export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, type, value, onChange, disable = false, required, floor }) => {
+export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, type, value, onChange, disable = false, required, floor = "light" }) => {
   const classes = useStyles();
 
   return (
     <TextField
       className={floor == "light" ? (classes.input, classes.light) : (classes.input, classes.dark)}
       sx={{
+        input: {
+          color: "white",
+        },
         "& .MuiInputLabel-root.Mui-focused": {
           color: "#FF0011",
         },
-        "& .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input": {
-          color: "white",
+        "& .MuiInputBase-input MuiOutlinedInput-input": {
+          color: "white !important",
         },
-        "& .css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root": {
+        "& .MuiFormLabel-root-MuiInputLabel-root": {
           transform: "translate(14px, 12px) scale(1)",
         },
         "& .MuiOutlinedInput-root": {
@@ -96,6 +99,7 @@ export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, typ
       type={type}
       fullWidth
       disabled={disable}
+      variant="outlined"
     />
   );
 };
