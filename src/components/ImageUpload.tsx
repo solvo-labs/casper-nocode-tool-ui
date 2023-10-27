@@ -81,13 +81,15 @@ const ImageUpload: React.FC<Props> = ({ file, setFile, loading }) => {
       {file && (
         <Grid item display={"flex"} justifySelf={"flex-end"}>
           <Grid container display={"flex"} alignItems={"center"}>
-            <Grid item>
-              <Tooltip title="Clear image">
-                <IconButton onClick={handleClearButtonClick} className={classes.icon}>
-                  <CloseIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>
+            {!loading && (
+              <Grid item>
+                <Tooltip title="Clear image">
+                  <IconButton onClick={handleClearButtonClick} className={classes.icon}>
+                    <CloseIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            )}
             <Avatar alt="Image" src={URL.createObjectURL(file)} sx={{ width: 72, height: 72, border: "2px solid #FF0011" }}></Avatar>
           </Grid>
         </Grid>
