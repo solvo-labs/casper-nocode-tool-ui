@@ -47,6 +47,7 @@ const VestingDetailModal: React.FC<Props> = ({ vesting, open, loading, recipient
             <Stack marginTop={"2rem"} spacing={2} sx={{ overflowY: "scroll", height: "480px" }}>
               {recipients.map((rcpt: VestingRecipient, index: number) => (
                 <Box
+                  key={index}
                   display={"flex"}
                   justifyContent={"center"}
                   alignItems={"center"}
