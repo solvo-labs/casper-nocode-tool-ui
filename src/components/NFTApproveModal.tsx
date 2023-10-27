@@ -105,7 +105,7 @@ export const ListNFTModal: React.FC<ListNFTModalProps> = ({ collection, open, ha
             </Grid>
             <Grid container>
               {nfts.map((e: any, index: number) => (
-                <Grid item lg={4} md={4} sm={6} xs={6}>
+                <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
                   <NftCard
                     description={e.description}
                     name={e.name}

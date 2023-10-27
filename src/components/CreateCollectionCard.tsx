@@ -33,14 +33,15 @@ type Props = {
   onClick: any;
 
   text?: string;
+  height?: string;
 };
 
-export const CreateCollectionCard: React.FC<Props> = ({ onClick, text = "CREATE COLLECTION" }) => {
+export const CreateCollectionCard: React.FC<Props> = ({ onClick, text = "CREATE COLLECTION", height }) => {
   const classes = useStyles();
   return (
     <CardActionArea>
-      <Card className={classes.card} onClick={onClick}>
-        <CardMedia component="img" height="240" image="/public/images/collection-image.jpg" alt="add nft" />
+      <Card className={classes.card} onClick={onClick} style={height ? { height: height } : {}}>
+        <CardMedia component="img" height="240" image="/images/collection-image.jpg" alt="add nft" />
         <CardContent sx={{ height: "fullWidth" }}>
           <p className={classes.title}>{text}</p>
         </CardContent>

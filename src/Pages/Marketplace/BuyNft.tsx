@@ -4,7 +4,7 @@ import { CustomButton } from "../../components/CustomButton";
 import { NftCard } from "../../components/NftCard";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { SERVER_API, getAllListingForSale } from "../../utils/api";
+import { SERVER_API, contractHashToContractPackageHash, getAllListingForSale, soldNft } from "../../utils/api";
 // @ts-ignore
 import { Contracts, RuntimeArgs, DeployUtil, CLValueBuilder, CLPublicKey } from "casper-js-sdk";
 
@@ -47,10 +47,16 @@ const BuyNft = () => {
       const listingData = await getAllListingForSale();
       setListings(listingData);
       setLoading(false);
+      console.log(listingData);
     };
 
     init();
   }, []);
+
+  const detailPage = async (collectionHash: string, tokenId: number) => {
+    const data = await contractHashToContractPackageHash(collectionHash);
+    window.open("https://testnet.cspr.live/contracts/" + data + "/nfts/" + tokenId.toString(), "_blank");
+  };
 
   const buyNft = async (listing: Listing) => {
     try {
@@ -60,7 +66,7 @@ const BuyNft = () => {
 
       const args = RuntimeArgs.fromMap({
         marketplace_contract_hash: CasperHelpers.stringToKey(listing.marketplace.slice(5)),
-        listing_id: CLValueBuilder.u64(listing.listingIndex),
+        listing_id: CLValueBuilder.u64(listing.listingIndex + 1),
         amount: CLValueBuilder.u512(listing.price * 1_000_000_000),
       });
 
@@ -85,8 +91,10 @@ const BuyNft = () => {
           headers: { "Content-Type": "application/json" },
         });
         toastr.success(response.data, "Sold successfully.");
+
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
+        soldNft(listing.id || "");
         navigate("/buy-nft");
         setLoading(false);
       } catch (error: any) {
@@ -119,23 +127,25 @@ const BuyNft = () => {
     <Grid container direction={"column"} className={classes.container}>
       <Grid item className={classes.container}>
         <Stack direction={"row"} justifyContent={"space-between"}>
-          <Typography variant="h4">Nft List in Sale</Typography>
+          <Typography variant="h4" sx={{ borderBottom: "1px solid red" }}>
+            Nft List in Sale
+          </Typography>
         </Stack>
       </Grid>
       <Grid item marginTop={"2rem"}>
         <Typography variant="h5">List of NFT's</Typography>
       </Grid>
       <Grid container>
-        {listings.map((lst) => {
+        {listings.map((lst, index: number) => {
           return (
-            <Grid item lg={3} md={4} sm={6} xs={6}>
+            <Grid item lg={3} md={4} sm={6} xs={6} key={index}>
               <NftCard
                 description={lst.nftDescription}
                 name={lst.nftName}
                 asset={lst.nftImage}
                 price={lst.price}
                 onClick={() => {
-                  window.open("https://testnet.cspr.live/contract/" + lst.marketplace.slice(5), "_blank");
+                  detailPage(lst.collection_hash.slice(5), lst.tokenId);
                 }}
                 index={0}
               ></NftCard>

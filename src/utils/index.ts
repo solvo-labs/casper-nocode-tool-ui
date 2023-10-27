@@ -36,3 +36,15 @@ export const uint32ArrayToHex = (data: any) => {
     .map((byte: any) => byte.toString(16).padStart(2, "0"))
     .join("");
 };
+
+export const removeDuplicates = (arr: any[]) => {
+  let unique: any = {};
+  let result: any[] = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (!unique[arr[i]]) {
+      result.push(arr[i]);
+      unique[arr[i]] = 1;
+    }
+  }
+  return result;
+};

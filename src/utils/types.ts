@@ -92,6 +92,7 @@ export type Marketplace = {
 };
 
 export type Listing = {
+  id?: string;
   marketplace: string;
   collection_hash: string;
   price: number;
@@ -143,3 +144,14 @@ export type RaffleMetadata = {
 };
 
 export type NumberMeta = { hex: string; type: string };
+
+export type VestingRecipient = {
+  allocation: number;
+  createdAt: string;
+  id: string;
+  recipient: string;
+  updatedAt: string;
+  v_contract: string;
+  v_index: number;
+  v_token: string;
+};

@@ -125,3 +125,9 @@ export enum FETCH_IMAGE_TYPE {
   COLLECTION,
   NFT,
 }
+
+export enum DONT_HAVE_ANYTHING {
+  MARKETPLACE = "Couldn't find the marketplace to be displayed.",
+  COLLECTION = "You don't own any collection. Let's create one.",
+  NFT = "You don't have an NFT belonging to the collection.",
+}

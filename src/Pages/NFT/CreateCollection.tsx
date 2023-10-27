@@ -148,8 +148,8 @@ export const CreateCollection = () => {
         navigate("/my-collections");
         setLoading(false);
       } catch (error: any) {
-        alert(error.message);
         setLoading(false);
+        toastr.error("Error: " + error);
       }
     } catch (error) {
       console.log(error);
@@ -160,12 +160,16 @@ export const CreateCollection = () => {
 
   const listSelectItem = (value: Object) => {
     const listItem = Object.values(value).filter((v) => isNaN(Number(v)));
-    return listItem.map((keys: any, value: any) => <MenuItem value={value}>{keys}</MenuItem>);
+    return listItem.map((keys: any, value: any) => (
+      <MenuItem key={value} value={value}>
+        {keys}
+      </MenuItem>
+    ));
   };
 
   if (loading) {
     return (
-      <div
+      <Stack
         style={{
           height: "50vh",
           width: "100%",
@@ -173,9 +177,12 @@ export const CreateCollection = () => {
           justifyContent: "center",
           alignItems: "center",
         }}
+        direction={"column"}
+        spacing={"2rem"}
       >
+        <Typography>Collection is being created.</Typography>
         <CircularProgress />
-      </div>
+      </Stack>
     );
   }
 
@@ -185,6 +192,7 @@ export const CreateCollection = () => {
         height: "calc(100vh-5rem)",
         minWidth: "21rem",
         padding: "1rem",
+        marginBottom: "2rem",
       }}
     >
       <Grid container className={classes.container}>

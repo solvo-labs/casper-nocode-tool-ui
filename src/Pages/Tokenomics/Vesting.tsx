@@ -77,7 +77,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: "40px",
     paddingBottom: "40px",
     paddingRight: "20px",
     paddingLeft: "20px",
@@ -90,7 +89,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     [theme.breakpoints.down("sm")]: {
       minWidth: "80vw",
     },
-    paddingTop: "2rem",
     paddingBottom: "2rem",
     color: "#fff !important",
   },
@@ -177,6 +175,7 @@ export const Vesting = () => {
   const [recipients, setRecipients] = useState<RecipientFormInput[]>([]);
   const [recipient, setRecipient] = useState<RecipientFormInput>(recipientDefaultState);
   const [loading, setLoading] = useState<boolean>(false);
+  const [vestingLoading, setVestingLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -191,6 +190,7 @@ export const Vesting = () => {
   }>();
 
   const createVesting = async () => {
+    setVestingLoading(true);
     try {
       setLoading(true);
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
@@ -230,6 +230,9 @@ export const Vesting = () => {
         const response = await axios.post(SERVER_API + "deploy", data, {
           headers: { "Content-Type": "application/json" },
         });
+
+        setVestingLoading(false);
+        navigate("/vesting-list");
         toastr.success(response.data, "Vesting deployed successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
@@ -245,7 +248,7 @@ export const Vesting = () => {
     }
   };
 
-  if (loading) {
+  if (loading || vestingLoading) {
     return (
       <div
         style={{
@@ -264,15 +267,16 @@ export const Vesting = () => {
   return (
     <div className={classes.main}>
       <Grid container className={classes.container} direction={"column"}>
-        <Grid item className={classes.title}>
-          <Typography variant="h5" style={{ color: "white" }}>
+        <Grid item display={"flex"} justifyContent={"center"}>
+          <Typography variant="h5" style={{ color: "white", borderBottom: "1px solid red" }}>
             Vesting
           </Typography>
-          <Divider className={classes.divider} />
         </Grid>
         <Grid item marginTop={"1.2rem"}>
           <Stack direction={"column"} width={"100%"} spacing={4}>
-            <span>Token Total Balance : {queryParams.amount}</span>
+            <Typography>
+              Token Total Balance : <b>{queryParams.amount}</b>
+            </Typography>
             <FormControl fullWidth>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 {
@@ -417,13 +421,10 @@ export const Vesting = () => {
             )}
           </Stack>
         </Grid>
-        <Grid item marginTop={2} display={"flex"} justifyContent={"center"} alignItems={"center"} flexDirection={"column"}>
+        <Stack direction={"row"} marginTop={"2rem"} display={"flex"} justifyContent={"space-between"}>
           <CustomButton label="Add Recipient" disabled={false} onClick={() => setRecipientModal({ ...recipientModal, show: true })} />
-        </Grid>
-        <Grid item marginTop={2} marginBottom={5} display={"flex"} justifyContent={"center"} alignItems={"center"} flexDirection={"column"}>
           <CustomButton label="Create Vesting Contract" disabled={vestParams.duration <= 0 || recipients.length <= 0} onClick={createVesting} />
-        </Grid>
-
+        </Stack>
         <Modal
           className={classes.modal}
           open={recipientModal.show}
@@ -499,7 +500,7 @@ export const Vesting = () => {
                       {recipients.map((value, index) => {
                         const labelId = `checkbox-list-secondary-label-${value}`;
                         return (
-                          <>
+                          <div key={index}>
                             <ListItem
                               key={index}
                               style={{ background: "white" }}
@@ -521,7 +522,11 @@ export const Vesting = () => {
                               disablePadding
                             >
                               <ListItemButton>
-                                <ListItemText style={{ color: "black" }} id={labelId} primary={"Address : " + value.recipientAddress + ", Amount : " + value.amount} />
+                                <ListItemText
+                                  style={{ color: "black", fontWeight: "bold" }}
+                                  id={labelId}
+                                  primary={"Address: " + value.recipientAddress.slice(0, 10) + "..." + value.recipientAddress.slice(-10) + ", Amount: " + value.amount}
+                                />
                               </ListItemButton>
                             </ListItem>
                             <Divider
@@ -531,7 +536,7 @@ export const Vesting = () => {
                                 background: "black",
                               }}
                             />
-                          </>
+                          </div>
                         );
                       })}
                     </List>

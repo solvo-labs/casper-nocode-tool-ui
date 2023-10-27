@@ -209,10 +209,10 @@ const ApproveNFT = () => {
           </Typography>
         </Grid>
         <Grid container marginTop={"2rem"}>
-          {collections.map((e: any) => (
-            <Grid item lg={3} md={3} sm={6} xs={6}>
+          {collections.map((e: any, index: number) => (
+            <Grid item lg={3} md={3} sm={6} xs={6} key={index}>
               <CollectionCardAlternate
-                image={e.image}
+                image={"/images/casper.png"}
                 onClick={() => {
                   handleOpenNFT(e.contractHash);
                 }}
