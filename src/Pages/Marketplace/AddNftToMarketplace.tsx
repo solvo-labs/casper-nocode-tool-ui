@@ -255,15 +255,16 @@ const AddNftToMarketplace = () => {
                 <CollectionCardAlternate
                   image={"/images/casper.png"}
                   onClick={() => setSelectedCollection(e.contractHash)}
-                  title={"Name: " + e.collection_name}
+                  title={e.collection_name}
                   contractHash={e.contractHash}
-                  symbol={""}
+                  symbol={e.collection_symbol}
                   cardHeight={""}
                   mediaHeight={""}
                   cardContentPadding={""}
                   cardContentTitle={""}
                   cardContentSymbol={""}
                   cardContentContractHash={""}
+                  tokenCountText={parseInt(e.number_of_minted_tokens.hex).toString() + "/" + parseInt(e.total_token_supply.hex).toString()}
                 ></CollectionCardAlternate>
               </Grid>
             ))}

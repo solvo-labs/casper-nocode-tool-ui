@@ -46,7 +46,7 @@ const ListMarketplace = () => {
   }
 
   return (
-    <Grid>
+    <Grid marginBottom={"2rem"}>
       <Stack>
         {marketplaces.length <= 0 && (
           <div style={{ display: "flex", alignItems: "center" }}>

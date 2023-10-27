@@ -19,8 +19,8 @@ type Props = {
   description: string;
   asset: string;
   index: number;
-  owner: string;
-  amIOwner: boolean;
+  owner?: string;
+  amIOwner?: boolean;
   price?: number;
   chipTitle?: string;
   status?: "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" | undefined;
@@ -35,25 +35,23 @@ export const NftCard: React.FC<Props> = ({ name, description, asset, index, owne
       <Card className={classes.card} onClick={onClick}>
         <CardMedia component="img" height="250" image={asset} alt={name} />
         <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            Name : {name}
+          <Typography fontWeight={"bold"} gutterBottom variant="h5" component="div">
+            {name}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Description : {description}
+            Description: {description}
           </Typography>
-          {price && (
-            <>
-              <Typography variant="body1">Price : {price} CSPR</Typography>
-            </>
-          )}
+          {price && <Typography variant="body1">Price: {price} CSPR</Typography>}
           {!price && (
             <>
               <Typography variant="body2" color="text.secondary">
-                Index : {index}
+                Index: {index}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Owner : {owner}
-              </Typography>
+              {owner && (
+                <Typography variant="body2" color="text.secondary">
+                  Owner : {owner}
+                </Typography>
+              )}
               <Chip sx={{ marginTop: "0.5rem", fontSize: "1rem" }} label={amIOwner ? "My Nft" : "Rest of collection item"} color={amIOwner ? "success" : "warning"} size="small" />
             </>
           )}
