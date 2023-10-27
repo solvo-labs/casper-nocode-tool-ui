@@ -33,6 +33,7 @@ export enum NFT_PAGE {
   CREATE_NFT = "Create NFT",
   CREATE_COLLECTION = "Create Collection",
   APPROVE_NFT = "Approve Nft",
+  LOOTBOX = "Lootbox",
 }
 
 export enum RAFFLE_PAGE {
