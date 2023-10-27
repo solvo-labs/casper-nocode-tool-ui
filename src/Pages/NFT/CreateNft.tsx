@@ -73,6 +73,11 @@ export const CreateNft = () => {
 
   const navigate = useNavigate();
 
+  const handleClear = () => {
+    setFile(null);
+    setNftData({ ...nftData, tokenMetaData: { ...nftData.tokenMetaData, asset: "" } });
+  };
+
   useEffect(() => {
     const init = async () => {
       const data = await fetchCep78NamedKeys(publicKey);
@@ -137,7 +142,7 @@ export const CreateNft = () => {
         // setActionLoader(false);
         setLoading(false);
       } catch (error: any) {
-        alert(error.message);
+        toastr.error("Error: " + error);
         setLoading(false);
       }
     } catch (error) {
@@ -223,7 +228,7 @@ export const CreateNft = () => {
             <Typography sx={{ borderBottom: "1px solid #FF0011 !important" }} variant="button">
               Metadata
             </Typography>
-            <ImageUpload file={file} loading={fileLoading} setFile={(data) => setFile(data)}></ImageUpload>
+            <ImageUpload file={file} loading={fileLoading} setFile={(data) => setFile(data)} handleClear={handleClear}></ImageUpload>
             <CustomInput
               placeholder="Metadata Name"
               label="Metadata Name"
@@ -240,7 +245,8 @@ export const CreateNft = () => {
                 });
               }}
               value={nftData.tokenMetaData.name}
-              disable={fileLoading}
+              disable={true}
+              floor="dark"
             ></CustomInput>
             <CustomInput
               placeholder="Metadata Description"

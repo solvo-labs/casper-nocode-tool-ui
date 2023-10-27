@@ -52,6 +52,11 @@ export const Lootbox = () => {
     nftIndex: -1,
   });
 
+  const handleClear = () => {
+    setFile(null);
+    setLootbox({ ...lootbox, asset: "" });
+  };
+
   useEffect(() => {
     const storeImage = async () => {
       if (file) {
@@ -157,7 +162,7 @@ export const Lootbox = () => {
             value={lootbox.desciption}
             floor="dark"
           ></CustomInput>
-          <ImageUpload file={file} loading={imageLoading} setFile={(data) => setFile(data)}></ImageUpload>
+          <ImageUpload file={file} loading={imageLoading} setFile={(data) => setFile(data)} handleClear={handleClear}></ImageUpload>
 
           <CustomSelect
             value={lootbox.collection?.contractHash || "default"}

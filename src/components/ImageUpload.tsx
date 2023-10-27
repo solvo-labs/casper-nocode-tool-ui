@@ -44,18 +44,19 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type Props = {
   file: File | undefined;
-  setFile: (image: File | null) => void;
   loading: boolean;
+  setFile: (image: File | null) => void;
+  handleClear: () => void;
 };
 
-const ImageUpload: React.FC<Props> = ({ file, setFile, loading }) => {
+const ImageUpload: React.FC<Props> = ({ file, loading, handleClear, setFile }) => {
   const classes = useStyles();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleClearButtonClick = () => {
-    setFile(null);
-    inputRef.current!.value = "";
-  };
+  // const handleClearButtonClick = () => {
+  //   setFile(null);
+  //   inputRef.current!.value = "";
+  // };
 
   const handleFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setFile(null);
@@ -84,7 +85,7 @@ const ImageUpload: React.FC<Props> = ({ file, setFile, loading }) => {
             {!loading && (
               <Grid item>
                 <Tooltip title="Clear image">
-                  <IconButton onClick={handleClearButtonClick} className={classes.icon}>
+                  <IconButton onClick={handleClear} className={classes.icon}>
                     <CloseIcon />
                   </IconButton>
                 </Tooltip>
