@@ -155,3 +155,11 @@ export type VestingRecipient = {
   v_index: number;
   v_token: string;
 };
+
+export type LootboxInputData = {
+  name: string;
+  desciption: string;
+  asset?: string;
+  collection: CollectionMetada | undefined;
+  nftIndex: number;
+};
