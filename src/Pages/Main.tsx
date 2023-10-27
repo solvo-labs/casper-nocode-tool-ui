@@ -342,7 +342,7 @@ const Main: React.FC = () => {
                     title={e.collection_name}
                     contractHash={e.contractHash}
                     symbol={e.collection_symbol}
-                    cardHeight={"180px"}
+                    cardHeight={"15rem"}
                     mediaHeight={"100px"}
                     cardContentPadding={"5px"}
                     cardContentTitle={"14px"}

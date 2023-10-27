@@ -64,6 +64,7 @@ export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, typ
     <TextField
       className={floor == "light" ? (classes.input, classes.light) : (classes.input, classes.dark)}
       sx={{
+        color: "white",
         "& .MuiInputLabel-root.Mui-focused": {
           color: "#FF0011",
         },
