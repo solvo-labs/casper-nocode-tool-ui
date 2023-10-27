@@ -77,6 +77,9 @@ export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, typ
           transform: "translate(14px, 12px) scale(1)",
         },
         "& .MuiOutlinedInput-root": {
+          "&.Mui-disabled .MuiOutlinedInput-notchedOutline": {
+            borderColor: "gray !important",
+          },
           "& fieldset": {
             borderRadius: "1rem",
             border: "1px solid #BFBFBF",
