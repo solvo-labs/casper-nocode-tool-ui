@@ -141,6 +141,9 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
     } else if (a === NFT_PAGE.APPROVE_NFT) {
       navigate("/approve-nft");
     } else if (a === TOKENOMICS_PAGE.CREATE_TOKENOMICS) {
+    } else if (a === NFT_PAGE.LOOTBOX) {
+      navigate("/lootbox");
+    } else if (a === TOKENOMICS_PAGE.CREATE_TOKENOMICS) {
       navigate("/tokenomics");
     } else if (a === TOKENOMICS_PAGE.MANAGE_TOKENOMICS) {
       navigate("/vesting-list");
