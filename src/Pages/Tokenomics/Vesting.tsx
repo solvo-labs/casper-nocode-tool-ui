@@ -431,8 +431,6 @@ export const Vesting = () => {
           onClose={() => {
             setRecipientModal({ ...recipientModal, show: false });
           }}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
         >
           <Box
             sx={{
@@ -442,8 +440,8 @@ export const Vesting = () => {
               left: "50%",
               transform: "translate(-50%, -50%)",
               width: 800,
-              bgcolor: "background.paper",
-              border: "2px solid #000",
+              bgcolor: "#0f1429",
+              border: "1px solid red",
               boxShadow: 24,
               p: 1,
             }}
