@@ -3,7 +3,7 @@ import { Grid, Theme, LinearProgress } from "@mui/material";
 import { Outlet, Navigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import TopBar from "../components/TopBar";
-import { fetchContract } from "../utils";
+import { delay, fetchContract } from "../utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   main: {
@@ -34,10 +34,14 @@ const ProtectedRoute: React.FC = () => {
   useEffect(() => {
     const init = async () => {
       try {
+        await delay(100);
         const CasperWalletProvider = window.CasperWalletProvider;
+        console.log("CasperWalletProvider", CasperWalletProvider);
         const provider = CasperWalletProvider();
-
+        console.log("provider", provider);
         const isConnected = await provider.isConnected();
+
+        console.log("isconnected", isConnected);
 
         if (isConnected) {
           const activePublicKey = await provider.getActivePublicKey();
