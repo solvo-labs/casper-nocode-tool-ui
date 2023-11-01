@@ -161,5 +161,8 @@ export type LootboxInputData = {
   desciption: string;
   asset?: string;
   collection: CollectionMetada | undefined;
-  nftIndex: number;
+  lootbox_price: number;
+  items_per_lootbox: number;
+  max_lootboxes: number;
+  max_items: number;
 };
