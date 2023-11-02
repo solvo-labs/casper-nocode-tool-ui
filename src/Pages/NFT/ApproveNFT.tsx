@@ -1,9 +1,9 @@
 import { CircularProgress, Grid, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useEffect, useMemo, useState } from "react";
-import { fetchCep78NamedKeys, fetchMarketplaceNamedKeys, fetchRaffleNamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
+import { fetchCep78NamedKeys, fetchLootboxNamedKeys, fetchMarketplaceNamedKeys, fetchRaffleNamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
 import { useOutletContext } from "react-router-dom";
-import { CollectionMetada, Marketplace, NFT, RaffleNamedKeys } from "../../utils/types";
+import { CollectionMetada, LootboxData, Marketplace, NFT, RaffleNamedKeys } from "../../utils/types";
 import { CollectionCardAlternate } from "../../components/CollectionCard";
 // @ts-ignore
 import { CLPublicKey, Contracts, RuntimeArgs, CLValueBuilder, CLKey, CLByteArray, DeployUtil } from "casper-js-sdk";
@@ -50,6 +50,7 @@ const ApproveNFT = () => {
 
   const [marketplaces, setMarketplaces] = useState<Marketplace[]>();
   const [raffles, setRaffles] = useState<RaffleNamedKeys[]>();
+  const [lootboxes, setLootboxes] = useState<LootboxData[]>();
 
   const handleOpenNFT = (contract: string) => {
     setSelectedCollection(contract);
@@ -133,6 +134,16 @@ const ApproveNFT = () => {
     init();
   }, []);
 
+  useEffect(() => {
+    const init = async () => {
+      const data = await fetchLootboxNamedKeys(publicKey);
+      console.log(data);
+      setLootboxes(data);
+    };
+
+    init();
+  }, []);
+
   const approve = async () => {
     setLoading(true);
     try {
@@ -149,7 +160,6 @@ const ApproveNFT = () => {
         });
 
         const deploy = contract.callEntrypoint("approve", args, ownerPublicKey, "casper-test", "10000000000");
-        console.log(deploy);
 
         const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -243,6 +253,7 @@ const ApproveNFT = () => {
                 selected={selectedOperatorHash}
                 marketplaces={marketplaces}
                 raffles={raffles}
+                lootboxes={lootboxes}
                 selectedOnChange={setSelectedOperatorHash}
                 open={openApprove}
                 handleClose={handleCloseApprove}
