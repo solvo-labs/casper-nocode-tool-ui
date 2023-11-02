@@ -1,4 +1,4 @@
-import { CircularProgress, Grid, LinearProgress, MenuItem, SelectChangeEvent, Stack, Theme, Typography } from "@mui/material";
+import { CircularProgress, Grid, MenuItem, SelectChangeEvent, Stack, Theme, Typography } from "@mui/material";
 import { CustomInput } from "../../components/CustomInput";
 import { makeStyles } from "@mui/styles";
 import ImageUpload from "../../components/ImageUpload";
@@ -6,8 +6,8 @@ import { useEffect, useMemo, useState } from "react";
 import { NFTStorage } from "nft.storage";
 import { CollectionMetada, LootboxInputData, NFT } from "../../utils/types";
 import { CustomButton } from "../../components/CustomButton";
-import { SERVER_API, fetchCep78NamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
-import { useOutletContext } from "react-router-dom";
+import { SERVER_API, fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
+import { useNavigate, useOutletContext } from "react-router-dom";
 // @ts-ignore
 import {
   RuntimeArgs,
@@ -26,6 +26,7 @@ import {
 import { CustomSelect } from "../../components/CustomSelect";
 import { CasperHelpers } from "../../utils";
 import axios from "axios";
+import toastr from "toastr";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -66,13 +67,12 @@ export const CreateLootbox = () => {
       ]
     >();
   const classes = useStyles();
+  const navigate = useNavigate();
 
   const [collections, setCollections] = useState<CollectionMetada[]>([]);
-  const [nfts, setNfts] = useState<NFT[]>([]);
-
   const [file, setFile] = useState<any>();
   const [loading, setLoading] = useState<boolean>(true);
-  const [loadingNFT, setLoadingNFT] = useState<boolean>(false);
+  const [loadingCreateLootbox, setLoadingCreateLootbox] = useState<boolean>(false);
   const [imageLoading, setImageLoading] = useState<boolean>(false);
   const [lootbox, setLootbox] = useState<LootboxInputData>({
     name: "",
@@ -91,6 +91,7 @@ export const CreateLootbox = () => {
   };
 
   const createLootbox = async () => {
+    setLoadingCreateLootbox(true);
     try {
       if (lootbox && lootbox.collection) {
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
@@ -108,69 +109,29 @@ export const CreateLootbox = () => {
         });
 
         const deploy = contract.install(new Uint8Array(lootboxWasm), args, "110000000000", ownerPublicKey, "casper-test");
-        // const deployJson = DeployUtil.deployToJson(deploy);
+        const deployJson = DeployUtil.deployToJson(deploy);
 
-        // try {
-        //   const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-        //   let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
-        //   signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-        //   const data = DeployUtil.deployToJson(signedDeploy.val);
-        //   const response = await axios.post(SERVER_API + "deploy", data, {
-        //     headers: { "Content-Type": "application/json" },
-        //   });
-        //   toastr.success(response.data, "Lootbox deployed successfully.");
-        // } catch (error: any) {
-        //   toastr.error("Lootbox couldn't be deploy. Error: "+error);
-        // }
+        try {
+          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+          const data = DeployUtil.deployToJson(signedDeploy.val);
+          const response = await axios.post(SERVER_API + "deploy", data, {
+            headers: { "Content-Type": "application/json" },
+          });
+          setLoadingCreateLootbox(false);
+          toastr.success(response.data, "Lootbox deployed successfully.");
+          navigate("/my-lootboxes");
+        } catch (error: any) {
+          setLoadingCreateLootbox(false);
+          toastr.error("Lootbox couldn't be deploy. Error: " + error);
+        }
       }
     } catch (error) {
+      setLoadingCreateLootbox(false);
       toastr.error("Error: " + error);
     }
   };
-
-  // const install = async () => {
-  //   setLoading(true);
-  //   try {
-  //     if (!disable) {
-  //       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-  //       const contract = new Contracts.Contract();
-
-  //       const args = RuntimeArgs.fromMap({
-  //         name: CLValueBuilder.string(raffleData.name),
-  //         start_date: CLValueBuilder.u64(raffleData.start * 1000),
-  //         end_date: CLValueBuilder.u64(raffleData.end * 1000),
-  //         collection: CasperHelpers.stringToKey(raffleData.collectionHash),
-  //         nft_index: CLValueBuilder.u64(raffleData.nftIndex),
-  //         price: CLValueBuilder.u512(raffleData.price * 1000000000),
-  //         storage_key: new CLAccountHash(Buffer.from(STORE_CONTRACT_HASH, "hex")),
-  //       });
-
-  //       const deploy = contract.install(new Uint8Array(raffleWasm), args, "150000000000", ownerPublicKey, "casper-test");
-  //       const deployJson = DeployUtil.deployToJson(deploy);
-
-  //       try {
-  //         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-  //         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
-  //         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-  //         const data = DeployUtil.deployToJson(signedDeploy.val);
-  //         const response = await axios.post(SERVER_API + "deploy", data, {
-  //           headers: { "Content-Type": "application/json" },
-  //         });
-  //         toastr.success(response.data, "Raffle deployed successfully.");
-  //         setRaffleOpen(false);
-  //         setLoading(false);
-  //         // navigate("/marketplace");
-  //       } catch (error: any) {
-  //         alert(error.message);
-  //         setLoading(false);
-  //       }
-  //     }
-  //   } catch (error: any) {
-  //     setLoading(false);
-  //     toastr.error(error);
-  //     console.log(error);
-  //   }
-  // };
 
   useEffect(() => {
     const storeImage = async () => {
@@ -209,39 +170,14 @@ export const CreateLootbox = () => {
     init();
   }, []);
 
-  // useEffect(() => {
-  //   setLoadingNFT(true);
-  //   const init = async () => {
-  //     if (lootbox.collection && lootbox.collection != undefined) {
-  //       const nftCollection = await getNftCollection(lootbox.collection.contractHash);
-  //       const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
-  //       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-
-  //       const accountHash = ownerPublicKey.toAccountHashStr();
-
-  //       let promises = [];
-  //       for (let index = 0; index < nftCount; index++) {
-  //         promises.push(getNftMetadata(lootbox.collection.contractHash, index.toString(), accountHash.slice(13)));
-  //       }
-
-  //       const nftMetas = await Promise.all(promises);
-  //       console.log(nftMetas);
-
-  //       setNfts(nftMetas);
-  //       setLoadingNFT(false);
-  //     }
-  //   };
-  //   init();
-  // }, [lootbox.collection]);
-
   const disable = useMemo(() => {
     const disable = !lootbox.name.length || !lootbox.desciption.length || !lootbox.collection;
     return disable;
   }, [lootbox]);
 
-  if (loading) {
+  if (loading || loadingCreateLootbox) {
     return (
-      <div
+      <Stack
         style={{
           height: "50vh",
           width: "100%",
@@ -249,9 +185,12 @@ export const CreateLootbox = () => {
           justifyContent: "center",
           alignItems: "center",
         }}
+        direction={"column"}
+        spacing={"2rem"}
       >
+        {loadingCreateLootbox && <Typography>Lootbox is being created.</Typography>}
         <CircularProgress />
-      </div>
+      </Stack>
     );
   }
 
@@ -367,13 +306,7 @@ export const CreateLootbox = () => {
               })}
             </CustomSelect>
           )} */}
-          <CustomButton
-            label="Create Lootbox"
-            onClick={() => {
-              console.log(lootbox);
-            }}
-            disabled={disable}
-          ></CustomButton>
+          <CustomButton label="Create Lootbox" onClick={createLootbox} disabled={disable}></CustomButton>
         </Stack>
       </Grid>
     </Grid>
