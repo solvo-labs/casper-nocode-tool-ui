@@ -128,6 +128,12 @@ export const enum RAFFLE_STATUS {
   COMPLETED,
 }
 
+export const enum APPROVE_TYPE {
+  MARKETPLACE = "marketplace",
+  RAFFLE = "raffle",
+  LOOTBOX = "lootbox",
+}
+
 export type RaffleMetadata = {
   key: string;
   collection: string;
@@ -165,4 +171,11 @@ export type LootboxInputData = {
   items_per_lootbox: number;
   max_lootboxes: number;
   max_items: number;
+};
+
+export type LootboxData = {
+  name: string;
+  key: string;
+  asset?: string;
+  nft_collection?: string;
 };
