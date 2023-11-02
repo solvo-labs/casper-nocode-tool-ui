@@ -30,6 +30,7 @@ const ProtectedRoute: React.FC = () => {
   const [executeListingWasm, setExecuteListingWasm] = useState<ArrayBuffer>();
   const [raffleWasm, setRaffleWasm] = useState<ArrayBuffer>();
   const [buyTicketWasm, setBuyTicketWasm] = useState<ArrayBuffer>();
+  const [lootboxWasm, setLootboxWasm] = useState<ArrayBuffer>();
 
   useEffect(() => {
     const init = async () => {
@@ -49,6 +50,7 @@ const ProtectedRoute: React.FC = () => {
           const execute_listing_contract = await fetchContract("/execute_listing_call.wasm");
           const raffle_contract = await fetchContract("/raffle.wasm");
           const buy_ticket_contract = await fetchContract("/raffle_deposit.wasm");
+          const lootbox_contract = await fetchContract("/lootbox.wasm");
 
           setCep18Wasm(cep18_contract);
           setCep78Wasm(cep78_contract);
@@ -57,6 +59,7 @@ const ProtectedRoute: React.FC = () => {
           setExecuteListingWasm(execute_listing_contract);
           setRaffleWasm(raffle_contract);
           setBuyTicketWasm(buy_ticket_contract);
+          setLootboxWasm(lootbox_contract);
 
           setProvider(provider);
           setPublicKey(activePublicKey);
@@ -95,7 +98,7 @@ const ProtectedRoute: React.FC = () => {
         <Grid item lg={12} md={12} xs={12} height={"100vh"} paddingTop={{ xl: "12rem", lg: "12rem", md: "10rem", sm: "8rem", xs: "8rem" }}>
           <Grid container direction={"column"} spacing={0}>
             {/* <Grid item><DrawerAppBar /></Grid> */}
-            <Outlet context={[publicKey, provider, cep18Wasm, cep78Wasm, marketplaceWasm, vestingWasm, executeListingWasm, raffleWasm, buyTicketWasm]} />
+            <Outlet context={[publicKey, provider, cep18Wasm, cep78Wasm, marketplaceWasm, vestingWasm, executeListingWasm, raffleWasm, buyTicketWasm, lootboxWasm]} />
           </Grid>
         </Grid>
       </Grid>
