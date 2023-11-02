@@ -245,7 +245,7 @@ export const CreateNft = () => {
                 });
               }}
               value={nftData.tokenMetaData.name}
-              disable={true}
+              disable={disable}
               floor="dark"
             ></CustomInput>
             <CustomInput
@@ -265,6 +265,7 @@ export const CreateNft = () => {
               }}
               value={nftData.tokenMetaData.description}
               disable={fileLoading}
+              floor="dark"
             ></CustomInput>
             <FormControlLabel
               style={{ justifyContent: "start" }}
