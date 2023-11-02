@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ERC20Token, Listing, RaffleNamedKeys } from "./types";
+import { ERC20Token, Listing, LootboxData, RaffleNamedKeys } from "./types";
 
 const service_api = "https://event-store-api-clarity-testnet.make.services/";
 export const SERVER_API = import.meta.env.DEV ? "http://localhost:3000/api/" : "https://casperdev.dappend.com/api/";
@@ -86,6 +86,20 @@ export const fetchRaffleNamedKeys = async (pubkey: string) => {
     }
     return { name: rf.name, key: rf.key };
   });
+  return finalData;
+};
+
+export const fetchLootboxNamedKeys = async (pubkey: string) => {
+  const namedKeys = await fetchNamedKeys(pubkey);
+  const filteredNamedKeys = namedKeys.filter((ky) => {
+    return ky.name.startsWith("lootbox_contract_hash_");
+  });
+
+  const finalData: LootboxData[] = filteredNamedKeys.map((ltbx: LootboxData) => {
+    let newName: string = ltbx.name.replace("lootbox_contract_hash_", "").slice(0, -14);
+    return { name: newName, key: ltbx.key };
+  });
+
   return finalData;
 };
 
@@ -204,6 +218,11 @@ export const fetchMarketplaceData = async (contractHash: string) => {
   const response = await axios.get(SERVER_API + "getMarketplace?contractHash=" + contractHash);
 
   return { ...response.data, contractHash };
+};
+
+export const getLootboxData = async (contractHash: string) => {
+  const response = await axios.get(SERVER_API + "getLootbox?contractHash=" + contractHash);
+  return { ...response.data };
 };
 
 export const storeListing = async (marketplace: string, collection: string, tokenId: number, price: number, nft: any, listingIndex: number) => {
