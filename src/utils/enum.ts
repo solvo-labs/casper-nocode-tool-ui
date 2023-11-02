@@ -33,7 +33,8 @@ export enum NFT_PAGE {
   CREATE_NFT = "Create NFT",
   CREATE_COLLECTION = "Create Collection",
   APPROVE_NFT = "Approve Nft",
-  LOOTBOX = "Lootbox",
+  CREATE_LOOTBOX = "Create Lootbox",
+  MY_LOOTBOXES = "My Lootboxes",
 }
 
 export enum RAFFLE_PAGE {
@@ -129,6 +130,7 @@ export enum FETCH_IMAGE_TYPE {
 
 export enum DONT_HAVE_ANYTHING {
   MARKETPLACE = "Couldn't find the marketplace to be displayed.",
-  COLLECTION = "You don't own any collection. Let's create one.",
+  COLLECTION = "You don't own any collection.",
   NFT = "You don't have an NFT belonging to the collection.",
+  LOOTBOX = "You don't own any lootbox.",
 }
