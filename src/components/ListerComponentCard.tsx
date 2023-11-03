@@ -77,16 +77,14 @@ export const LootboxCard: React.FC<Props> = ({ name, hash, asset, menuOpen, anch
               anchorEl={anchorEl}
               open={menuOpen}
               onClose={handleCloseMenu}
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
               onMouseDown={(e) => {
                 e.stopPropagation();
               }}
             >
               <MenuItem onClick={handleAddNFT}>Add NFT</MenuItem>
-              <MenuItem onClick={handleCloseMenu}>My account</MenuItem>
-              <MenuItem onClick={handleCloseMenu}>Logout</MenuItem>
+              <MenuItem onClick={handleCloseMenu} disabled={true}>
+                Buy
+              </MenuItem>
             </Menu>
           </CardContent>
         </Box>
