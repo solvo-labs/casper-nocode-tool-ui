@@ -1,4 +1,4 @@
-import { Box, Grid, Modal, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid, Modal, Typography } from "@mui/material";
 import React from "react";
 import { LootboxData, NFT } from "../utils/types";
 import { NftCard } from "./NftCard";
@@ -24,12 +24,13 @@ type Props = {
   nfts: NFT[];
   selectedNFTIndex: number;
   disable: boolean;
+  loadingNFT: boolean;
   handleClose: () => void;
   handleChangeIndex: (index: number) => void;
   addItem: () => void;
 };
 
-const AddItemToLootboxModal: React.FC<Props> = ({ open, lootbox, nfts, selectedNFTIndex, disable, handleClose, handleChangeIndex, addItem }) => {
+const AddItemToLootboxModal: React.FC<Props> = ({ open, lootbox, nfts, selectedNFTIndex, disable, loadingNFT, handleClose, handleChangeIndex, addItem }) => {
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style} display={"flex"} flexDirection={"column"} justifyContent={"space-between"}>
@@ -51,7 +52,20 @@ const AddItemToLootboxModal: React.FC<Props> = ({ open, lootbox, nfts, selectedN
           </Typography>
         </Grid>
         <Grid container marginTop={"2rem"}>
-          {nfts?.length > 0 &&
+          {loadingNFT && (
+            <div
+              style={{
+                height: "50vh",
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <CircularProgress />
+            </div>
+          )}
+          {!loadingNFT &&
             nfts.map((nft: any, index: number) => (
               <Grid item md={4} key={index}>
                 <NftCard key={index} asset={nft.asset} description={nft.desciption} index={index} name={nft.name} onClick={() => handleChangeIndex(index)}></NftCard>
