@@ -1,15 +1,16 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, MouseEvent } from "react";
 import { SERVER_API, fetchCep78NamedKeys, fetchLootboxNamedKeys, getLootboxData, getNftCollection, getNftMetadata } from "../../utils/api";
-import { useNavigate, useOutletContext } from "react-router-dom";
-import { Grid, Stack, Typography, Divider } from "@mui/material";
+import { useNavigate, useOutletContext, useSearchParams } from "react-router-dom";
+import { Grid, Stack, Typography, Divider, CircularProgress } from "@mui/material";
 import { CollectionMetada, LootboxData, NFT } from "../../utils/types";
-import { MarketplaceCard } from "../../components/MarketplaceCard";
+import { LootboxCard, MarketplaceCard } from "../../components/ListerComponentCard";
 import CreatorRouter from "../../components/CreatorRouter";
 import { DONT_HAVE_ANYTHING, NFTMetadataKind } from "../../utils/enum";
 import { uint32ArrayToHex } from "../../utils";
 import AddItemToLootboxModal from "../../components/AddItemToLootboxModal";
 // @ts-ignore
-import { CLPublicKey, Contracts, RuntimeArgs, CLValueBuilder, DeployUtil } from "casper-js-sdk";
+import { CLPublicKey, Contracts, RuntimeArgs, CLValueBuilder, CLKey, CLByteArray, DeployUtil } from "casper-js-sdk";
+
 import axios from "axios";
 import toastr from "toastr";
 
@@ -30,12 +31,26 @@ const MyLootboxes = () => {
       ]
     >();
 
+  const [loading, setLoading] = useState<boolean>(false);
+  const [fetchNFTLoading, setFetchNFTLoading] = useState<boolean>(false);
+
   const [lootboxes, setLootboxes] = useState<LootboxData[]>([]);
   const [addItemModalOpen, setAddItemModalOpen] = useState<boolean>(false);
   const [nfts, setNfts] = useState<NFT[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<string>();
   const [selectedNFTIndex, setSelectedNFTIndex] = useState<number>(-1);
-  const [selectedLootbox, setSelectedLootbox] = useState<string>();
+  const [selectedLootbox, setSelectedLootbox] = useState<LootboxData>();
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    event.preventDefault();
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
 
   const navigate = useNavigate();
 
@@ -47,6 +62,7 @@ const MyLootboxes = () => {
 
   useEffect(() => {
     const fetchLootboxes = async () => {
+      setLoading(true);
       const data = await fetchLootboxNamedKeys(publicKey);
       const promises = data.map((dt) => getLootboxData(dt.key));
       const result = await Promise.all(promises);
@@ -58,8 +74,8 @@ const MyLootboxes = () => {
           nft_collection: uint32ArrayToHex(result[index].nft_collection),
         };
       });
-      // console.log(finalData);
       setLootboxes(finalData);
+      setLoading(false);
     };
 
     fetchLootboxes();
@@ -67,6 +83,7 @@ const MyLootboxes = () => {
 
   useEffect(() => {
     const init = async () => {
+      setFetchNFTLoading(true);
       if (selectedCollection) {
         const nftCollection = await getNftCollection("hash-" + selectedCollection);
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
@@ -83,6 +100,7 @@ const MyLootboxes = () => {
 
         // console.log("nftmeta--------->", nftMetas);
         setNfts(nftMetas);
+        setFetchNFTLoading(false);
       }
     };
     init();
@@ -90,15 +108,65 @@ const MyLootboxes = () => {
 
   const disable = useMemo(() => {
     return selectedNFTIndex == -1;
-  }, [selectedNFTIndex, selectedCollection]);
+  }, [selectedNFTIndex]);
+
+  const approve = async () => {
+    setLoading(true);
+    try {
+      if (selectedLootbox?.key) {
+        const contract = new Contracts.Contract();
+        contract.setContractHash("hash-" + selectedCollection);
+
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+        const operatorHash = selectedLootbox.key.replace("hash-", "");
+
+        const args = RuntimeArgs.fromMap({
+          operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(operatorHash, "hex")))),
+          token_id: CLValueBuilder.u64(selectedNFTIndex),
+        });
+
+        const deploy = contract.callEntrypoint("approve", args, ownerPublicKey, "casper-test", "10000000000");
+
+        const deployJson = DeployUtil.deployToJson(deploy);
+
+        try {
+          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+          const data = DeployUtil.deployToJson(signedDeploy.val);
+          const response = await axios.post(SERVER_API + "deploy", data, {
+            headers: { "Content-Type": "application/json" },
+          });
+
+          toastr.success(response.data, "Approve deployed successfully.");
+
+          console.log("approve basarili");
+
+          addItem();
+
+          console.log("additem patladi");
+
+          setLoading(false);
+        } catch (error: any) {
+          toastr.error("Error: " + error);
+          setLoading(false);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toastr.error("error");
+    }
+  };
 
   const addItem = async () => {
     try {
       if (selectedNFTIndex != -1 && selectedLootbox) {
         console.log("asdas");
         const contract = new Contracts.Contract();
-        contract.setContractHash(selectedLootbox);
+        contract.setContractHash(selectedLootbox.key);
 
+        console.log("ahahahhah");
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
         const args = RuntimeArgs.fromMap({
@@ -128,6 +196,22 @@ const MyLootboxes = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div
+        style={{
+          height: "50vh",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
+
   return (
     <Grid marginBottom={"2rem"}>
       <Stack>
@@ -142,27 +226,41 @@ const MyLootboxes = () => {
             <Divider sx={{ backgroundColor: "red", marginBottom: " 1rem !important" }}></Divider>
             {lootboxes?.map((ltbx: any, index: number) => (
               <div key={index}>
-                <MarketplaceCard
+                <LootboxCard
                   key={index}
                   hash={ltbx.key.slice(0, 20)}
                   name={ltbx.name}
-                  onClick={() => {
-                    handleOpen(setAddItemModalOpen);
-                    setSelectedCollection(ltbx.nft_collection);
-                    setSelectedLootbox(ltbx.key);
-                  }}
                   asset={ltbx.asset}
-                ></MarketplaceCard>
-                <AddItemToLootboxModal
-                  lootbox={ltbx}
-                  nfts={nfts}
-                  open={addItemModalOpen}
-                  selectedNFTIndex={selectedNFTIndex}
-                  handleClose={() => handleClose(setAddItemModalOpen)}
-                  handleChangeIndex={setSelectedNFTIndex}
-                  addItem={addItem}
-                  disable={disable}
-                ></AddItemToLootboxModal>
+                  menuOpen={open}
+                  anchorEl={anchorEl}
+                  handleCloseMenu={handleCloseMenu}
+                  handleOpenMenu={(e: any) => {
+                    handleClickMenu(e);
+                    setSelectedLootbox(ltbx);
+                    setSelectedCollection(ltbx.nft_collection);
+                  }}
+                  handleAddNFT={() => {
+                    console.log(ltbx);
+                    handleOpen(setAddItemModalOpen);
+                    handleCloseMenu();
+                  }}
+                ></LootboxCard>
+                {selectedLootbox && (
+                  <AddItemToLootboxModal
+                    lootbox={selectedLootbox}
+                    nfts={nfts}
+                    open={addItemModalOpen}
+                    selectedNFTIndex={selectedNFTIndex}
+                    handleClose={() => {
+                      handleClose(setAddItemModalOpen);
+                      setSelectedNFTIndex(-1);
+                    }}
+                    handleChangeIndex={setSelectedNFTIndex}
+                    addItem={approve}
+                    disable={disable}
+                    loadingNFT={fetchNFTLoading}
+                  ></AddItemToLootboxModal>
+                )}
               </div>
             ))}
           </div>
