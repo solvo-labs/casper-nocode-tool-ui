@@ -170,7 +170,6 @@ export type LootboxInputData = {
   lootbox_price: number;
   items_per_lootbox: number;
   max_lootboxes: number;
-  max_items: number;
 };
 
 export type LootboxData = {

@@ -82,7 +82,6 @@ export const CreateLootbox = () => {
     lootbox_price: 0,
     items_per_lootbox: 0,
     max_lootboxes: 0,
-    max_items: 0,
   });
 
   const handleClear = () => {
@@ -105,7 +104,7 @@ export const CreateLootbox = () => {
           lootbox_price: CLValueBuilder.u512(lootbox.lootbox_price * 1_000_000_000),
           items_per_lootbox: CLValueBuilder.u64(lootbox.items_per_lootbox),
           max_lootboxes: CLValueBuilder.u64(lootbox.max_lootboxes),
-          max_items: CLValueBuilder.u64(lootbox.max_items),
+          max_items: CLValueBuilder.u64(lootbox.max_lootboxes * lootbox.items_per_lootbox),
         });
 
         const deploy = contract.install(new Uint8Array(lootboxWasm), args, "110000000000", ownerPublicKey, "casper-test");
@@ -248,15 +247,7 @@ export const CreateLootbox = () => {
             value={lootbox.max_lootboxes}
             floor="dark"
           ></CustomInput>
-          <CustomInput
-            label="Max Items"
-            name="max_items"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLootbox({ ...lootbox, max_items: Number(e.target.value) })}
-            placeholder="ItemsMax Items"
-            type="text"
-            value={lootbox.max_items}
-            floor="dark"
-          ></CustomInput>
+
           <ImageUpload file={file} loading={imageLoading} setFile={(data) => setFile(data)} handleClear={handleClear}></ImageUpload>
 
           <CustomSelect

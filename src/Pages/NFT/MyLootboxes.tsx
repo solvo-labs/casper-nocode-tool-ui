@@ -140,13 +140,7 @@ const MyLootboxes = () => {
           });
 
           toastr.success(response.data, "Approve deployed successfully.");
-
-          console.log("approve basarili");
-
           addItem();
-
-          console.log("additem patladi");
-
           setLoading(false);
         } catch (error: any) {
           toastr.error("Error: " + error);
@@ -162,11 +156,9 @@ const MyLootboxes = () => {
   const addItem = async () => {
     try {
       if (selectedNFTIndex != -1 && selectedLootbox) {
-        console.log("asdas");
         const contract = new Contracts.Contract();
         contract.setContractHash(selectedLootbox.key);
 
-        console.log("ahahahhah");
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
         const args = RuntimeArgs.fromMap({
