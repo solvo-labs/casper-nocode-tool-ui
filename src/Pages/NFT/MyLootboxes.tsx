@@ -31,7 +31,7 @@ const MyLootboxes = () => {
       ]
     >();
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [fetchNFTLoading, setFetchNFTLoading] = useState<boolean>(false);
 
   const [lootboxes, setLootboxes] = useState<LootboxData[]>([]);
@@ -44,8 +44,8 @@ const MyLootboxes = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    event.preventDefault();
+    // event.stopPropagation();
+    // event.preventDefault();
     setAnchorEl(event.currentTarget);
   };
   const handleCloseMenu = () => {
@@ -62,7 +62,6 @@ const MyLootboxes = () => {
 
   useEffect(() => {
     const fetchLootboxes = async () => {
-      setLoading(true);
       const data = await fetchLootboxNamedKeys(publicKey);
       const promises = data.map((dt) => getLootboxData(dt.key));
       const result = await Promise.all(promises);
