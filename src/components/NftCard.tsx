@@ -1,16 +1,20 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import { Card, CardActionArea, CardContent, CardMedia, Chip, Theme, Typography } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle"; // Örnek bir ikon, gerekirse değiştirebilirsiniz
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((_theme: Theme) => ({
   card: {
     margin: "1rem",
     maxHeight: "560px",
     minHeight: "240px",
-    // height: "360px",
-    [theme.breakpoints.down("xl")]: {
-      // fontSize: "1rem",
-    },
+  },
+
+  selectedIcon: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    color: "green",
   },
 }));
 
@@ -24,15 +28,17 @@ type Props = {
   price?: number;
   chipTitle?: string;
   status?: "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" | undefined;
+  isSelected?: boolean;
   onClick?: () => void;
 };
 
-export const NftCard: React.FC<Props> = ({ name, description, asset, index, owner, amIOwner = false, price, chipTitle, status, onClick }) => {
+export const NftCard: React.FC<Props> = ({ name, description, asset, index, owner, amIOwner = false, price, chipTitle, status, isSelected = false, onClick }) => {
   const classes = useStyles();
 
   return (
     <CardActionArea>
       <Card className={classes.card} onClick={onClick}>
+        {isSelected && <CheckCircleIcon className={classes.selectedIcon} fontSize="large" />}
         <CardMedia component="img" height="250" image={asset} alt={name} />
         <CardContent>
           <Typography fontWeight={"bold"} gutterBottom variant="h5" component="div">

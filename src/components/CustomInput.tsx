@@ -55,9 +55,10 @@ type Props = {
   disable?: boolean;
   required?: boolean;
   floor?: "light" | "dark";
+  style?: any;
 };
 
-export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, type, value, onChange, disable = false, required, floor = "light" }) => {
+export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, type, value, onChange, disable = false, required, floor = "light", style }) => {
   const classes = useStyles();
 
   return (
@@ -103,6 +104,7 @@ export const CustomInput: React.FC<Props> = ({ placeholder, label, id, name, typ
       fullWidth
       disabled={disable}
       variant="outlined"
+      style={style}
     />
   );
 };

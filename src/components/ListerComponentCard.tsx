@@ -52,6 +52,7 @@ export const MarketplaceCard: React.FC<Props> = ({ name, hash, asset, onClick })
 
 export const LootboxCard: React.FC<Props> = ({ name, hash, asset, description, menuOpen, anchorEl, onClick, handleCloseMenu, handleOpenMenu, handleAddNFT }) => {
   const classes = useStyles();
+
   return (
     <CardActionArea onClick={onClick}>
       <Card sx={{ display: "flex" }} className={classes.card}>
@@ -62,14 +63,14 @@ export const LootboxCard: React.FC<Props> = ({ name, hash, asset, description, m
               <Typography component="div" variant="h5">
                 {name}
               </Typography>
-              <IconButton
+              {/* <IconButton
                 onMouseDown={(e) => {
                   e.stopPropagation();
                 }}
                 onClick={handleOpenMenu}
               >
                 <MoreVertIcon />
-              </IconButton>
+              </IconButton> */}
             </Stack>
             <Typography variant="subtitle1" color="text.secondary" component="div">
               {description}
