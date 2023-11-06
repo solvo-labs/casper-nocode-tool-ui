@@ -175,6 +175,12 @@ export type LootboxInputData = {
 export type LootboxData = {
   name: string;
   key: string;
-  asset?: string;
-  nft_collection?: string;
+  asset: string;
+  nft_collection: string;
+  deposited_item_count: number;
+  description: string;
+  item_count: number;
+  items_per_lootbox: number;
+  lootbox_count: number;
+  lootbox_price: number;
 };

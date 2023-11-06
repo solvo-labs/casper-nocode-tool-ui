@@ -47,9 +47,10 @@ type Props = {
   loading: boolean;
   setFile: (image: File | null) => void;
   handleClear: () => void;
+  text?: string;
 };
 
-const ImageUpload: React.FC<Props> = ({ file, loading, handleClear, setFile }) => {
+const ImageUpload: React.FC<Props> = ({ file, loading, handleClear, setFile, text = "Upload your file" }) => {
   const classes = useStyles();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -70,7 +71,7 @@ const ImageUpload: React.FC<Props> = ({ file, loading, handleClear, setFile }) =
     <Grid container className={classes.container}>
       <Grid item>
         <Stack spacing={1}>
-          <Typography variant="body1">Upload your icon (optional)</Typography>
+          <Typography variant="body1">{text}</Typography>
           <input className={classes.input} accept="image/*" multiple id="contained-button-file" type="file" onChange={handleFileInputChange} ref={inputRef}></input>
           <label htmlFor="contained-button-file">
             <Button className={classes.button} variant="contained" color="primary" component="span">

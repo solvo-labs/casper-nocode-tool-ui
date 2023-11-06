@@ -95,7 +95,7 @@ export const fetchLootboxNamedKeys = async (pubkey: string) => {
     return ky.name.startsWith("lootbox_contract_hash_");
   });
 
-  const finalData: LootboxData[] = filteredNamedKeys.map((ltbx: LootboxData) => {
+  const finalData = filteredNamedKeys.map((ltbx: any) => {
     let newName: string = ltbx.name.replace("lootbox_contract_hash_", "").slice(0, -14);
     return { name: newName, key: ltbx.key };
   });
@@ -221,8 +221,8 @@ export const fetchMarketplaceData = async (contractHash: string) => {
 };
 
 export const getLootboxData = async (contractHash: string) => {
-  const response = await axios.get(SERVER_API + "getLootbox?contractHash=" + contractHash);
-  return { ...response.data };
+  const response = await axios.get<LootboxData>(SERVER_API + "getLootbox?contractHash=" + contractHash);
+  return response.data;
 };
 
 export const storeListing = async (marketplace: string, collection: string, tokenId: number, price: number, nft: any, listingIndex: number) => {

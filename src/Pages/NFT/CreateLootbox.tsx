@@ -4,25 +4,12 @@ import { makeStyles } from "@mui/styles";
 import ImageUpload from "../../components/ImageUpload";
 import { useEffect, useMemo, useState } from "react";
 import { NFTStorage } from "nft.storage";
-import { CollectionMetada, LootboxInputData, NFT } from "../../utils/types";
+import { CollectionMetada, LootboxInputData } from "../../utils/types";
 import { CustomButton } from "../../components/CustomButton";
 import { SERVER_API, fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
 import { useNavigate, useOutletContext } from "react-router-dom";
 // @ts-ignore
-import {
-  RuntimeArgs,
-  DeployUtil,
-  CLValueBuilder,
-  Contracts,
-  CLKey,
-  CasperClient,
-  CLByteArray,
-  Keys,
-  CLPublicKey,
-  Signer,
-  CasperServiceByJsonRPC,
-  CLAccountHash,
-} from "casper-js-sdk";
+import { RuntimeArgs, DeployUtil, CLValueBuilder, Contracts, CLPublicKey } from "casper-js-sdk";
 import { CustomSelect } from "../../components/CustomSelect";
 import { CasperHelpers } from "../../utils";
 import axios from "axios";
@@ -200,8 +187,8 @@ export const CreateLootbox = () => {
           Lootbox
         </Typography>
       </Grid>
-      <Grid item marginTop={"2rem"} display={"flex"} justifyContent={"center"}>
-        <Stack className={classes.inputContainer} spacing={4}>
+      <Grid item marginTop={"1rem"} display={"flex"} justifyContent={"center"}>
+        <Stack className={classes.inputContainer} spacing={2}>
           <CustomInput
             label="Name"
             name="name"
@@ -221,10 +208,10 @@ export const CreateLootbox = () => {
             floor="dark"
           ></CustomInput>
           <CustomInput
-            label="Price"
+            label="Price (CSPR)"
             name="price"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLootbox({ ...lootbox, lootbox_price: Number(e.target.value) })}
-            placeholder="Price"
+            placeholder="Price (CSPR)"
             type="text"
             value={lootbox.lootbox_price}
             floor="dark"
@@ -248,7 +235,7 @@ export const CreateLootbox = () => {
             floor="dark"
           ></CustomInput>
 
-          <ImageUpload file={file} loading={imageLoading} setFile={(data) => setFile(data)} handleClear={handleClear}></ImageUpload>
+          <ImageUpload file={file} loading={imageLoading} text="Uplaod image for lootbox cover" setFile={(data) => setFile(data)} handleClear={handleClear}></ImageUpload>
 
           <CustomSelect
             value={lootbox.collection?.contractHash || "default"}

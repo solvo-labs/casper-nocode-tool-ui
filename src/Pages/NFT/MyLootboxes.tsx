@@ -1,12 +1,11 @@
-import React, { useEffect, useMemo, useState, MouseEvent } from "react";
-import { SERVER_API, fetchCep78NamedKeys, fetchLootboxNamedKeys, getLootboxData, getNftCollection, getNftMetadata } from "../../utils/api";
-import { useNavigate, useOutletContext, useSearchParams } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { SERVER_API, fetchLootboxNamedKeys, getLootboxData, getNftCollection, getNftMetadata } from "../../utils/api";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { Grid, Stack, Typography, Divider, CircularProgress } from "@mui/material";
-import { CollectionMetada, LootboxData, NFT } from "../../utils/types";
-import { LootboxCard, MarketplaceCard } from "../../components/ListerComponentCard";
+import { LootboxData, NFT } from "../../utils/types";
+import { LootboxCard } from "../../components/ListerComponentCard";
 import CreatorRouter from "../../components/CreatorRouter";
-import { DONT_HAVE_ANYTHING, NFTMetadataKind } from "../../utils/enum";
-import { uint32ArrayToHex } from "../../utils";
+import { DONT_HAVE_ANYTHING } from "../../utils/enum";
 import AddItemToLootboxModal from "../../components/AddItemToLootboxModal";
 // @ts-ignore
 import { CLPublicKey, Contracts, RuntimeArgs, CLValueBuilder, CLKey, CLByteArray, DeployUtil } from "casper-js-sdk";
@@ -64,16 +63,9 @@ const MyLootboxes = () => {
     const fetchLootboxes = async () => {
       const data = await fetchLootboxNamedKeys(publicKey);
       const promises = data.map((dt) => getLootboxData(dt.key));
-      const result = await Promise.all(promises);
+      const result: LootboxData[] = await Promise.all(promises);
 
-      const finalData: LootboxData[] = data.map((dt: LootboxData, index: number) => {
-        return {
-          ...dt,
-          asset: result[index].asset,
-          nft_collection: uint32ArrayToHex(result[index].nft_collection),
-        };
-      });
-      setLootboxes(finalData);
+      setLootboxes(result);
       setLoading(false);
     };
 
