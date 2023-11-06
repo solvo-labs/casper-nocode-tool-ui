@@ -104,7 +104,6 @@ const MyLootboxes = () => {
       if (selectedLootbox) {
         const contract = new Contracts.Contract();
         contract.setContractHash("hash-" + selectedLootbox.nft_collection);
-
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
         const operatorHash = selectedLootbox.key.replace("hash-", "");

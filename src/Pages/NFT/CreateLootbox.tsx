@@ -94,7 +94,7 @@ export const CreateLootbox = () => {
           max_items: CLValueBuilder.u64(lootbox.max_lootboxes * lootbox.items_per_lootbox),
         });
 
-        const deploy = contract.install(new Uint8Array(lootboxWasm), args, "110000000000", ownerPublicKey, "casper-test");
+        const deploy = contract.install(new Uint8Array(lootboxWasm), args, "130000000000", ownerPublicKey, "casper-test");
         const deployJson = DeployUtil.deployToJson(deploy);
 
         try {
