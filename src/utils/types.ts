@@ -184,3 +184,10 @@ export type LootboxData = {
   lootbox_count: number;
   lootbox_price: number;
 };
+
+export type LootboxItem = {
+  idValue: number;
+  rarityValue: number;
+  tokenIdValue: number;
+  nameText: string;
+};

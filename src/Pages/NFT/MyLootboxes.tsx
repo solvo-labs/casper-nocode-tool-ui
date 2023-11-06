@@ -12,23 +12,10 @@ import { CLPublicKey, Contracts, RuntimeArgs, CLValueBuilder, CLKey, CLByteArray
 
 import axios from "axios";
 import toastr from "toastr";
+import LootboxModal from "../../components/LootboxModal";
 
 const MyLootboxes = () => {
-  const [publicKey, provider, , , , , , , , lootboxWasm] =
-    useOutletContext<
-      [
-        publicKey: any,
-        provider: any,
-        cep18Wasm: any,
-        cep78Wasm: any,
-        marketplaceWasm: any,
-        vestingWasm: any,
-        executeListingWasm: any,
-        raffleWasm: any,
-        buyTicketWasm: any,
-        lootboxWasm: any
-      ]
-    >();
+  const [publicKey, provider] = useOutletContext<[publicKey: any, provider: any]>();
 
   const [loading, setLoading] = useState<boolean>(true);
   const [fetchNFTLoading, setFetchNFTLoading] = useState<boolean>(false);
@@ -39,12 +26,11 @@ const MyLootboxes = () => {
   const [selectedCollection, setSelectedCollection] = useState<string>();
   const [selectedNFTIndex, setSelectedNFTIndex] = useState<number>(-1);
   const [selectedLootbox, setSelectedLootbox] = useState<LootboxData>();
+  const [showDetailsModal, setShowDetailsModal] = useState<boolean>(false);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // event.stopPropagation();
-    // event.preventDefault();
     setAnchorEl(event.currentTarget);
   };
   const handleCloseMenu = () => {
@@ -207,13 +193,14 @@ const MyLootboxes = () => {
           <div>
             <Typography variant="h5">Lootboxes</Typography>
             <Divider sx={{ backgroundColor: "red", marginBottom: " 1rem !important" }}></Divider>
-            {lootboxes?.map((ltbx: any, index: number) => (
+            {lootboxes?.map((ltbx: LootboxData, index: number) => (
               <div key={index}>
                 <LootboxCard
                   key={index}
-                  hash={ltbx.key.slice(0, 20)}
+                  hash={ltbx.key}
                   name={ltbx.name}
                   asset={ltbx.asset}
+                  description={ltbx.description}
                   menuOpen={open}
                   anchorEl={anchorEl}
                   handleCloseMenu={handleCloseMenu}
@@ -227,22 +214,36 @@ const MyLootboxes = () => {
                     handleOpen(setAddItemModalOpen);
                     handleCloseMenu();
                   }}
-                ></LootboxCard>
+                  onClick={() => {
+                    console.log("here");
+                    setShowDetailsModal(true);
+                    setSelectedLootbox(ltbx);
+                  }}
+                />
                 {selectedLootbox && (
-                  <AddItemToLootboxModal
-                    lootbox={selectedLootbox}
-                    nfts={nfts}
-                    open={addItemModalOpen}
-                    selectedNFTIndex={selectedNFTIndex}
-                    handleClose={() => {
-                      handleClose(setAddItemModalOpen);
-                      setSelectedNFTIndex(-1);
-                    }}
-                    handleChangeIndex={setSelectedNFTIndex}
-                    addItem={approve}
-                    disable={disable}
-                    loadingNFT={fetchNFTLoading}
-                  ></AddItemToLootboxModal>
+                  <>
+                    <AddItemToLootboxModal
+                      lootbox={selectedLootbox}
+                      nfts={nfts}
+                      open={addItemModalOpen}
+                      selectedNFTIndex={selectedNFTIndex}
+                      handleClose={() => {
+                        handleClose(setAddItemModalOpen);
+                        setSelectedNFTIndex(-1);
+                      }}
+                      handleChangeIndex={setSelectedNFTIndex}
+                      addItem={approve}
+                      disable={disable}
+                      loadingNFT={fetchNFTLoading}
+                    />
+                    <LootboxModal
+                      open={showDetailsModal}
+                      handleClose={() => {
+                        setShowDetailsModal(false);
+                      }}
+                      lootbox={selectedLootbox}
+                    />
+                  </>
                 )}
               </div>
             ))}

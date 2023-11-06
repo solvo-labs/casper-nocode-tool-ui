@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ERC20Token, Listing, LootboxData, RaffleNamedKeys } from "./types";
+import { ERC20Token, Listing, LootboxData, LootboxItem, RaffleNamedKeys } from "./types";
 
 const service_api = "https://event-store-api-clarity-testnet.make.services/";
 export const SERVER_API = import.meta.env.DEV ? "http://localhost:3000/api/" : "https://casperdev.dappend.com/api/";
@@ -319,5 +319,10 @@ export const getAllNftsByOwned = async (accountHash: string) => {
 export const soldNft = async (id: string) => {
   const response = await axios.get(SERVER_API + "sold-nft?id=" + id);
 
+  return response.data;
+};
+
+export const getLootboxItem = async (contractHash: string, index: number) => {
+  const response = await axios.get<LootboxItem>(SERVER_API + "fetchLootboxItem?contractHash=" + contractHash + "&index=" + index);
   return response.data;
 };

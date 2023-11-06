@@ -80,19 +80,20 @@ export const CreateNft = () => {
 
   useEffect(() => {
     const init = async () => {
-      const data = await fetchCep78NamedKeys(publicKey);
-
-      const promises = data.map((data) => getNftCollection(data.key));
-
-      const result = await Promise.all(promises);
-
       if (params.collectionHash) {
-        const currentCollection = result.find((rs) => rs.contractHash === params.collectionHash);
+        const currentCollection = await getNftCollection(params.collectionHash);
 
         setSelectedCollection(currentCollection);
+      } else {
+        const data = await fetchCep78NamedKeys(publicKey);
+
+        const promises = data.map((data) => getNftCollection(data.key));
+
+        const result = await Promise.all(promises);
+
+        setCollections(result);
       }
 
-      setCollections(result);
       setLoading(false);
     };
 
@@ -204,16 +205,17 @@ export const CreateNft = () => {
         <Grid container className={classes.gridContainer}>
           <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
             <CustomSelect
-              value={selectedCollection?.contractHash || "default"}
+              value={collections.length > 0 ? selectedCollection?.contractHash || "default" : "default"}
               label="ERC-20 Token"
               onChange={(event: SelectChangeEvent) => {
                 const data = collections.find((tk: any) => tk.contractHash === event.target.value);
                 setSelectedCollection(data);
               }}
               id={"custom-select"}
+              disabled={params.collectionHash !== undefined}
             >
               <MenuItem value="default">
-                <em>Select a Collection</em>
+                <em>{params.collectionHash ? selectedCollection.collection_name : "Select a Collection"}</em>
               </MenuItem>
               {collections.map((tk: any) => {
                 return (

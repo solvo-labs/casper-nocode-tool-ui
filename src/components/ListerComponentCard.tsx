@@ -1,6 +1,6 @@
 import React, { MouseEvent } from "react";
 import { makeStyles } from "@mui/styles";
-import { Box, Button, Card, CardActionArea, CardContent, CardMedia, IconButton, Menu, MenuItem, Stack, Theme, Typography } from "@mui/material";
+import { Box, Card, CardActionArea, CardContent, CardMedia, IconButton, Menu, MenuItem, Stack, Theme, Typography } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -19,7 +19,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 type Props = {
   name: string;
   hash: string;
-  asset?: string;
+  asset: string;
+  description: string;
   menuOpen: boolean;
   anchorEl: null | HTMLElement;
   onClick?: () => void;
@@ -31,8 +32,8 @@ type Props = {
 export const MarketplaceCard: React.FC<Props> = ({ name, hash, asset, onClick }) => {
   const classes = useStyles();
   return (
-    <CardActionArea>
-      <Card sx={{ display: "flex" }} className={classes.card} onClick={onClick}>
+    <CardActionArea onClick={onClick}>
+      <Card sx={{ display: "flex" }} className={classes.card}>
         <CardMedia component="img" sx={{ height: "auto", width: 200 }} image={asset ? asset : "/images/casper.png"} alt={name} />
         <Box sx={{ display: "flex", flexDirection: "column" }}>
           <CardContent sx={{ flex: "1 0 auto" }}>
@@ -49,12 +50,12 @@ export const MarketplaceCard: React.FC<Props> = ({ name, hash, asset, onClick })
   );
 };
 
-export const LootboxCard: React.FC<Props> = ({ name, hash, asset, menuOpen, anchorEl, handleCloseMenu, handleOpenMenu, handleAddNFT }) => {
+export const LootboxCard: React.FC<Props> = ({ name, hash, asset, description, menuOpen, anchorEl, onClick, handleCloseMenu, handleOpenMenu, handleAddNFT }) => {
   const classes = useStyles();
   return (
-    <CardActionArea>
+    <CardActionArea onClick={onClick}>
       <Card sx={{ display: "flex" }} className={classes.card}>
-        <CardMedia component="img" sx={{ height: "auto", width: 200 }} image={asset ? asset : "/images/casper.png"} alt={name} />
+        <CardMedia component="img" sx={{ height: "auto", width: 200, objectFit: "contain" }} image={asset ? asset : "/images/casper.png"} alt={name} />
         <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
           <CardContent sx={{ flex: "1 0 auto" }}>
             <Stack direction={"row"} justifyContent={"space-between"}>
@@ -70,6 +71,9 @@ export const LootboxCard: React.FC<Props> = ({ name, hash, asset, menuOpen, anch
                 <MoreVertIcon />
               </IconButton>
             </Stack>
+            <Typography variant="subtitle1" color="text.secondary" component="div">
+              {description}
+            </Typography>
             <Typography variant="subtitle1" color="text.secondary" component="div">
               {hash}
             </Typography>
