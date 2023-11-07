@@ -84,12 +84,11 @@ const MyLootboxes = () => {
           data.push(result);
         }
 
-        const currentCollection = await getNftCollection("hash-" + selectedLootbox.nft_collection);
         if (nftMetas.length === 0) setIsAddItem(false);
 
         const filteredItems = allNfts.filter((al) => data.findIndex((dt) => dt.tokenIdValue === al.index) > -1);
 
-        setCollection(currentCollection);
+        setCollection(nftCollection);
         setItems(filteredItems);
         setNfts(nftMetas);
         setFetchNFTLoading(false);
