@@ -76,7 +76,12 @@ const AddItemToLootboxModal: React.FC<Props> = ({
                 Lootbox <b>{lootbox.name}</b>
               </Typography>
               <Typography variant="subtitle1">
-                Collection is <b>{collection.collection_name}</b> , Lootbox Count is <b>{lootbox.lootbox_count}</b> , Item count per lootbox is <b>{lootbox.items_per_lootbox}</b>
+                Collection is <b>{collection.collection_name}</b> , Max Lootbox count is <b>{lootbox.max_lootboxes}</b> , Item count per lootbox is{" "}
+                <b>{lootbox.items_per_lootbox}</b>
+              </Typography>
+              <Typography variant="subtitle1">
+                Earning <b>{lootbox.earning} (CSPR)</b>
+                <CustomButton onClick={() => {}} style={{ marginLeft: "1rem" }} label={"Withdraw"} disabled={lootbox.earning === 0}></CustomButton>
               </Typography>
               <Typography variant="subtitle1">
                 {selectedNFTIndex !== undefined && (

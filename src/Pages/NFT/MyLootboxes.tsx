@@ -132,7 +132,7 @@ const MyLootboxes = () => {
 
           toastr.success(response.data, "Approve deployed successfully.");
           addItem();
-          setLoading(false);
+          // setLoading(false);
         } catch (error: any) {
           toastr.error("Error: " + error);
           setLoading(false);
@@ -170,11 +170,14 @@ const MyLootboxes = () => {
           });
           toastr.success(response.data, "Item added to Lootbox successfully.");
           navigate("/my-lootboxes");
+          setLoading(false);
         } catch (error: any) {
           toastr.error("Item couldn't be successfully uploaded to the Lootbox. Error: " + error);
+          setLoading(false);
         }
       }
     } catch (error) {
+      setLoading(false);
       toastr.error("Error: " + error);
     }
   };
