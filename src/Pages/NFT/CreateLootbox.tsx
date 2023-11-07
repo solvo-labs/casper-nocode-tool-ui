@@ -9,9 +9,9 @@ import { CustomButton } from "../../components/CustomButton";
 import { SERVER_API, fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
 import { useNavigate, useOutletContext } from "react-router-dom";
 // @ts-ignore
-import { RuntimeArgs, DeployUtil, CLValueBuilder, Contracts, CLPublicKey } from "casper-js-sdk";
+import { RuntimeArgs, DeployUtil, CLValueBuilder, Contracts, CLPublicKey, CLAccountHash } from "casper-js-sdk";
 import { CustomSelect } from "../../components/CustomSelect";
-import { CasperHelpers } from "../../utils";
+import { CasperHelpers, lootboxStorageContract } from "../../utils";
 import axios from "axios";
 import toastr from "toastr";
 
@@ -92,6 +92,7 @@ export const CreateLootbox = () => {
           items_per_lootbox: CLValueBuilder.u64(lootbox.items_per_lootbox),
           max_lootboxes: CLValueBuilder.u64(lootbox.max_lootboxes),
           max_items: CLValueBuilder.u64(lootbox.max_lootboxes * lootbox.items_per_lootbox),
+          storage_key: new CLAccountHash(Buffer.from(lootboxStorageContract, "hex")),
         });
 
         const deploy = contract.install(new Uint8Array(lootboxWasm), args, "130000000000", ownerPublicKey, "casper-test");

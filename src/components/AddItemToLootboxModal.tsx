@@ -23,6 +23,7 @@ type Props = {
   open: boolean;
   lootbox: LootboxData;
   nfts: NFT[];
+  items: NFT[];
   disable: boolean;
   loadingNFT: boolean;
   collection: any;
@@ -33,12 +34,14 @@ type Props = {
   handleChangeIndex: (index: number) => void;
   addItem: () => void;
   handleChangeItemName: (text: string) => void;
+  showButtonOnChange: () => void;
 };
 
 const AddItemToLootboxModal: React.FC<Props> = ({
   open,
   lootbox,
   nfts,
+  items,
   disable,
   loadingNFT,
   collection,
@@ -49,6 +52,7 @@ const AddItemToLootboxModal: React.FC<Props> = ({
   handleChangeIndex,
   addItem,
   handleChangeItemName,
+  showButtonOnChange,
 }) => {
   return (
     <Modal open={open} onClose={handleClose}>
@@ -83,24 +87,45 @@ const AddItemToLootboxModal: React.FC<Props> = ({
               </Typography>
             </Grid>
             <Grid container marginTop={"2rem"}>
-              <div style={{ textAlign: "center", width: "100%", marginBottom: "0.5rem" }}>
-                <Typography variant="h5">
+              <div style={{ width: "100%", marginBottom: "0.5rem" }}>
+                <div style={{ textAlign: "center", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <Typography variant="h5">
+                    {isAddItem ? (
+                      <>
+                        {nfts.length > 0 ? (
+                          <>
+                            Add Item to <b>{lootbox.name}</b>
+                          </>
+                        ) : (
+                          <div style={{ display: "flex", justifyContent: "center" }}>There are no nft's</div>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {items.length > 0 ? (
+                          <>
+                            Existing items in <b>{lootbox.name}</b>
+                          </>
+                        ) : (
+                          <div style={{ display: "flex", justifyContent: "center" }}>There are no items</div>
+                        )}
+                      </>
+                    )}
+                  </Typography>
                   {isAddItem ? (
-                    <>
-                      Add Item to <b>{lootbox.name}</b>
-                    </>
+                    <CustomButton label="Show Existing Items" onClick={showButtonOnChange} disabled={false} />
                   ) : (
-                    "Existing Items"
+                    <CustomButton label="Show Addable NFTs." onClick={showButtonOnChange} disabled={false} />
                   )}
-                </Typography>
+                </div>
               </div>
-              {nfts.map((nft: any, index: number) => (
+              {(isAddItem ? nfts : items).map((nft: any, index: number) => (
                 <Grid item md={4} key={index}>
                   <NftCard
                     key={nft.index}
                     asset={nft.asset}
-                    description={nft.desciption}
-                    index={index}
+                    description={nft.description}
+                    index={nft.index}
                     name={nft.name}
                     onClick={() => handleChangeIndex(nft.index)}
                     isSelected={selectedNFTIndex === nft.index}
@@ -109,21 +134,23 @@ const AddItemToLootboxModal: React.FC<Props> = ({
                 </Grid>
               ))}
             </Grid>
-            <Grid display={"flex"} justifyContent={"space-between"} marginTop={"0.5rem"}>
-              <CustomInput
-                placeholder="Item Name"
-                label="Item Name"
-                id="itemName"
-                name="itemName"
-                type="text"
-                onChange={(e: any) => {
-                  handleChangeItemName(e.target.value);
-                }}
-                value={itemName}
-                style={{ width: "70%" }}
-              />
-              <CustomButton disabled={disable} style={{ width: "25%" }} label="Add Item" onClick={addItem}></CustomButton>
-            </Grid>
+            {isAddItem && (
+              <Grid display={"flex"} justifyContent={"space-between"} marginTop={"0.5rem"}>
+                <CustomInput
+                  placeholder="Item Name"
+                  label="Item Name"
+                  id="itemName"
+                  name="itemName"
+                  type="text"
+                  onChange={(e: any) => {
+                    handleChangeItemName(e.target.value);
+                  }}
+                  value={itemName}
+                  style={{ width: "70%" }}
+                />
+                <CustomButton disabled={disable} style={{ width: "25%" }} label="Add Item" onClick={addItem}></CustomButton>
+              </Grid>
+            )}
           </>
         )}
       </Box>

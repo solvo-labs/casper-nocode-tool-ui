@@ -21,7 +21,7 @@ const MyLootboxes = () => {
   const [nfts, setNfts] = useState<NFT[]>([]);
   const [selectedNFTIndex, setSelectedNFTIndex] = useState<number>();
   const [selectedLootbox, setSelectedLootbox] = useState<LootboxData>();
-  const [items, setItems] = useState<LootboxItem[]>([]);
+  const [items, setItems] = useState<NFT[]>([]);
   const [collection, setCollection] = useState<any>();
   const [isAddItem, setIsAddItem] = useState<boolean>(true);
   const [itemName, setItemName] = useState<string>("");
@@ -73,10 +73,10 @@ const MyLootboxes = () => {
           promises.push(getNftMetadata("hash-" + selectedLootbox.nft_collection, index.toString(), accountHash.slice(13)));
         }
 
-        const nftMetasPromiseResult = await Promise.all(promises);
-        const nftMetas = nftMetasPromiseResult.filter((nft) => nft.isMyNft);
+        const allNfts = await Promise.all(promises);
+        const nftMetas = allNfts.filter((nft) => nft.isMyNft);
 
-        const data = [];
+        const data: LootboxItem[] = [];
 
         for (let index = 0; index < selectedLootbox.deposited_item_count; index++) {
           const result = await getLootboxItem(selectedLootbox.key, index);
@@ -85,9 +85,12 @@ const MyLootboxes = () => {
         }
 
         const currentCollection = await getNftCollection("hash-" + selectedLootbox.nft_collection);
+        if (nftMetas.length === 0) setIsAddItem(false);
+
+        const filteredItems = allNfts.filter((al) => data.findIndex((dt) => dt.tokenIdValue === al.index) > -1);
 
         setCollection(currentCollection);
-        setItems(data);
+        setItems(filteredItems);
         setNfts(nftMetas);
         setFetchNFTLoading(false);
       }
@@ -238,6 +241,7 @@ const MyLootboxes = () => {
                       handleClose={() => {
                         setSelectedLootbox(undefined);
                         setSelectedNFTIndex(undefined);
+                        setIsAddItem(true);
                       }}
                       collection={collection}
                       handleChangeIndex={setSelectedNFTIndex}
@@ -247,6 +251,11 @@ const MyLootboxes = () => {
                       isAddItem={isAddItem}
                       itemName={itemName}
                       handleChangeItemName={(text: string) => setItemName(text)}
+                      showButtonOnChange={() => {
+                        setSelectedNFTIndex(undefined);
+                        setIsAddItem(!isAddItem);
+                      }}
+                      items={items}
                     />
                   </>
                 )}
