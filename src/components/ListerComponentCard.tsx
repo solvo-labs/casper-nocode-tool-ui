@@ -1,7 +1,6 @@
 import React, { MouseEvent } from "react";
 import { makeStyles } from "@mui/styles";
-import { Box, Card, CardActionArea, CardContent, CardMedia, IconButton, Menu, MenuItem, Stack, Theme, Typography } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { Box, Card, CardActionArea, CardContent, CardMedia, Menu, MenuItem, Stack, Theme, Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -13,6 +12,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     [theme.breakpoints.down("xl")]: {
       // fontSize: "1rem",
     },
+  },
+  text: {
+    whiteSpace: "nowrap",
   },
 }));
 
@@ -50,7 +52,7 @@ export const MarketplaceCard: React.FC<Props> = ({ name, hash, asset, onClick })
   );
 };
 
-export const LootboxCard: React.FC<Props> = ({ name, hash, asset, description, menuOpen, anchorEl, onClick, handleCloseMenu, handleOpenMenu, handleAddNFT }) => {
+export const LootboxCard: React.FC<Props> = ({ name, hash, asset, description, menuOpen, anchorEl, onClick, handleCloseMenu, handleAddNFT }) => {
   const classes = useStyles();
 
   return (
@@ -72,10 +74,10 @@ export const LootboxCard: React.FC<Props> = ({ name, hash, asset, description, m
                 <MoreVertIcon />
               </IconButton> */}
             </Stack>
-            <Typography variant="subtitle1" color="text.secondary" component="div">
+            <Typography className={classes.text} variant="subtitle1" color="text.secondary" component="div">
               {description}
             </Typography>
-            <Typography variant="subtitle1" color="text.secondary" component="div">
+            <Typography className={classes.text} variant="subtitle1" color="text.secondary" component="div">
               {hash}
             </Typography>
             <Menu

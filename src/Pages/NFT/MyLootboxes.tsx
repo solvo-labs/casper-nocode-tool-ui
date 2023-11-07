@@ -73,7 +73,8 @@ const MyLootboxes = () => {
           promises.push(getNftMetadata("hash-" + selectedLootbox.nft_collection, index.toString(), accountHash.slice(13)));
         }
 
-        const nftMetas = await Promise.all(promises);
+        const nftMetasPromiseResult = await Promise.all(promises);
+        const nftMetas = nftMetasPromiseResult.filter((nft) => nft.isMyNft);
 
         const data = [];
 
@@ -95,7 +96,7 @@ const MyLootboxes = () => {
   }, [selectedLootbox]);
 
   const disable = useMemo(() => {
-    return selectedNFTIndex == -1;
+    return selectedNFTIndex == undefined;
   }, [selectedNFTIndex]);
 
   const approve = async () => {

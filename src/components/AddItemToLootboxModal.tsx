@@ -50,8 +50,6 @@ const AddItemToLootboxModal: React.FC<Props> = ({
   addItem,
   handleChangeItemName,
 }) => {
-  console.log(selectedNFTIndex);
-
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style} display={"flex"} flexDirection={"column"} justifyContent={"space-between"}>
@@ -99,13 +97,14 @@ const AddItemToLootboxModal: React.FC<Props> = ({
               {nfts.map((nft: any, index: number) => (
                 <Grid item md={4} key={index}>
                   <NftCard
-                    key={index}
+                    key={nft.index}
                     asset={nft.asset}
                     description={nft.desciption}
                     index={index}
                     name={nft.name}
-                    onClick={() => handleChangeIndex(index)}
-                    isSelected={selectedNFTIndex === index}
+                    onClick={() => handleChangeIndex(nft.index)}
+                    isSelected={selectedNFTIndex === nft.index}
+                    amIOwner={nft.isMyNft}
                   />
                 </Grid>
               ))}
@@ -123,8 +122,7 @@ const AddItemToLootboxModal: React.FC<Props> = ({
                 value={itemName}
                 style={{ width: "70%" }}
               />
-
-              <CustomButton disabled={disable} label="Add Item" onClick={addItem}></CustomButton>
+              <CustomButton disabled={disable} style={{ width: "25%" }} label="Add Item" onClick={addItem}></CustomButton>
             </Grid>
           </>
         )}

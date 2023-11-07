@@ -68,6 +68,7 @@ export type Collection = {
 };
 
 export type NFT = {
+  index: number;
   contractHash: string;
   tokenMetaData: {
     name: string;
