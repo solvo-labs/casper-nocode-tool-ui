@@ -31,6 +31,7 @@ import ManageRaffle from "../Pages/Raffle/ManageRaffle";
 import { Stake } from "../Pages/Stake/Stake";
 import CreateLootbox from "../Pages/NFT/CreateLootbox";
 import MyLootboxes from "../Pages/NFT/MyLootboxes";
+import { LootboxList } from "../Pages/NFT/LootboxList";
 
 const Router: React.FC = () => {
   return (
@@ -62,6 +63,7 @@ const Router: React.FC = () => {
             <Route path="/approve-nft" index element={<ApproveNFT />} />
             <Route path="/create-lootbox" index element={<CreateLootbox />}></Route>
             <Route path="/my-lootboxes" index element={<MyLootboxes />}></Route>
+            <Route path="/lootbox-list" index element={<LootboxList />}></Route>
             {/* MARKETPLACE */}
             <Route path="/marketplace" index element={<ListMarketplace />} />
             <Route path="/create-marketplace" index element={<CreateMarketplace />} />

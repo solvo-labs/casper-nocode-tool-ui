@@ -184,6 +184,7 @@ export type LootboxData = {
   items_per_lootbox: number;
   lootbox_count: number;
   lootbox_price: number;
+  max_lootboxes: number;
 };
 
 export type LootboxItem = {

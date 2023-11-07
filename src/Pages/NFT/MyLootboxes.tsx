@@ -205,7 +205,7 @@ const MyLootboxes = () => {
         )}
         {lootboxes.length > 0 && (
           <div>
-            <Typography variant="h5">Lootboxes</Typography>
+            <Typography variant="h5">My Lootboxes</Typography>
             <Divider sx={{ backgroundColor: "red", marginBottom: " 1rem !important" }}></Divider>
             {lootboxes?.map((ltbx: LootboxData, index: number) => (
               <div key={index}>
@@ -218,7 +218,7 @@ const MyLootboxes = () => {
                   menuOpen={open}
                   anchorEl={anchorEl}
                   handleCloseMenu={handleCloseMenu}
-                  handleOpenMenu={(e: any) => {
+                  handleOpenMenu={() => {
                     // handleClickMenu(e);
                     // setSelectedLootbox(ltbx);
                   }}
