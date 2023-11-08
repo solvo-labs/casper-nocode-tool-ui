@@ -5,7 +5,7 @@ import { Grid, Stack, Typography, Divider, CircularProgress } from "@mui/materia
 import { LootboxData, LootboxItem, NFT } from "../../utils/types";
 import { LootboxCard } from "../../components/ListerComponentCard";
 import CreatorRouter from "../../components/CreatorRouter";
-import { DONT_HAVE_ANYTHING } from "../../utils/enum";
+import { DONT_HAVE_ANYTHING, RarityLevel } from "../../utils/enum";
 import AddItemToLootboxModal from "../../components/AddItemToLootboxModal";
 // @ts-ignore
 import { CLPublicKey, Contracts, RuntimeArgs, CLValueBuilder, CLKey, CLByteArray, DeployUtil } from "casper-js-sdk";
@@ -25,9 +25,12 @@ const MyLootboxes = () => {
   const [collection, setCollection] = useState<any>();
   const [isAddItem, setIsAddItem] = useState<boolean>(true);
   const [itemName, setItemName] = useState<string>("");
+  const [rarity, setRarity] = useState<number>(-1);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
+  const [rarityList] = useState<string[]>(Object.keys(RarityLevel).filter((v) => isNaN(Number(v))));
 
   // const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
   //   setAnchorEl(event.currentTarget);
@@ -98,8 +101,8 @@ const MyLootboxes = () => {
   }, [selectedLootbox]);
 
   const disable = useMemo(() => {
-    return selectedNFTIndex == undefined;
-  }, [selectedNFTIndex]);
+    return selectedNFTIndex == undefined || rarity < 0;
+  }, [selectedNFTIndex, rarity]);
 
   const approve = async () => {
     setLoading(true);
@@ -114,6 +117,7 @@ const MyLootboxes = () => {
         const args = RuntimeArgs.fromMap({
           operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(operatorHash, "hex")))),
           token_id: CLValueBuilder.u64(selectedNFTIndex),
+          rarity: CLValueBuilder.u64(rarity),
         });
 
         const deploy = contract.callEntrypoint("approve", args, ownerPublicKey, "casper-test", "10000000000");
@@ -297,6 +301,9 @@ const MyLootboxes = () => {
                       }}
                       items={items}
                       withdrawOnClick={withdraw}
+                      rarity={rarity}
+                      rarityList={rarityList}
+                      handleChangeItemRarity={(rarity: any) => setRarity(rarity)}
                     />
                   </>
                 )}
