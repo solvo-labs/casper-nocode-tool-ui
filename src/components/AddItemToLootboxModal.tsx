@@ -62,7 +62,7 @@ const AddItemToLootboxModal: React.FC<Props> = ({
         {loadingNFT ? (
           <div
             style={{
-              height: "50vh",
+              height: "100%",
               width: "100%",
               display: "flex",
               justifyContent: "center",

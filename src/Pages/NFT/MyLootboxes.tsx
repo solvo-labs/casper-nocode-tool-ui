@@ -169,6 +169,8 @@ const MyLootboxes = () => {
           });
           toastr.success(response.data, "Item added to Lootbox successfully.");
           navigate("/my-lootboxes");
+          setSelectedLootbox(undefined);
+          setSelectedNFTIndex(undefined);
           setLoading(false);
         } catch (error: any) {
           toastr.error("Item couldn't be successfully uploaded to the Lootbox. Error: " + error);

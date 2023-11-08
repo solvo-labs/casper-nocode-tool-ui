@@ -20,15 +20,15 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 960,
-  height: 600,
+  height: 720,
   bgcolor: "#0F1429",
   color: "white",
   border: "1px solid red",
   borderRadius: "12px",
   boxShadow: 24,
-  pt: 2,
+  pt: 4,
   px: 4,
-  pb: 3,
+  pb: 4,
   "&:focus": {
     outline: "none",
   },
@@ -147,7 +147,7 @@ export const LootboxList = () => {
           {loadingNFT ? (
             <div
               style={{
-                height: "50vh",
+                height: "100%",
                 width: "100%",
                 display: "flex",
                 justifyContent: "center",
@@ -159,12 +159,14 @@ export const LootboxList = () => {
           ) : (
             <>
               <Grid container direction={"column"} gap={1}>
-                <Typography variant="h5">Buy Lootbox</Typography>
-                <Typography variant="h5">
-                  Lootbox <b>{selectedLootbox?.name}</b>
-                </Typography>
+                <Grid container direction={"row"} justifyContent={"space-between"}>
+                  <Typography variant="h5">
+                    Lootbox <b>{selectedLootbox?.name}</b>
+                  </Typography>
+                  <CustomButton disabled={false} label="Buy Lootbox" onClick={purchase}></CustomButton>
+                </Grid>
                 <Typography variant="subtitle1">
-                  Max Lootbox count is <b>{selectedLootbox?.max_lootboxes}</b> , Item count per lootbox is <b>{selectedLootbox?.items_per_lootbox}</b>
+                  Max Lootbox count is <b>{selectedLootbox?.max_lootboxes}</b>, Item count per lootbox is <b>{selectedLootbox?.items_per_lootbox}</b>
                 </Typography>
                 <Typography variant="subtitle1">
                   Lootbox price is <b>{(selectedLootbox?.lootbox_price || 0) / Math.pow(10, 9)} (CSPR)</b>
@@ -186,9 +188,7 @@ export const LootboxList = () => {
                   </Grid>
                 ))}
               </Grid>
-              <Grid display={"flex"} justifyContent={"space-between"} marginTop={"0.5rem"}>
-                <CustomButton disabled={false} label="Buy Lootbox" onClick={purchase}></CustomButton>
-              </Grid>
+              {/* <Grid display={"flex"} justifyContent={"space-between"} marginTop={"0.5rem"}></Grid> */}
             </>
           )}
         </Box>
