@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { SERVER_API, getAllLootboxes, getLootboxItem, getNftCollection, getNftMetadata } from "../../utils/api";
-import { lootboxStorageContract } from "../../utils";
+import { SERVER_API, getAllLootboxes, getLootboxItem, getLootboxItemOwner, getNftCollection, getNftMetadata } from "../../utils/api";
+import { lootboxStorageContract, uint32ArrayToHex } from "../../utils";
 import { Box, CircularProgress, Divider, Grid, Modal, Stack, Typography } from "@mui/material";
 import { LootboxData, LootboxItem } from "../../utils/types";
 import CreatorRouter from "../../components/CreatorRouter";
@@ -35,7 +35,7 @@ const style = {
 };
 
 export const LootboxList = () => {
-  const [loading, setLoding] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [lootboxes, setLootboxes] = useState<LootboxData[]>([]);
   const [selectedLootbox, setSelectedLootbox] = useState<LootboxData>();
   const [publicKey, provider, , , , , , , , , lootboxDepositWasm] =
@@ -58,14 +58,14 @@ export const LootboxList = () => {
   const [itemData, setItemData] = useState<any[]>([]);
   const [collection, setCollection] = useState<any>();
   const [loadingNFT, setLoadingNFT] = useState<boolean>(false);
+  const [lootboxOwners, setLootboxOwners] = useState<any>([]);
 
   const navigate = useNavigate();
   useEffect(() => {
     const init = async () => {
       const data = await getAllLootboxes(lootboxStorageContract);
       setLootboxes(data);
-
-      setLoding(false);
+      setLoading(false);
     };
 
     init();
@@ -108,6 +108,43 @@ export const LootboxList = () => {
     }
   };
 
+  const claim = async (nftIndex: number) => {
+    setLoading(true);
+    try {
+      if (selectedLootbox) {
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+        const contract = new Contracts.Contract();
+        contract.setContractHash(selectedLootbox.key);
+
+        const args = RuntimeArgs.fromMap({
+          item_index: CLValueBuilder.u64(nftIndex),
+        });
+
+        const deploy = contract.callEntrypoint("claim", args, ownerPublicKey, "casper-test", "12000000000");
+        const deployJson = DeployUtil.deployToJson(deploy);
+
+        try {
+          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+          const data = DeployUtil.deployToJson(signedDeploy.val);
+          const response = await axios.post(SERVER_API + "deploy", data, {
+            headers: { "Content-Type": "application/json" },
+          });
+
+          toastr.success(response.data, "Claim successfully.");
+          // setLoading(false);
+          // navigate("/marketplace");
+        } catch (error: any) {
+          alert(error.message);
+        }
+      }
+    } catch (error) {
+      setLoadingNFT(false);
+      toastr.error("Error: " + error);
+    }
+  };
+
   useEffect(() => {
     const fetch = async () => {
       if (selectedLootbox) {
@@ -127,8 +164,12 @@ export const LootboxList = () => {
 
         const nfts = await Promise.all(nftMetasPromises);
 
+        const ownersData = await getLootboxItemOwner(selectedLootbox.key);
+        // console.log(data);
+        // setLootboxOwners(data);
+
         const finalData = nfts.map((nft: any, index: number) => {
-          return { ...nft, ...items[index] };
+          return { ...nft, ...items[index], owner: ownersData[index] };
         });
         console.log(finalData);
         setItemData(finalData);
@@ -140,10 +181,26 @@ export const LootboxList = () => {
     fetch();
   }, [selectedLootbox]);
 
+  if (loading) {
+    return (
+      <div
+        style={{
+          height: "50vh",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
+
   const modal = () => {
     return (
       <Modal open={selectedLootbox !== undefined} onClose={() => setSelectedLootbox(undefined)}>
-        <Box sx={style} display={"flex"} flexDirection={"column"} justifyContent={"space-between"}>
+        <Box sx={style} display={"flex"} flexDirection={"column"}>
           {loadingNFT ? (
             <div
               style={{
@@ -175,20 +232,26 @@ export const LootboxList = () => {
               <Grid container marginTop={"2rem"}>
                 {itemData.map((nft: any, index: number) => (
                   <Grid item md={4} key={index}>
-                    <NftCard
-                      key={nft.index}
-                      asset={nft.asset}
-                      description={nft.description}
-                      index={nft.index}
-                      name={nft.nameText}
-                      onClick={() => {}}
-                      isSelected={false}
-                      amIOwner={nft.isMyNft}
-                    />
+                    <Grid container direction={"column"}>
+                      <NftCard
+                        key={nft.index}
+                        asset={nft.asset}
+                        description={nft.description}
+                        index={nft.index}
+                        name={nft.nameText}
+                        onClick={() => {}}
+                        isSelected={false}
+                        amIOwner={nft.isMyNft}
+                      />
+                      {nft.owner.owner == CLPublicKey.fromHex(publicKey).toAccountHashStr().slice(13) ? (
+                        <Grid item display={"flex"} justifyContent={"center"}>
+                          <CustomButton label="Claim NFT" disabled={false} onClick={() => claim(index)}></CustomButton>
+                        </Grid>
+                      ) : null}
+                    </Grid>
                   </Grid>
                 ))}
               </Grid>
-              {/* <Grid display={"flex"} justifyContent={"space-between"} marginTop={"0.5rem"}></Grid> */}
             </>
           )}
         </Box>
