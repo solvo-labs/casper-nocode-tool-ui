@@ -1,9 +1,12 @@
-import { Box, CircularProgress, Grid, Modal, Typography } from "@mui/material";
+import { Box, CircularProgress, Divider, Grid, MenuItem, Modal, Stack, Typography, Tooltip } from "@mui/material";
 import React from "react";
 import { LootboxData, NFT } from "../utils/types";
 import { NftCard } from "./NftCard";
 import { CustomButton } from "./CustomButton";
 import { CustomInput } from "./CustomInput";
+import { CustomSelect } from "./CustomSelect";
+import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
+import { rarityLevelExplanationTitle } from "../utils";
 
 const style = {
   position: "absolute" as "absolute",
@@ -30,10 +33,13 @@ type Props = {
   isAddItem: boolean;
   itemName: string;
   selectedNFTIndex?: number;
+  rarity: number;
+  rarityList: any[];
   handleClose: () => void;
   handleChangeIndex: (index: number) => void;
   addItem: () => void;
   handleChangeItemName: (text: string) => void;
+  handleChangeItemRarity: (rarity: string) => void;
   showButtonOnChange: () => void;
   withdrawOnClick: () => void;
 };
@@ -49,8 +55,11 @@ const AddItemToLootboxModal: React.FC<Props> = ({
   isAddItem,
   itemName,
   selectedNFTIndex,
+  rarity,
+  rarityList,
   handleClose,
   handleChangeIndex,
+  handleChangeItemRarity,
   addItem,
   handleChangeItemName,
   showButtonOnChange,
@@ -101,7 +110,7 @@ const AddItemToLootboxModal: React.FC<Props> = ({
                       <>
                         {nfts.length > 0 ? (
                           <>
-                            Add Item to <b>{lootbox.name}</b>
+                            Select NFT for add to <b>{lootbox.name}</b>
                           </>
                         ) : (
                           <div style={{ display: "flex", justifyContent: "center" }}>There are no nft's</div>
@@ -142,20 +151,60 @@ const AddItemToLootboxModal: React.FC<Props> = ({
               ))}
             </Grid>
             {isAddItem && (
-              <Grid display={"flex"} justifyContent={"space-between"} marginTop={"0.5rem"}>
-                <CustomInput
-                  placeholder="Item Name"
-                  label="Item Name"
-                  id="itemName"
-                  name="itemName"
-                  type="text"
-                  onChange={(e: any) => {
-                    handleChangeItemName(e.target.value);
+              <Grid container direction={"column"} marginTop={"1rem"} gap={4}>
+                <Divider
+                  sx={{
+                    color: "red",
+                    "&::before, &::after": {
+                      borderTop: "thin solid gray !important",
+                    },
                   }}
-                  value={itemName}
-                  style={{ width: "70%" }}
-                />
-                <CustomButton disabled={disable} style={{ width: "25%" }} label="Add Item" onClick={addItem}></CustomButton>
+                >
+                  Item Features
+                </Divider>
+                <Stack direction={"row"} spacing={2} alignItems={"center"}>
+                  <CustomInput
+                    placeholder="Item Name"
+                    label="Item Name"
+                    id="itemName"
+                    name="itemName"
+                    type="text"
+                    onChange={(e: any) => {
+                      handleChangeItemName(e.target.value);
+                    }}
+                    value={itemName}
+                    style={{ width: "50%" }}
+                  />
+                  <div style={{ width: "50%", display: "flex", flexDirection: "row", justifyItems: "center", alignItems: "center" }}>
+                    <CustomSelect
+                      value={rarity}
+                      id="collectionHash"
+                      onChange={(e: any) => {
+                        handleChangeItemRarity(e.target.value);
+                      }}
+                    >
+                      <MenuItem value="-1">
+                        <em>Select a Collection</em>
+                      </MenuItem>
+                      {rarityList.map((rr: any, index: number) => {
+                        return (
+                          <MenuItem key={index} value={index}>
+                            {rr}
+                          </MenuItem>
+                        );
+                      })}
+                    </CustomSelect>
+                  </div>
+                  <Tooltip title={<div style={{ whiteSpace: "pre-line" }}>{rarityLevelExplanationTitle}</div>} placement="top-start">
+                    <div style={{ background: "gray", borderRadius: "12px", height: "24px", width: "24px", display: "flex", justifyItems: "center", alignItems: "center" }}>
+                      <QuestionMarkIcon sx={{ color: "white", height: "16px" }}></QuestionMarkIcon>
+                    </div>
+                  </Tooltip>
+                </Stack>
+
+                <Grid item display={"flex"} justifyContent={"flex-end"}>
+                  <CustomButton disabled={disable} label="Add Item" onClick={addItem}></CustomButton>
+                </Grid>
               </Grid>
             )}
           </>
