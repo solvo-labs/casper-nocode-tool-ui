@@ -109,7 +109,7 @@ const AddItemToLootboxModal: React.FC<Props> = ({
                       <>
                         {items.length > 0 ? (
                           <>
-                            Existing items in <b>{lootbox.name}</b>
+                            Existing items in <b>{lootbox.name}</b> {"(" + lootbox.deposited_item_count + "/" + lootbox.max_lootboxes * lootbox.items_per_lootbox + ")"}
                           </>
                         ) : (
                           <div style={{ display: "flex", justifyContent: "center" }}>There are no items</div>
