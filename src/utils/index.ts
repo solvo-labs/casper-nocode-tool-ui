@@ -54,3 +54,9 @@ export const sleep = (ms: number) => {
 };
 
 export const lootboxStorageContract = "8ed16330ef4d678b18b14de9d88e19643342cfe46b80c29bdcbe0f5c1e4081b9";
+const rarityLevelExplanationTitleArray: string[] = [
+  "COMMON: This level is given to the most frequently encountered items inside loot boxes. These items are generally common and widely found.",
+  "RARE: This level is given to less common and more special items. These items are rarer within the general population and possess special value.",
+  "LEGENDARY: This is the highest level, given to the rarest and most special items found in loot boxes. They are often of unique value and highly esteemed within the community.",
+];
+export const rarityLevelExplanationTitle = rarityLevelExplanationTitleArray.join("\n");
