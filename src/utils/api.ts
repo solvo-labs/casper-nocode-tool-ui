@@ -331,3 +331,8 @@ export const getAllLootboxes = async (contractHash: string) => {
   const response = await axios.get<LootboxData[]>(SERVER_API + "get_all_lootboxes?contractHash=hash-" + contractHash);
   return response.data;
 };
+
+export const getLootboxItemOwner = async (contractHash: string) => {
+  const response = await axios.get<any[]>(SERVER_API + "fetch_lootbox_item_owners?contractHash=" + contractHash);
+  return response.data;
+};
