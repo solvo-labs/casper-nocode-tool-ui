@@ -169,10 +169,10 @@ export const LootboxList = () => {
         // setLootboxOwners(data);
 
         const finalData = nfts.map((nft: any, index: number) => {
-          return { ...nft, ...items[index], owner: ownersData[index] };
+          return { ...nft, ...items[index], itemOwner: ownersData[index] };
         });
-        console.log(finalData);
-        setItemData(finalData);
+        const filterData = finalData.filter((fltr) => fltr.owner != accountHash.slice(13));
+        setItemData(filterData);
         setCollection(nftCollection);
         setLoadingNFT(false);
       }
