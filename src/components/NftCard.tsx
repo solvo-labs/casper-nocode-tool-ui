@@ -36,7 +36,14 @@ export const NftCard: React.FC<Props> = ({ name, description, asset, index, owne
   const classes = useStyles();
 
   return (
-    <CardActionArea>
+    <CardActionArea
+      sx={{
+        "&:focus": {
+          backgroundColor: "transparent !important",
+          outline: "none !important",
+        },
+      }}
+    >
       <Card className={classes.card} onClick={onClick}>
         {isSelected && <CheckCircleIcon className={classes.selectedIcon} fontSize="large" />}
         <CardMedia component="img" height="250" image={asset} alt={name} />
