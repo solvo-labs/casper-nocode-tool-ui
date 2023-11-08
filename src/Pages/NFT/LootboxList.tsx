@@ -72,7 +72,7 @@ export const LootboxList = () => {
   }, []);
 
   const purchase = async () => {
-    setLoadingNFT(true);
+    setLoading(true);
     try {
       if (selectedLootbox) {
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
@@ -95,10 +95,10 @@ export const LootboxList = () => {
             headers: { "Content-Type": "application/json" },
           });
 
-          setLoadingNFT(false);
+          setLoading(false);
           toastr.success(response.data, "Lootbox deployed successfully.");
         } catch (error: any) {
-          setLoadingNFT(false);
+          setLoading(false);
           toastr.error("Lootbox couldn't be deploy. Error: " + error);
         }
       }
