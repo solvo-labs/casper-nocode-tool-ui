@@ -181,6 +181,42 @@ const MyLootboxes = () => {
     }
   };
 
+  const withdraw = async () => {
+    try {
+      if (selectedLootbox) {
+        const contract = new Contracts.Contract();
+        contract.setContractHash(selectedLootbox.key);
+
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+        const args = RuntimeArgs.fromMap({});
+
+        const deploy = contract.callEntrypoint("withdraw", args, ownerPublicKey, "casper-test", "5000000000");
+        const deployJson = DeployUtil.deployToJson(deploy);
+
+        try {
+          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+          const data = DeployUtil.deployToJson(signedDeploy.val);
+          const response = await axios.post(SERVER_API + "deploy", data, {
+            headers: { "Content-Type": "application/json" },
+          });
+
+          toastr.success(response.data, "Withdraw completed successfully.");
+          navigate("/my-lootboxes");
+          setLoading(false);
+        } catch (error: any) {
+          toastr.error(error);
+          setLoading(false);
+        }
+      }
+    } catch (error) {
+      setLoading(false);
+      toastr.error("Error: " + error);
+    }
+  };
+
   if (loading) {
     return (
       <div
@@ -258,6 +294,7 @@ const MyLootboxes = () => {
                         setIsAddItem(!isAddItem);
                       }}
                       items={items}
+                      withdrawOnClick={withdraw}
                     />
                   </>
                 )}

@@ -35,6 +35,7 @@ type Props = {
   addItem: () => void;
   handleChangeItemName: (text: string) => void;
   showButtonOnChange: () => void;
+  withdrawOnClick: () => void;
 };
 
 const AddItemToLootboxModal: React.FC<Props> = ({
@@ -53,6 +54,7 @@ const AddItemToLootboxModal: React.FC<Props> = ({
   addItem,
   handleChangeItemName,
   showButtonOnChange,
+  withdrawOnClick,
 }) => {
   return (
     <Modal open={open} onClose={handleClose}>
@@ -81,7 +83,7 @@ const AddItemToLootboxModal: React.FC<Props> = ({
               </Typography>
               <Typography variant="subtitle1">
                 Earning <b>{lootbox.earning} (CSPR)</b>
-                <CustomButton onClick={() => {}} style={{ marginLeft: "1rem" }} label={"Withdraw"} disabled={lootbox.earning === 0}></CustomButton>
+                <CustomButton onClick={withdrawOnClick} style={{ marginLeft: "1rem" }} label={"Withdraw"} disabled={lootbox.earning === 0}></CustomButton>
               </Typography>
               <Typography variant="subtitle1">
                 {selectedNFTIndex !== undefined && (
