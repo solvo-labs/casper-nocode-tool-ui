@@ -234,7 +234,7 @@ export const LootboxList = () => {
                   Lootbox price is <b>{(selectedLootbox?.lootbox_price || 0) / Math.pow(10, 9)} (CSPR)</b>
                 </Typography>
               </Grid>
-              <Grid container marginTop={"2rem"}>
+              <Grid container marginTop={"2rem"} overflow={"auto"}>
                 {itemData.map((nft: any, index: number) => (
                   <Grid item md={4} key={index}>
                     <Grid container direction={"column"}>
