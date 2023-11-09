@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { SERVER_API, getAllLootboxes, getLootboxItem, getLootboxItemOwner, getNftCollection, getNftMetadata } from "../../utils/api";
-import { lootboxStorageContract, uint32ArrayToHex } from "../../utils";
+import { lootboxStorageContract } from "../../utils";
 import { Box, CircularProgress, Divider, Grid, Modal, Stack, Typography } from "@mui/material";
 import { LootboxData, LootboxItem } from "../../utils/types";
 import CreatorRouter from "../../components/CreatorRouter";
