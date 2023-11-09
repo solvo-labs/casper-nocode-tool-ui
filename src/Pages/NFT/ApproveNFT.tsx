@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 import { useEffect, useMemo, useState } from "react";
 import { fetchCep78NamedKeys, fetchLootboxNamedKeys, fetchMarketplaceNamedKeys, fetchRaffleNamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
 import { useOutletContext } from "react-router-dom";
-import { CollectionMetada, LootboxData, Marketplace, NFT, RaffleNamedKeys } from "../../utils/types";
+import { CollectionMetada, Marketplace, NFT, RaffleNamedKeys } from "../../utils/types";
 import { CollectionCardAlternate } from "../../components/CollectionCard";
 // @ts-ignore
 import { CLPublicKey, Contracts, RuntimeArgs, CLValueBuilder, CLKey, CLByteArray, DeployUtil } from "casper-js-sdk";
@@ -50,7 +50,7 @@ const ApproveNFT = () => {
 
   const [marketplaces, setMarketplaces] = useState<Marketplace[]>();
   const [raffles, setRaffles] = useState<RaffleNamedKeys[]>();
-  const [lootboxes, setLootboxes] = useState<LootboxData[]>();
+  const [lootboxes, setLootboxes] = useState<any[]>();
 
   const handleOpenNFT = (contract: string) => {
     setSelectedCollection(contract);
@@ -127,7 +127,6 @@ const ApproveNFT = () => {
   useEffect(() => {
     const init = async () => {
       const data = await fetchRaffleNamedKeys(publicKey);
-      console.log(data);
       setRaffles(data);
     };
 

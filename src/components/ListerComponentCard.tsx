@@ -21,14 +21,14 @@ const useStyles = makeStyles((theme: Theme) => ({
 type Props = {
   name: string;
   hash: string;
-  asset: string;
-  description: string;
-  menuOpen: boolean;
-  anchorEl: null | HTMLElement;
+  asset?: string;
+  description?: string;
+  menuOpen?: boolean;
+  anchorEl?: null | HTMLElement;
   onClick?: () => void;
-  handleOpenMenu: (e: MouseEvent<HTMLElement>) => void;
-  handleCloseMenu: () => void;
-  handleAddNFT: () => void;
+  handleOpenMenu?: (e: MouseEvent<HTMLElement>) => void;
+  handleCloseMenu?: () => void;
+  handleAddNFT?: () => void;
 };
 
 export const MarketplaceCard: React.FC<Props> = ({ name, hash, asset, onClick }) => {
@@ -82,7 +82,7 @@ export const LootboxCard: React.FC<Props> = ({ name, hash, asset, description, m
             </Typography>
             <Menu
               anchorEl={anchorEl}
-              open={menuOpen}
+              open={menuOpen ? menuOpen : false}
               onClose={handleCloseMenu}
               onMouseDown={(e) => {
                 e.stopPropagation();

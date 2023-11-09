@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { SERVER_API, getAllLootboxes, getLootboxItem, getLootboxItemOwner, getNftCollection, getNftMetadata } from "../../utils/api";
+import { SERVER_API, getAllLootboxes, getLootboxItem, getLootboxItemOwner, getNftMetadata } from "../../utils/api";
 import { lootboxStorageContract } from "../../utils";
 import { Box, CircularProgress, Divider, Grid, Modal, Stack, Typography } from "@mui/material";
 import { LootboxData, LootboxItem } from "../../utils/types";
@@ -56,9 +56,9 @@ export const LootboxList = () => {
     >();
 
   const [itemData, setItemData] = useState<any[]>([]);
-  const [collection, setCollection] = useState<any>();
+  // const [collection, setCollection] = useState<any>();
   const [loadingNFT, setLoadingNFT] = useState<boolean>(false);
-  const [lootboxOwners, setLootboxOwners] = useState<any>([]);
+  // const [lootboxOwners, setLootboxOwners] = useState<any>([]);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -149,7 +149,7 @@ export const LootboxList = () => {
     const fetch = async () => {
       if (selectedLootbox) {
         setLoadingNFT(true);
-        const nftCollection = await getNftCollection("hash-" + selectedLootbox.nft_collection);
+        // const nftCollection = await getNftCollection("hash-" + selectedLootbox.nft_collection);
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
         const accountHash = ownerPublicKey.toAccountHashStr();
 
@@ -177,7 +177,7 @@ export const LootboxList = () => {
         const filterData = finalData.filter((fltr) => fltr.owner == selectedLootbox.key.slice(5));
 
         setItemData(filterData);
-        setCollection(nftCollection);
+        // setCollection(nftCollection);
         setLoadingNFT(false);
       }
     };
