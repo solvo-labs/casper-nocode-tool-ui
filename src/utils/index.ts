@@ -53,7 +53,7 @@ export const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-export const lootboxStorageContract = "8ed16330ef4d678b18b14de9d88e19643342cfe46b80c29bdcbe0f5c1e4081b9";
+export const lootboxStorageContract = "ea046dfb169168f011dd692ce9d7143b798d5728ea4fc7adc4d170d41e50f4ab";
 const rarityLevelExplanationTitleArray: string[] = [
   "COMMON: This level is given to the most frequently encountered items inside loot boxes. These items are generally common and widely found.",
   "RARE: This level is given to less common and more special items. These items are rarer within the general population and possess special value.",
