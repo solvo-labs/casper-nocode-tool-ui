@@ -55,6 +55,7 @@ export const CreateNft = () => {
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
   const classes = useStyles();
   const [nftData, setNftData] = useState<NFT>({
+    index: 0,
     contractHash: "",
     tokenMetaData: {
       name: "",
