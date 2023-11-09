@@ -60,3 +60,6 @@ const rarityLevelExplanationTitleArray: string[] = [
   "LEGENDARY: This is the highest level, given to the rarest and most special items found in loot boxes. They are often of unique value and highly esteemed within the community.",
 ];
 export const rarityLevelExplanationTitle = rarityLevelExplanationTitleArray.join("\n");
+export const delay = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
