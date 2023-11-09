@@ -35,7 +35,6 @@ export enum NFT_PAGE {
   APPROVE_NFT = "Approve Nft",
   CREATE_LOOTBOX = "Create Lootbox",
   MY_LOOTBOXES = "My Lootboxes",
-  LOOTBOX_LIST = "Lootbox List",
 }
 
 export enum RAFFLE_PAGE {
@@ -47,6 +46,7 @@ export enum MARKETPLACE_PAGE {
   LIST_MARKETPLACE = "List My Own Marketplace",
   CREATE_MARKETPLACE = "Create Marketplace",
   BUY_NFT = "Buy Nft",
+  BUY_LOOTBOX = "Buy Lootbox",
 }
 
 export enum WALLETS_NAME {

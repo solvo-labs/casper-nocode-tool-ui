@@ -144,8 +144,6 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
       navigate("/create-lootbox");
     } else if (a === NFT_PAGE.MY_LOOTBOXES) {
       navigate("/my-lootboxes");
-    } else if (a === NFT_PAGE.LOOTBOX_LIST) {
-      navigate("/lootbox-list");
     } else if (a === TOKENOMICS_PAGE.CREATE_TOKENOMICS) {
       navigate("/tokenomics");
     } else if (a === TOKENOMICS_PAGE.MANAGE_TOKENOMICS) {
@@ -156,6 +154,8 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
       navigate("/marketplace");
     } else if (a === MARKETPLACE_PAGE.BUY_NFT) {
       navigate("/buy-nft");
+    } else if (a === MARKETPLACE_PAGE.BUY_LOOTBOX) {
+      navigate("/buy-lootbox");
     } else if (a === RAFFLE_PAGE.MANAGE_RAFFLE) {
       navigate("/manage-raffle");
     }
