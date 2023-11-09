@@ -223,7 +223,8 @@ export const LootboxList = () => {
                   <CustomButton disabled={false} label="Buy Lootbox" onClick={purchase}></CustomButton>
                 </Grid>
                 <Typography variant="subtitle1">
-                  Max Lootbox count is <b>{selectedLootbox?.max_lootboxes}</b>, Item count per lootbox is <b>{selectedLootbox?.items_per_lootbox}</b>
+                  Max Lootbox count is <b>{selectedLootbox?.max_lootboxes}</b>, Item count per lootbox is <b>{selectedLootbox?.items_per_lootbox}</b> , Purchased Lootbox count is{" "}
+                  <b>{selectedLootbox?.lootbox_count}</b>
                 </Typography>
                 <Typography variant="subtitle1">
                   Lootbox price is <b>{(selectedLootbox?.lootbox_price || 0) / Math.pow(10, 9)} (CSPR)</b>

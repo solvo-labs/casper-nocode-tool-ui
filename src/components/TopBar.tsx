@@ -195,9 +195,9 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
               >
                 <Typography className={classes.menuTitle}>{PAGES_NAME.STAKE}</Typography>
               </Button>
-              <Button onClick={() => {}}>
+              {/* <Button onClick={() => {}}>
                 <Typography className={classes.menuTitle}>{PAGES_NAME.DAO}</Typography>
-              </Button>
+              </Button> */}
               <Box>
                 <Button
                   onClick={(e: any) => handleClick(e, setAnchorElForNFT)}
