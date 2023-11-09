@@ -150,7 +150,7 @@ const AddItemToLootboxModal: React.FC<Props> = ({
                 </Grid>
               ))}
             </Grid>
-            {isAddItem && (
+            {isAddItem && nfts.length > 0 && (
               <Grid container direction={"column"} marginTop={"1rem"} gap={4}>
                 <Divider
                   sx={{
@@ -195,7 +195,7 @@ const AddItemToLootboxModal: React.FC<Props> = ({
                       })}
                     </CustomSelect>
                   </div>
-                  <Tooltip title={<div style={{ whiteSpace: "pre-line" }}>{rarityLevelExplanationTitle}</div>} placement="top-start">
+                  <Tooltip title={<div style={{ whiteSpace: "pre-line" }}>{rarityLevelExplanationTitle}</div>}>
                     <div style={{ background: "gray", borderRadius: "12px", height: "24px", width: "24px", display: "flex", justifyItems: "center", alignItems: "center" }}>
                       <QuestionMarkIcon sx={{ color: "white", height: "16px" }}></QuestionMarkIcon>
                     </div>
