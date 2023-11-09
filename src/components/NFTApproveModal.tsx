@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { NftCard } from "./NftCard.tsx";
 import { makeStyles } from "@mui/styles";
-import { CollectionMetada, Marketplace, NFT, RaffleMetadata, RaffleNamedKeys } from "../utils/types.ts";
+import { APPROVE_TYPE, CollectionMetada, LootboxData, Marketplace, NFT, RaffleMetadata, RaffleNamedKeys } from "../utils/types.ts";
 import { CustomButton } from "./CustomButton.tsx";
 import React from "react";
 import { CustomSelect } from "./CustomSelect.tsx";
@@ -63,6 +63,7 @@ type ApproveModal = {
   selectedOnChange: (param: string) => void;
   marketplaces: Marketplace[] | undefined;
   raffles: RaffleNamedKeys[] | undefined;
+  lootboxes: LootboxData[] | undefined;
   open: boolean;
   handleClose: () => void;
   approve: () => void;
@@ -129,13 +130,14 @@ export const ApproveNFTModal: React.FC<ApproveModal> = ({
   selected,
   marketplaces,
   raffles,
-  selectedOnChange,
+  lootboxes,
   open,
+  approveOperatorType,
+  disable,
+  selectedOnChange,
   handleClose,
   approve,
-  approveOperatorType,
   approveOperatorOnChange,
-  disable,
 }) => {
   const classes = useStyles();
 
@@ -171,9 +173,18 @@ export const ApproveNFTModal: React.FC<ApproveModal> = ({
                       selectedOnChange("default");
                     }}
                   />
+                  <FormControlLabel
+                    value="lootbox"
+                    control={<CustomRadioButton />}
+                    label="Lootbox"
+                    onClick={(e: any) => {
+                      approveOperatorOnChange(e.target.value);
+                      selectedOnChange("default");
+                    }}
+                  />
                 </RadioGroup>
               </FormControl>
-              {approveOperatorType == "marketplace" && (
+              {approveOperatorType == APPROVE_TYPE.MARKETPLACE && (
                 <FormControl>
                   <CustomSelect
                     id="marketplaces"
@@ -187,7 +198,7 @@ export const ApproveNFTModal: React.FC<ApproveModal> = ({
                     {marketplaces &&
                       marketplaces.map((mp: any, index: number) => {
                         return (
-                          <MenuItem key={mp.key} value={mp.contractHash}>
+                          <MenuItem key={index} value={mp.contractHash}>
                             {(mp.contractName ? mp.contractName : "nameless") + "[" + index + "]"}
                           </MenuItem>
                         );
@@ -195,7 +206,7 @@ export const ApproveNFTModal: React.FC<ApproveModal> = ({
                   </CustomSelect>
                 </FormControl>
               )}
-              {approveOperatorType == "raffle" && (
+              {approveOperatorType == APPROVE_TYPE.RAFFLE && (
                 <FormControl>
                   <CustomSelect id="raffle" value={selected ? selected : "default"} label="Raffles" onChange={(event: SelectChangeEvent) => selectedOnChange(event.target.value)}>
                     <MenuItem value={"default"}>Select Raffle</MenuItem>
@@ -204,6 +215,21 @@ export const ApproveNFTModal: React.FC<ApproveModal> = ({
                         return (
                           <MenuItem key={index} value={rf.key}>
                             {rf.name}
+                          </MenuItem>
+                        );
+                      })}
+                  </CustomSelect>
+                </FormControl>
+              )}
+              {approveOperatorType == APPROVE_TYPE.LOOTBOX && (
+                <FormControl>
+                  <CustomSelect id="raffle" value={selected ? selected : "default"} label="Raffles" onChange={(event: SelectChangeEvent) => selectedOnChange(event.target.value)}>
+                    <MenuItem value={"default"}>Select Lootbox</MenuItem>
+                    {lootboxes &&
+                      lootboxes.map((lb: any, index: number) => {
+                        return (
+                          <MenuItem key={index} value={lb.key}>
+                            {lb.name}
                           </MenuItem>
                         );
                       })}

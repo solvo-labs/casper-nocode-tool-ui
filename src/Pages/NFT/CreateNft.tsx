@@ -55,6 +55,7 @@ export const CreateNft = () => {
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
   const classes = useStyles();
   const [nftData, setNftData] = useState<NFT>({
+    index: 0,
     contractHash: "",
     tokenMetaData: {
       name: "",
@@ -73,21 +74,27 @@ export const CreateNft = () => {
 
   const navigate = useNavigate();
 
+  const handleClear = () => {
+    setFile(null);
+    setNftData({ ...nftData, tokenMetaData: { ...nftData.tokenMetaData, asset: "" } });
+  };
+
   useEffect(() => {
     const init = async () => {
-      const data = await fetchCep78NamedKeys(publicKey);
-
-      const promises = data.map((data) => getNftCollection(data.key));
-
-      const result = await Promise.all(promises);
-
       if (params.collectionHash) {
-        const currentCollection = result.find((rs) => rs.contractHash === params.collectionHash);
+        const currentCollection = await getNftCollection(params.collectionHash);
 
         setSelectedCollection(currentCollection);
+      } else {
+        const data = await fetchCep78NamedKeys(publicKey);
+
+        const promises = data.map((data) => getNftCollection(data.key));
+
+        const result = await Promise.all(promises);
+
+        setCollections(result);
       }
 
-      setCollections(result);
       setLoading(false);
     };
 
@@ -137,7 +144,7 @@ export const CreateNft = () => {
         // setActionLoader(false);
         setLoading(false);
       } catch (error: any) {
-        alert(error.message);
+        toastr.error("Error: " + error);
         setLoading(false);
       }
     } catch (error) {
@@ -199,16 +206,17 @@ export const CreateNft = () => {
         <Grid container className={classes.gridContainer}>
           <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
             <CustomSelect
-              value={selectedCollection?.contractHash || "default"}
+              value={collections.length > 0 ? selectedCollection?.contractHash || "default" : "default"}
               label="ERC-20 Token"
               onChange={(event: SelectChangeEvent) => {
                 const data = collections.find((tk: any) => tk.contractHash === event.target.value);
                 setSelectedCollection(data);
               }}
               id={"custom-select"}
+              disabled={params.collectionHash !== undefined}
             >
               <MenuItem value="default">
-                <em>Select a Collection</em>
+                <em>{params.collectionHash ? selectedCollection.collection_name : "Select a Collection"}</em>
               </MenuItem>
               {collections.map((tk: any) => {
                 return (
@@ -223,7 +231,7 @@ export const CreateNft = () => {
             <Typography sx={{ borderBottom: "1px solid #FF0011 !important" }} variant="button">
               Metadata
             </Typography>
-            <ImageUpload file={file} loading={fileLoading} setFile={(data) => setFile(data)}></ImageUpload>
+            <ImageUpload file={file} loading={fileLoading} setFile={(data) => setFile(data)} handleClear={handleClear}></ImageUpload>
             <CustomInput
               placeholder="Metadata Name"
               label="Metadata Name"
@@ -240,7 +248,8 @@ export const CreateNft = () => {
                 });
               }}
               value={nftData.tokenMetaData.name}
-              disable={fileLoading}
+              disable={disable}
+              floor="dark"
             ></CustomInput>
             <CustomInput
               placeholder="Metadata Description"
@@ -259,6 +268,7 @@ export const CreateNft = () => {
               }}
               value={nftData.tokenMetaData.description}
               disable={fileLoading}
+              floor="dark"
             ></CustomInput>
             <FormControlLabel
               style={{ justifyContent: "start" }}

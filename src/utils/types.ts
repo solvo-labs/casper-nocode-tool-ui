@@ -68,6 +68,7 @@ export type Collection = {
 };
 
 export type NFT = {
+  index: number;
   contractHash: string;
   tokenMetaData: {
     name: string;
@@ -128,6 +129,12 @@ export const enum RAFFLE_STATUS {
   COMPLETED,
 }
 
+export const enum APPROVE_TYPE {
+  MARKETPLACE = "marketplace",
+  RAFFLE = "raffle",
+  LOOTBOX = "lootbox",
+}
+
 export type RaffleMetadata = {
   key: string;
   collection: string;
@@ -154,4 +161,36 @@ export type VestingRecipient = {
   v_contract: string;
   v_index: number;
   v_token: string;
+};
+
+export type LootboxInputData = {
+  name: string;
+  desciption: string;
+  asset?: string;
+  collection: CollectionMetada | undefined;
+  lootbox_price: number;
+  items_per_lootbox: number;
+  max_lootboxes: number;
+};
+
+export type LootboxData = {
+  name: string;
+  key: string;
+  asset: string;
+  nft_collection: string;
+  deposited_item_count: number;
+  description: string;
+  item_count: number;
+  items_per_lootbox: number;
+  lootbox_count: number;
+  lootbox_price: number;
+  max_lootboxes: number;
+  earning: number;
+};
+
+export type LootboxItem = {
+  idValue: number;
+  rarityValue: number;
+  tokenIdValue: number;
+  nameText: string;
 };

@@ -21,9 +21,10 @@ type Props = {
   value?: any;
   label?: string;
   children?: any;
+  disabled?: boolean;
 };
 
-export const CustomSelect: React.FC<Props> = ({ onChange, value, children, id, label }) => {
+export const CustomSelect: React.FC<Props> = ({ onChange, value, children, id, label, disabled = false }) => {
   const classes = useStyles();
 
   return (
@@ -59,6 +60,7 @@ export const CustomSelect: React.FC<Props> = ({ onChange, value, children, id, l
       fullWidth
       id={id}
       label={label}
+      disabled={disabled}
     >
       {Children.map(children, (child) => {
         return cloneElement(child, {

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ERC20Token, Listing, RaffleNamedKeys } from "./types";
+import { ERC20Token, Listing, LootboxData, LootboxItem, RaffleNamedKeys } from "./types";
 
 const service_api = "https://event-store-api-clarity-testnet.make.services/";
 export const SERVER_API = import.meta.env.DEV ? "http://localhost:3000/api/" : "https://casperdev.dappend.com/api/";
@@ -86,6 +86,20 @@ export const fetchRaffleNamedKeys = async (pubkey: string) => {
     }
     return { name: rf.name, key: rf.key };
   });
+  return finalData;
+};
+
+export const fetchLootboxNamedKeys = async (pubkey: string) => {
+  const namedKeys = await fetchNamedKeys(pubkey);
+  const filteredNamedKeys = namedKeys.filter((ky) => {
+    return ky.name.startsWith("lootbox_contract_hash_");
+  });
+
+  const finalData = filteredNamedKeys.map((ltbx: any) => {
+    let newName: string = ltbx.name.replace("lootbox_contract_hash_", "").slice(0, -14);
+    return { name: newName, key: ltbx.key };
+  });
+
   return finalData;
 };
 
@@ -197,13 +211,18 @@ export const getNftCollection = async (contractHash: string, amICreator = true) 
 export const getNftMetadata = async (contractHash: string, index: string, accoutHash: string) => {
   const response = (await axios.get<any>(SERVER_API + "getNftMetadata?contractHash=" + contractHash + "&index=" + index)).data;
 
-  return { ...JSON.parse(response.metadata), owner: response.owner, isMyNft: response.owner === accoutHash };
+  return { ...JSON.parse(response.metadata), owner: response.owner, isMyNft: response.owner === accoutHash, index: Number(index) };
 };
 
 export const fetchMarketplaceData = async (contractHash: string) => {
   const response = await axios.get(SERVER_API + "getMarketplace?contractHash=" + contractHash);
 
   return { ...response.data, contractHash };
+};
+
+export const getLootboxData = async (contractHash: string) => {
+  const response = await axios.get<LootboxData>(SERVER_API + "getLootbox?contractHash=" + contractHash);
+  return response.data;
 };
 
 export const storeListing = async (marketplace: string, collection: string, tokenId: number, price: number, nft: any, listingIndex: number) => {
@@ -299,6 +318,20 @@ export const getAllNftsByOwned = async (accountHash: string) => {
 
 export const soldNft = async (id: string) => {
   const response = await axios.get(SERVER_API + "sold-nft?id=" + id);
+  return response.data;
+};
 
+export const getLootboxItem = async (contractHash: string, index: number) => {
+  const response = await axios.get<LootboxItem>(SERVER_API + "fetchLootboxItem?contractHash=" + contractHash + "&index=" + index);
+  return response.data;
+};
+
+export const getAllLootboxes = async (contractHash: string) => {
+  const response = await axios.get<LootboxData[]>(SERVER_API + "get_all_lootboxes?contractHash=hash-" + contractHash);
+  return response.data;
+};
+
+export const getLootboxItemOwner = async (contractHash: string) => {
+  const response = await axios.get<any[]>(SERVER_API + "fetch_lootbox_item_owners?contractHash=" + contractHash);
   return response.data;
 };

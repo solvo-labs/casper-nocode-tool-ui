@@ -140,6 +140,10 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
       navigate("/create-nft");
     } else if (a === NFT_PAGE.APPROVE_NFT) {
       navigate("/approve-nft");
+    } else if (a === NFT_PAGE.CREATE_LOOTBOX) {
+      navigate("/create-lootbox");
+    } else if (a === NFT_PAGE.MY_LOOTBOXES) {
+      navigate("/my-lootboxes");
     } else if (a === TOKENOMICS_PAGE.CREATE_TOKENOMICS) {
       navigate("/tokenomics");
     } else if (a === TOKENOMICS_PAGE.MANAGE_TOKENOMICS) {
@@ -150,6 +154,8 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
       navigate("/marketplace");
     } else if (a === MARKETPLACE_PAGE.BUY_NFT) {
       navigate("/buy-nft");
+    } else if (a === MARKETPLACE_PAGE.BUY_LOOTBOX) {
+      navigate("/buy-lootbox");
     } else if (a === RAFFLE_PAGE.MANAGE_RAFFLE) {
       navigate("/manage-raffle");
     }
@@ -189,9 +195,9 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
               >
                 <Typography className={classes.menuTitle}>{PAGES_NAME.STAKE}</Typography>
               </Button>
-              <Button onClick={() => {}}>
+              {/* <Button onClick={() => {}}>
                 <Typography className={classes.menuTitle}>{PAGES_NAME.DAO}</Typography>
-              </Button>
+              </Button> */}
               <Box>
                 <Button
                   onClick={(e: any) => handleClick(e, setAnchorElForNFT)}

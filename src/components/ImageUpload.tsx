@@ -44,18 +44,20 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type Props = {
   file: File | undefined;
-  setFile: (image: File | null) => void;
   loading: boolean;
+  setFile: (image: File | null) => void;
+  handleClear: () => void;
+  text?: string;
 };
 
-const ImageUpload: React.FC<Props> = ({ file, setFile, loading }) => {
+const ImageUpload: React.FC<Props> = ({ file, loading, handleClear, setFile, text = "Upload your file" }) => {
   const classes = useStyles();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleClearButtonClick = () => {
-    setFile(null);
-    inputRef.current!.value = "";
-  };
+  // const handleClearButtonClick = () => {
+  //   setFile(null);
+  //   inputRef.current!.value = "";
+  // };
 
   const handleFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setFile(null);
@@ -69,7 +71,7 @@ const ImageUpload: React.FC<Props> = ({ file, setFile, loading }) => {
     <Grid container className={classes.container}>
       <Grid item>
         <Stack spacing={1}>
-          <Typography variant="body1">Upload your icon (optional)</Typography>
+          <Typography variant="body1">{text}</Typography>
           <input className={classes.input} accept="image/*" multiple id="contained-button-file" type="file" onChange={handleFileInputChange} ref={inputRef}></input>
           <label htmlFor="contained-button-file">
             <Button className={classes.button} variant="contained" color="primary" component="span">
@@ -81,13 +83,15 @@ const ImageUpload: React.FC<Props> = ({ file, setFile, loading }) => {
       {file && (
         <Grid item display={"flex"} justifySelf={"flex-end"}>
           <Grid container display={"flex"} alignItems={"center"}>
-            <Grid item>
-              <Tooltip title="Clear image">
-                <IconButton onClick={handleClearButtonClick} className={classes.icon}>
-                  <CloseIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>
+            {!loading && (
+              <Grid item>
+                <Tooltip title="Clear image">
+                  <IconButton onClick={handleClear} className={classes.icon}>
+                    <CloseIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            )}
             <Avatar alt="Image" src={URL.createObjectURL(file)} sx={{ width: 72, height: 72, border: "2px solid #FF0011" }}></Avatar>
           </Grid>
         </Grid>

@@ -254,80 +254,82 @@ const Main: React.FC = () => {
         </div>
       </Grid>
       <Grid item xs={6} style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-        <div className={classes.tableCard} style={{ width: "585px", height: "375px !important", marginBottom: "30px" }}>
-          <div className={classes.walletBalance} style={{ paddingLeft: "1rem", paddingBottom: "1rem" }}>
-            My Tokens
-          </div>
-          {
-            <div>
-              <TableContainer className={classes.tableContainer}>
-                <Table stickyHeader aria-label="sticky table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell key="name" align="left">
-                        <Typography fontWeight="bold" color="#0f1429">
-                          {MY_ERC20TOKEN.NAME}
-                        </Typography>
-                      </TableCell>
-                      <TableCell key="symbol" align="left">
-                        <Typography fontWeight="bold" color="#0f1429">
-                          {MY_ERC20TOKEN.SYMBOL}
-                        </Typography>
-                      </TableCell>
-                      <TableCell key="decimal" align="center">
-                        <Typography fontWeight="bold" color="#0f1429">
-                          {MY_ERC20TOKEN.DECIMAL}
-                        </Typography>
-                      </TableCell>
-                      <TableCell key="balance" align="center">
-                        <Typography fontWeight="bold" color="#0f1429">
-                          {MY_ERC20TOKEN.BALANCE}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {myTokenList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: any, index: number) => {
-                      return (
-                        <TableRow
-                          hover
-                          role="checkbox"
-                          onClick={() => window.open("https://testnet.cspr.live/contract/" + row.contractHash, "_blank")}
-                          tabIndex={-1}
-                          key={index}
-                          style={{ cursor: "pointer" }}
-                        >
-                          <TableCell align="left">
-                            <Typography className={classes.tableStr}>{row.name}</Typography>
-                          </TableCell>
-                          <TableCell align="left">
-                            <Typography className={classes.tableStr}>{row.symbol}</Typography>
-                          </TableCell>
-                          <TableCell align="center">
-                            <Typography className={classes.tableInt}>{row.decimals}</Typography>
-                          </TableCell>
-                          <TableCell align="center">
-                            <Typography className={classes.tableInt}>{row.balance}</Typography>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[1, 5, 10]}
-                component="div"
-                count={myTokenList.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                sx={{ color: "#fff !important", "& .MuiSvgIcon-root": { fill: "#fff !important" } }}
-              />
+        {myTokenList.lengt < 0 && (
+          <div className={classes.tableCard} style={{ width: "585px", height: "375px !important", marginBottom: "30px" }}>
+            <div className={classes.walletBalance} style={{ paddingLeft: "1rem", paddingBottom: "1rem" }}>
+              My Tokens
             </div>
-          }
-        </div>
+            {
+              <div>
+                <TableContainer className={classes.tableContainer}>
+                  <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell key="name" align="left">
+                          <Typography fontWeight="bold" color="#0f1429">
+                            {MY_ERC20TOKEN.NAME}
+                          </Typography>
+                        </TableCell>
+                        <TableCell key="symbol" align="left">
+                          <Typography fontWeight="bold" color="#0f1429">
+                            {MY_ERC20TOKEN.SYMBOL}
+                          </Typography>
+                        </TableCell>
+                        <TableCell key="decimal" align="center">
+                          <Typography fontWeight="bold" color="#0f1429">
+                            {MY_ERC20TOKEN.DECIMAL}
+                          </Typography>
+                        </TableCell>
+                        <TableCell key="balance" align="center">
+                          <Typography fontWeight="bold" color="#0f1429">
+                            {MY_ERC20TOKEN.BALANCE}
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {myTokenList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: any, index: number) => {
+                        return (
+                          <TableRow
+                            hover
+                            role="checkbox"
+                            onClick={() => window.open("https://testnet.cspr.live/contract/" + row.contractHash, "_blank")}
+                            tabIndex={-1}
+                            key={index}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <TableCell align="left">
+                              <Typography className={classes.tableStr}>{row.name}</Typography>
+                            </TableCell>
+                            <TableCell align="left">
+                              <Typography className={classes.tableStr}>{row.symbol}</Typography>
+                            </TableCell>
+                            <TableCell align="center">
+                              <Typography className={classes.tableInt}>{row.decimals}</Typography>
+                            </TableCell>
+                            <TableCell align="center">
+                              <Typography className={classes.tableInt}>{row.balance}</Typography>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[1, 5, 10]}
+                  component="div"
+                  count={myTokenList.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  sx={{ color: "#fff !important", "& .MuiSvgIcon-root": { fill: "#fff !important" } }}
+                />
+              </div>
+            }
+          </div>
+        )}
         <div className={classes.tableCard} style={{ width: "585px", height: "375px !important" }}>
           <div className={classes.walletBalance} style={{ paddingLeft: "1rem", paddingBottom: "1rem" }}>
             My Collections
@@ -356,6 +358,7 @@ const Main: React.FC = () => {
           </div>
         </div>
       </Grid>
+
       <Grid item xs={3}>
         <div className={`${classes.buttonCard}`} style={{ width: "250px !important", marginBottom: "30px" }}>
           <div className={classes.walletBalance} style={{ marginBottom: "20px" }}>
