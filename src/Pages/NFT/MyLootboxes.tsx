@@ -158,6 +158,7 @@ const MyLootboxes = () => {
         const args = RuntimeArgs.fromMap({
           item_name: CLValueBuilder.string(itemName),
           token_id: CLValueBuilder.u64(selectedNFTIndex),
+          rarity: CLValueBuilder.u64(rarity),
         });
 
         const deploy = contract.callEntrypoint("add_item", args, ownerPublicKey, "casper-test", "5000000000");
