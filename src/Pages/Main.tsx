@@ -253,8 +253,8 @@ const Main: React.FC = () => {
           </div>
         </div>
       </Grid>
-      {myTokenList && (
-        <Grid item xs={6} style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+      <Grid item xs={6} style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+        {myTokenList.lengt < 0 && (
           <div className={classes.tableCard} style={{ width: "585px", height: "375px !important", marginBottom: "30px" }}>
             <div className={classes.walletBalance} style={{ paddingLeft: "1rem", paddingBottom: "1rem" }}>
               My Tokens
@@ -329,35 +329,35 @@ const Main: React.FC = () => {
               </div>
             }
           </div>
-          <div className={classes.tableCard} style={{ width: "585px", height: "375px !important" }}>
-            <div className={classes.walletBalance} style={{ paddingLeft: "1rem", paddingBottom: "1rem" }}>
-              My Collections
-            </div>
-            <div>
-              <Grid container width={"100%"} justifyContent={"flex-start"}>
-                {collections.slice(0, 6).map((e: any, index: number) => (
-                  <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
-                    <CollectionCard
-                      image={"/images/casper.png"}
-                      onClick={() => navigate("/nft-list/" + e.contractHash)}
-                      title={e.collection_name}
-                      contractHash={e.contractHash}
-                      symbol={e.collection_symbol}
-                      cardHeight={"15rem"}
-                      mediaHeight={"100px"}
-                      cardContentPadding={"5px"}
-                      cardContentTitle={"14px"}
-                      cardContentSymbol={"14px"}
-                      cardContentContractHash={"12px"}
-                      tokenCountText={parseInt(e.number_of_minted_tokens.hex).toString() + "/" + parseInt(e.total_token_supply.hex).toString()}
-                    ></CollectionCard>
-                  </Grid>
-                ))}
-              </Grid>
-            </div>
+        )}
+        <div className={classes.tableCard} style={{ width: "585px", height: "375px !important" }}>
+          <div className={classes.walletBalance} style={{ paddingLeft: "1rem", paddingBottom: "1rem" }}>
+            My Collections
           </div>
-        </Grid>
-      )}
+          <div>
+            <Grid container width={"100%"} justifyContent={"flex-start"}>
+              {collections.slice(0, 6).map((e: any, index: number) => (
+                <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
+                  <CollectionCard
+                    image={"/images/casper.png"}
+                    onClick={() => navigate("/nft-list/" + e.contractHash)}
+                    title={e.collection_name}
+                    contractHash={e.contractHash}
+                    symbol={e.collection_symbol}
+                    cardHeight={"15rem"}
+                    mediaHeight={"100px"}
+                    cardContentPadding={"5px"}
+                    cardContentTitle={"14px"}
+                    cardContentSymbol={"14px"}
+                    cardContentContractHash={"12px"}
+                    tokenCountText={parseInt(e.number_of_minted_tokens.hex).toString() + "/" + parseInt(e.total_token_supply.hex).toString()}
+                  ></CollectionCard>
+                </Grid>
+              ))}
+            </Grid>
+          </div>
+        </div>
+      </Grid>
 
       <Grid item xs={3}>
         <div className={`${classes.buttonCard}`} style={{ width: "250px !important", marginBottom: "30px" }}>
