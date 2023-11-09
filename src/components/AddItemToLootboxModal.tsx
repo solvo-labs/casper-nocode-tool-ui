@@ -184,7 +184,7 @@ const AddItemToLootboxModal: React.FC<Props> = ({
                       }}
                     >
                       <MenuItem value="-1">
-                        <em>Select a Collection</em>
+                        <em>Select a Rarity</em>
                       </MenuItem>
                       {rarityList.map((rr: any, index: number) => {
                         return (
