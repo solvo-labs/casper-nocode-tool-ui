@@ -112,6 +112,7 @@ export const Stake = () => {
   const classes = useStyles();
   const [amount, setAmount] = useState<number>();
   const [loading, setLoading] = useState<boolean>(true);
+  const [delegationsLoading, setDelegationsLoading] = useState<boolean>(false);
   const [validators, setValidators] = useState<any[]>([]);
   const [delegations, setDelegations] = useState<any[]>([]);
   const [selectedValidator, setSelectedValidator] = useState<any>();
@@ -121,6 +122,7 @@ export const Stake = () => {
 
   useEffect(() => {
     const init = () => {
+      setDelegationsLoading(true);
       getValidators()
         .then((data) => {
           const filteredData = data.filter((dt: any) => dt.bid.delegators.length < 1200);
@@ -139,6 +141,7 @@ export const Stake = () => {
           }
 
           setDelegations(myActiveDelegations);
+          setDelegationsLoading(false);
         })
         .catch((err) => {
           toastr.error(err);
@@ -403,6 +406,16 @@ export const Stake = () => {
               />
             </ListItem>
           </>
+          {delegationsLoading && (
+            <Grid display={"flex"} minHeight={"120px"} justifyContent={"center"} alignItems={"center"}>
+              <CircularProgress />
+            </Grid>
+          )}
+          {delegations.length <= 0 && !delegationsLoading && (
+            <Grid display={"flex"} minHeight={"120px"} justifyContent={"center"} alignItems={"center"}>
+              <Typography>You don't have any stake yet.</Typography>
+            </Grid>
+          )}
           {delegations.map((value, index) => {
             const labelId = `checkbox-list-label-${index}`;
             const delegationRate = validators.find((vl) => vl.public_key === value.delegatee).bid.delegation_rate;
