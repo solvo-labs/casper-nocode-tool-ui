@@ -13,6 +13,8 @@ import { SERVER_API, listofCreatorERC20Tokens } from "../../utils/api";
 
 import { SelectChangeEvent } from "@mui/material/Select";
 import { CustomSelect } from "../../components/CustomSelect";
+import CreatorRouter from "../../components/CreatorRouter";
+import { DONT_HAVE_ANYTHING } from "../../utils/enum";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -162,60 +164,65 @@ const Allowance: React.FC = () => {
   }
 
   return (
-    <div
-      style={{
-        height: "calc(100vh-5rem)",
-        minWidth: "21rem",
-        padding: "1rem",
-      }}
-    >
-      <Grid container className={classes.container}>
-        <Grid container className={classes.center}>
-          <Grid item>
-            <Typography className={classes.title} variant="h5">
-              Allowance Token
-            </Typography>
-          </Grid>
-          <Grid container className={classes.gridContainer}>
-            <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>
-              <CustomSelect
-                value={selectedToken?.contractHash || "default"}
-                label="ERC-20 Token"
-                onChange={(event: SelectChangeEvent) => {
-                  const data = tokens.find((tk) => tk.contractHash === event.target.value);
-                  setSelectedToken(data);
-                }}
-                id={"custom-select"}
-              >
-                <MenuItem value="default">
-                  <em>Select an ERC-20 Token</em>
-                </MenuItem>
-                {tokens.map((tk) => {
-                  return (
-                    <MenuItem key={tk.contractHash} value={tk.contractHash}>
-                      {tk.name + "(" + tk.symbol + ")"}
-                    </MenuItem>
-                  );
-                })}
-              </CustomSelect>
-              <CustomInput
-                placeholder="Receipt Pubkey"
-                label="Receipt Pubkey"
-                id="receiptPubkey"
-                name="receiptPubkey"
-                type="text"
-                value={receipentPubkey}
-                onChange={(e: any) => setReceipentPubkey(e.target.value)}
-              />
-
-              <Grid paddingTop={"2rem"} container justifyContent={"center"}>
-                <CustomButton onClick={allowance} disabled={disable} label="Allowance" />
+    <>
+      {tokens.length <= 0 && <CreatorRouter explain={DONT_HAVE_ANYTHING.TOKEN} handleOnClick={() => navigate("/token")}></CreatorRouter>}
+      {tokens.length > 0 && (
+        <div
+          style={{
+            // height: "calc(100vh-5rem)",
+            // minWidth: "21rem",
+            padding: "1rem",
+          }}
+        >
+          <Grid container className={classes.container}>
+            <Grid container className={classes.center}>
+              <Grid item>
+                <Typography className={classes.title} variant="h5">
+                  Allowance Token
+                </Typography>
               </Grid>
-            </Stack>
+              <Grid container className={classes.gridContainer}>
+                <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>
+                  <CustomSelect
+                    value={selectedToken?.contractHash || "default"}
+                    label="ERC-20 Token"
+                    onChange={(event: SelectChangeEvent) => {
+                      const data = tokens.find((tk) => tk.contractHash === event.target.value);
+                      setSelectedToken(data);
+                    }}
+                    id={"custom-select"}
+                  >
+                    <MenuItem value="default">
+                      <em>Select an ERC-20 Token</em>
+                    </MenuItem>
+                    {tokens.map((tk) => {
+                      return (
+                        <MenuItem key={tk.contractHash} value={tk.contractHash}>
+                          {tk.name + "(" + tk.symbol + ")"}
+                        </MenuItem>
+                      );
+                    })}
+                  </CustomSelect>
+                  <CustomInput
+                    placeholder="Receipt Pubkey"
+                    label="Receipt Pubkey"
+                    id="receiptPubkey"
+                    name="receiptPubkey"
+                    type="text"
+                    value={receipentPubkey}
+                    onChange={(e: any) => setReceipentPubkey(e.target.value)}
+                  />
+
+                  <Grid paddingTop={"2rem"} container justifyContent={"center"}>
+                    <CustomButton onClick={allowance} disabled={disable} label="Allowance" />
+                  </Grid>
+                </Stack>
+              </Grid>
+            </Grid>
           </Grid>
-        </Grid>
-      </Grid>
-    </div>
+        </div>
+      )}
+    </>
   );
 };
 

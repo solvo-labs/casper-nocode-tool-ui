@@ -11,6 +11,8 @@ import { SERVER_API, listofCreatorERC20Tokens } from "../../utils/api";
 import axios from "axios";
 import toastr from "toastr";
 import { CustomSelect } from "../../components/CustomSelect";
+import CreatorRouter from "../../components/CreatorRouter";
+import { DONT_HAVE_ANYTHING } from "../../utils/enum";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -164,78 +166,83 @@ const Approve: React.FC = () => {
   }
 
   return (
-    <div
-      style={{
-        height: "calc(100vh-5rem)",
-        minWidth: "21rem",
-        padding: "1rem",
-      }}
-    >
-      <Grid container className={classes.container}>
-        <Grid container className={classes.center}>
-          <Grid item>
-            <Typography variant="h5" className={classes.title}>
-              Approve Token
-            </Typography>
-          </Grid>
-          <Grid container className={classes.gridContainer}>
-            <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
-              <CustomSelect
-                value={selectedToken?.contractHash || "default"}
-                label="ERC-20 Token"
-                onChange={(event: SelectChangeEvent) => {
-                  const data = tokens.find((tk) => tk.contractHash === event.target.value);
-                  setSelectedToken(data);
-                }}
-                id={"custom-select"}
-              >
-                <MenuItem value="default">
-                  <em>Select an ERC-20 Token</em>
-                </MenuItem>
-                {tokens.map((tk) => {
-                  return (
-                    <MenuItem key={tk.contractHash} value={tk.contractHash}>
-                      {tk.name + "(" + tk.symbol + ")"}
-                    </MenuItem>
-                  );
-                })}
-              </CustomSelect>
-              <CustomInput
-                placeholder="Spender Pubkey"
-                label="Spender Pubkey"
-                id="spenderPubkey"
-                name="spenderPubkey"
-                type="text"
-                value={data.spenderPubkey}
-                onChange={(e: any) =>
-                  setData({
-                    ...data,
-                    spenderPubkey: e.target.value,
-                  })
-                }
-              />
-              <CustomInput
-                placeholder="Amount"
-                label="Amount"
-                id="amount"
-                name="amount"
-                type="number"
-                value={data.amount}
-                onChange={(e: any) =>
-                  setData({
-                    ...data,
-                    amount: e.target.value,
-                  })
-                }
-              />
-              <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton onClick={approve} disabled={disable} label="Approve" />
+    <>
+      {tokens.length <= 0 && <CreatorRouter explain={DONT_HAVE_ANYTHING.TOKEN} handleOnClick={() => navigate("/token")}></CreatorRouter>}
+      {tokens.length > 0 && (
+        <div
+          style={{
+            // height: "calc(100vh-5rem)",
+            // minWidth: "21rem",
+            padding: "1rem",
+          }}
+        >
+          <Grid container className={classes.container}>
+            <Grid container className={classes.center}>
+              <Grid item>
+                <Typography variant="h5" className={classes.title}>
+                  Approve Token
+                </Typography>
               </Grid>
-            </Stack>
+              <Grid container className={classes.gridContainer}>
+                <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
+                  <CustomSelect
+                    value={selectedToken?.contractHash || "default"}
+                    label="ERC-20 Token"
+                    onChange={(event: SelectChangeEvent) => {
+                      const data = tokens.find((tk) => tk.contractHash === event.target.value);
+                      setSelectedToken(data);
+                    }}
+                    id={"custom-select"}
+                  >
+                    <MenuItem value="default">
+                      <em>Select an ERC-20 Token</em>
+                    </MenuItem>
+                    {tokens.map((tk) => {
+                      return (
+                        <MenuItem key={tk.contractHash} value={tk.contractHash}>
+                          {tk.name + "(" + tk.symbol + ")"}
+                        </MenuItem>
+                      );
+                    })}
+                  </CustomSelect>
+                  <CustomInput
+                    placeholder="Spender Pubkey"
+                    label="Spender Pubkey"
+                    id="spenderPubkey"
+                    name="spenderPubkey"
+                    type="text"
+                    value={data.spenderPubkey}
+                    onChange={(e: any) =>
+                      setData({
+                        ...data,
+                        spenderPubkey: e.target.value,
+                      })
+                    }
+                  />
+                  <CustomInput
+                    placeholder="Amount"
+                    label="Amount"
+                    id="amount"
+                    name="amount"
+                    type="number"
+                    value={data.amount}
+                    onChange={(e: any) =>
+                      setData({
+                        ...data,
+                        amount: e.target.value,
+                      })
+                    }
+                  />
+                  <Grid paddingTop={2} container justifyContent={"center"}>
+                    <CustomButton onClick={approve} disabled={disable} label="Approve" />
+                  </Grid>
+                </Stack>
+              </Grid>
+            </Grid>
           </Grid>
-        </Grid>
-      </Grid>
-    </div>
+        </div>
+      )}
+    </>
   );
 };
 

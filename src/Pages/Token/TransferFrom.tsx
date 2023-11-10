@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Stack, Theme, CircularProgress, MenuItem } from "@mui/material";
+import { Grid, Stack, Theme, CircularProgress, MenuItem, Typography } from "@mui/material";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
 import { makeStyles } from "@mui/styles";
@@ -12,6 +12,8 @@ import { SERVER_API, Token, initTokens } from "../../utils/api";
 
 import { SelectChangeEvent } from "@mui/material/Select";
 import { CustomSelect } from "../../components/CustomSelect";
+import CreatorRouter from "../../components/CreatorRouter";
+import { DONT_HAVE_ANYTHING } from "../../utils/enum";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -19,53 +21,6 @@ const useStyles = makeStyles((theme: Theme) => ({
       marginBottom: 2,
       marginTop: 2,
       padding: "24px",
-    },
-  },
-  center: {
-    justifyContent: "center",
-    [theme.breakpoints.down("sm")]: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      textAlign: "center",
-    },
-  },
-  title: {
-    fontWeight: 500,
-    fontSize: "26px",
-    position: "relative",
-    top: "3rem",
-    borderBottom: "1px solid #FF0011 !important",
-  },
-  gridContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "auto",
-    padding: "1rem",
-  },
-  stackContainer: {
-    minWidth: "25rem",
-    [theme.breakpoints.down("sm")]: {
-      minWidth: "10rem",
-    },
-  },
-  buttonContainer: {
-    textAlign: "start",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  select: {
-    "& .MuiOutlinedInput-notchedOutline": {
-      borderColor: "white",
-    },
-    "&:hover .MuiOutlinedInput-notchedOutline": {
-      borderColor: "white",
-    },
-    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-      borderColor: "white",
-    },
-    "& .MuiInputLabel-root.Mui-focused": {
-      color: "#FF0011",
     },
   },
 }));
@@ -166,93 +121,98 @@ const TransferFrom: React.FC = () => {
   }
 
   return (
-    <div
-      style={{
-        height: "calc(100vh-5rem)",
-        minWidth: "21rem",
-        padding: "1rem",
-      }}
-    >
-      <Grid container className={classes.container}>
-        <Grid container className={classes.center}>
-          <h5 className={classes.title}>Transfer From Approved User To Another User</h5>
+    <>
+      {tokens.length <= 0 && <CreatorRouter explain={DONT_HAVE_ANYTHING.TOKEN} handleOnClick={() => navigate("/token")}></CreatorRouter>}
+      {tokens.length > 0 && (
+        <div
+          style={{
+            // height: "calc(100vh-5rem)",
+            // minWidth: "21rem",
+            padding: "1rem",
+          }}
+        >
+          <Grid container direction={"column"}>
+            <Grid item sx={{ borderBottom: "1px solid red" }}>
+              <Typography variant="h5">Transfer From Approved User To Another User</Typography>
+            </Grid>
 
-          <Grid container className={classes.gridContainer}>
-            <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
-              <CustomSelect
-                value={selectedToken?.contractHash || "default"}
-                label="ERC-20 Token"
-                onChange={(event: SelectChangeEvent) => {
-                  const data = tokens.find((tk) => tk.contractHash === event.target.value);
-                  setSelectedToken(data);
-                }}
-                id={"custom-select"}
-              >
-                <MenuItem value="default">
-                  <em>Select an ERC-20 Token</em>
-                </MenuItem>
-                {tokens.map((tk) => {
-                  return (
-                    <MenuItem key={tk.contractHash} value={tk.contractHash}>
-                      {tk.name + "(" + tk.symbol + ")"}
-                    </MenuItem>
-                  );
-                })}
-              </CustomSelect>
-              <CustomInput
-                placeholder="From Pubkey"
-                label="From Pubkey"
-                id="fromPubkey"
-                name="fromPubkey"
-                type="text"
-                value={data.fromPubkey}
-                onChange={(e: any) =>
-                  setData({
-                    ...data,
-                    fromPubkey: e.target.value,
-                  })
-                }
-              />
-              <CustomInput
-                placeholder="Receipt Pubkey"
-                label="Receipt Pubkey"
-                id="receiptPubkey"
-                name="receiptPubkey"
-                type="text"
-                value={data.receipentPubkey}
-                onChange={(e: any) =>
-                  setData({
-                    ...data,
-                    receipentPubkey: e.target.value,
-                  })
-                }
-              />
-              <CustomInput
-                placeholder="Amount"
-                label="Amount"
-                id="amount"
-                name="amount"
-                type="number"
-                value={data.amount}
-                onChange={(e: any) =>
-                  setData({
-                    ...data,
-                    amount: e.target.value,
-                  })
-                }
-              />
-              <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton
-                  onClick={transferData}
-                  disabled={data.fromPubkey === "" || data.amount <= 0 || data.receipentPubkey === "" || selectedToken === undefined}
-                  label="Transfer"
+            <Grid item marginTop={"4rem"}>
+              <Stack spacing={4} direction={"column"}>
+                <CustomSelect
+                  value={selectedToken?.contractHash || "default"}
+                  label="ERC-20 Token"
+                  onChange={(event: SelectChangeEvent) => {
+                    const data = tokens.find((tk) => tk.contractHash === event.target.value);
+                    setSelectedToken(data);
+                  }}
+                  id={"custom-select"}
+                >
+                  <MenuItem value="default">
+                    <em>Select an ERC-20 Token</em>
+                  </MenuItem>
+                  {tokens.map((tk) => {
+                    return (
+                      <MenuItem key={tk.contractHash} value={tk.contractHash}>
+                        {tk.name + "(" + tk.symbol + ")"}
+                      </MenuItem>
+                    );
+                  })}
+                </CustomSelect>
+                <CustomInput
+                  placeholder="From Pubkey"
+                  label="From Pubkey"
+                  id="fromPubkey"
+                  name="fromPubkey"
+                  type="text"
+                  value={data.fromPubkey}
+                  onChange={(e: any) =>
+                    setData({
+                      ...data,
+                      fromPubkey: e.target.value,
+                    })
+                  }
                 />
-              </Grid>
-            </Stack>
+                <CustomInput
+                  placeholder="Receipt Pubkey"
+                  label="Receipt Pubkey"
+                  id="receiptPubkey"
+                  name="receiptPubkey"
+                  type="text"
+                  value={data.receipentPubkey}
+                  onChange={(e: any) =>
+                    setData({
+                      ...data,
+                      receipentPubkey: e.target.value,
+                    })
+                  }
+                />
+                <CustomInput
+                  placeholder="Amount"
+                  label="Amount"
+                  id="amount"
+                  name="amount"
+                  type="number"
+                  value={data.amount}
+                  onChange={(e: any) =>
+                    setData({
+                      ...data,
+                      amount: e.target.value,
+                    })
+                  }
+                />
+                <Grid paddingTop={2} container justifyContent={"center"}>
+                  <CustomButton
+                    onClick={transferData}
+                    disabled={data.fromPubkey === "" || data.amount <= 0 || data.receipentPubkey === "" || selectedToken === undefined}
+                    label="Transfer"
+                  />
+                </Grid>
+              </Stack>
+            </Grid>
           </Grid>
-        </Grid>
-      </Grid>
-    </div>
+        </div>
+      )}
+    </>
   );
 };
 
