@@ -1,5 +1,5 @@
 import React from "react";
-import { FormControl, InputLabel, MenuItem, SelectChangeEvent } from "@mui/material";
+import { MenuItem, SelectChangeEvent } from "@mui/material";
 import { Token } from "../utils/api";
 import { CustomSelect } from "./CustomSelect";
 
