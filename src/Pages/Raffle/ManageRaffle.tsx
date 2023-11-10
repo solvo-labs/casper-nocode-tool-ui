@@ -1,5 +1,4 @@
 import {
-  Box,
   CircularProgress,
   Grid,
   IconButton,
@@ -7,7 +6,6 @@ import {
   MenuItem,
   Paper,
   Stack,
-  Tab,
   Table,
   TableBody,
   TableCell,
@@ -21,13 +19,12 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import { CustomButton } from "../../components/CustomButton";
 import { makeStyles } from "@mui/styles";
-import { fetchCep78NamedKeys, fetchRaffleNamedKeys, getAllRafflesForJoin, getNftCollection, getNftMetadata, getRaffleDetails, SERVER_API } from "../../utils/api";
+import { fetchCep78NamedKeys, fetchRaffleNamedKeys, getNftCollection, getNftMetadata, getRaffleDetails, SERVER_API } from "../../utils/api";
 import { CollectionMetada, NFT, RAFFLE_STATUS, Raffle, RaffleMetadata } from "../../utils/types";
 import moment from "moment";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CreateRaffleModal from "../../components/CreateRaffleModal.tsx";
-import { CasperHelpers, uint32ArrayToHex } from "../../utils";
+import { CasperHelpers, STORE_RAFFLE_CONTRACT_HASH, uint32ArrayToHex } from "../../utils";
 //@ts-ignore
 import { CLAccountHash, CLByteArray, CLKey, CLPublicKey, CLValueBuilder, Contracts, DeployUtil, RuntimeArgs } from "casper-js-sdk";
 import axios from "axios";
@@ -36,8 +33,6 @@ import { useOutletContext } from "react-router-dom";
 import toastr from "toastr";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
-
-const STORE_CONTRACT_HASH = "6cbf0ee026d1d6ebc0364308213ce859895278f73bb15744b5089f8335adb8c8";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -82,7 +77,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ManageRaffle = () => {
   const classes = useStyles();
   // const navigate = useNavigate();
-  const [publicKey, provider, , , , , , raffleWasm, buyTicketWasm] =
+  const [publicKey, provider, , , , , , raffleWasm] =
     useOutletContext<
       [publicKey: string, provider: any, cep18Wasm: any, cep78Wasm: any, marketplaceWasm: any, vestingWasm: any, executeListingWasm: any, raffleWasm: any, buyTicketWasm: any]
     >();
@@ -97,12 +92,9 @@ const ManageRaffle = () => {
   const [collections, setCollections] = useState<CollectionMetada[] | any>([]);
   const [nfts, setNfts] = useState<NFT[] | any>([]);
 
-  const [tabValue, setTabValue] = useState("1");
-
   const [raffleMore, setRaffleMore] = useState<null | HTMLElement>(null);
   const raffleMoreOpen = Boolean(raffleMore);
 
-  const [joinableRaffle, setJoinableRaffle] = useState<RaffleMetadata[]>();
   const [clickedRaffle, setClickedRaffle] = useState<RaffleMetadata>();
 
   const [raffles, setRaffles] = useState<any[] | undefined>();
@@ -119,20 +111,12 @@ const ManageRaffle = () => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  const [page2, setPage2] = React.useState(0);
-  const [rowsPerPage2, setRowsPerPage2] = React.useState(5);
-
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>, state: any) => {
     state(event.currentTarget);
   };
 
   const handleMenuClose = (state: any) => {
     state(null);
-  };
-
-  // @ts-ignore
-  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
-    setTabValue(newValue);
   };
 
   const handleOpen = (state: any) => {
@@ -148,43 +132,6 @@ const ManageRaffle = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
-  const handleChangePage2 = (_event: unknown, newPage: number) => {
-    setPage2(newPage);
-  };
-
-  const handleChangeRowsPerPage2 = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage2(+event.target.value);
-    setPage2(0);
-  };
-
-  // const fetchNft = async (contract: string) => {
-  //   setLoadingNFT(true);
-  //   if (contract) {
-  //     const nftCollection = await getNftCollection(contract);
-  //
-  //     const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
-  //
-  //     let promises = [];
-  //     for (let index = 0; index < nftCount; index++) {
-  //       promises.push(getNftMetadata(contract, index.toString()));
-  //     }
-  //
-  //     const nftMetas= await Promise.all(promises);
-  //     const imagePromises = nftMetas.map((e: any) => getMetadataImage(e, FETCH_IMAGE_TYPE.NFT));
-  //     const images = await Promise.all(imagePromises);
-  //
-  //     const finalData = nftMetas.map((e: any, index: number) => {
-  //       return {
-  //         ...e,
-  //         asset: images[index],
-  //       };
-  //     });
-  //
-  //     nfts(finalData);
-  //     setLoadingNFT(false);
-  //   }
-  // };
 
   const approve = async () => {
     setLoading(true);
@@ -269,45 +216,6 @@ const ManageRaffle = () => {
     }
   };
 
-  const buy_ticket = async (raffle: any) => {
-    try {
-      if (raffle) {
-        setLoading(true);
-        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-        const contract = new Contracts.Contract();
-        const args = RuntimeArgs.fromMap({
-          // raffle_contract_hash: CasperHelpers.stringToKey("61b408af2f990fc16476e93bcdc6727e2b79879f3abded73e64ae4dff39e46cd"),
-          raffle_contract_hash: new CLAccountHash(Buffer.from(raffle?.key.substring(5), "hex")),
-          amount: CLValueBuilder.u512(raffle.price),
-        });
-
-        const deploy = contract.install(new Uint8Array(buyTicketWasm), args, "10000000000", ownerPublicKey, "casper-test");
-
-        const deployJson = DeployUtil.deployToJson(deploy);
-
-        try {
-          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
-          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-          const data = DeployUtil.deployToJson(signedDeploy.val);
-          const response = await axios.post(SERVER_API + "deploy", data, {
-            headers: { "Content-Type": "application/json" },
-          });
-
-          toastr.success(response.data, "Deposit successfully.");
-          setLoading(false);
-        } catch (error: any) {
-          alert(error.message);
-          setLoading(false);
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      toastr.error("error");
-      setLoading(false);
-    }
-  };
-
   const draw = async () => {
     setLoading(true);
     try {
@@ -340,43 +248,6 @@ const ManageRaffle = () => {
           alert(error.message);
           setLoading(false);
         }
-      }
-    } catch (error) {
-      console.log(error);
-      toastr.error("error");
-      setLoading(false);
-    }
-  };
-
-  const claim = async () => {
-    setLoading(true);
-    try {
-      const contract = new Contracts.Contract();
-      contract.setContractHash(clickedRaffle?.key);
-      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-
-      const args = RuntimeArgs.fromMap({});
-
-      const deploy = contract.callEntrypoint("claim", args, ownerPublicKey, "casper-test", "5000000000");
-      console.log(deploy);
-
-      const deployJson = DeployUtil.deployToJson(deploy);
-
-      try {
-        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
-        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-        const data = DeployUtil.deployToJson(signedDeploy.val);
-        const response = await axios.post(SERVER_API + "deploy", data, {
-          headers: { "Content-Type": "application/json" },
-        });
-
-        toastr.success(response.data, "Approve deployed successfully.");
-        setApproveModal(false);
-        setLoading(false);
-        // navigate("/marketplace");
-      } catch (error: any) {
-        alert(error.message);
       }
     } catch (error) {
       console.log(error);
@@ -436,7 +307,7 @@ const ManageRaffle = () => {
           collection: CasperHelpers.stringToKey(raffleData.collectionHash),
           nft_index: CLValueBuilder.u64(raffleData.nftIndex),
           price: CLValueBuilder.u512(raffleData.price * 1000000000),
-          storage_key: new CLAccountHash(Buffer.from(STORE_CONTRACT_HASH, "hex")),
+          storage_key: new CLAccountHash(Buffer.from(STORE_RAFFLE_CONTRACT_HASH, "hex")),
         });
 
         const deploy = contract.install(new Uint8Array(raffleWasm), args, "150000000000", ownerPublicKey, "casper-test");
@@ -507,10 +378,6 @@ const ManageRaffle = () => {
 
   useEffect(() => {
     const init = async () => {
-      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-
-      const accountHash = ownerPublicKey.toAccountHashStr().substring(13);
-
       const data = await fetchRaffleNamedKeys(publicKey);
 
       const raffleDetailsPromises = data.map((rf: any) => getRaffleDetails(rf.key));
@@ -532,38 +399,6 @@ const ManageRaffle = () => {
           cancelable: raffle.cancelable,
         };
       });
-
-      const rafflesData = await getAllRafflesForJoin("hash-" + STORE_CONTRACT_HASH);
-
-      const finalJoinData: any[] = rafflesData.map((raffle: RaffleMetadata) => {
-        return {
-          key: raffle.key,
-          collection: uint32ArrayToHex(raffle.collection),
-          winner_account: raffle.winner_account,
-          name: raffle.name,
-          owner: uint32ArrayToHex(raffle.owner),
-          nft_index: Number(raffle.nft_index.hex),
-          start_date: Number(raffle.start_date.hex),
-          end_date: Number(raffle.end_date.hex),
-          price: Number(raffle.price.hex),
-          claimed: raffle.claimed,
-          status: raffle.status,
-        };
-      });
-
-      const lastData = finalJoinData.filter((raffle: any) => {
-        if (raffle.claimed) {
-          return !raffle.claimed;
-        }
-
-        if (raffle.winner_account) {
-          return raffle.winner_account === accountHash;
-        }
-
-        return raffle.owner != accountHash && moment.unix(raffle.end_date).unix() >= Date.now();
-      });
-
-      setJoinableRaffle(lastData);
 
       setRaffles(finalData);
       setLoading(false);
@@ -626,7 +461,7 @@ const ManageRaffle = () => {
     <Grid container className={classes.container}>
       <Stack direction={"row"} width={"100%"} justifyContent={"space-between"}>
         <Typography variant="h4" className={classes.title}>
-          Active Raffles
+          Manage Raffles
         </Typography>
         <CustomButton disabled={false} label="Create new Raffle" onClick={() => handleOpen(setRaffleOpen)}></CustomButton>
         <CreateRaffleModal
@@ -642,268 +477,157 @@ const ManageRaffle = () => {
           disable={disable}
         ></CreateRaffleModal>
       </Stack>
-      <Grid container width={"100%"} display={"grid"} marginTop={"4rem"} className={classes.tab}>
-        <TabContext value={tabValue}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList onChange={handleTabChange} variant="fullWidth">
-              <Tab label="my raffles" value="1" />
-              <Tab label="join raffle" value="2" />
-            </TabList>
-          </Box>
-          <TabPanel value="1">
-            <Grid className={classes.table} justifyContent={"center"}>
-              <Paper className={classes.paper}>
-                <TableContainer>
-                  <Table stickyHeader aria-label="sticky table">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell key="name" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            Name
-                          </Typography>
-                        </TableCell>
-                        <TableCell key="symbol" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            Start date
-                          </Typography>
-                        </TableCell>
-                        <TableCell key="decimal" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            End date
-                          </Typography>
-                        </TableCell>
-                        <TableCell key="nft-id" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            NFT ID
-                          </Typography>
-                        </TableCell>
-                        <TableCell key="raffle-price" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            Price
-                          </Typography>
-                        </TableCell>
-                        <TableCell key="status" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            Status
-                          </Typography>
-                        </TableCell>
-                        <TableCell key="claimed" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            Claimed
-                          </Typography>
-                        </TableCell>
-                        <TableCell key="raffle-actions" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            Actions
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {raffles &&
-                        raffles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((raffle: any, index: number) => {
-                          return (
-                            <TableRow style={{ cursor: "pointer" }} key={index}>
-                              <TableCell align="left">
-                                <Typography color="#0f1429">{raffle.name}</Typography>
-                              </TableCell>
-                              <TableCell align="left">
-                                <Typography color="#0f1429">{moment.unix(raffle.start_date / 1000).format("MM/DD/YYYY h:mm A")}</Typography>
-                              </TableCell>
-                              <TableCell align="left">
-                                <Typography color="#0f1429">{moment.unix(raffle.end_date / 1000).format("MM/DD/YYYY h:mm A")}</Typography>
-                              </TableCell>
-                              <TableCell align="left">
-                                <Typography color="#0f1429">{raffle.nft_index}</Typography>
-                              </TableCell>
-                              <TableCell align="left">
-                                <Typography color="#0f1429">{raffle.price / Math.pow(10, 9)} CSPR</Typography>
-                              </TableCell>
-                              <TableCell align="left">
-                                <Typography color="#0f1429">{getStatus(raffle.status)}</Typography>
-                              </TableCell>
-                              <TableCell align="left">
-                                <Typography color="#0f1429">{raffle.claimed ? <CheckIcon color="success" /> : <CloseIcon color="error" />}</Typography>
-                              </TableCell>
-                              <TableCell align="left">
-                                <IconButton
-                                  disabled={raffle.claimed}
-                                  onClick={(e: any) => {
-                                    setClickedRaffle(raffle);
-                                    handleMenuClick(e, setRaffleMore);
-                                  }}
-                                >
-                                  <MoreVertIcon />
-                                </IconButton>
-                                <Menu
-                                  anchorEl={raffleMore}
-                                  open={raffleMoreOpen}
-                                  onClose={() => {
-                                    setClickedRaffle(undefined);
-                                    handleMenuClose(setRaffleMore);
-                                  }}
-                                  anchorOrigin={{
-                                    vertical: "top",
-                                    horizontal: "left",
-                                  }}
-                                  transformOrigin={{
-                                    vertical: "top",
-                                    horizontal: "left",
-                                  }}
-                                  sx={{ zIndex: 999 }}
-                                >
-                                  <MenuItem
-                                    disabled={clickedRaffle?.status !== RAFFLE_STATUS.WAITING_DEPOSIT}
-                                    onClick={() => {
-                                      handleMenuClose(setRaffleMore);
-                                      handleOpen(setApproveModal);
-                                    }}
-                                  >
-                                    Deposit NFT
-                                  </MenuItem>
+      <Grid container width={"100%"} display={"grid"} className={classes.tab}>
+        <Grid className={classes.table} justifyContent={"center"}>
+          <Paper className={classes.paper}>
+            <TableContainer>
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell key="name" align="left">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        Name
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="symbol" align="left">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        Start date
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="decimal" align="left">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        End date
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="nft-id" align="left">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        NFT ID
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="raffle-price" align="left">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        Price
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="status" align="left">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        Status
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="claimed" align="left">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        Claimed
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="raffle-actions" align="left">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        Actions
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {raffles &&
+                    raffles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((raffle: any, index: number) => {
+                      return (
+                        <TableRow style={{ cursor: "pointer" }} key={index}>
+                          <TableCell align="left">
+                            <Typography color="#0f1429">{raffle.name}</Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography color="#0f1429">{moment.unix(raffle.start_date / 1000).format("MM/DD/YYYY h:mm A")}</Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography color="#0f1429">{moment.unix(raffle.end_date / 1000).format("MM/DD/YYYY h:mm A")}</Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography color="#0f1429">{raffle.nft_index}</Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography color="#0f1429">{raffle.price / Math.pow(10, 9)} CSPR</Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography color="#0f1429">{getStatus(raffle.status)}</Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography color="#0f1429">{raffle.claimed ? <CheckIcon color="success" /> : <CloseIcon color="error" />}</Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <IconButton
+                              disabled={raffle.claimed}
+                              onClick={(e: any) => {
+                                setClickedRaffle(raffle);
+                                handleMenuClick(e, setRaffleMore);
+                              }}
+                            >
+                              <MoreVertIcon />
+                            </IconButton>
+                            <Menu
+                              anchorEl={raffleMore}
+                              open={raffleMoreOpen}
+                              onClose={() => {
+                                setClickedRaffle(undefined);
+                                handleMenuClose(setRaffleMore);
+                              }}
+                              anchorOrigin={{
+                                vertical: "top",
+                                horizontal: "left",
+                              }}
+                              transformOrigin={{
+                                vertical: "top",
+                                horizontal: "left",
+                              }}
+                              sx={{ zIndex: 999 }}
+                            >
+                              <MenuItem
+                                disabled={clickedRaffle?.status !== RAFFLE_STATUS.WAITING_DEPOSIT}
+                                onClick={() => {
+                                  handleMenuClose(setRaffleMore);
+                                  handleOpen(setApproveModal);
+                                }}
+                              >
+                                Deposit NFT
+                              </MenuItem>
 
-                                  <MenuItem
-                                    disabled={clickedRaffle?.status !== RAFFLE_STATUS.WAITING_DRAW}
-                                    onClick={() => {
-                                      handleMenuClose(setRaffleMore);
-                                      draw();
-                                    }}
-                                  >
-                                    Draw
-                                  </MenuItem>
+                              <MenuItem
+                                disabled={clickedRaffle?.status !== RAFFLE_STATUS.WAITING_DRAW}
+                                onClick={() => {
+                                  handleMenuClose(setRaffleMore);
+                                  draw();
+                                }}
+                              >
+                                Draw
+                              </MenuItem>
 
-                                  <MenuItem
-                                    disabled={!clickedRaffle?.cancelable}
-                                    onClick={() => {
-                                      handleMenuClose(setRaffleMore);
-                                      cancel();
-                                    }}
-                                  >
-                                    Cancel
-                                  </MenuItem>
-                                </Menu>
-                                <ApproveNFTModalonRaffePage open={approveModal} handleClose={() => handleClose(setApproveModal)} approve={approve} selectedRaffle={clickedRaffle} />
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-                <TablePagination
-                  rowsPerPageOptions={[1, 5, 10]}
-                  component="div"
-                  count={raffles?.length ? raffles.length : 0}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-              </Paper>
-            </Grid>
-          </TabPanel>
-          <TabPanel value="2">
-            {" "}
-            <Grid className={classes.table} justifyContent={"center"}>
-              <Paper className={classes.paper}>
-                <TableContainer>
-                  <Table stickyHeader aria-label="sticky table">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell key="name" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            Name
-                          </Typography>
-                        </TableCell>
-                        <TableCell key="symbol" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            Start
-                          </Typography>
-                        </TableCell>
-                        <TableCell key="decimal" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            End
-                          </Typography>
-                        </TableCell>
-                        <TableCell key="collection" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            Collection
-                          </Typography>
-                        </TableCell>
-                        <TableCell key="nft-id" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            NFT ID
-                          </Typography>
-                        </TableCell>
-                        <TableCell key="raffle-price" align="left">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            Price
-                          </Typography>
-                        </TableCell>
-                        <TableCell key="raffle-actions" align="center">
-                          <Typography fontWeight="bold" color="#0f1429">
-                            Actions
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {joinableRaffle &&
-                        joinableRaffle.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((raffle: any, index: number) => {
-                          return (
-                            <TableRow style={{ cursor: "pointer" }} onClick={() => {}} hover role="checkbox" tabIndex={-1} key={index}>
-                              <TableCell align="left">
-                                <Typography color="#0f1429">{raffle.name}</Typography>
-                              </TableCell>
-                              <TableCell align="left">
-                                <Typography color="#0f1429">{moment.unix(raffle.start_date / 1000).format("MM/DD/YYYY h:mm A")}</Typography>
-                              </TableCell>
-                              <TableCell align="left">
-                                <Typography color="#0f1429">{moment.unix(raffle.end_date / 1000).format("MM/DD/YYYY h:mm A")}</Typography>
-                              </TableCell>{" "}
-                              <TableCell align="left">
-                                <Typography color="#0f1429">{raffle.collection.substring(0, 10) + "..." + raffle.collection.substring(54)}</Typography>
-                              </TableCell>
-                              <TableCell align="left">
-                                <Typography color="#0f1429">{raffle.nft_index}</Typography>
-                              </TableCell>
-                              <TableCell align="left">
-                                <Typography color="#0f1429">{raffle.price / Math.pow(10, 9)}</Typography>
-                              </TableCell>
-                              {moment.unix(raffle.end_date).unix() < Date.now() ? (
-                                <TableCell align="left">
-                                  <CustomButton disabled={false} label="Claim" onClick={claim}></CustomButton>
-                                </TableCell>
-                              ) : (
-                                <TableCell align="left">
-                                  <CustomButton
-                                    disabled={false}
-                                    label="buy ticket"
-                                    onClick={() => {
-                                      buy_ticket(raffle);
-                                    }}
-                                  ></CustomButton>
-                                </TableCell>
-                              )}
-                            </TableRow>
-                          );
-                        })}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-                <TablePagination
-                  rowsPerPageOptions={[1, 5, 10]}
-                  component="div"
-                  count={joinableRaffle?.length || 0}
-                  rowsPerPage={rowsPerPage2}
-                  page={page2}
-                  onPageChange={handleChangePage2}
-                  onRowsPerPageChange={handleChangeRowsPerPage2}
-                />
-              </Paper>
-            </Grid>
-          </TabPanel>
-        </TabContext>
+                              <MenuItem
+                                disabled={!clickedRaffle?.cancelable}
+                                onClick={() => {
+                                  handleMenuClose(setRaffleMore);
+                                  cancel();
+                                }}
+                              >
+                                Cancel
+                              </MenuItem>
+                            </Menu>
+                            <ApproveNFTModalonRaffePage open={approveModal} handleClose={() => handleClose(setApproveModal)} approve={approve} selectedRaffle={clickedRaffle} />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[1, 5, 10]}
+              component="div"
+              count={raffles?.length ? raffles.length : 0}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Paper>
+        </Grid>
       </Grid>
     </Grid>
   );
