@@ -68,6 +68,7 @@ const TokenMint: React.FC = () => {
   });
 
   const [actionLoader, setActionLoader] = useState<boolean>(false);
+  const [mintLoading, setMintLoading] = useState<boolean>(false);
 
   const classes = useStyles();
   const navigate = useNavigate();
@@ -75,7 +76,7 @@ const TokenMint: React.FC = () => {
   const [publicKey, provider, cep18Wasm] = useOutletContext<[publickey: string, provider: any, cep18Wasm: ArrayBuffer]>();
 
   const mintToken = async () => {
-    setActionLoader(true);
+    setMintLoading(true);
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
       console.log("ownerPublicKey", ownerPublicKey);
@@ -104,8 +105,6 @@ const TokenMint: React.FC = () => {
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
         console.log("sign", sign);
-
-        setActionLoader(true);
 
         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
@@ -156,17 +155,23 @@ const TokenMint: React.FC = () => {
     return !data.name || !data.symbol || data.supply <= 0 || data.decimal <= 0;
   }, [data]);
 
-  if (actionLoader) {
+  if (actionLoader || mintLoading) {
     return (
       <div
         style={{
-          height: "calc(100vh - 12rem)",
+          height: "calc(100vh - 20rem)",
           width: "100%",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          flexDirection: "column",
         }}
       >
+        {mintLoading && (
+          <Typography sx={{ marginY: "2rem" }} variant="subtitle1">
+            Your token is being created.
+          </Typography>
+        )}
         <CircularProgress />
       </div>
     );
