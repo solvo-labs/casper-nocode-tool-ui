@@ -131,6 +131,7 @@ export enum FETCH_IMAGE_TYPE {
 }
 
 export enum DONT_HAVE_ANYTHING {
+  TOKEN = "You don't have any Token",
   MARKETPLACE = "Couldn't find the marketplace to be displayed.",
   COLLECTION = "You don't own any collection.",
   NFT = "You don't have an NFT belonging to the collection.",
