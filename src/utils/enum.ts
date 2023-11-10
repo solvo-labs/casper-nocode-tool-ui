@@ -39,7 +39,7 @@ export enum NFT_PAGE {
 
 export enum RAFFLE_PAGE {
   MANAGE_RAFFLE = "Manage Raffle",
-  CLAIM_RAFFLE = "Claim Raffle",
+  // CLAIM_RAFFLE = "Claim Raffle",
 }
 
 export enum MARKETPLACE_PAGE {
