@@ -198,8 +198,8 @@ export const Tokenomics = () => {
 
   const disable = useMemo(() => {
     const lenghtControl = sections.every((e: any) => e.name.length > 0);
-    const disable = !(selectedToken != undefined && lenghtControl);
-    return disable;
+    const amountControl = sections.every((e: any) => e.amount > 0);
+    return !selectedToken || !lenghtControl || !amountControl;
   }, [sections, selectedToken]);
 
   if (loading) {
@@ -320,7 +320,7 @@ export const Tokenomics = () => {
                         <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"}>
                           <CustomButton
                             label="Vesting"
-                            disabled={section.name === "" || limits!.availableBalance < 0}
+                            disabled={disable}
                             onClick={() => {
                               navigate("/create-vesting/" + selectedToken.contractHash + "/" + section.name + "/" + section.amount);
                             }}
