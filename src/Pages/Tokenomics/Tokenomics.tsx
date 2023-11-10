@@ -12,6 +12,8 @@ import TokenSelector from "../../components/TokenSelector";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
 import { uint32ArrayToHex } from "../../utils";
+import { DONT_HAVE_ANYTHING } from "../../utils/enum";
+import CreatorRouter from "../../components/CreatorRouter";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -217,121 +219,126 @@ export const Tokenomics = () => {
   }
 
   return (
-    <Grid container className={classes.container}>
-      <Grid item width={"100%"} display={"flex"} justifyContent={"center"}>
-        <Typography variant="h5" sx={{ borderBottom: "1px solid red" }}>
-          Tokenomics
-        </Typography>
-      </Grid>
-      <Stack spacing={8} marginTop={"2rem"} width={"100%"} alignItems={"center"}>
-        <Stack width={"60%"} display={"flex"}>
-          <Typography marginBottom={"1.2rem"}>Please select a token for vesting. We will fetch vesting history for current token.</Typography>
-          <TokenSelector
-            selectedToken={selectedToken}
-            setSelectedToken={(data) => {
-              fetchHistory(data);
-              setSelectedToken(data);
-            }}
-            tokens={tokens}
-          />
-        </Stack>
-        <Grid container justifyContent={"center"}>
-          <Grid item>
-            <CardContent
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                marginBottom: "1rem",
-              }}
-            >
-              <Stack direction={"row"} justifyContent={"center"} spacing={4}>
-                {selectedToken && (
-                  <>
-                    <Typography> Selected: {selectedToken?.name} </Typography>
-                    <Divider orientation="vertical" sx={{ marginTop: "1rem", background: "white" }} />
-                    {limits?.availableBalance ? (
-                      <Typography>
-                        Available balance: {limits.availableBalance} (%
-                        {limits.availablePercent.toFixed(2)})
-                      </Typography>
-                    ) : (
-                      <Typography>Available balance: {limits?.availableBalance} </Typography>
-                    )}
-                    <Divider orientation="vertical" sx={{ marginTop: "1rem", background: "white" }} />
-                    <Typography>
-                      Total Balance:
-                      {selectedToken?.balance}
-                    </Typography>
-                  </>
-                )}
-              </Stack>
-            </CardContent>
-            {selectedToken && (
-              <Stack direction={"column"} justifyContent={"space-around"} spacing={2}>
-                {sections
-                  .sort((a, b) => (a.isOldSection === b.isOldSection ? 0 : a.isOldSection ? -1 : 1))
-                  .map((section: Section, index: number) => (
-                    <Stack display={"flex"} justifyContent={"center"} alignItems={"center"} direction={"row"} spacing={2} key={index}>
-                      <Grid item display={"flex"} alignContent={"center"}>
-                        {index > sections.length - 2 ? (
-                          <IconButton onClick={addInput} disabled={disable}>
-                            <AddIcon sx={{ color: "white" }}></AddIcon>
-                          </IconButton>
-                        ) : (
-                          !section.isOldSection && (
-                            <IconButton onClick={() => removeInput(index)}>
-                              <RemoveIcon sx={{ color: "red" }} />
-                            </IconButton>
-                          )
-                        )}
-                      </Grid>
-                      <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"} marginBottom={"10px !important"} gap={2}>
-                        <CustomInput
-                          id="Name"
-                          label="Section Name"
-                          name="sectionName"
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => !section.isOldSection && sectionSetter(e, index, "name")}
-                          placeholder="Section Name"
-                          type="text"
-                          value={section.name}
-                        ></CustomInput>
-                        <CustomInput
-                          id="Percent"
-                          label="%"
-                          name="percent"
-                          value={section.percent}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => !section.isOldSection && sectionSetter(e, index, "percent")}
-                          type="text"
-                          placeholder={"percent"}
-                        ></CustomInput>
-                        <CustomInput
-                          id="Amount"
-                          label="Amount"
-                          placeholder="Amount"
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => !section.isOldSection && sectionSetter(e, index, "amount")}
-                          type="text"
-                          value={section.amount}
-                          name={"amount"}
-                        />
-                      </Grid>
-                      {!section.isOldSection && (
-                        <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"}>
-                          <CustomButton
-                            label="Vesting"
-                            disabled={disable || section.amount <= 0}
-                            onClick={() => {
-                              navigate("/create-vesting/" + selectedToken.contractHash + "/" + section.name + "/" + section.amount);
-                            }}
-                          />
-                        </Grid>
-                      )}
-                    </Stack>
-                  ))}
-              </Stack>
-            )}
+    <>
+      {tokens.length <= 0 && <CreatorRouter explain={DONT_HAVE_ANYTHING.TOKEN} handleOnClick={() => navigate("/token")}></CreatorRouter>}
+      {tokens.length > 0 && (
+        <Grid container className={classes.container}>
+          <Grid item width={"100%"} display={"flex"} justifyContent={"center"}>
+            <Typography variant="h5" sx={{ borderBottom: "1px solid red" }}>
+              Tokenomics
+            </Typography>
           </Grid>
+          <Stack spacing={8} marginTop={"2rem"} width={"100%"} alignItems={"center"}>
+            <Stack display={"flex"}>
+              <Typography marginBottom={"1.2rem"}>Please select a token for vesting. We will fetch vesting history for current token.</Typography>
+              <TokenSelector
+                selectedToken={selectedToken}
+                setSelectedToken={(data) => {
+                  fetchHistory(data);
+                  setSelectedToken(data);
+                }}
+                tokens={tokens}
+              />
+            </Stack>
+            <Grid container justifyContent={"center"}>
+              <Grid item>
+                <CardContent
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "1rem",
+                  }}
+                >
+                  <Stack direction={"row"} justifyContent={"center"} spacing={4}>
+                    {selectedToken && (
+                      <>
+                        <Typography> Selected: {selectedToken?.name} </Typography>
+                        <Divider orientation="vertical" sx={{ marginTop: "1rem", background: "white" }} />
+                        {limits?.availableBalance ? (
+                          <Typography>
+                            Available balance: {limits.availableBalance} (%
+                            {limits.availablePercent.toFixed(2)})
+                          </Typography>
+                        ) : (
+                          <Typography>Available balance: {limits?.availableBalance} </Typography>
+                        )}
+                        <Divider orientation="vertical" sx={{ marginTop: "1rem", background: "white" }} />
+                        <Typography>
+                          Total Balance:
+                          {selectedToken?.balance}
+                        </Typography>
+                      </>
+                    )}
+                  </Stack>
+                </CardContent>
+                {selectedToken && (
+                  <Stack direction={"column"} justifyContent={"space-around"} spacing={2}>
+                    {sections
+                      .sort((a, b) => (a.isOldSection === b.isOldSection ? 0 : a.isOldSection ? -1 : 1))
+                      .map((section: Section, index: number) => (
+                        <Stack display={"flex"} justifyContent={"center"} alignItems={"center"} direction={"row"} spacing={2} key={index}>
+                          <Grid item display={"flex"} alignContent={"center"}>
+                            {index > sections.length - 2 ? (
+                              <IconButton onClick={addInput} disabled={disable}>
+                                <AddIcon sx={{ color: "white" }}></AddIcon>
+                              </IconButton>
+                            ) : (
+                              !section.isOldSection && (
+                                <IconButton onClick={() => removeInput(index)}>
+                                  <RemoveIcon sx={{ color: "red" }} />
+                                </IconButton>
+                              )
+                            )}
+                          </Grid>
+                          <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"} marginBottom={"10px !important"} gap={2}>
+                            <CustomInput
+                              id="Name"
+                              label="Section Name"
+                              name="sectionName"
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => !section.isOldSection && sectionSetter(e, index, "name")}
+                              placeholder="Section Name"
+                              type="text"
+                              value={section.name}
+                            ></CustomInput>
+                            <CustomInput
+                              id="Percent"
+                              label="%"
+                              name="percent"
+                              value={section.percent}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => !section.isOldSection && sectionSetter(e, index, "percent")}
+                              type="text"
+                              placeholder={"percent"}
+                            ></CustomInput>
+                            <CustomInput
+                              id="Amount"
+                              label="Amount"
+                              placeholder="Amount"
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => !section.isOldSection && sectionSetter(e, index, "amount")}
+                              type="text"
+                              value={section.amount}
+                              name={"amount"}
+                            />
+                          </Grid>
+                          {!section.isOldSection && (
+                            <Grid item display={"flex"} justifyContent={"center"} alignItems={"center"}>
+                              <CustomButton
+                                label="Vesting"
+                                disabled={disable || section.amount <= 0}
+                                onClick={() => {
+                                  navigate("/create-vesting/" + selectedToken.contractHash + "/" + section.name + "/" + section.amount);
+                                }}
+                              />
+                            </Grid>
+                          )}
+                        </Stack>
+                      ))}
+                  </Stack>
+                )}
+              </Grid>
+            </Grid>
+          </Stack>
         </Grid>
-      </Stack>
-    </Grid>
+      )}
+    </>
   );
 };

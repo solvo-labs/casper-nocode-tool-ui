@@ -13,6 +13,8 @@ import { CustomButton } from "../../components/CustomButton";
 import ImageUpload from "../../components/ImageUpload";
 import { NFTStorage } from "nft.storage";
 import { CustomSelect } from "../../components/CustomSelect";
+import CreatorRouter from "../../components/CreatorRouter";
+import { DONT_HAVE_ANYTHING } from "../../utils/enum";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -202,106 +204,111 @@ export const CreateNft = () => {
   }
 
   return (
-    <Grid container className={classes.container}>
-      <Grid container className={classes.center}>
-        <Grid item>
-          <Typography className={classes.title} variant="h5">
-            Create NFT
-          </Typography>
-        </Grid>
-        <Grid container className={classes.gridContainer}>
-          <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
-            <CustomSelect
-              value={collections.length > 0 ? selectedCollection?.contractHash || "default" : "default"}
-              label="ERC-20 Token"
-              onChange={(event: SelectChangeEvent) => {
-                const data = collections.find((tk: any) => tk.contractHash === event.target.value);
-                setSelectedCollection(data);
-              }}
-              id={"custom-select"}
-              disabled={params.collectionHash !== undefined}
-            >
-              <MenuItem value="default">
-                <em>{params.collectionHash ? selectedCollection.collection_name : "Select a Collection"}</em>
-              </MenuItem>
-              {collections.map((tk: any) => {
-                return (
-                  <MenuItem key={tk.contractHash} value={tk.contractHash}>
-                    {tk.collection_name}
-                  </MenuItem>
-                );
-              })}
-            </CustomSelect>
-            <Divider
-              // textAlign="left"
-              sx={{
-                color: "white",
-                "&::before, &::after": {
-                  borderTop: "thin solid red !important",
-                },
-              }}
-            >
-              NFT Metadata
-            </Divider>
-            <ImageUpload file={file} loading={fileLoading} setFile={(data) => setFile(data)} handleClear={handleClear}></ImageUpload>
-            <CustomInput
-              placeholder="Metadata Name"
-              label="Metadata Name"
-              id="metadataName"
-              name="metadataName"
-              type="text"
-              onChange={(e: any) => {
-                setNftData({
-                  ...nftData,
-                  tokenMetaData: {
-                    ...nftData.tokenMetaData,
-                    name: e.target.value,
-                  },
-                });
-              }}
-              value={nftData.tokenMetaData.name}
-              disable={fileLoading}
-              floor="dark"
-            ></CustomInput>
-            <CustomInput
-              placeholder="Metadata Description"
-              label="Metadata Description"
-              id="metadataDescription"
-              name="metadataDescription"
-              type="text"
-              onChange={(e: any) => {
-                setNftData({
-                  ...nftData,
-                  tokenMetaData: {
-                    ...nftData.tokenMetaData,
-                    description: e.target.value,
-                  },
-                });
-              }}
-              value={nftData.tokenMetaData.description}
-              disable={fileLoading}
-              floor="dark"
-            ></CustomInput>
-            <FormControlLabel
-              sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
-              labelPlacement="start"
-              control={<Switch checked={nftData.mergable} color="error" onChange={() => setNftData({ ...nftData, mergable: !nftData.mergable })} />}
-              label="Mergeable NFT"
-              disabled={fileLoading}
-            />
-            <FormControlLabel
-              sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
-              labelPlacement="start"
-              control={<Switch checked={nftData.timeable} color="error" onChange={() => setNftData({ ...nftData, timeable: !nftData.timeable })} />}
-              label="Timeable NFT"
-              disabled={fileLoading}
-            />
-            <Grid paddingTop={2} container justifyContent={"center"}>
-              <CustomButton onClick={createNft} disabled={disable} label="Create NFT" />
+    <>
+      {collections.length <= 0 && <CreatorRouter explain={DONT_HAVE_ANYTHING.COLLECTION} handleOnClick={() => navigate("/token")}></CreatorRouter>}
+      {collections.lengt > 0 && (
+        <Grid container className={classes.container}>
+          <Grid container className={classes.center}>
+            <Grid item>
+              <Typography className={classes.title} variant="h5">
+                Create NFT
+              </Typography>
             </Grid>
-          </Stack>
+            <Grid container className={classes.gridContainer}>
+              <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
+                <CustomSelect
+                  value={collections.length > 0 ? selectedCollection?.contractHash || "default" : "default"}
+                  label="ERC-20 Token"
+                  onChange={(event: SelectChangeEvent) => {
+                    const data = collections.find((tk: any) => tk.contractHash === event.target.value);
+                    setSelectedCollection(data);
+                  }}
+                  id={"custom-select"}
+                  disabled={params.collectionHash !== undefined}
+                >
+                  <MenuItem value="default">
+                    <em>{params.collectionHash ? selectedCollection.collection_name : "Select a Collection"}</em>
+                  </MenuItem>
+                  {collections.map((tk: any) => {
+                    return (
+                      <MenuItem key={tk.contractHash} value={tk.contractHash}>
+                        {tk.collection_name}
+                      </MenuItem>
+                    );
+                  })}
+                </CustomSelect>
+                <Divider
+                  // textAlign="left"
+                  sx={{
+                    color: "white",
+                    "&::before, &::after": {
+                      borderTop: "thin solid red !important",
+                    },
+                  }}
+                >
+                  NFT Metadata
+                </Divider>
+                <ImageUpload file={file} loading={fileLoading} setFile={(data) => setFile(data)} handleClear={handleClear}></ImageUpload>
+                <CustomInput
+                  placeholder="Metadata Name"
+                  label="Metadata Name"
+                  id="metadataName"
+                  name="metadataName"
+                  type="text"
+                  onChange={(e: any) => {
+                    setNftData({
+                      ...nftData,
+                      tokenMetaData: {
+                        ...nftData.tokenMetaData,
+                        name: e.target.value,
+                      },
+                    });
+                  }}
+                  value={nftData.tokenMetaData.name}
+                  disable={fileLoading}
+                  floor="dark"
+                ></CustomInput>
+                <CustomInput
+                  placeholder="Metadata Description"
+                  label="Metadata Description"
+                  id="metadataDescription"
+                  name="metadataDescription"
+                  type="text"
+                  onChange={(e: any) => {
+                    setNftData({
+                      ...nftData,
+                      tokenMetaData: {
+                        ...nftData.tokenMetaData,
+                        description: e.target.value,
+                      },
+                    });
+                  }}
+                  value={nftData.tokenMetaData.description}
+                  disable={fileLoading}
+                  floor="dark"
+                ></CustomInput>
+                <FormControlLabel
+                  sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
+                  labelPlacement="start"
+                  control={<Switch checked={nftData.mergable} color="error" onChange={() => setNftData({ ...nftData, mergable: !nftData.mergable })} />}
+                  label="Mergeable NFT"
+                  disabled={fileLoading}
+                />
+                <FormControlLabel
+                  sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
+                  labelPlacement="start"
+                  control={<Switch checked={nftData.timeable} color="error" onChange={() => setNftData({ ...nftData, timeable: !nftData.timeable })} />}
+                  label="Timeable NFT"
+                  disabled={fileLoading}
+                />
+                <Grid paddingTop={2} container justifyContent={"center"}>
+                  <CustomButton onClick={createNft} disabled={disable} label="Create NFT" />
+                </Grid>
+              </Stack>
+            </Grid>
+          </Grid>
         </Grid>
-      </Grid>
-    </Grid>
+      )}
+    </>
   );
 };
