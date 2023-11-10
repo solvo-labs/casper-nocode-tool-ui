@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { CircularProgress, Grid, MenuItem, SelectChangeEvent, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
@@ -79,6 +79,10 @@ const Approve: React.FC = () => {
   const [selectedToken, setSelectedToken] = useState<ERC20Token>();
 
   const navigate = useNavigate();
+
+  const disable = useMemo(() => {
+    return !selectedToken || !data.spenderPubkey || data.amount <= 0;
+  }, [data, selectedToken]);
 
   useEffect(() => {
     const init = async () => {
@@ -225,7 +229,7 @@ const Approve: React.FC = () => {
                 }
               />
               <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton onClick={approve} disabled={!selectedToken || !data.spenderPubkey || data.amount <= 0} label="Approve" />
+                <CustomButton onClick={approve} disabled={disable} label="Approve" />
               </Grid>
             </Stack>
           </Grid>

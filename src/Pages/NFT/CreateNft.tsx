@@ -6,7 +6,7 @@ import { SERVER_API, fetchCep78NamedKeys, getNftCollection } from "../../utils/a
 import axios from "axios";
 import toastr from "toastr";
 import { NFT } from "../../utils/types";
-import { CircularProgress, FormControlLabel, Grid, MenuItem, SelectChangeEvent, Stack, Switch, Theme, Typography } from "@mui/material";
+import { CircularProgress, Divider, FormControlLabel, Grid, MenuItem, SelectChangeEvent, Stack, Switch, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
@@ -108,9 +108,9 @@ export const CreateNft = () => {
   }, []);
 
   const disable = useMemo(() => {
-    const disable = !(nftData.tokenMetaData && selectedCollection && !fileLoading);
+    const disable = !selectedCollection || !nftData.tokenMetaData.name || !nftData.tokenMetaData.description || fileLoading;
     return disable;
-  }, [nftData, fileLoading, selectedCollection]);
+  }, [nftData, selectedCollection, fileLoading]);
 
   const createNft = async () => {
     const contract = new Contracts.Contract();
@@ -232,11 +232,17 @@ export const CreateNft = () => {
                 );
               })}
             </CustomSelect>
-
-            {/* //TODO nft metadata input */}
-            <Typography sx={{ borderBottom: "1px solid #FF0011 !important" }} variant="button">
-              Metadata
-            </Typography>
+            <Divider
+              // textAlign="left"
+              sx={{
+                color: "white",
+                "&::before, &::after": {
+                  borderTop: "thin solid red !important",
+                },
+              }}
+            >
+              NFT Metadata
+            </Divider>
             <ImageUpload file={file} loading={fileLoading} setFile={(data) => setFile(data)} handleClear={handleClear}></ImageUpload>
             <CustomInput
               placeholder="Metadata Name"
@@ -254,7 +260,7 @@ export const CreateNft = () => {
                 });
               }}
               value={nftData.tokenMetaData.name}
-              disable={disable}
+              disable={fileLoading}
               floor="dark"
             ></CustomInput>
             <CustomInput
@@ -277,20 +283,19 @@ export const CreateNft = () => {
               floor="dark"
             ></CustomInput>
             <FormControlLabel
-              style={{ justifyContent: "start" }}
+              sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
               labelPlacement="start"
               control={<Switch checked={nftData.mergable} color="error" onChange={() => setNftData({ ...nftData, mergable: !nftData.mergable })} />}
               label="Mergeable NFT"
               disabled={fileLoading}
             />
             <FormControlLabel
-              style={{ justifyContent: "start" }}
+              sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
               labelPlacement="start"
               control={<Switch checked={nftData.timeable} color="error" onChange={() => setNftData({ ...nftData, timeable: !nftData.timeable })} />}
               label="Timeable NFT"
               disabled={fileLoading}
             />
-
             <Grid paddingTop={2} container justifyContent={"center"}>
               <CustomButton onClick={createNft} disabled={disable} label="Create NFT" />
             </Grid>

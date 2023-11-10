@@ -32,6 +32,7 @@ import axios from "axios";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
+    maxWidth: "80vw",
     [theme.breakpoints.down("sm")]: {
       marginBottom: 2,
       marginTop: 2,
@@ -300,7 +301,7 @@ export const Stake = () => {
         <Grid container className={classes.center}>
           <Grid item>
             <Typography className={classes.title} variant="h5">
-              STAKE MANAGEMENT
+              STAKE CSPR
             </Typography>
           </Grid>
           <Grid container className={classes.gridContainer}>

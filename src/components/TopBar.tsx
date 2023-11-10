@@ -156,6 +156,8 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
       navigate("/buy-nft");
     } else if (a === MARKETPLACE_PAGE.BUY_LOOTBOX) {
       navigate("/buy-lootbox");
+    } else if (a === MARKETPLACE_PAGE.JOIN_RAFFLE) {
+      navigate("/join-raffle");
     } else if (a === RAFFLE_PAGE.MANAGE_RAFFLE) {
       navigate("/manage-raffle");
     }

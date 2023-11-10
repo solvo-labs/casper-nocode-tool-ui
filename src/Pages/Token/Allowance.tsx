@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ERC20Token } from "../../utils/types";
 import { Grid, Stack, Theme, CircularProgress, MenuItem, Typography } from "@mui/material";
 import { CustomInput } from "../../components/CustomInput";
@@ -77,6 +77,10 @@ const Allowance: React.FC = () => {
 
   const classes = useStyles();
   const navigate = useNavigate();
+
+  const disable = useMemo(() => {
+    return receipentPubkey === "" || selectedToken === undefined;
+  }, [receipentPubkey, selectedToken]);
 
   useEffect(() => {
     const init = async () => {
@@ -205,7 +209,7 @@ const Allowance: React.FC = () => {
               />
 
               <Grid paddingTop={"2rem"} container justifyContent={"center"}>
-                <CustomButton onClick={allowance} disabled={receipentPubkey === "" || selectedToken === undefined} label="Allowance" />
+                <CustomButton onClick={allowance} disabled={disable} label="Allowance" />
               </Grid>
             </Stack>
           </Grid>

@@ -39,7 +39,7 @@ export enum NFT_PAGE {
 
 export enum RAFFLE_PAGE {
   MANAGE_RAFFLE = "Manage Raffle",
-  CLAIM_RAFFLE = "Claim Raffle",
+  // CLAIM_RAFFLE = "Claim Raffle",
 }
 
 export enum MARKETPLACE_PAGE {
@@ -47,6 +47,7 @@ export enum MARKETPLACE_PAGE {
   CREATE_MARKETPLACE = "Create Marketplace",
   BUY_NFT = "Buy Nft",
   BUY_LOOTBOX = "Buy Lootbox",
+  JOIN_RAFFLE = "Join Raffle",
 }
 
 export enum WALLETS_NAME {

@@ -1,6 +1,6 @@
 import { Grid, Stack, Theme, CircularProgress, Switch, FormControlLabel, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 
@@ -152,7 +152,9 @@ const TokenMint: React.FC = () => {
     //   });
   };
 
-  const disable = !(data.name && data.symbol && data.supply && data.decimal);
+  const disable = useMemo(() => {
+    return !data.name || !data.symbol || data.supply <= 0 || data.decimal <= 0;
+  }, [data]);
 
   if (actionLoader) {
     return (
