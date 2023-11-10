@@ -179,9 +179,8 @@ export const VestingList = () => {
   }, []);
 
   useEffect(() => {
-    setVestingModalLoading(true);
-
-    const init = async () => {
+    const init = async (loader: boolean) => {
+      setVestingModalLoading(loader);
       if (selectedVesting) {
         const recipientsData = await setVestingRecipients(selectedVesting);
         setRecipients(recipientsData);
@@ -189,9 +188,9 @@ export const VestingList = () => {
 
       setVestingModalLoading(false);
     };
-    init();
+    init(true);
 
-    const interval = setInterval(() => init(), 30000);
+    const interval = setInterval(() => init(false), 30000);
 
     return () => {
       clearInterval(interval);
