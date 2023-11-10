@@ -96,6 +96,12 @@ const Approve: React.FC = () => {
     };
 
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const approve = async () => {

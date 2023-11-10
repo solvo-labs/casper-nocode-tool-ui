@@ -86,6 +86,12 @@ const ApproveNFT = () => {
     };
 
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const fetchNft = async (contract: string) => {
@@ -118,10 +124,15 @@ const ApproveNFT = () => {
       });
 
       setMarketplaces(finalData);
-      console.log(finalData);
     };
 
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {
@@ -131,6 +142,12 @@ const ApproveNFT = () => {
     };
 
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {
@@ -141,6 +158,12 @@ const ApproveNFT = () => {
     };
 
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const approve = async () => {

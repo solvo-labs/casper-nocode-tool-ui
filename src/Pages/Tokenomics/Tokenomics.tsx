@@ -188,6 +188,12 @@ export const Tokenomics = () => {
     };
 
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const disable = useMemo(() => {

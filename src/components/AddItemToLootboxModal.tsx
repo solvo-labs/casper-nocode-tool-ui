@@ -42,6 +42,7 @@ type Props = {
   handleChangeItemRarity: (rarity: string) => void;
   showButtonOnChange: () => void;
   withdrawOnClick: () => void;
+  approveOnClick: () => void;
 };
 
 const AddItemToLootboxModal: React.FC<Props> = ({
@@ -64,6 +65,7 @@ const AddItemToLootboxModal: React.FC<Props> = ({
   handleChangeItemName,
   showButtonOnChange,
   withdrawOnClick,
+  approveOnClick,
 }) => {
   return (
     <Modal open={open} onClose={handleClose}>
@@ -83,11 +85,14 @@ const AddItemToLootboxModal: React.FC<Props> = ({
         ) : (
           <>
             <Grid container direction={"column"} gap={1}>
-              <Typography variant="h5">
-                Lootbox <b>{lootbox.name}</b>
-              </Typography>
+              <Grid container direction={"row"} justifyContent={"space-between"}>
+                <Typography variant="h5">
+                  Lootbox <b>{lootbox.name}</b>
+                </Typography>
+                <CustomButton disabled={false} label="Approve Collection" onClick={approveOnClick}></CustomButton>
+              </Grid>
               <Typography variant="subtitle1">
-                Collection is <b>{collection.collection_name}</b> , Max Lootbox count is <b>{lootbox.max_lootboxes}</b> , Item count per lootbox is{" "}
+                Collection is <b>{collection?.collection_name}</b> , Max Lootbox count is <b>{lootbox.max_lootboxes}</b> , Item count per lootbox is{" "}
                 <b>{lootbox.items_per_lootbox}</b>
               </Typography>
               <Typography variant="subtitle1">

@@ -120,31 +120,41 @@ export const Stake = () => {
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
 
   useEffect(() => {
-    getValidators()
-      .then((data) => {
-        const filteredData = data.filter((dt: any) => dt.bid.delegators.length < 1200);
-        setValidators(filteredData);
+    const init = () => {
+      getValidators()
+        .then((data) => {
+          const filteredData = data.filter((dt: any) => dt.bid.delegators.length < 1200);
+          setValidators(filteredData);
 
-        let myActiveDelegations: any[] = [];
+          let myActiveDelegations: any[] = [];
 
-        for (let dt of data) {
-          const delegators = dt.bid.delegators;
+          for (let dt of data) {
+            const delegators = dt.bid.delegators;
 
-          const findMe = delegators.filter((dl: any) => dl.public_key === publicKey);
+            const findMe = delegators.filter((dl: any) => dl.public_key === publicKey);
 
-          if (findMe.length > 0) {
-            myActiveDelegations = [...myActiveDelegations, ...findMe];
+            if (findMe.length > 0) {
+              myActiveDelegations = [...myActiveDelegations, ...findMe];
+            }
           }
-        }
 
-        setDelegations(myActiveDelegations);
-      })
-      .catch((err) => {
-        toastr.error(err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+          setDelegations(myActiveDelegations);
+        })
+        .catch((err) => {
+          toastr.error(err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    };
+
+    init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const stake = async () => {

@@ -170,19 +170,31 @@ export const VestingList = () => {
     };
 
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {
-    setVestingModalLoading(true);
-    const init = async () => {
+    const init = async (loader: boolean) => {
+      setVestingModalLoading(loader);
       if (selectedVesting) {
         const recipientsData = await setVestingRecipients(selectedVesting);
         setRecipients(recipientsData);
-        console.log(recipientsData);
       }
+
       setVestingModalLoading(false);
     };
-    init();
+    init(true);
+
+    const interval = setInterval(() => init(false), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [vestingOpen]);
 
   const tableHeaders = ["Name", "Status", "Start", "End", "Period", "Cliff", "Token", "Vesting Amount", "Recipient Count", "Released", "Action"];

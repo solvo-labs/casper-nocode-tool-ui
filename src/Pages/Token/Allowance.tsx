@@ -94,6 +94,12 @@ const Allowance: React.FC = () => {
     };
 
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const allowance = async () => {

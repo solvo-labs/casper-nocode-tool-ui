@@ -68,6 +68,12 @@ export const LootboxList = () => {
     };
 
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const purchase = async () => {
@@ -145,8 +151,8 @@ export const LootboxList = () => {
 
   useEffect(() => {
     const fetch = async () => {
+      setLoadingNFT(true);
       if (selectedLootbox) {
-        setLoadingNFT(true);
         const nftCollection = await getNftCollection("hash-" + selectedLootbox.nft_collection);
 
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
@@ -174,10 +180,18 @@ export const LootboxList = () => {
         setCollection(nftCollection);
         setItemData(filterData);
         setLoadingNFT(false);
+      } else {
+        setLoadingNFT(false);
       }
     };
 
     fetch();
+
+    const interval = setInterval(() => fetch(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [selectedLootbox]);
 
   if (loading) {
@@ -249,7 +263,7 @@ export const LootboxList = () => {
                       />
                       {item.itemOwner.owner == CLPublicKey.fromHex(publicKey).toAccountHashStr().slice(13) ? (
                         <Grid item display={"flex"} justifyContent={"center"}>
-                          <CustomButton label="Claim NFT" disabled={false} onClick={() => claim(item.index)}></CustomButton>
+                          <CustomButton label="Claim NFT" disabled={false} onClick={() => claim(item.idValue)}></CustomButton>
                         </Grid>
                       ) : null}
                     </Grid>

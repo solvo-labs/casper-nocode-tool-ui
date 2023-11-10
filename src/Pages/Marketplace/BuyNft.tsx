@@ -51,6 +51,12 @@ const BuyNft = () => {
     };
 
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const detailPage = async (collectionHash: string, tokenId: number) => {

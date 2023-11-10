@@ -162,6 +162,12 @@ const Main: React.FC = () => {
     };
 
     fetchData();
+
+    const interval = setInterval(() => fetchData(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [publicKey]);
 
   const handleChangePage = (_event: unknown, newPage: number) => {

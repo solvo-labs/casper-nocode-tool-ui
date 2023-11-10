@@ -171,6 +171,12 @@ const AddNftToMarketplace = () => {
     };
 
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const fetchNft = async () => {

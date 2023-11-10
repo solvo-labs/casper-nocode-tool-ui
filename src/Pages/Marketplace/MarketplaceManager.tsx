@@ -54,6 +54,12 @@ const MarketplaceManager = () => {
     };
 
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   if (loading) {
