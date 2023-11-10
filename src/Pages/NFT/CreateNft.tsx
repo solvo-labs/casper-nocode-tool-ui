@@ -71,6 +71,7 @@ export const CreateNft = () => {
   const [file, setFile] = useState<any>();
   const [fileLoading, setFileLoading] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [actionLoading, setActionLoader] = useState<boolean>(false);
   const [collections, setCollections] = useState<any>([]);
   const [selectedCollection, setSelectedCollection] = useState<any>();
 
@@ -115,11 +116,11 @@ export const CreateNft = () => {
   }, [nftData, selectedCollection, fileLoading]);
 
   const createNft = async () => {
+    setActionLoader(true);
     const contract = new Contracts.Contract();
     contract.setContractHash(selectedCollection.contractHash);
 
     try {
-      setLoading(true);
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
       const args = RuntimeArgs.fromMap({
@@ -134,8 +135,6 @@ export const CreateNft = () => {
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
 
-        // setActionLoader(true);
-
         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
@@ -149,16 +148,14 @@ export const CreateNft = () => {
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-collections");
-        // setActionLoader(false);
-        setLoading(false);
+        setActionLoader(false);
       } catch (error: any) {
         toastr.error("Error: " + error);
-        setLoading(false);
+        setActionLoader(false);
       }
     } catch (error) {
-      console.log(error);
-      setLoading(false);
-      toastr.error("error");
+      setActionLoader(false);
+      toastr.error("Error: " + error);
     }
   };
 
@@ -187,7 +184,7 @@ export const CreateNft = () => {
     storeImage();
   }, [file]);
 
-  if (loading) {
+  if (loading || actionLoading) {
     return (
       <div
         style={{
@@ -196,8 +193,14 @@ export const CreateNft = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          flexDirection: "column",
         }}
       >
+        {actionLoading && (
+          <Typography sx={{ marginY: "2rem" }} variant="subtitle1">
+            Your NFT is being created.
+          </Typography>
+        )}
         <CircularProgress />
       </div>
     );
