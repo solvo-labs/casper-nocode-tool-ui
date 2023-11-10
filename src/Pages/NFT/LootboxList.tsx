@@ -225,8 +225,8 @@ export const LootboxList = () => {
                   Collection : <b>{collection?.collection_name}</b>
                 </Typography>
                 <Typography variant="subtitle1">
-                  Lootbox count is <b>{selectedLootbox?.max_lootboxes}</b>, Item count per lootbox is <b>{selectedLootbox?.items_per_lootbox}</b> , Purchased Lootbox count is{" "}
-                  <b>{selectedLootbox?.lootbox_count}</b>
+                  Lootbox count is <b>{(selectedLootbox?.deposited_item_count || 0) / (selectedLootbox?.items_per_lootbox || 1)}</b>, Item count per lootbox is{" "}
+                  <b>{selectedLootbox?.items_per_lootbox}</b> , Purchased Lootbox count is <b>{selectedLootbox?.lootbox_count}</b>
                 </Typography>
                 <Typography variant="subtitle1">
                   Lootbox price is <b>{(selectedLootbox?.lootbox_price || 0) / Math.pow(10, 9)} (CSPR)</b>
