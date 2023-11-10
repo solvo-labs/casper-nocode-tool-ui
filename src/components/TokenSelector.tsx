@@ -11,35 +11,26 @@ type Props = {
 
 const TokenSelector: React.FC<Props> = ({ tokens, selectedToken, setSelectedToken }) => {
   return (
-    <FormControl fullWidth>
-      <InputLabel
-        id="selectLabel"
-        style={{
-          color: "#fff",
-        }}
-      >
-        Select a Token
-      </InputLabel>
-      <CustomSelect
-        value={selectedToken?.contractHash || ""}
-        // label="Select a Token"
-        onChange={(e: SelectChangeEvent<string>) => {
-          const token = tokens.find((tkn: Token) => tkn.contractHash === e.target.value);
-          if (token != undefined) {
-            setSelectedToken(token);
-          }
-        }}
-        id={"custom-select"}
-      >
-        {tokens.map((tk: Token) => {
-          return (
-            <MenuItem key={tk.contractHash} value={tk.contractHash}>
-              {tk.name + "(" + tk.symbol + ")"}
-            </MenuItem>
-          );
-        })}
-      </CustomSelect>
-    </FormControl>
+    <CustomSelect
+      value={selectedToken?.contractHash || "default"}
+      // label="Select a Token"
+      onChange={(e: SelectChangeEvent<string>) => {
+        const token = tokens.find((tkn: Token) => tkn.contractHash === e.target.value);
+        if (token != undefined) {
+          setSelectedToken(token);
+        }
+      }}
+      id={"custom-select"}
+    >
+      <MenuItem value={"default"}>Select a Token</MenuItem>
+      {tokens.map((tk: Token) => {
+        return (
+          <MenuItem key={tk.contractHash} value={tk.contractHash}>
+            {tk.name + "(" + tk.symbol + ")"}
+          </MenuItem>
+        );
+      })}
+    </CustomSelect>
   );
 };
 
