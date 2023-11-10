@@ -235,20 +235,20 @@ export const LootboxList = () => {
                 </Typography>
               </Grid>
               <Grid container marginTop={"2rem"} overflow={"auto"}>
-                {itemData.map((nft: any, index: number) => (
+                {itemData.map((item: any, index: number) => (
                   <Grid item md={4} key={index}>
                     <Grid container direction={"column"}>
                       <NftCard
-                        key={nft.index}
-                        asset={nft.asset}
-                        description={nft.description}
-                        index={nft.index}
-                        name={nft.nameText}
+                        key={item.index}
+                        asset={item.asset}
+                        description={item.description}
+                        index={item.index}
+                        name={item.nameText}
                         onClick={() => {}}
                         isSelected={false}
-                        amIOwner={nft.isMyNft}
+                        amIOwner={item.isMyNft}
                       />
-                      {nft.owner.owner == CLPublicKey.fromHex(publicKey).toAccountHashStr().slice(13) ? (
+                      {item.itemOwner.owner == CLPublicKey.fromHex(publicKey).toAccountHashStr().slice(13) ? (
                         <Grid item display={"flex"} justifyContent={"center"}>
                           <CustomButton label="Claim NFT" disabled={false} onClick={() => claim(index)}></CustomButton>
                         </Grid>
