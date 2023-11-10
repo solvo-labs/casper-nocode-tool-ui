@@ -277,14 +277,14 @@ export const CreateNft = () => {
               floor="dark"
             ></CustomInput>
             <FormControlLabel
-              style={{ justifyContent: "start" }}
+              sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
               labelPlacement="start"
               control={<Switch checked={nftData.mergable} color="error" onChange={() => setNftData({ ...nftData, mergable: !nftData.mergable })} />}
               label="Mergeable NFT"
               disabled={fileLoading}
             />
             <FormControlLabel
-              style={{ justifyContent: "start" }}
+              sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
               labelPlacement="start"
               control={<Switch checked={nftData.timeable} color="error" onChange={() => setNftData({ ...nftData, timeable: !nftData.timeable })} />}
               label="Timeable NFT"
