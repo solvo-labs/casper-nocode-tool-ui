@@ -2,7 +2,7 @@ import { CircularProgress, Grid, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useEffect, useMemo, useState } from "react";
 import { fetchCep78NamedKeys, fetchLootboxNamedKeys, fetchMarketplaceNamedKeys, fetchRaffleNamedKeys, getNftCollection, getNftMetadata } from "../../utils/api";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { CollectionMetada, Marketplace, NFT, RaffleNamedKeys } from "../../utils/types";
 import { CollectionCardAlternate } from "../../components/CollectionCard";
 // @ts-ignore
@@ -11,6 +11,8 @@ import toastr from "toastr";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
 import { ApproveNFTModal, ListNFTModal } from "../../components/NFTApproveModal.tsx";
+import CreatorRouter from "../../components/CreatorRouter.tsx";
+import { DONT_HAVE_ANYTHING } from "../../utils/enum.ts";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -33,8 +35,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const ApproveNFT = () => {
   const classes = useStyles();
+  const navigate = useNavigate();
   const [publicKey, provider] = useOutletContext<[publicKey: string, provider: any]>();
-  // const navigate = useNavigate();
   const [collections, setCollections] = useState<CollectionMetada[] | any>([]);
   const [nftData, setNftData] = useState<NFT[] | any>([]);
   const [selectedCollection, setSelectedCollection] = useState<string | null>("");
@@ -237,57 +239,60 @@ const ApproveNFT = () => {
 
   return (
     <>
-      <Grid container className={classes.container}>
-        <Grid item>
-          <Typography variant="h5" className={classes.title}>
-            Select Collection and Approve Your Nft
-          </Typography>
+      {collections.length <= 0 && <CreatorRouter explain={DONT_HAVE_ANYTHING.APPROVE} handleOnClick={() => navigate("/create-collection")}></CreatorRouter>}
+      {collections.lengt > 0 && (
+        <Grid container className={classes.container}>
+          <Grid item>
+            <Typography variant="h5" className={classes.title}>
+              Select Collection and Approve Your Nft
+            </Typography>
+          </Grid>
+          <Grid container marginTop={"2rem"}>
+            {collections.map((e: any, index: number) => (
+              <Grid item lg={3} md={3} sm={6} xs={6} key={index}>
+                <CollectionCardAlternate
+                  image={"/images/casper.png"}
+                  onClick={() => {
+                    handleOpenNFT(e.contractHash);
+                  }}
+                  title={e.collection_name}
+                  contractHash={e.contractHash}
+                  symbol={e.collection_symbol}
+                  cardHeight={""}
+                  mediaHeight={""}
+                  cardContentPadding={""}
+                  cardContentTitle={""}
+                  cardContentSymbol={""}
+                  cardContentContractHash={""}
+                  tokenCountText={parseInt(e.number_of_minted_tokens.hex).toString() + "/" + parseInt(e.total_token_supply.hex).toString()}
+                ></CollectionCardAlternate>
+                <ListNFTModal
+                  collection={e}
+                  open={openNFT}
+                  handleClose={handleCloseNFT}
+                  loading={loadingNFT}
+                  nfts={nftData}
+                  handleOpenApprove={handleOpenApprove}
+                  selectedNFTIndex={setSelectedTokenId}
+                ></ListNFTModal>
+                <ApproveNFTModal
+                  selected={selectedOperatorHash}
+                  marketplaces={marketplaces}
+                  raffles={raffles}
+                  lootboxes={lootboxes}
+                  selectedOnChange={setSelectedOperatorHash}
+                  open={openApprove}
+                  handleClose={handleCloseApprove}
+                  approve={approve}
+                  approveOperatorType={approveOperatorType}
+                  approveOperatorOnChange={setApproveOperatorType}
+                  disable={disable}
+                ></ApproveNFTModal>
+              </Grid>
+            ))}
+          </Grid>
         </Grid>
-        <Grid container marginTop={"2rem"}>
-          {collections.map((e: any, index: number) => (
-            <Grid item lg={3} md={3} sm={6} xs={6} key={index}>
-              <CollectionCardAlternate
-                image={"/images/casper.png"}
-                onClick={() => {
-                  handleOpenNFT(e.contractHash);
-                }}
-                title={e.collection_name}
-                contractHash={e.contractHash}
-                symbol={e.collection_symbol}
-                cardHeight={""}
-                mediaHeight={""}
-                cardContentPadding={""}
-                cardContentTitle={""}
-                cardContentSymbol={""}
-                cardContentContractHash={""}
-                tokenCountText={parseInt(e.number_of_minted_tokens.hex).toString() + "/" + parseInt(e.total_token_supply.hex).toString()}
-              ></CollectionCardAlternate>
-              <ListNFTModal
-                collection={e}
-                open={openNFT}
-                handleClose={handleCloseNFT}
-                loading={loadingNFT}
-                nfts={nftData}
-                handleOpenApprove={handleOpenApprove}
-                selectedNFTIndex={setSelectedTokenId}
-              ></ListNFTModal>
-              <ApproveNFTModal
-                selected={selectedOperatorHash}
-                marketplaces={marketplaces}
-                raffles={raffles}
-                lootboxes={lootboxes}
-                selectedOnChange={setSelectedOperatorHash}
-                open={openApprove}
-                handleClose={handleCloseApprove}
-                approve={approve}
-                approveOperatorType={approveOperatorType}
-                approveOperatorOnChange={setApproveOperatorType}
-                disable={disable}
-              ></ApproveNFTModal>
-            </Grid>
-          ))}
-        </Grid>
-      </Grid>
+      )}
     </>
   );
 };
