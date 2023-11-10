@@ -67,7 +67,6 @@ const TokenMint: React.FC = () => {
     enableMintBurn: true,
   });
 
-  const [actionLoader, setActionLoader] = useState<boolean>(false);
   const [mintLoading, setMintLoading] = useState<boolean>(false);
 
   const classes = useStyles();
@@ -94,12 +93,10 @@ const TokenMint: React.FC = () => {
         total_supply: CLValueBuilder.u256(data.supply * Math.pow(10, data.decimal)),
         enable_mint_burn: CLValueBuilder.bool(data.enableMintBurn),
       });
-      console.log("args", args);
 
       const deploy = contract.install(new Uint8Array(cep18Wasm), args, "150000000000", ownerPublicKey, "casper-test");
 
       const deployJson = DeployUtil.deployToJson(deploy);
-      console.log("deployJson", deployJson);
 
       // signer logic
       try {
@@ -117,16 +114,16 @@ const TokenMint: React.FC = () => {
           headers: { "Content-Type": "application/json" },
         });
         toastr.success(response.data, "ERC-20 Token deployed successfully.");
-        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
-        setActionLoader(false);
+        setMintLoading(false);
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
       } catch (error: any) {
-        setActionLoader(false);
+        setMintLoading(false);
         toastr.error("Something went wrong. Error: " + error);
       }
     } catch (err: any) {
-      setActionLoader(false);
+      setMintLoading(false);
       toastr.error(err);
     }
     // wallet
@@ -155,7 +152,7 @@ const TokenMint: React.FC = () => {
     return !data.name || !data.symbol || data.supply <= 0 || data.decimal <= 0;
   }, [data]);
 
-  if (actionLoader || mintLoading) {
+  if (mintLoading) {
     return (
       <div
         style={{
@@ -167,11 +164,9 @@ const TokenMint: React.FC = () => {
           flexDirection: "column",
         }}
       >
-        {mintLoading && (
-          <Typography sx={{ marginY: "2rem" }} variant="subtitle1">
-            Your token is being created.
-          </Typography>
-        )}
+        <Typography sx={{ marginY: "2rem" }} variant="subtitle1">
+          Your token is being created.
+        </Typography>
         <CircularProgress />
       </div>
     );
