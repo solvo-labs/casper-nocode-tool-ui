@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { SERVER_API, getAllLootboxes, getLootboxItem, getLootboxItemOwner, getNftMetadata } from "../../utils/api";
+import { SERVER_API, getAllLootboxes, getLootboxItem, getLootboxItemOwner, getNftCollection, getNftMetadata } from "../../utils/api";
 import { lootboxStorageContract } from "../../utils";
 import { Box, CircularProgress, Divider, Grid, Modal, Stack, Typography } from "@mui/material";
 import { LootboxData, LootboxItem } from "../../utils/types";
@@ -56,9 +56,8 @@ export const LootboxList = () => {
     >();
 
   const [itemData, setItemData] = useState<any[]>([]);
-  // const [collection, setCollection] = useState<any>();
+  const [collection, setCollection] = useState<any>();
   const [loadingNFT, setLoadingNFT] = useState<boolean>(false);
-  // const [lootboxOwners, setLootboxOwners] = useState<any>([]);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -133,8 +132,7 @@ export const LootboxList = () => {
           });
 
           toastr.success(response.data, "Claim successfully.");
-          // setLoading(false);
-          // navigate("/marketplace");
+          setLoading(false);
         } catch (error: any) {
           alert(error.message);
         }
@@ -149,7 +147,8 @@ export const LootboxList = () => {
     const fetch = async () => {
       if (selectedLootbox) {
         setLoadingNFT(true);
-        // const nftCollection = await getNftCollection("hash-" + selectedLootbox.nft_collection);
+        const nftCollection = await getNftCollection("hash-" + selectedLootbox.nft_collection);
+
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
         const accountHash = ownerPublicKey.toAccountHashStr();
 
@@ -165,19 +164,15 @@ export const LootboxList = () => {
         const nfts = await Promise.all(nftMetasPromises);
 
         const ownersData = await getLootboxItemOwner(selectedLootbox.key);
-        // console.log(data);
-        // setLootboxOwners(data);
 
         const finalData = nfts.map((nft: any, index: number) => {
           return { ...nft, ...items[index], itemOwner: ownersData[index] };
         });
 
-        console.log(finalData);
-
         const filterData = finalData.filter((fltr) => fltr.owner == selectedLootbox.key.slice(5));
 
+        setCollection(nftCollection);
         setItemData(filterData);
-        // setCollection(nftCollection);
         setLoadingNFT(false);
       }
     };
@@ -227,7 +222,10 @@ export const LootboxList = () => {
                   <CustomButton disabled={false} label="Buy Lootbox" onClick={purchase}></CustomButton>
                 </Grid>
                 <Typography variant="subtitle1">
-                  Max Lootbox count is <b>{selectedLootbox?.max_lootboxes}</b>, Item count per lootbox is <b>{selectedLootbox?.items_per_lootbox}</b> , Purchased Lootbox count is{" "}
+                  Collection : <b>{collection?.collection_name}</b>
+                </Typography>
+                <Typography variant="subtitle1">
+                  Lootbox count is <b>{selectedLootbox?.max_lootboxes}</b>, Item count per lootbox is <b>{selectedLootbox?.items_per_lootbox}</b> , Purchased Lootbox count is{" "}
                   <b>{selectedLootbox?.lootbox_count}</b>
                 </Typography>
                 <Typography variant="subtitle1">
@@ -247,6 +245,7 @@ export const LootboxList = () => {
                         onClick={() => {}}
                         isSelected={false}
                         amIOwner={item.isMyNft}
+                        rarity={item.rarityValue}
                       />
                       {item.itemOwner.owner == CLPublicKey.fromHex(publicKey).toAccountHashStr().slice(13) ? (
                         <Grid item display={"flex"} justifyContent={"center"}>
@@ -314,7 +313,7 @@ export const LootboxList = () => {
           </div>
         )}
       </Stack>
-      {modal()}
+      {selectedLootbox && modal()}
     </Grid>
   );
 };
