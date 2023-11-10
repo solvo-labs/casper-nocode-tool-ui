@@ -17,6 +17,7 @@ const useStyles = makeStyles((_theme: Theme) => ({
   },
   title: {
     marginBottom: "2rem !important",
+    borderBottom: "1px solid red",
   },
 }));
 
@@ -32,10 +33,8 @@ const CreateMarketplace = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const disable = useMemo(() => {
-    if (checked) {
-      return true;
-    }
-  }, [checked]);
+    return !marketplaceName || !feeWallet;
+  }, [marketplaceName, feeWallet]);
 
   const createMarketplace = async () => {
     try {
@@ -104,7 +103,7 @@ const CreateMarketplace = () => {
         <Typography variant="h4">Create your own Marketplace's</Typography>
       </Grid>
       <Stack spacing={4} display={"flex"}>
-        <Grid item width={"540px"}>
+        <Grid item maxWidth={"540px"}>
           <Typography variant="subtitle1" sx={{ overflowWrap: "break-word" }}>
             Wallet information for transferring earned tokens in marketplace transactions.
           </Typography>
@@ -117,7 +116,7 @@ const CreateMarketplace = () => {
             placeholder="Fee wallet"
             type="text"
             value={feeWallet}
-            disable={disable}
+            disable={checked}
             floor="dark"
           ></CustomInput>
           <Stack direction={"row"} alignItems={"center"}>
@@ -142,7 +141,9 @@ const CreateMarketplace = () => {
           type="text"
           value={marketplaceName}
         ></CustomInput>
-        <CustomButton disabled={false} label="Create Marketplace" onClick={createMarketplace}></CustomButton>
+        <Grid item display={"flex"} justifyContent={"center"}>
+          <CustomButton disabled={disable} label="Create Marketplace" onClick={createMarketplace}></CustomButton>
+        </Grid>
       </Stack>
     </Grid>
   );
