@@ -290,23 +290,25 @@ const AddNftToMarketplace = () => {
         <Grid container marginTop={"4rem"} justifyContent={"center"}>
           <Grid item>
             <Typography variant="h4" fontWeight={"bold"}>
-              Choose a collection
+              Choose a NFT
             </Typography>
           </Grid>
           <Grid container marginY={"2rem"}>
-            {nftData.map((e: any, index: number) => (
-              <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
-                <NftCard
-                  description={e.description}
-                  name={e.name}
-                  asset={e.asset}
-                  onClick={() => {
-                    setSelectedNftIndex(index);
-                  }}
-                  index={index}
-                ></NftCard>
-              </Grid>
-            ))}
+            {nftData
+              .filter((fltr: any) => fltr.isMyNft)
+              .map((e: any, index: number) => (
+                <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
+                  <NftCard
+                    description={e.description}
+                    name={e.name}
+                    asset={e.asset}
+                    onClick={() => {
+                      setSelectedNftIndex(index);
+                    }}
+                    index={index}
+                  ></NftCard>
+                </Grid>
+              ))}
           </Grid>
           <Grid container width={"100%"}>
             <Stack width={"100%"} direction={"row"} justifyContent={"space-evenly"}>
