@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { TokenTransfer } from "../../utils/types";
 import { Grid, Stack, Theme, CircularProgress, MenuItem } from "@mui/material";
 import { CustomInput } from "../../components/CustomInput";
@@ -85,6 +85,10 @@ const Transfer: React.FC = () => {
   const classes = useStyles();
   const navigate = useNavigate();
 
+  const disable = useMemo(() => {
+    return data.amount <= 0 || data.receipentPubkey == "" || selectedToken == undefined;
+  }, [data]);
+
   useEffect(() => {
     const init = async () => {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
@@ -148,7 +152,7 @@ const Transfer: React.FC = () => {
     return (
       <div
         style={{
-          height: "calc(100vh - 8rem)",
+          height: "50vh",
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -224,7 +228,7 @@ const Transfer: React.FC = () => {
                 }
               />
               <Grid paddingTop={2} container justifyContent={"center"}>
-                <CustomButton onClick={transferData} disabled={data.amount <= 0 || data.receipentPubkey === "" || selectedToken === undefined} label="Transfer" />
+                <CustomButton onClick={transferData} disabled={disable} label="Transfer" />
               </Grid>
             </Stack>
           </Grid>
