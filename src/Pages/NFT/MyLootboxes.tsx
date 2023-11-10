@@ -61,6 +61,8 @@ const MyLootboxes = () => {
 
         const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
 
+        toastr.info("First, you must approve this collection; if you have already approved it before, do not take this warning lightly.");
+
         let promises = [];
         for (let index = 0; index < nftCount; index++) {
           promises.push(getNftMetadata("hash-" + selectedLootbox.nft_collection, index.toString(), accountHash.slice(13)));
@@ -274,10 +276,7 @@ const MyLootboxes = () => {
                       }}
                       collection={collection}
                       handleChangeIndex={setSelectedNFTIndex}
-                      addItem={() => {
-                        // approve();
-                        addItem();
-                      }}
+                      addItem={addItem}
                       disable={disable}
                       loadingNFT={fetchNFTLoading}
                       isAddItem={isAddItem}
@@ -292,6 +291,7 @@ const MyLootboxes = () => {
                       rarity={rarity}
                       rarityList={rarityList}
                       handleChangeItemRarity={(rarity: any) => setRarity(rarity)}
+                      approveOnClick={approve}
                     />
                   </>
                 )}
