@@ -233,8 +233,8 @@ export const LootboxList = () => {
                 </Typography>
               </Grid>
               <Grid container marginTop={"2rem"} overflow={"auto"}>
-                {itemData.map((item: any, index: number) => (
-                  <Grid item md={4} key={index}>
+                {itemData.map((item: any) => (
+                  <Grid item md={4} key={item.index}>
                     <Grid container direction={"column"}>
                       <NftCard
                         key={item.index}
