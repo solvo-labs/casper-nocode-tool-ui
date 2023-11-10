@@ -158,7 +158,8 @@ export const CreateLootbox = () => {
   }, []);
 
   const disable = useMemo(() => {
-    const disable = !lootbox.name.length || !lootbox.desciption.length || !lootbox.collection;
+    const disable =
+      !lootbox.name.length || !lootbox.desciption.length || !lootbox.collection || lootbox.lootbox_price <= 0 || lootbox.items_per_lootbox <= 0 || lootbox.max_lootboxes <= 0;
     return disable;
   }, [lootbox]);
 
@@ -188,8 +189,8 @@ export const CreateLootbox = () => {
           Lootbox
         </Typography>
       </Grid>
-      <Grid item marginTop={"1rem"} display={"flex"} justifyContent={"center"}>
-        <Stack className={classes.inputContainer} spacing={2}>
+      <Grid item marginTop={"2rem"} display={"flex"} justifyContent={"center"}>
+        <Stack className={classes.inputContainer} spacing={4}>
           <CustomInput
             label="Name"
             name="name"
