@@ -350,11 +350,17 @@ const ManageRaffle = () => {
     };
 
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {
-    const init = async () => {
-      setLoadingNFT(true);
+    const init = async (loader: boolean) => {
+      setLoadingNFT(loader);
       if (raffleData.collectionHash && raffleData.collectionHash != "") {
         const nftCollection = await getNftCollection(raffleData.collectionHash);
         const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
@@ -373,7 +379,13 @@ const ManageRaffle = () => {
       }
     };
 
-    init();
+    init(true);
+
+    const interval = setInterval(() => init(false), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [raffleData.collectionHash]);
 
   useEffect(() => {

@@ -85,6 +85,12 @@ const JoinRaffle = () => {
       setLoading(false);
     };
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const buy_ticket = async (raffle: any) => {
