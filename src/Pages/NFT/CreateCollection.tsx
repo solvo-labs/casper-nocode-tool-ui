@@ -5,7 +5,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
 import { Collection } from "../../utils/types";
-import { CircularProgress, Divider, FormControl, Grid, InputLabel, MenuItem, Stack, Theme, Typography } from "@mui/material";
+import { CircularProgress, Divider, Grid, MenuItem, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
@@ -203,7 +203,7 @@ export const CreateCollection = () => {
             </Typography>
           </Grid>
           <Grid container className={classes.gridContainer}>
-            <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
+            <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>
               <CustomInput
                 placeholder="Collection Name"
                 label="Collection Name"
@@ -248,205 +248,182 @@ export const CreateCollection = () => {
                 value={collectionData.totalSupply}
                 floor={"dark"}
               ></CustomInput>
-              <Divider sx={{ backgroundColor: "red", marginTop: "3rem !important" }}></Divider>
-
-              <FormControl fullWidth>
-                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
-                  Ownership Mode
-                </InputLabel>
-                <CustomSelect
-                  id="ownershipMode"
-                  value={collectionData.ownershipMode}
-                  label="Ownership Mode"
-                  onChange={(e: any) => {
-                    setCollectionData({
-                      ...collectionData,
-                      ownershipMode: e.target.value,
-                    });
-                  }}
-                >
-                  {listSelectItem(NFTOwnershipMode)}
-                </CustomSelect>
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
-                  Collection Kind
-                </InputLabel>
-                <CustomSelect
-                  id="collectionkind"
-                  value={collectionData.kind}
-                  label="Collection kind"
-                  onChange={(e: any) => {
-                    setCollectionData({
-                      ...collectionData,
-                      kind: e.target.value,
-                    });
-                  }}
-                >
-                  {listSelectItem(NFTKind)}
-                </CustomSelect>
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Collection Kind</InputLabel>
-                <CustomSelect
-                  id="collectionnftMetadataKind"
-                  value={collectionData.nftMetadataKind}
-                  label="Collection metadata kind"
-                  onChange={(e: any) => {
-                    setCollectionData({
-                      ...collectionData,
-                      nftMetadataKind: e.target.value,
-                    });
-                  }}
-                >
-                  {listSelectItem(NFTMetadataKind)}
-                </CustomSelect>
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
-                  White List Mode
-                </InputLabel>
-                <CustomSelect
-                  id="whiteListMode"
-                  value={collectionData.whiteListMode}
-                  label="whiteListMode"
-                  onChange={(e: any) => {
-                    setCollectionData({
-                      ...collectionData,
-                      whiteListMode: e.target.value,
-                    });
-                  }}
-                >
-                  {listSelectItem(WhiteListMode)}
-                </CustomSelect>
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
-                  Identifier Mode
-                </InputLabel>
-                <CustomSelect
-                  id="identifierMode"
-                  value={collectionData.identifierMode}
-                  label="identifierMode"
-                  onChange={(e: any) => {
-                    setCollectionData({
-                      ...collectionData,
-                      identifierMode: e.target.value,
-                    });
-                  }}
-                >
-                  {listSelectItem(NFTIdentifierMode)}
-                </CustomSelect>
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
-                  Metadata Mutability
-                </InputLabel>
-                <CustomSelect
-                  id="metadataMutability"
-                  value={collectionData.metadataMutability}
-                  label="identifierMode"
-                  onChange={(e: any) => {
-                    setCollectionData({
-                      ...collectionData,
-                      metadataMutability: e.target.value,
-                    });
-                  }}
-                >
-                  {listSelectItem(MetadataMutability)}
-                </CustomSelect>
-              </FormControl>
-
-              <FormControl fullWidth>
-                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
-                  Minting Mode
-                </InputLabel>
-                <CustomSelect
-                  id="mintinMode"
-                  value={collectionData.mintingMode}
-                  label="identifierMode"
-                  onChange={(e: any) => {
-                    setCollectionData({
-                      ...collectionData,
-                      mintingMode: e.target.value,
-                    });
-                  }}
-                >
-                  {listSelectItem(MintingMode)}
-                </CustomSelect>
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
-                  Burn Mode
-                </InputLabel>
-                <CustomSelect
-                  id="burnMode"
-                  value={collectionData.burnMode}
-                  label="burnMode"
-                  onChange={(e: any) => {
-                    setCollectionData({
-                      ...collectionData,
-                      burnMode: e.target.value,
-                    });
-                  }}
-                >
-                  {listSelectItem(BurnMode)}
-                </CustomSelect>
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
-                  Holder Mode
-                </InputLabel>
-                <CustomSelect
-                  id="holderMode"
-                  value={collectionData.holderMode}
-                  label="holderMode"
-                  onChange={(e: any) => {
-                    setCollectionData({
-                      ...collectionData,
-                      holderMode: e.target.value,
-                    });
-                  }}
-                >
-                  {listSelectItem(NFTHolderMode)}
-                </CustomSelect>
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
-                  Named Key Convention Mode
-                </InputLabel>
-                <CustomSelect
-                  id="holderMode"
-                  value={collectionData.namedKeyConventionMode}
-                  label="holderMode"
-                  onChange={(e: any) => {
-                    setCollectionData({
-                      ...collectionData,
-                      namedKeyConventionMode: e.target.value,
-                    });
-                  }}
-                >
-                  {listSelectItem(NamedKeyConventionMode)}
-                </CustomSelect>
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel sx={{ color: "white" }} id="demo-simple-select-label">
-                  Owner Reverse Lookup Mode
-                </InputLabel>
-                <CustomSelect
-                  id="holderMode"
-                  value={collectionData.ownerReverseLookupMode}
-                  label="holderMode"
-                  onChange={(e: any) => {
-                    setCollectionData({
-                      ...collectionData,
-                      ownerReverseLookupMode: e.target.value,
-                    });
-                  }}
-                >
-                  {listSelectItem(OwnerReverseLookupMode)}
-                </CustomSelect>
-              </FormControl>
+              <Divider
+                // textAlign="left"
+                sx={{
+                  color: "white",
+                  "&::before, &::after": {
+                    borderTop: "thin solid red !important",
+                  },
+                }}
+              >
+                Collection Features
+              </Divider>
+              <CustomSelect
+                id="ownershipMode"
+                value={collectionData.ownershipMode}
+                label="Ownership Mode"
+                onChange={(e: any) => {
+                  setCollectionData({
+                    ...collectionData,
+                    ownershipMode: e.target.value,
+                  });
+                }}
+                titlePosition={"relative"}
+                titleTop={"10px"}
+              >
+                {listSelectItem(NFTOwnershipMode)}
+              </CustomSelect>
+              <CustomSelect
+                id="collectionKind"
+                value={collectionData.kind}
+                label="Collection Kind"
+                onChange={(e: any) => {
+                  setCollectionData({
+                    ...collectionData,
+                    kind: e.target.value,
+                  });
+                }}
+                titlePosition={"relative"}
+                titleTop={"10px"}
+              >
+                {listSelectItem(NFTKind)}
+              </CustomSelect>
+              <CustomSelect
+                id="collectionnftMetadataKind"
+                value={collectionData.nftMetadataKind}
+                label="Collection Metadata Kind"
+                onChange={(e: any) => {
+                  setCollectionData({
+                    ...collectionData,
+                    nftMetadataKind: e.target.value,
+                  });
+                }}
+                titlePosition={"relative"}
+                titleTop={"10px"}
+              >
+                {listSelectItem(NFTMetadataKind)}
+              </CustomSelect>
+              <CustomSelect
+                id="whiteListMode"
+                value={collectionData.whiteListMode}
+                label="White List Mode"
+                onChange={(e: any) => {
+                  setCollectionData({
+                    ...collectionData,
+                    whiteListMode: e.target.value,
+                  });
+                }}
+                titlePosition={"relative"}
+                titleTop={"10px"}
+              >
+                {listSelectItem(WhiteListMode)}
+              </CustomSelect>
+              <CustomSelect
+                id="identifierMode"
+                value={collectionData.identifierMode}
+                label="Identifier Mode"
+                onChange={(e: any) => {
+                  setCollectionData({
+                    ...collectionData,
+                    identifierMode: e.target.value,
+                  });
+                }}
+                titlePosition={"relative"}
+                titleTop={"10px"}
+              >
+                {listSelectItem(NFTIdentifierMode)}
+              </CustomSelect>
+              <CustomSelect
+                id="metadataMutability"
+                value={collectionData.metadataMutability}
+                label="Metadata Mutability"
+                onChange={(e: any) => {
+                  setCollectionData({
+                    ...collectionData,
+                    metadataMutability: e.target.value,
+                  });
+                }}
+                titlePosition={"relative"}
+                titleTop={"10px"}
+              >
+                {listSelectItem(MetadataMutability)}
+              </CustomSelect>
+              <CustomSelect
+                id="mintingMode"
+                value={collectionData.mintingMode}
+                label="Minting Mode"
+                onChange={(e: any) => {
+                  setCollectionData({
+                    ...collectionData,
+                    mintingMode: e.target.value,
+                  });
+                }}
+                titlePosition={"relative"}
+                titleTop={"10px"}
+              >
+                {listSelectItem(MintingMode)}
+              </CustomSelect>
+              <CustomSelect
+                id="burnMode"
+                value={collectionData.burnMode}
+                label="Burn Mode"
+                onChange={(e: any) => {
+                  setCollectionData({
+                    ...collectionData,
+                    burnMode: e.target.value,
+                  });
+                }}
+                titlePosition={"relative"}
+                titleTop={"10px"}
+              >
+                {listSelectItem(BurnMode)}
+              </CustomSelect>
+              <CustomSelect
+                id="holderMode"
+                value={collectionData.holderMode}
+                label="Holder Mode"
+                onChange={(e: any) => {
+                  setCollectionData({
+                    ...collectionData,
+                    holderMode: e.target.value,
+                  });
+                }}
+                titlePosition={"relative"}
+                titleTop={"10px"}
+              >
+                {listSelectItem(NFTHolderMode)}
+              </CustomSelect>
+              <CustomSelect
+                id="namedKeyConventionMode"
+                value={collectionData.namedKeyConventionMode}
+                label="Named Key Convention Mode"
+                onChange={(e: any) => {
+                  setCollectionData({
+                    ...collectionData,
+                    namedKeyConventionMode: e.target.value,
+                  });
+                }}
+                titlePosition={"relative"}
+                titleTop={"10px"}
+              >
+                {listSelectItem(NamedKeyConventionMode)}
+              </CustomSelect>
+              <CustomSelect
+                id="ownerReverseLookupMode"
+                value={collectionData.ownerReverseLookupMode}
+                label="Owner Reverse Lookup Mode"
+                onChange={(e: any) => {
+                  setCollectionData({
+                    ...collectionData,
+                    ownerReverseLookupMode: e.target.value,
+                  });
+                }}
+                titlePosition={"relative"}
+                titleTop={"10px"}
+              >
+                {listSelectItem(OwnerReverseLookupMode)}
+              </CustomSelect>
               <Grid paddingTop={2} container justifyContent={"center"}>
                 <CustomButton onClick={mintCollection} disabled={disable} label="Create Collection" />
               </Grid>
