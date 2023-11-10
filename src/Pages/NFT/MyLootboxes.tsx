@@ -32,21 +32,11 @@ const MyLootboxes = () => {
 
   const [rarityList] = useState<string[]>(Object.keys(RarityLevel).filter((v) => isNaN(Number(v))));
 
-  // const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-  //   setAnchorEl(event.currentTarget);
-  // };
-
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
 
   const navigate = useNavigate();
-
-  // const handleOpen = (setState: any) => setState(true);
-  // const handleClose = (setState: any) => {
-  //   setState(false);
-  //   setSelectedNFTIndex(-1);
-  // };
 
   useEffect(() => {
     const fetchLootboxes = async () => {
@@ -115,12 +105,12 @@ const MyLootboxes = () => {
         const operatorHash = selectedLootbox.key.replace("hash-", "");
 
         const args = RuntimeArgs.fromMap({
+          token_owner: ownerPublicKey,
+          approve_all: CLValueBuilder.bool(true),
           operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(operatorHash, "hex")))),
-          token_id: CLValueBuilder.u64(selectedNFTIndex),
-          rarity: CLValueBuilder.u64(rarity),
         });
 
-        const deploy = contract.callEntrypoint("approve", args, ownerPublicKey, "casper-test", "10000000000");
+        const deploy = contract.callEntrypoint("set_approval_for_all", args, ownerPublicKey, "casper-test", "10000000000");
 
         const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -134,7 +124,7 @@ const MyLootboxes = () => {
           });
 
           toastr.success(response.data, "Approve deployed successfully.");
-          addItem();
+          // addItem();
           // setLoading(false);
         } catch (error: any) {
           toastr.error("Error: " + error);
@@ -149,7 +139,7 @@ const MyLootboxes = () => {
 
   const addItem = async () => {
     try {
-      if (selectedNFTIndex != -1 && selectedLootbox) {
+      if (selectedNFTIndex !== undefined && selectedLootbox) {
         const contract = new Contracts.Contract();
         contract.setContractHash(selectedLootbox.key);
 
@@ -174,6 +164,7 @@ const MyLootboxes = () => {
           });
           toastr.success(response.data, "Item added to Lootbox successfully.");
           navigate("/my-lootboxes");
+
           setSelectedLootbox(undefined);
           setSelectedNFTIndex(undefined);
           setLoading(false);
@@ -263,15 +254,8 @@ const MyLootboxes = () => {
                   menuOpen={open}
                   anchorEl={anchorEl}
                   handleCloseMenu={handleCloseMenu}
-                  handleOpenMenu={() => {
-                    // handleClickMenu(e);
-                    // setSelectedLootbox(ltbx);
-                  }}
-                  handleAddNFT={() => {
-                    console.log(ltbx);
-                    // handleOpen(setAddItemModalOpen);
-                    // handleCloseMenu();
-                  }}
+                  handleOpenMenu={() => {}}
+                  handleAddNFT={() => {}}
                   onClick={() => {
                     setSelectedLootbox(ltbx);
                   }}
@@ -290,7 +274,10 @@ const MyLootboxes = () => {
                       }}
                       collection={collection}
                       handleChangeIndex={setSelectedNFTIndex}
-                      addItem={approve}
+                      addItem={() => {
+                        // approve();
+                        addItem();
+                      }}
                       disable={disable}
                       loadingNFT={fetchNFTLoading}
                       isAddItem={isAddItem}
