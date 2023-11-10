@@ -92,7 +92,7 @@ const AddItemToLootboxModal: React.FC<Props> = ({
                 <CustomButton disabled={false} label="Approve Collection" onClick={approveOnClick}></CustomButton>
               </Grid>
               <Typography variant="subtitle1">
-                Collection is <b>{collection.collection_name}</b> , Max Lootbox count is <b>{lootbox.max_lootboxes}</b> , Item count per lootbox is{" "}
+                Collection is <b>{collection?.collection_name}</b> , Max Lootbox count is <b>{lootbox.max_lootboxes}</b> , Item count per lootbox is{" "}
                 <b>{lootbox.items_per_lootbox}</b>
               </Typography>
               <Typography variant="subtitle1">

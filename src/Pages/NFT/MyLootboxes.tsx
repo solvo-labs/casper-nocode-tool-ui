@@ -49,11 +49,17 @@ const MyLootboxes = () => {
     };
 
     fetchLootboxes();
+
+    const interval = setInterval(() => fetchLootboxes(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {
-    const init = async () => {
-      setFetchNFTLoading(true);
+    const init = async (loader: boolean) => {
+      setFetchNFTLoading(loader);
       if (selectedLootbox) {
         const nftCollection = await getNftCollection("hash-" + selectedLootbox.nft_collection);
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
@@ -61,7 +67,7 @@ const MyLootboxes = () => {
 
         const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
 
-        toastr.info("First, you must approve this collection; if you have already approved it before, do not take this warning lightly.");
+        loader && toastr.info("First, you must approve this collection; if you have already approved it before, do not take this warning lightly.");
 
         let promises = [];
         for (let index = 0; index < nftCount; index++) {
@@ -89,7 +95,14 @@ const MyLootboxes = () => {
         setFetchNFTLoading(false);
       }
     };
-    init();
+
+    init(true);
+
+    const interval = setInterval(() => init(false), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [selectedLootbox]);
 
   const disable = useMemo(() => {

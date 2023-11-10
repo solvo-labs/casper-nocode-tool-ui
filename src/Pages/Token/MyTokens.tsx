@@ -57,6 +57,12 @@ const MyTokens: React.FC = () => {
     };
 
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const handleChangePage = (_event: unknown, newPage: number) => {
