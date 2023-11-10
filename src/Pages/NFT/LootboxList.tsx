@@ -249,7 +249,7 @@ export const LootboxList = () => {
                       />
                       {item.itemOwner.owner == CLPublicKey.fromHex(publicKey).toAccountHashStr().slice(13) ? (
                         <Grid item display={"flex"} justifyContent={"center"}>
-                          <CustomButton label="Claim NFT" disabled={false} onClick={() => claim(index)}></CustomButton>
+                          <CustomButton label="Claim NFT" disabled={false} onClick={() => claim(item.index)}></CustomButton>
                         </Grid>
                       ) : null}
                     </Grid>
