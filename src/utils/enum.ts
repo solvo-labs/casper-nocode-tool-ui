@@ -47,6 +47,7 @@ export enum MARKETPLACE_PAGE {
   CREATE_MARKETPLACE = "Create Marketplace",
   BUY_NFT = "Buy Nft",
   BUY_LOOTBOX = "Buy Lootbox",
+  JOIN_RAFFLE = "Join Raffle",
 }
 
 export enum WALLETS_NAME {
