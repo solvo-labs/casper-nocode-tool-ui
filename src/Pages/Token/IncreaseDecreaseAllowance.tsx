@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { CircularProgress, Grid, MenuItem, SelectChangeEvent, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
@@ -79,6 +79,10 @@ const IncreaseDecreaseAllowance: React.FC = () => {
   const [selectedToken, setSelectedToken] = useState<ERC20Token>();
 
   const navigate = useNavigate();
+
+  const disable = useMemo(() => {
+    return data.receipentPubkey === "" || selectedToken === undefined || data.amount <= 0;
+  }, [data, selectedToken]);
 
   useEffect(() => {
     const init = async () => {
@@ -262,10 +266,10 @@ const IncreaseDecreaseAllowance: React.FC = () => {
               />
               <Grid container paddingTop={"2rem"} justifyContent={"space-around"}>
                 <Grid item>
-                  <CustomButton onClick={increase} disabled={data.receipentPubkey === "" || selectedToken === undefined || data.amount <= 0} label="Increase" />
+                  <CustomButton onClick={increase} disabled={disable} label="Increase" />
                 </Grid>
                 <Grid item>
-                  <CustomButton onClick={decrease} disabled={data.receipentPubkey === "" || selectedToken === undefined || data.amount <= 0} label="Decrease" />
+                  <CustomButton onClick={decrease} disabled={disable} label="Decrease" />
                 </Grid>
               </Grid>
             </Stack>

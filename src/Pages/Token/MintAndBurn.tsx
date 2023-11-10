@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ERC20Token } from "../../utils/types";
 import { Grid, Stack, Theme, CircularProgress, MenuItem, Typography } from "@mui/material";
 import { CustomInput } from "../../components/CustomInput";
@@ -77,6 +77,19 @@ const MintAndBurn: React.FC = () => {
 
   const classes = useStyles();
   const navigate = useNavigate();
+
+  const calculateSupply = () => {
+    if (selectedToken) {
+      return parseInt(selectedToken.total_supply.hex || "", 16) / Math.pow(10, parseInt(selectedToken.decimals.hex, 16));
+    }
+
+    return 0;
+  };
+
+  const disable = useMemo(() => {
+    const supply = calculateSupply();
+    return data <= 0 || data > supply || selectedToken === undefined;
+  }, [data, selectedToken]);
 
   useEffect(() => {
     const init = async () => {
@@ -182,14 +195,6 @@ const MintAndBurn: React.FC = () => {
     }
   };
 
-  const calculateSupply = () => {
-    if (selectedToken) {
-      return parseInt(selectedToken.total_supply.hex || "", 16) / Math.pow(10, parseInt(selectedToken.decimals.hex, 16));
-    }
-
-    return 0;
-  };
-
   if (loading) {
     return (
       <div
@@ -250,7 +255,7 @@ const MintAndBurn: React.FC = () => {
                   <CustomButton onClick={mint} disabled={data <= 0 || selectedToken === undefined} label="Mint" />
                 </Grid>
                 <Grid item>
-                  <CustomButton onClick={burn} disabled={data <= 0 || data > calculateSupply() || selectedToken === undefined} label="Burn" />
+                  <CustomButton onClick={burn} disabled={disable} label="Burn" />
                 </Grid>
               </Grid>
             </Stack>
