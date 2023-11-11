@@ -70,8 +70,6 @@ const AddNftToMarketplace = () => {
 
   const handleNext = () => {
     toastr.info("Before listing, you must approve the marketplace for the NFT to be listed. Please make sure you do this");
-    console.log(selectedNftIndex);
-
     let newSkipped = skipped;
     if (isStepSkipped(activeStep)) {
       newSkipped = new Set(newSkipped.values());
@@ -139,7 +137,7 @@ const AddNftToMarketplace = () => {
           const response = await axios.post(SERVER_API + "deploy", data, {
             headers: { "Content-Type": "application/json" },
           });
-          console.log(marketplaceHash, selectedCollection, selectedNftIndex, price, nftData[selectedNftIndex], Number(parseInt(marketplaceData.listingCount.hex)));
+          // console.log(marketplaceHash, selectedCollection, selectedNftIndex, price, nftData[selectedNftIndex], Number(parseInt(marketplaceData.listingCount.hex)));
           await storeListing(marketplaceHash, selectedCollection, selectedNftIndex, price, nftData[selectedNftIndex], Number(parseInt(marketplaceData.listingCount.hex)));
 
           toastr.success(response.data, "Listing created successfully.");
@@ -167,7 +165,6 @@ const AddNftToMarketplace = () => {
       setMarketPlaceData(marketplaceData);
       setLoading(false);
       setCollections(result);
-      console.log(result);
     };
 
     init();
@@ -195,8 +192,6 @@ const AddNftToMarketplace = () => {
       }
 
       const nftMetas = await Promise.all(promises);
-      console.log(nftMetas);
-
       setNftData(nftMetas);
       setLoading(false);
     }
@@ -322,12 +317,12 @@ const AddNftToMarketplace = () => {
         <Grid container>
           <Stack spacing={"2rem"} width={"100%"}>
             <Grid item className={classes.text}>
-              {collections.map((col: any) => {
+              {collections.map((col: any, index: number) => {
                 if (col.contractHash == selectedCollection) {
                   return (
-                    <Grid container marginTop={"2rem"} justifyContent={"center"}>
+                    <Grid container marginTop={"2rem"} justifyContent={"center"} key={index}>
                       <Typography variant="h5">
-                        Selected collection:{" "}
+                        Selected collection:
                         <b>
                           {col.collection_name} ({col.collection_symbol})
                         </b>
