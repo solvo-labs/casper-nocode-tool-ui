@@ -155,7 +155,6 @@ const ApproveNFT = () => {
   useEffect(() => {
     const init = async () => {
       const data = await fetchLootboxNamedKeys(publicKey);
-      console.log(data);
       setLootboxes(data);
     };
 
@@ -211,8 +210,7 @@ const ApproveNFT = () => {
         }
       }
     } catch (error) {
-      console.log(error);
-      toastr.error("error");
+      toastr.error("Error: " + error);
     }
   };
 
@@ -240,7 +238,7 @@ const ApproveNFT = () => {
   return (
     <>
       {collections.length <= 0 && <CreatorRouter explain={DONT_HAVE_ANYTHING.APPROVE} handleOnClick={() => navigate("/create-collection")}></CreatorRouter>}
-      {collections.lengt > 0 && (
+      {collections.length > 0 && (
         <Grid container className={classes.container}>
           <Grid item>
             <Typography variant="h5" className={classes.title}>
