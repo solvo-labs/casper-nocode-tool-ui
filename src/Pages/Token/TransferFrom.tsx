@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Stack, Theme, CircularProgress, MenuItem, Typography } from "@mui/material";
+import { Grid, Stack, CircularProgress, MenuItem, Typography } from "@mui/material";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
-import { makeStyles } from "@mui/styles";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toastr from "toastr";
@@ -14,16 +13,6 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import { CustomSelect } from "../../components/CustomSelect";
 import CreatorRouter from "../../components/CreatorRouter";
 import { DONT_HAVE_ANYTHING } from "../../utils/enum";
-
-const useStyles = makeStyles((theme: Theme) => ({
-  container: {
-    [theme.breakpoints.down("sm")]: {
-      marginBottom: 2,
-      marginTop: 2,
-      padding: "24px",
-    },
-  },
-}));
 
 const TransferFrom: React.FC = () => {
   const [data, setData] = useState<any>({
@@ -37,7 +26,6 @@ const TransferFrom: React.FC = () => {
 
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
 
-  const classes = useStyles();
   const navigate = useNavigate();
 
   useEffect(() => {
