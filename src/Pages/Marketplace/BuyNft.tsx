@@ -76,7 +76,7 @@ const BuyNft = () => {
         amount: CLValueBuilder.u512(listing.price * 1_000_000_000),
       });
 
-      const deploy = contract.install(new Uint8Array(executeListingWasm!), args, "100000000000", ownerPublicKey, "casper-test");
+      const deploy = contract.install(new Uint8Array(executeListingWasm!), args, "15000000000", ownerPublicKey, "casper-test");
 
       const deployJson = DeployUtil.deployToJson(deploy);
       console.log("deployJson", deployJson);
