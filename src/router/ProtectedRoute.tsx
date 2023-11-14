@@ -38,12 +38,8 @@ const ProtectedRoute: React.FC = () => {
       try {
         await delay(100);
         const CasperWalletProvider = window.CasperWalletProvider;
-        console.log("CasperWalletProvider", CasperWalletProvider);
         const provider = CasperWalletProvider();
-        console.log("provider", provider);
         const isConnected = await provider.isConnected();
-
-        console.log("isconnected", isConnected);
 
         if (isConnected) {
           const activePublicKey = await provider.getActivePublicKey();
