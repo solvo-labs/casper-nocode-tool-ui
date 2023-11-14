@@ -24,8 +24,13 @@ const Login: React.FC = () => {
       const provider = CasperWalletProvider();
 
       const isConnected = await provider.isConnected();
+      let activePublickey = "";
 
-      if (isConnected) {
+      try {
+        activePublickey = await provider.getActivePublicKey();
+      } catch {}
+
+      if (isConnected && activePublickey !== "") {
         navigate("/");
       }
     };
