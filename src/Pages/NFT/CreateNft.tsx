@@ -6,7 +6,7 @@ import { SERVER_API, fetchCep78NamedKeys, getNftCollection } from "../../utils/a
 import axios from "axios";
 import toastr from "toastr";
 import { NFT } from "../../utils/types";
-import { CircularProgress, Divider, FormControlLabel, Grid, MenuItem, SelectChangeEvent, Stack, Switch, Theme, Typography } from "@mui/material";
+import { CircularProgress, Divider, Grid, MenuItem, SelectChangeEvent, Stack, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
@@ -290,7 +290,7 @@ export const CreateNft = () => {
                 disable={fileLoading}
                 floor="dark"
               ></CustomInput>
-              <FormControlLabel
+              {/* <FormControlLabel
                 sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
                 labelPlacement="start"
                 control={<Switch checked={nftData.mergable} color="error" onChange={() => setNftData({ ...nftData, mergable: !nftData.mergable })} />}
@@ -303,7 +303,7 @@ export const CreateNft = () => {
                 control={<Switch checked={nftData.timeable} color="error" onChange={() => setNftData({ ...nftData, timeable: !nftData.timeable })} />}
                 label="Timeable NFT"
                 disabled={fileLoading}
-              />
+              /> */}
               <Grid paddingTop={2} container justifyContent={"center"}>
                 <CustomButton onClick={createNft} disabled={disable} label="Create NFT" />
               </Grid>
