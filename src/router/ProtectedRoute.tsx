@@ -83,6 +83,18 @@ const ProtectedRoute: React.FC = () => {
     init();
   }, []);
 
+  useEffect(() => {
+    const handleConnected = () => {
+      setConnected(false);
+    };
+
+    window.addEventListener("casper-wallet:activeKeyChanged", handleConnected);
+
+    return () => {
+      window.removeEventListener("casper-wallet:activeKeyChanged", handleConnected);
+    };
+  }, []);
+
   if (loading) {
     return (
       <div
