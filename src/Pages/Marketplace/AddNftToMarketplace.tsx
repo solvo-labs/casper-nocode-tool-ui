@@ -6,7 +6,7 @@ import { fetchCep78NamedKeys, fetchMarketplaceData, getNftCollection, getNftMeta
 import { CasperHelpers } from "../../utils";
 import { DONT_HAVE_ANYTHING } from "../../utils/enum";
 // @ts-ignore
-import { Contracts, RuntimeArgs, DeployUtil, CLValueBuilder, CLPublicKey } from "casper-js-sdk";
+import { Contracts, RuntimeArgs, DeployUtil, CLValueBuilder, CLPublicKey, CLKey, CLByteArray } from "casper-js-sdk";
 import { CollectionMetada, NFT } from "../../utils/types";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { CollectionCardAlternate } from "../../components/CollectionCard";
@@ -68,17 +68,62 @@ const AddNftToMarketplace = () => {
     return skipped.has(step);
   };
 
+  const approve = async () => {
+    try {
+      if (selectedCollection && marketplaceHash) {
+        const contract = new Contracts.Contract();
+        contract.setContractHash(selectedCollection);
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+        const operatorHash = marketplaceHash.replace("hash-", "");
+
+        const args = RuntimeArgs.fromMap({
+          operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(operatorHash, "hex")))),
+          token_id: CLValueBuilder.u64(selectedNftIndex),
+        });
+
+        const deploy = contract.callEntrypoint("approve", args, ownerPublicKey, "casper-test", "10000000000");
+
+        const deployJson = DeployUtil.deployToJson(deploy);
+
+        try {
+          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+          const data = DeployUtil.deployToJson(signedDeploy.val);
+          const response = await axios.post(SERVER_API + "deploy", data, {
+            headers: { "Content-Type": "application/json" },
+          });
+
+          toastr.success(response.data, "Approve deployed successfully.");
+        } catch (error: any) {
+          alert(error.message);
+        }
+      }
+    } catch (error) {
+      toastr.error("Error: " + error);
+    }
+  };
+
   const handleNext = () => {
-    toastr.info("Before listing, you must approve the marketplace for the NFT to be listed. Please make sure you do this");
     let newSkipped = skipped;
     if (isStepSkipped(activeStep)) {
       newSkipped = new Set(newSkipped.values());
       newSkipped.delete(activeStep);
     }
+
     if (activeStep == 0) {
       fetchNft();
     }
+
+    if (activeStep == 1) {
+      toastr.info("Before listing, you must to  approve the marketplace for the NFT to be listed. Please sign this transaction");
+
+      approve();
+    }
+
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
+
     setSkipped(newSkipped);
   };
 
@@ -291,17 +336,19 @@ const AddNftToMarketplace = () => {
           <Grid container marginY={"2rem"}>
             {nftData
               .filter((fltr: any) => fltr.isMyNft)
-              .map((e: any, index: number) => (
-                <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
+              .map((e: any) => (
+                <Grid item lg={4} md={4} sm={6} xs={6} key={e.index}>
                   <NftCard
                     description={e.description}
                     name={e.name}
                     asset={e.asset}
                     onClick={() => {
-                      setSelectedNftIndex(index);
+                      setSelectedNftIndex(e.index);
                     }}
-                    index={index}
-                  ></NftCard>
+                    index={e.index}
+                    amIOwner={e.isMyNft}
+                    isSelected={selectedNftIndex == e.index}
+                  />
                 </Grid>
               ))}
           </Grid>
@@ -339,6 +386,7 @@ const AddNftToMarketplace = () => {
                   description={nftData[selectedNftIndex].description}
                   index={selectedNftIndex}
                   name={nftData[selectedNftIndex].name}
+                  amIOwner={nftData[selectedNftIndex].isMyNft}
                 ></NftCard>
               </Grid>
             </Grid>
