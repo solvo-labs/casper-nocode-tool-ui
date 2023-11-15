@@ -93,7 +93,7 @@ export const NftList = () => {
   }
 
   return (
-    <Grid container direction={"column"}>
+    <Grid container direction={"column"} marginBottom={"2rem"}>
       <Grid container className={classes.titleContainer}>
         <Stack direction={"row"} spacing={2} display={"flex"} alignItems={"baseline"} className={classes.title}>
           <Typography variant="h4">
