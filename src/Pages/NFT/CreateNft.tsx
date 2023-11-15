@@ -69,9 +69,6 @@ export const CreateNft = () => {
       description: "",
       asset: "",
     },
-    mergable: true,
-    timeable: true,
-    endTime: 0,
   });
 
   const [file, setFile] = useState<any>();
@@ -122,7 +119,7 @@ export const CreateNft = () => {
   }, []);
 
   const disable = useMemo(() => {
-    const disable = !selectedCollection || !nftData.tokenMetaData.name || !nftData.tokenMetaData.description || fileLoading || nftData.endTime == 0;
+    const disable = !selectedCollection || !nftData.tokenMetaData.name || !nftData.tokenMetaData.description || fileLoading;
     return disable;
   }, [nftData, selectedCollection, fileLoading]);
 
@@ -257,7 +254,7 @@ export const CreateNft = () => {
                   <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
                     <CustomSelect
                       value={collections.length > 0 ? selectedCollection?.contractHash || "default" : "default"}
-                      label="ERC-20 Token"
+                      label="Collection"
                       onChange={(event: SelectChangeEvent) => {
                         const data = collections.find((tk: any) => tk.contractHash === event.target.value);
                         setSelectedCollection(data);
@@ -337,7 +334,7 @@ export const CreateNft = () => {
                   <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
                     <CustomSelect
                       value={collections.length > 0 ? selectedCollection?.contractHash || "default" : "default"}
-                      label="ERC-20 Token"
+                      label="Collection"
                       onChange={(event: SelectChangeEvent) => {
                         const data = collections.find((tk: any) => tk.contractHash === event.target.value);
                         setSelectedCollection(data);
@@ -410,22 +407,49 @@ export const CreateNft = () => {
                       <FormControlLabel
                         sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
                         labelPlacement="start"
-                        control={<Switch checked={nftData.mergable} color="error" onChange={() => setNftData({ ...nftData, mergable: !nftData.mergable })} />}
+                        control={
+                          <Switch
+                            checked={nftData.tokenMetaData.mergable}
+                            color="error"
+                            onChange={() => {
+                              const clonedData = { ...nftData };
+                              clonedData.tokenMetaData.mergable = !clonedData.tokenMetaData.mergable;
+
+                              setNftData(clonedData);
+                            }}
+                          />
+                        }
                         label="Mergeable NFT"
                         disabled={fileLoading}
                       />
                       <FormControlLabel
                         sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
                         labelPlacement="start"
-                        control={<Switch checked={nftData.timeable} color="error" onChange={() => setNftData({ ...nftData, timeable: !nftData.timeable })} />}
+                        control={
+                          <Switch
+                            checked={nftData.tokenMetaData.timeable}
+                            color="error"
+                            onChange={() => {
+                              const clonedData = { ...nftData };
+                              clonedData.tokenMetaData.timeable = !clonedData.tokenMetaData.timeable;
+
+                              setNftData(clonedData);
+                            }}
+                          />
+                        }
                         label="Timeable NFT"
                         disabled={fileLoading}
                       />
                     </Stack>
-                    {nftData.timeable && (
+                    {nftData.tokenMetaData.timeable && (
                       <Grid item sx={{ maxWidth: "400px" }}>
                         <CustomDateTime
-                          onChange={(e: Moment) => setNftData({ ...nftData, endTime: e.unix() })}
+                          onChange={(e: Moment) => {
+                            const clonedData = { ...nftData };
+                            clonedData.tokenMetaData.endTime = e.unix();
+
+                            setNftData(clonedData);
+                          }}
                           value={"d"}
                           dateLabel="Select end date"
                           clockLabel="Select end time"
@@ -434,13 +458,7 @@ export const CreateNft = () => {
                       </Grid>
                     )}
                     <Grid paddingTop={2} container justifyContent={"center"}>
-                      <CustomButton
-                        onClick={() => {
-                          console.log(nftData.endTime);
-                        }}
-                        disabled={disable}
-                        label="Create Custom NFT"
-                      />
+                      <CustomButton onClick={createNft} disabled={disable} label="Create Custom NFT" />
                     </Grid>
                   </Stack>
                 </Grid>

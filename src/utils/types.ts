@@ -74,10 +74,10 @@ export type NFT = {
     name: string;
     description: string;
     asset: string;
+    mergable?: boolean;
+    timeable?: boolean;
+    endTime?: number;
   };
-  mergable?: boolean;
-  timeable?: boolean;
-  endTime?: number;
 };
 
 export type CollectionMetada = {
