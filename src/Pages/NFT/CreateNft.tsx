@@ -17,7 +17,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { CustomDateTime } from "../../components/CustomDateTime";
-import moment, { Moment, unix } from "moment";
+import moment, { Moment } from "moment";
 // import CreatorRouter from "../../components/CreatorRouter";
 // import { DONT_HAVE_ANYTHING } from "../../utils/enum";
 
@@ -447,8 +447,8 @@ export const CreateNft = () => {
                     {nftData.tokenMetaData.timeable && (
                       <Grid item sx={{ maxWidth: "400px" }}>
                         <CustomDateTime
-                          onChange={(e: Moment) => setNftData({ ...nftData, endTime: e.unix() })}
-                          value={nftData.endTime}
+                          onChange={(e: Moment) => setNftData({ ...nftData, tokenMetaData: { ...nftData.tokenMetaData, endTime: e.unix() } })}
+                          value={nftData.tokenMetaData.endTime}
                           dateLabel="Select end date"
                           clockLabel="Select end time"
                           theme="Dark"
