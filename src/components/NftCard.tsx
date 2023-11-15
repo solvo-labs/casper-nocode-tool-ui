@@ -31,10 +31,27 @@ type Props = {
   status?: "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" | undefined;
   isSelected?: boolean;
   rarity?: RarityLevel;
+  timeable?: boolean;
+  mergable?: boolean;
   onClick?: () => void;
 };
 
-export const NftCard: React.FC<Props> = ({ name, description, asset, index, owner, amIOwner = false, price, chipTitle, status, isSelected = false, rarity, onClick }) => {
+export const NftCard: React.FC<Props> = ({
+  name,
+  description,
+  asset,
+  index,
+  owner,
+  amIOwner = false,
+  price,
+  chipTitle,
+  status,
+  isSelected = false,
+  rarity,
+  timeable,
+  mergable,
+  onClick,
+}) => {
   const classes = useStyles();
 
   const getRarityBadge = () => {
@@ -70,7 +87,7 @@ export const NftCard: React.FC<Props> = ({ name, description, asset, index, owne
     >
       <Card className={classes.card} onClick={onClick}>
         {isSelected && <CheckCircleIcon className={classes.selectedIcon} fontSize="large" />}
-        <CardMedia component="img" height="250" image={asset} alt={name} />
+        <CardMedia component="img" height="250" image={asset ? asset : "../images/casper.png"} alt={name} />
         <CardContent>
           <Typography fontWeight={"bold"} gutterBottom variant="h5" component="div">
             {name}
@@ -92,7 +109,7 @@ export const NftCard: React.FC<Props> = ({ name, description, asset, index, owne
               {rarity !== undefined && getRarityBadge()}
               {rarity === undefined && (
                 <Chip
-                  sx={{ marginTop: "0.5rem", fontSize: "1rem" }}
+                  sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }}
                   label={amIOwner ? "My Nft" : "Rest of collection item"}
                   color={amIOwner ? "success" : "warning"}
                   size="small"
@@ -100,7 +117,9 @@ export const NftCard: React.FC<Props> = ({ name, description, asset, index, owne
               )}
             </>
           )}
-          {chipTitle && <Chip sx={{ marginTop: "1rem" }} label={chipTitle} color={status} size="small"></Chip>}
+          {chipTitle && <Chip sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }} label={chipTitle} color={status} size="small"></Chip>}
+          {timeable && <Chip sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }} label={"Timable"} color={"warning"} size="small"></Chip>}
+          {mergable && <Chip sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }} label={"Mergable"} color={"warning"} size="small"></Chip>}
         </CardContent>
       </Card>
     </CardActionArea>
