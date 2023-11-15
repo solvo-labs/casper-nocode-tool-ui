@@ -16,6 +16,8 @@ import { CustomSelect } from "../../components/CustomSelect";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
+import { CustomDateTime } from "../../components/CustomDateTime";
+import { Moment } from "moment";
 // import CreatorRouter from "../../components/CreatorRouter";
 // import { DONT_HAVE_ANYTHING } from "../../utils/enum";
 
@@ -69,6 +71,7 @@ export const CreateNft = () => {
     },
     mergable: true,
     timeable: true,
+    endTime: 0,
   });
 
   const [file, setFile] = useState<any>();
@@ -119,7 +122,7 @@ export const CreateNft = () => {
   }, []);
 
   const disable = useMemo(() => {
-    const disable = !selectedCollection || !nftData.tokenMetaData.name || !nftData.tokenMetaData.description || fileLoading;
+    const disable = !selectedCollection || !nftData.tokenMetaData.name || !nftData.tokenMetaData.description || fileLoading || nftData.endTime == 0;
     return disable;
   }, [nftData, selectedCollection, fileLoading]);
 
@@ -403,22 +406,41 @@ export const CreateNft = () => {
                       disable={fileLoading}
                       floor="dark"
                     ></CustomInput>
-                    <FormControlLabel
-                      sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
-                      labelPlacement="start"
-                      control={<Switch checked={nftData.mergable} color="error" onChange={() => setNftData({ ...nftData, mergable: !nftData.mergable })} />}
-                      label="Mergeable NFT"
-                      disabled={fileLoading}
-                    />
-                    <FormControlLabel
-                      sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
-                      labelPlacement="start"
-                      control={<Switch checked={nftData.timeable} color="error" onChange={() => setNftData({ ...nftData, timeable: !nftData.timeable })} />}
-                      label="Timeable NFT"
-                      disabled={fileLoading}
-                    />
+                    <Stack>
+                      <FormControlLabel
+                        sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
+                        labelPlacement="start"
+                        control={<Switch checked={nftData.mergable} color="error" onChange={() => setNftData({ ...nftData, mergable: !nftData.mergable })} />}
+                        label="Mergeable NFT"
+                        disabled={fileLoading}
+                      />
+                      <FormControlLabel
+                        sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
+                        labelPlacement="start"
+                        control={<Switch checked={nftData.timeable} color="error" onChange={() => setNftData({ ...nftData, timeable: !nftData.timeable })} />}
+                        label="Timeable NFT"
+                        disabled={fileLoading}
+                      />
+                    </Stack>
+                    {nftData.timeable && (
+                      <Grid item sx={{ maxWidth: "400px" }}>
+                        <CustomDateTime
+                          onChange={(e: Moment) => setNftData({ ...nftData, endTime: e.unix() })}
+                          value={"d"}
+                          dateLabel="Select end date"
+                          clockLabel="Select end time"
+                          theme="Dark"
+                        ></CustomDateTime>
+                      </Grid>
+                    )}
                     <Grid paddingTop={2} container justifyContent={"center"}>
-                      <CustomButton onClick={createNft} disabled={disable} label="Create Custom NFT" />
+                      <CustomButton
+                        onClick={() => {
+                          console.log(nftData.endTime);
+                        }}
+                        disabled={disable}
+                        label="Create Custom NFT"
+                      />
                     </Grid>
                   </Stack>
                 </Grid>
