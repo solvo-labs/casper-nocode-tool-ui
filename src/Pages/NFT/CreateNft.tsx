@@ -122,7 +122,7 @@ export const CreateNft = () => {
   }, []);
 
   const disable = useMemo(() => {
-    const disable = !selectedCollection || !nftData.tokenMetaData.name || !nftData.tokenMetaData.description || fileLoading || nftData.tokenMetaData.endTime! <= moment().unix();
+    const disable = !selectedCollection || !nftData.tokenMetaData.name || !nftData.tokenMetaData.description || fileLoading;
     return disable;
   }, [nftData, selectedCollection, fileLoading]);
 
@@ -456,7 +456,7 @@ export const CreateNft = () => {
                       </Grid>
                     )}
                     <Grid paddingTop={2} container justifyContent={"center"}>
-                      <CustomButton onClick={createNft} disabled={disable} label="Create Custom NFT" />
+                      <CustomButton onClick={createNft} disabled={disable || nftData.tokenMetaData.endTime! <= moment().unix()} label="Create Custom NFT" />
                     </Grid>
                   </Stack>
                 </Grid>
