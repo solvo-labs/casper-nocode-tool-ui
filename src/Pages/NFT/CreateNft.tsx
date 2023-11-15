@@ -68,10 +68,10 @@ export const CreateNft = () => {
       name: "",
       description: "",
       asset: "",
+      mergable: true,
+      timeable: true,
+      endTime: moment().unix(),
     },
-    mergable: true,
-    timeable: true,
-    endTime: moment().unix(),
   });
 
   const [file, setFile] = useState<any>();
@@ -122,7 +122,7 @@ export const CreateNft = () => {
   }, []);
 
   const disable = useMemo(() => {
-    const disable = !selectedCollection || !nftData.tokenMetaData.name || !nftData.tokenMetaData.description || fileLoading || nftData.endTime! <= moment().unix();
+    const disable = !selectedCollection || !nftData.tokenMetaData.name || !nftData.tokenMetaData.description || fileLoading || nftData.tokenMetaData.endTime! <= moment().unix();
     return disable;
   }, [nftData, selectedCollection, fileLoading]);
 
