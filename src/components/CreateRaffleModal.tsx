@@ -174,14 +174,21 @@ const CreateRaffleModal: React.FC<Props> = ({ raffle, createRaffle, open, onClos
               <Grid item>
                 <CustomDateTime
                   // label="startRaffle"
-                  firstLabel="Pick start date"
-                  secondLabel="Pick start time"
+                  dateLabel="Pick start date"
+                  clockLabel="Pick start time"
                   onChange={(e: Moment) => raffleOnChange({ ...raffle, start: e.unix() })}
                   value={raffle.start}
+                  theme="Light"
                 />
               </Grid>
               <Grid item>
-                <CustomDateTime firstLabel="Pick end date" secondLabel="Pick end time" onChange={(e: Moment) => raffleOnChange({ ...raffle, end: e.unix() })} value={raffle.end} />
+                <CustomDateTime
+                  theme="Light"
+                  dateLabel="Pick end date"
+                  clockLabel="Pick end time"
+                  onChange={(e: Moment) => raffleOnChange({ ...raffle, end: e.unix() })}
+                  value={raffle.end}
+                />
               </Grid>
               <Grid item display={"flex"} justifyContent={"center"}>
                 <CustomButton disabled={disable} label="Create Raffle" onClick={createRaffle}></CustomButton>

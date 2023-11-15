@@ -6,46 +6,50 @@ import moment from "moment";
 
 type Props = {
   label?: string;
-  firstLabel?: string;
-  secondLabel?: string;
+  dateLabel?: string;
+  clockLabel?: string;
   value: any;
+  theme: "Dark" | "Light";
   onChange: (e: any) => void;
 };
 
-const style = {
-  "& .MuiPopper-root-MuiPickersPopper-root": {
-    marginTop: "20px",
-    "&-MuiPickersPopper-paper": {
-      backgroundColor: "#ff8a92",
+export const CustomDateTime: React.FC<Props> = ({ label, dateLabel, clockLabel, value, theme, onChange }) => {
+  const style = {
+    "& .MuiInputBase-input": {
+      color: theme == "Dark" ? "white !important" : "black !important",
     },
-  },
-  // "& .MuiInputLabel-root": { color: "black" },
-  "& .MuiInputLabel-root.Mui-focused": { color: "black" },
-  "& .MuiOutlinedInput": {
-    "&-notchedOutline": {
-      borderRadius: "1rem",
-      borderColor: "black",
+    "& .MuiIconButton-root": {
+      color: theme == "Dark" ? "white !important" : "black !important",
     },
-  },
-  "& .MuiOutlinedInput-root": {
-    "&:hover fieldset": { borderColor: "#ff8a92" },
-    "&.Mui-focused fieldset": {
-      borderColor: "red",
+    "& .MuiPopper-root-MuiPickersPopper-root": {
+      marginTop: "20px",
+      "&-MuiPickersPopper-paper": {
+        backgroundColor: "#ff8a92",
+      },
     },
-  },
-  "& .MuiPickersDay-root": {
-    "&.Mui-selected": {
-      backgroundColor: "#ff8a92 !important",
+    "& .MuiInputLabel-root": {
+      color: "red !important",
+      "&.Mui-focused": { color: "red", fontWeight: "bold" },
     },
-  },
-};
+    "& .MuiOutlinedInput": {
+      "&-notchedOutline": {
+        borderRadius: "1rem",
+        borderColor: "gray",
+      },
+    },
+    "& .MuiOutlinedInput-root": {
+      "&:hover fieldset": { borderColor: "#ff8a92" },
+      "&.Mui-focused fieldset": {
+        borderColor: "red",
+      },
+    },
+  };
 
-export const CustomDateTime: React.FC<Props> = ({ label, firstLabel, secondLabel, value, onChange }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <Stack direction={"row"} spacing={2}>
-        <DatePicker sx={style} defaultValue={moment()} value={moment.unix(value)} label={label || firstLabel} onChange={onChange} />
-        <TimePicker ampm={false} sx={style} defaultValue={moment()} value={moment.unix(value)} label={label || secondLabel} onChange={onChange} />
+        <DatePicker sx={style} defaultValue={moment()} value={moment.unix(value)} label={label || dateLabel} onChange={onChange} />
+        <TimePicker ampm={false} sx={style} defaultValue={moment()} value={moment.unix(value)} label={label || clockLabel} onChange={onChange} />
       </Stack>
     </LocalizationProvider>
   );
