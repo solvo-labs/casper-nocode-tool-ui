@@ -17,7 +17,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { CustomDateTime } from "../../components/CustomDateTime";
-import { Moment } from "moment";
+import moment, { Moment, unix } from "moment";
 // import CreatorRouter from "../../components/CreatorRouter";
 // import { DONT_HAVE_ANYTHING } from "../../utils/enum";
 
@@ -69,6 +69,9 @@ export const CreateNft = () => {
       description: "",
       asset: "",
     },
+    mergable: true,
+    timeable: true,
+    endTime: moment().unix(),
   });
 
   const [file, setFile] = useState<any>();
@@ -119,7 +122,7 @@ export const CreateNft = () => {
   }, []);
 
   const disable = useMemo(() => {
-    const disable = !selectedCollection || !nftData.tokenMetaData.name || !nftData.tokenMetaData.description || fileLoading;
+    const disable = !selectedCollection || !nftData.tokenMetaData.name || !nftData.tokenMetaData.description || fileLoading || nftData.endTime! <= moment().unix();
     return disable;
   }, [nftData, selectedCollection, fileLoading]);
 
@@ -444,13 +447,8 @@ export const CreateNft = () => {
                     {nftData.tokenMetaData.timeable && (
                       <Grid item sx={{ maxWidth: "400px" }}>
                         <CustomDateTime
-                          onChange={(e: Moment) => {
-                            const clonedData = { ...nftData };
-                            clonedData.tokenMetaData.endTime = e.unix();
-
-                            setNftData(clonedData);
-                          }}
-                          value={"d"}
+                          onChange={(e: Moment) => setNftData({ ...nftData, endTime: e.unix() })}
+                          value={nftData.endTime}
                           dateLabel="Select end date"
                           clockLabel="Select end time"
                           theme="Dark"
