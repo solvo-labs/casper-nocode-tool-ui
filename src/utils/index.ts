@@ -1,6 +1,21 @@
 // @ts-ignore
 import { CLValueBuilder } from "casper-js-sdk";
 
+export const timestampToDate = (timestamp: number) => {
+  const dateFormat = new Date(timestamp * 1000);
+  const dayFormat = dateFormat.getDate().toString();
+  const monthFormat = (dateFormat.getMonth() + 1).toString();
+  const hourFormat = dateFormat.getHours().toString();
+  const minutesFormat = dateFormat.getMinutes().toString();
+
+  const formatter = (value: string): string => {
+    value.length < 2 ? (value = 0 + "" + value) : value;
+    return value;
+  };
+  const date = formatter(dayFormat) + "/" + formatter(monthFormat) + "/" + dateFormat.getFullYear() + " " + formatter(hourFormat) + ":" + formatter(minutesFormat);
+  return timestamp == 0 ? "-" : date;
+};
+
 export const fetchContract = async (path: string) => {
   try {
     const wasmUrl = new URL(path, import.meta.url).href;
