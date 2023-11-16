@@ -28,7 +28,7 @@ import { useOutletContext } from "react-router-dom";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 import axios from "axios";
-import { CasperHelpers, uint32ArrayToHex } from "../../utils";
+import { CasperHelpers, timestampToDate, uint32ArrayToHex } from "../../utils";
 import toastr from "toastr";
 import VestingDetailModal from "../../components/VestingDetailModal";
 import { VestingRecipient } from "../../utils/types";
@@ -87,21 +87,6 @@ const useStyles = makeStyles((_theme: Theme) => ({
     "& .makeStyles-pagination-18 .css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon": {},
   },
 }));
-
-const timestampToDate = (timestamp: number) => {
-  const dateFormat = new Date(timestamp * 1000);
-  const dayFormat = dateFormat.getDate().toString();
-  const monthFormat = (dateFormat.getMonth() + 1).toString();
-  const hourFormat = dateFormat.getHours().toString();
-  const minutesFormat = dateFormat.getMinutes().toString();
-
-  const formatter = (value: string): string => {
-    value.length < 2 ? (value = 0 + "" + value) : value;
-    return value;
-  };
-  const date = formatter(dayFormat) + "/" + formatter(monthFormat) + "/" + dateFormat.getFullYear() + " " + formatter(hourFormat) + ":" + formatter(minutesFormat);
-  return timestamp == 0 ? "-" : date;
-};
 
 export const VestingList = () => {
   const classes = useStyles();
@@ -402,7 +387,8 @@ export const VestingList = () => {
 
           <TableCell align="center">
             <CustomButton
-              onClick={() => {
+              onClick={(event: any) => {
+                event.stopPropagation();
                 releaseVesting(e);
               }}
               label={"Release"}
