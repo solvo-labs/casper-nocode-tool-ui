@@ -416,55 +416,56 @@ export const Stake = () => {
               <Typography>You don't have any stake yet.</Typography>
             </Grid>
           )}
-          {delegations.map((value, index) => {
-            const labelId = `checkbox-list-label-${index}`;
-            const delegationRate = validators.find((vl) => vl.public_key === value.delegatee).bid.delegation_rate;
+          {!delegationsLoading &&
+            delegations.map((value, index) => {
+              const labelId = `checkbox-list-label-${index}`;
+              const delegationRate = validators.find((vl) => vl.public_key === value.delegatee).bid.delegation_rate;
 
-            return (
-              <ListItem
-                key={value}
-                secondaryAction={
-                  <IconButton edge="end" aria-label="comments">
-                    <CustomButton style={{ marginRight: "5px " }} onClick={() => openModal(value)} disabled={false} label="UnStake" fullWidth />
-                    <CustomButton onClick={stake} disabled={false} label="Stake" fullWidth />
-                  </IconButton>
-                }
-                style={{ padding: "0.5rem" }}
-                disablePadding
-              >
-                <ListItem dense>
-                  <ListItemText
-                    id={labelId}
-                    primary={
-                      <>
-                        <Typography sx={{ marginRight: "1rem" }}>{value.delegatee}</Typography>
-                      </>
-                    }
-                  />
+              return (
+                <ListItem
+                  key={value}
+                  secondaryAction={
+                    <IconButton edge="end" aria-label="comments">
+                      <CustomButton style={{ marginRight: "5px " }} onClick={() => openModal(value)} disabled={false} label="UnStake" fullWidth />
+                      <CustomButton onClick={stake} disabled={false} label="Stake" fullWidth />
+                    </IconButton>
+                  }
+                  style={{ padding: "0.5rem" }}
+                  disablePadding
+                >
+                  <ListItem dense>
+                    <ListItemText
+                      id={labelId}
+                      primary={
+                        <>
+                          <Typography sx={{ marginRight: "1rem" }}>{value.delegatee}</Typography>
+                        </>
+                      }
+                    />
+                  </ListItem>
+                  <ListItem dense>
+                    <ListItemText
+                      id={labelId}
+                      primary={
+                        <>
+                          <Typography>{value.staked_amount / 1000000000} CSPR</Typography>
+                        </>
+                      }
+                    />
+                  </ListItem>
+                  <ListItem dense>
+                    <ListItemText
+                      id={labelId}
+                      primary={
+                        <>
+                          <Typography>{delegationRate.toFixed(2)} %</Typography>
+                        </>
+                      }
+                    />
+                  </ListItem>
                 </ListItem>
-                <ListItem dense>
-                  <ListItemText
-                    id={labelId}
-                    primary={
-                      <>
-                        <Typography>{value.staked_amount / 1000000000} CSPR</Typography>
-                      </>
-                    }
-                  />
-                </ListItem>
-                <ListItem dense>
-                  <ListItemText
-                    id={labelId}
-                    primary={
-                      <>
-                        <Typography>{delegationRate.toFixed(2)} %</Typography>
-                      </>
-                    }
-                  />
-                </ListItem>
-              </ListItem>
-            );
-          })}
+              );
+            })}
         </List>
       </Grid>
       <Dialog open={modal} onClose={() => setModal(false)}>
