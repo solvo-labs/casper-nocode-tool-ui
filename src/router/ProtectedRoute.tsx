@@ -32,6 +32,7 @@ const ProtectedRoute: React.FC = () => {
   const [buyTicketWasm, setBuyTicketWasm] = useState<ArrayBuffer>();
   const [lootboxWasm, setLootboxWasm] = useState<ArrayBuffer>();
   const [lootboxDepositWasm, setLootboxDepositWasm] = useState<ArrayBuffer>();
+  const [timable_mergableWasm, setTimable_mergableWasm] = useState<ArrayBuffer>();
 
   useEffect(() => {
     const init = async () => {
@@ -53,6 +54,7 @@ const ProtectedRoute: React.FC = () => {
           const buy_ticket_contract = await fetchContract("/raffle_deposit.wasm");
           const lootbox_contract = await fetchContract("/lootbox.wasm");
           const lootbox_deposit_contract = await fetchContract("/lootbox_deposit_contract.wasm");
+          const timable_mergable_contract = await fetchContract("/timeable_mergeable_nft");
 
           setCep18Wasm(cep18_contract);
           setCep78Wasm(cep78_contract);
@@ -63,6 +65,7 @@ const ProtectedRoute: React.FC = () => {
           setBuyTicketWasm(buy_ticket_contract);
           setLootboxWasm(lootbox_contract);
           setLootboxDepositWasm(lootbox_deposit_contract);
+          setTimable_mergableWasm(timable_mergable_contract);
 
           setProvider(provider);
           setPublicKey(activePublicKey);
