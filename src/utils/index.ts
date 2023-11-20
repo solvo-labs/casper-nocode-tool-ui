@@ -81,3 +81,5 @@ export const rarityLevelExplanationTitle = rarityLevelExplanationTitleArray.join
 export const delay = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
+
+export const MINTING_MODE_EXPLANATION = "If you want to create custom NFTs for your collection, it is necessary to select the minting mode as public.";

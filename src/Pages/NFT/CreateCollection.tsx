@@ -5,7 +5,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
 import { Collection } from "../../utils/types";
-import { CircularProgress, Divider, Grid, MenuItem, Stack, Theme, Typography } from "@mui/material";
+import { CircularProgress, Divider, Grid, MenuItem, Stack, Theme, Tooltip, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
@@ -24,6 +24,8 @@ import {
 } from "../../utils/enum";
 import { CustomSelect } from "../../components/CustomSelect";
 import toastr from "toastr";
+import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
+import { MINTING_MODE_EXPLANATION } from "../../utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -349,21 +351,39 @@ export const CreateCollection = () => {
               >
                 {listSelectItem(MetadataMutability)}
               </CustomSelect>
-              <CustomSelect
-                id="mintingMode"
-                value={collectionData.mintingMode}
-                label="Minting Mode"
-                onChange={(e: any) => {
-                  setCollectionData({
-                    ...collectionData,
-                    mintingMode: e.target.value,
-                  });
-                }}
-                titlePosition={"relative"}
-                titleTop={"10px"}
-              >
-                {listSelectItem(MintingMode)}
-              </CustomSelect>
+              <Stack direction={"row"} spacing={2} justifyContent={"center"} alignItems={"center"}>
+                <CustomSelect
+                  id="mintingMode"
+                  value={collectionData.mintingMode}
+                  label="Minting Mode"
+                  onChange={(e: any) => {
+                    setCollectionData({
+                      ...collectionData,
+                      mintingMode: e.target.value,
+                    });
+                  }}
+                  titlePosition={"relative"}
+                  titleTop={"10px"}
+                >
+                  {listSelectItem(MintingMode)}
+                </CustomSelect>
+                <Tooltip title={<div style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>{MINTING_MODE_EXPLANATION}</div>}>
+                  <div
+                    style={{
+                      background: "gray",
+                      borderRadius: "12px",
+                      height: "24px",
+                      width: "24px",
+                      display: "flex",
+                      justifyItems: "center",
+                      alignItems: "center",
+                      marginTop: "1rem",
+                    }}
+                  >
+                    <QuestionMarkIcon sx={{ color: "white", height: "16px" }}></QuestionMarkIcon>
+                  </div>
+                </Tooltip>
+              </Stack>
               <CustomSelect
                 id="burnMode"
                 value={collectionData.burnMode}
