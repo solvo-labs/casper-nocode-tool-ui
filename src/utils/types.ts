@@ -134,6 +134,7 @@ export const enum APPROVE_TYPE {
   MARKETPLACE = "marketplace",
   RAFFLE = "raffle",
   LOOTBOX = "lootbox",
+  CUSTOM_NFT = "custom-nft",
 }
 
 export type RaffleMetadata = {
