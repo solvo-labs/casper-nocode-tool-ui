@@ -87,7 +87,7 @@ const ManageRaffle = () => {
 
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingCollection, setLoadingCollection] = useState<boolean>(false);
-  const [loadingNFT, setLoadingNFT] = useState<boolean>(true);
+  const [loadingNFT, setLoadingNFT] = useState<boolean>(false);
 
   const [collections, setCollections] = useState<CollectionMetada[] | any>([]);
   const [nfts, setNfts] = useState<NFT[] | any>([]);
