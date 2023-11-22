@@ -78,8 +78,14 @@ const rarityLevelExplanationTitleArray: string[] = [
   "LEGENDARY: This is the highest level, given to the rarest and most special items found in loot boxes. They are often of unique value and highly esteemed within the community.",
 ];
 export const rarityLevelExplanationTitle = rarityLevelExplanationTitleArray.join("\n");
+
 export const delay = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-export const MINTING_MODE_EXPLANATION = "If you want to create custom NFTs for your collection, it is necessary to select the minting mode as public.";
+export const METADATA_MUTABILITY_EXPLANATION =
+  "If you want to create Custom NFTs or Timable NFTs for your collection, it is necessary to select the metadata mutability mode as immutable.";
+export const MINTING_MODE_EXPLANATION = "If you want to create Custom NFTs or Timable NFTs for your collection, it is necessary to select the minting mode as public.";
+export const BURN_MODE_EXPLANATION = "If you want to create Custom NFTs or Timable NFTs for your collection, it is necessary to select the burn mode as burnable.";
+export const OWNER_REVERSE_LOOKUP_MODE_EXPLANATION =
+  "If you want your collection to have the Mergable feature, the Owner Reverse Lookup Mode must be either 'NoLookup' or 'TransfersOnly'. If you want it to be a Timable NFT, you should select the 'Complete' mode.";

@@ -25,7 +25,7 @@ import {
 import { CustomSelect } from "../../components/CustomSelect";
 import toastr from "toastr";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
-import { MINTING_MODE_EXPLANATION } from "../../utils";
+import { BURN_MODE_EXPLANATION, METADATA_MUTABILITY_EXPLANATION, MINTING_MODE_EXPLANATION, OWNER_REVERSE_LOOKUP_MODE_EXPLANATION } from "../../utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -336,21 +336,39 @@ export const CreateCollection = () => {
               >
                 {listSelectItem(NFTIdentifierMode)}
               </CustomSelect>
-              <CustomSelect
-                id="metadataMutability"
-                value={collectionData.metadataMutability}
-                label="Metadata Mutability"
-                onChange={(e: any) => {
-                  setCollectionData({
-                    ...collectionData,
-                    metadataMutability: e.target.value,
-                  });
-                }}
-                titlePosition={"relative"}
-                titleTop={"10px"}
-              >
-                {listSelectItem(MetadataMutability)}
-              </CustomSelect>
+              <Stack direction={"row"} spacing={2} justifyContent={"center"} alignItems={"center"}>
+                <CustomSelect
+                  id="metadataMutability"
+                  value={collectionData.metadataMutability}
+                  label="Metadata Mutability"
+                  onChange={(e: any) => {
+                    setCollectionData({
+                      ...collectionData,
+                      metadataMutability: e.target.value,
+                    });
+                  }}
+                  titlePosition={"relative"}
+                  titleTop={"10px"}
+                >
+                  {listSelectItem(MetadataMutability)}
+                </CustomSelect>
+                <Tooltip title={<div style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>{METADATA_MUTABILITY_EXPLANATION}</div>}>
+                  <div
+                    style={{
+                      background: "gray",
+                      borderRadius: "12px",
+                      height: "24px",
+                      width: "24px",
+                      display: "flex",
+                      justifyItems: "center",
+                      alignItems: "center",
+                      marginTop: "1rem",
+                    }}
+                  >
+                    <QuestionMarkIcon sx={{ color: "white", height: "16px" }}></QuestionMarkIcon>
+                  </div>
+                </Tooltip>
+              </Stack>
               <Stack direction={"row"} spacing={2} justifyContent={"center"} alignItems={"center"}>
                 <CustomSelect
                   id="mintingMode"
@@ -384,21 +402,39 @@ export const CreateCollection = () => {
                   </div>
                 </Tooltip>
               </Stack>
-              <CustomSelect
-                id="burnMode"
-                value={collectionData.burnMode}
-                label="Burn Mode"
-                onChange={(e: any) => {
-                  setCollectionData({
-                    ...collectionData,
-                    burnMode: e.target.value,
-                  });
-                }}
-                titlePosition={"relative"}
-                titleTop={"10px"}
-              >
-                {listSelectItem(BurnMode)}
-              </CustomSelect>
+              <Stack direction={"row"} spacing={2} justifyContent={"center"} alignItems={"center"}>
+                <CustomSelect
+                  id="burnMode"
+                  value={collectionData.burnMode}
+                  label="Burn Mode"
+                  onChange={(e: any) => {
+                    setCollectionData({
+                      ...collectionData,
+                      burnMode: e.target.value,
+                    });
+                  }}
+                  titlePosition={"relative"}
+                  titleTop={"10px"}
+                >
+                  {listSelectItem(BurnMode)}
+                </CustomSelect>
+                <Tooltip title={<div style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>{BURN_MODE_EXPLANATION}</div>}>
+                  <div
+                    style={{
+                      background: "gray",
+                      borderRadius: "12px",
+                      height: "24px",
+                      width: "24px",
+                      display: "flex",
+                      justifyItems: "center",
+                      alignItems: "center",
+                      marginTop: "1rem",
+                    }}
+                  >
+                    <QuestionMarkIcon sx={{ color: "white", height: "16px" }}></QuestionMarkIcon>
+                  </div>
+                </Tooltip>
+              </Stack>
               <CustomSelect
                 id="holderMode"
                 value={collectionData.holderMode}
@@ -429,21 +465,39 @@ export const CreateCollection = () => {
               >
                 {listSelectItem(NamedKeyConventionMode)}
               </CustomSelect>
-              <CustomSelect
-                id="ownerReverseLookupMode"
-                value={collectionData.ownerReverseLookupMode}
-                label="Owner Reverse Lookup Mode"
-                onChange={(e: any) => {
-                  setCollectionData({
-                    ...collectionData,
-                    ownerReverseLookupMode: e.target.value,
-                  });
-                }}
-                titlePosition={"relative"}
-                titleTop={"10px"}
-              >
-                {listSelectItem(OwnerReverseLookupMode)}
-              </CustomSelect>
+              <Stack direction={"row"} spacing={2} justifyContent={"center"} alignItems={"center"}>
+                <CustomSelect
+                  id="ownerReverseLookupMode"
+                  value={collectionData.ownerReverseLookupMode}
+                  label="Owner Reverse Lookup Mode"
+                  onChange={(e: any) => {
+                    setCollectionData({
+                      ...collectionData,
+                      ownerReverseLookupMode: e.target.value,
+                    });
+                  }}
+                  titlePosition={"relative"}
+                  titleTop={"10px"}
+                >
+                  {listSelectItem(OwnerReverseLookupMode)}
+                </CustomSelect>
+                <Tooltip title={<div style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>{OWNER_REVERSE_LOOKUP_MODE_EXPLANATION}</div>}>
+                  <div
+                    style={{
+                      background: "gray",
+                      borderRadius: "12px",
+                      height: "24px",
+                      width: "24px",
+                      display: "flex",
+                      justifyItems: "center",
+                      alignItems: "center",
+                      marginTop: "1rem",
+                    }}
+                  >
+                    <QuestionMarkIcon sx={{ color: "white", height: "16px" }}></QuestionMarkIcon>
+                  </div>
+                </Tooltip>
+              </Stack>
               <Grid paddingTop={2} container justifyContent={"center"}>
                 <CustomButton onClick={mintCollection} disabled={disable} label="Create Collection" />
               </Grid>
