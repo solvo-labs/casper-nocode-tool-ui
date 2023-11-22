@@ -204,7 +204,12 @@ export const initTokens = async (accountHash: string, pubkey: string) => {
 
 export const getNftCollection = async (contractHash: string, amICreator = true) => {
   const response = await axios.get<any>(SERVER_API + "getCollection?contractHash=" + contractHash);
-  // console.log("response", response.data.json_schema);
+  // console.log("response", response.data);
+  return { ...response.data, contractHash, amICreator };
+};
+
+export const getNftCollectionDetails = async (contractHash: string, amICreator = true) => {
+  const response = await axios.get<any>(SERVER_API + "getCollectionDetails?contractHash=" + contractHash);
   return { ...response.data, contractHash, amICreator };
 };
 
