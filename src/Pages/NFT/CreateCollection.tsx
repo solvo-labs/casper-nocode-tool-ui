@@ -117,7 +117,7 @@ export const CreateCollection = () => {
         burn_mode: CLValueBuilder.u8(collectionData.burnMode),
         holder_mode: CLValueBuilder.u8(collectionData.holderMode),
         named_key_convention: CLValueBuilder.u8(collectionData.namedKeyConventionMode),
-        owner_reverse_lookup_mode: CLValueBuilder.u8(collectionData.namedKeyConventionMode),
+        owner_reverse_lookup_mode: CLValueBuilder.u8(collectionData.ownerReverseLookupMode),
         events_mode: CLValueBuilder.u8(2),
       });
 
