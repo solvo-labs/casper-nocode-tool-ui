@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { CircularProgress, Divider, Grid, MenuItem, SelectChangeEvent, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { CollectionMetada, NFT } from "../../utils/types";
+import { Collection, CollectionMetada, NFT } from "../../utils/types";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 import { useOutletContext } from "react-router-dom";
-import { SERVER_API, fetchCep78NamedKeys, getAllNftsByOwned, getNftCollection, getNftMetadata } from "../../utils/api";
+import { SERVER_API, fetchCep78NamedKeys, getAllNftsByOwned, getNftCollection, getNftCollectionDetails, getNftMetadata } from "../../utils/api";
 import { CasperHelpers, MERGABLE_NFT_CONTRACT, removeDuplicates } from "../../utils";
 import { CustomSelect } from "../../components/CustomSelect";
 import { NftCard } from "../../components/NftCard";
 import { CustomButton } from "../../components/CustomButton";
 import axios from "axios";
+import { BurnMode, MetadataMutability, MintingMode } from "../../utils/enum";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -47,7 +48,7 @@ const MergeNFT = () => {
 
       const data = await fetchCep78NamedKeys(publicKey);
 
-      const promises = data.map((data) => getNftCollection(data.key));
+      const promises = data.map((data) => getNftCollectionDetails(data.key));
 
       const ownedCollections = await Promise.all(promises);
 
@@ -59,7 +60,7 @@ const MergeNFT = () => {
 
       uniqueIncomings.forEach((uc) => {
         if (ownedCollections.findIndex((oc: any) => oc.contractHash === uc) < 0) {
-          missingCollectionPromises.push(getNftCollection(uc, false));
+          missingCollectionPromises.push(getNftCollectionDetails(uc, false));
         }
       });
 
@@ -197,13 +198,15 @@ const MergeNFT = () => {
             <MenuItem value="default">
               <em>Select a Collection</em>
             </MenuItem>
-            {collections.map((collection: any) => {
-              return (
-                <MenuItem key={collection.contractHash} value={collection.contractHash}>
-                  {collection.collection_name}
-                </MenuItem>
-              );
-            })}
+            {collections
+              .filter((col: any) => col.metadata_mutability == MetadataMutability.Immutable && col.minting_mode == MintingMode.Public && col.burn_mode == BurnMode.Burnable)
+              .map((collection: any) => {
+                return (
+                  <MenuItem key={collection.contractHash} value={collection.contractHash}>
+                    {collection.collection_name}
+                  </MenuItem>
+                );
+              })}
           </CustomSelect>
         </Grid>
         {nftLoading && (
@@ -240,25 +243,27 @@ const MergeNFT = () => {
               Your NFTs
             </Divider>
             <Grid container width={"80%"} marginTop={"2rem"}>
-              {nfts.map((nft: any, index: number) => (
-                <Grid item lg={3} md={3} sm={6} xs={12} key={index}>
-                  <NftCard
-                    asset={nft.asset}
-                    description={nft.description}
-                    index={index}
-                    name={nft.name}
-                    onClick={() => {
-                      !selectedTokenIds.includes(nft.index)
-                        ? setSelectedTokenIds([...selectedTokenIds, nft.index])
-                        : setSelectedTokenIds(selectedTokenIds.filter((item) => item !== index));
-                    }}
-                    isSelected={selectedTokenIds.includes(index)}
-                  ></NftCard>
-                </Grid>
-              ))}
+              {nfts
+                .filter((fltr: any) => fltr.mergable == true)
+                .map((nft: any) => (
+                  <Grid item lg={3} md={3} sm={6} xs={12} key={nft.index}>
+                    <NftCard
+                      asset={nft.asset}
+                      description={nft.description}
+                      index={nft.index}
+                      name={nft.name}
+                      onClick={() => {
+                        !selectedTokenIds.includes(nft.index)
+                          ? setSelectedTokenIds([...selectedTokenIds, nft.index])
+                          : setSelectedTokenIds(selectedTokenIds.filter((item) => item !== nft.index));
+                      }}
+                      isSelected={selectedTokenIds.includes(nft.index)}
+                    ></NftCard>
+                  </Grid>
+                ))}
             </Grid>
             <Grid item marginTop={"2rem"}>
-              <CustomButton disabled={selectedTokenIds.length <= 0 || !selectedCollection} label="Merge NFTs" onClick={merge}></CustomButton>
+              <CustomButton disabled={selectedTokenIds.length <= 1 || !selectedCollection} label="Merge NFTs" onClick={() => console.log(selectedTokenIds)}></CustomButton>
             </Grid>
           </Grid>
         )}

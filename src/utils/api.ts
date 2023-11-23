@@ -307,7 +307,6 @@ export const getBalance = async (publicKey: string) => {
 
 export const getAllNftsByOwned = async (accountHash: string) => {
   const response = (await axios.get(service_api + "accounts/" + accountHash.slice(13) + "/nft-tokens?fields=contract_package&page=1&limit=100")).data.data;
-  console.log(response);
   const collectionHashPromises = response.map((r: any) => contractPackageHashToContractHash(r.contract_package_hash));
   const collections = await Promise.all(collectionHashPromises);
 
