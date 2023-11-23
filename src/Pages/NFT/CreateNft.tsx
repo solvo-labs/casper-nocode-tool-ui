@@ -71,7 +71,7 @@ export const CreateNft = () => {
       asset: "",
       mergable: false,
       timeable: false,
-      endTime: moment().unix(),
+      timestamp: moment().unix(),
     },
   });
 
@@ -515,8 +515,8 @@ export const CreateNft = () => {
                         ></CustomInput>
                         <Grid item sx={{ maxWidth: "400px" }}>
                           <CustomDateTime
-                            onChange={(e: Moment) => setNftData({ ...nftData, tokenMetaData: { ...nftData.tokenMetaData, endTime: e.unix() } })}
-                            value={nftData.tokenMetaData.endTime}
+                            onChange={(e: Moment) => setNftData({ ...nftData, tokenMetaData: { ...nftData.tokenMetaData, timestamp: e.unix() } })}
+                            value={nftData.tokenMetaData.timestamp}
                             dateLabel="Select end date"
                             clockLabel="Select end time"
                             theme="Dark"
@@ -527,7 +527,7 @@ export const CreateNft = () => {
                     <Grid paddingTop={2} container justifyContent={"center"}>
                       <CustomButton
                         onClick={createNft}
-                        disabled={disable || nftData.tokenMetaData.timeable ? nftData.tokenMetaData.endTime! <= moment().unix() : false}
+                        disabled={disable || nftData.tokenMetaData.timeable ? nftData.tokenMetaData.timestamp! <= moment().unix() : false}
                         label="Create Custom NFT"
                       />
                     </Grid>
