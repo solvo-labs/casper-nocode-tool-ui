@@ -178,11 +178,11 @@ export const CreateNft = () => {
         const response = await axios.post(SERVER_API + "deploy", deployData, {
           headers: { "Content-Type": "application/json" },
         });
+        setActionLoader(false);
+
         toastr.success(response.data, "Mint completed successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
-
         navigate("/my-collections");
-        setActionLoader(false);
       } catch (error: any) {
         toastr.error("Error: " + error);
         setActionLoader(false);
@@ -526,7 +526,7 @@ export const CreateNft = () => {
                     )}
                     <Grid paddingTop={2} container justifyContent={"center"}>
                       <CustomButton
-                        onClick={() => console.log(nftData.tokenMetaData)}
+                        onClick={createNft}
                         disabled={disable || nftData.tokenMetaData.timeable ? nftData.tokenMetaData.endTime! <= moment().unix() : false}
                         label="Create Custom NFT"
                       />
