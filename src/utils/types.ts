@@ -76,7 +76,7 @@ export type NFT = {
     asset: string;
     mergable?: boolean;
     timeable?: boolean;
-    endTime?: number;
+    timestamp?: number;
   };
 };
 

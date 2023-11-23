@@ -69,8 +69,8 @@ export const CreateNft = () => {
       name: "",
       description: "",
       asset: "",
-      mergable: true,
-      timeable: true,
+      mergable: false,
+      timeable: false,
       endTime: moment().unix(),
     },
   });
@@ -182,7 +182,7 @@ export const CreateNft = () => {
 
         toastr.success(response.data, "Mint completed successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
-        navigate("/my-collections");
+        // navigate("/my-collections");
       } catch (error: any) {
         toastr.error("Error: " + error);
         setActionLoader(false);
