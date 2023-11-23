@@ -157,9 +157,13 @@ export const CreateNft = () => {
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
+      const clonedMetadata = { ...nftData.tokenMetaData };
+
+      clonedMetadata.timestamp = (clonedMetadata?.timestamp || 0) * 100;
+
       const args = RuntimeArgs.fromMap({
         token_owner: CLValueBuilder.key(ownerPublicKey),
-        token_meta_data: CLValueBuilder.string(JSON.stringify(nftData.tokenMetaData)),
+        token_meta_data: CLValueBuilder.string(JSON.stringify(clonedMetadata)),
       });
 
       const deploy = contract.callEntrypoint("mint", args, ownerPublicKey, "casper-test", "4000000000");
