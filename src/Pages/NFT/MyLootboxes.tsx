@@ -75,7 +75,7 @@ const MyLootboxes = () => {
         }
 
         const allNfts = await Promise.all(promises);
-        const nftMetas = allNfts.filter((nft) => nft.isMyNft);
+        const nftMetas = allNfts.filter((nft) => nft.isMyNft && nft.burnt == false);
 
         const data: LootboxItem[] = [];
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CircularProgress, Divider, Grid, MenuItem, SelectChangeEvent, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { Collection, CollectionMetada, NFT } from "../../utils/types";
+import { CollectionMetada, NFT } from "../../utils/types";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 import { useOutletContext } from "react-router-dom";
@@ -101,7 +101,7 @@ const MergeNFT = () => {
 
         const nftMetas = await Promise.all(promises);
 
-        setNFTS(nftMetas);
+        setNFTS(nftMetas.filter((nf) => nf.burnt === false));
         console.log(nftMetas);
 
         setNFTLoading(false);
@@ -113,17 +113,19 @@ const MergeNFT = () => {
 
   const merge = async () => {
     try {
-      if (selectedCollection && !selectedTokenIds.length) {
+      if (selectedCollection && selectedTokenIds.length > 0) {
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
         const contract = new Contracts.Contract();
-        contract.setContractHash(MERGABLE_NFT_CONTRACT);
+        contract.setContractHash("hash-" + MERGABLE_NFT_CONTRACT);
 
         const args = RuntimeArgs.fromMap({
           collection: CasperHelpers.stringToKey(selectedCollection.contractHash),
           token_ids: CLValueBuilder.list(selectedTokenIds.map((id: any) => CLValueBuilder.u64(id))),
         });
 
-        const deploy = contract.callEntrypoint("merge", args, ownerPublicKey, "casper-test", "12000000000");
+        const fee = (2 * selectedTokenIds.length + 3) * Math.pow(10, 9);
+
+        const deploy = contract.callEntrypoint("merge", args, ownerPublicKey, "casper-test", fee);
 
         const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -263,7 +265,7 @@ const MergeNFT = () => {
                 ))}
             </Grid>
             <Grid item marginTop={"2rem"}>
-              <CustomButton disabled={selectedTokenIds.length <= 1 || !selectedCollection} label="Merge NFTs" onClick={() => console.log(selectedTokenIds)}></CustomButton>
+              <CustomButton disabled={selectedTokenIds.length <= 1 || !selectedCollection} label="Merge NFTs" onClick={merge}></CustomButton>
             </Grid>
           </Grid>
         )}

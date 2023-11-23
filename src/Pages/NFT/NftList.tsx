@@ -61,8 +61,8 @@ export const NftList = () => {
         }
 
         const nftMetas = await Promise.all(promises);
-        console.log(nftMetas);
-        setNftData(nftMetas);
+
+        setNftData(nftMetas.filter((nf) => nf.burnt === false));
         setLoading(false);
       }
     };
@@ -103,9 +103,9 @@ export const NftList = () => {
         </Stack>
       </Grid>
       <Grid container className={classes.container}>
-        {nftData.map((e: any, index: number) => (
-          <Grid item xl={3} lg={4} md={4} sm={6} xs={6} key={index}>
-            <NftCard description={e.description} name={e.name} asset={e.asset} index={index} owner={e.owner.slice(0, 20)} amIOwner={e.isMyNft}></NftCard>
+        {nftData.map((e: any) => (
+          <Grid item xl={3} lg={4} md={4} sm={6} xs={6} key={e.index}>
+            <NftCard description={e.description} name={e.name} asset={e.asset} index={e.index} owner={e.owner.slice(0, 20)} amIOwner={e.isMyNft}></NftCard>
           </Grid>
         ))}
         <Grid item xl={3} lg={4} md={4} sm={6} xs={6}>

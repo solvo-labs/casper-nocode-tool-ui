@@ -237,7 +237,7 @@ const AddNftToMarketplace = () => {
       }
 
       const nftMetas = await Promise.all(promises);
-      setNftData(nftMetas);
+      setNftData(nftMetas.filter((nf) => nf.burnt === false));
       setLoading(false);
     }
   };

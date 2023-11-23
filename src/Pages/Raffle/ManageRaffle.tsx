@@ -374,7 +374,7 @@ const ManageRaffle = () => {
         }
 
         const nftMetas = await Promise.all(promises);
-        setNfts(nftMetas);
+        setNfts(nftMetas.filter((nf) => nf.burnt === false));
         setLoadingNFT(false);
       }
     };
