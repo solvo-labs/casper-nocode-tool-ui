@@ -131,18 +131,18 @@ export const CreateNft = () => {
   const disable = useMemo(() => {
     const disable = !selectedCollection || !nftData.tokenMetaData.name || !nftData.tokenMetaData.description || fileLoading;
     return disable;
-  }, [nftData, selectedCollection, fileLoading]);
+  }, [nftData.tokenMetaData, selectedCollection, fileLoading]);
 
   useEffect(() => {
     const init = () => {
       if (selectedCollection) {
         if (selectedCollection.reporting_mode != OwnerReverseLookupMode.Complate) {
-          nftData.tokenMetaData.timeable = false;
+          // nftData.tokenMetaData.timeable = false;
           setSwitchValue({ ...switchValue, timable: true });
         } else {
           setSwitchValue({ ...switchValue, timable: false });
-          nftData.tokenMetaData.mergable = true;
-          nftData.tokenMetaData.timeable = false;
+          // nftData.tokenMetaData.mergable = true;
+          // nftData.tokenMetaData.timeable = false;
         }
       }
     };
@@ -445,17 +445,28 @@ export const CreateNft = () => {
                           <Switch
                             checked={nftData.tokenMetaData.mergable}
                             color="error"
-                            onChange={() => {
+                            onClick={() => {
                               const clonedData = { ...nftData };
                               if (selectedCollection.reporting_mode == OwnerReverseLookupMode.Complate) {
-                                setNftData((prevNftData) => ({
-                                  ...prevNftData,
-                                  tokenMetaData: {
-                                    ...prevNftData.tokenMetaData,
-                                    mergable: !clonedData.tokenMetaData.mergable,
-                                    timeable: clonedData.tokenMetaData.mergable,
-                                  },
-                                }));
+                                if (clonedData.tokenMetaData.timeable) {
+                                  setNftData((prevNftData) => ({
+                                    ...prevNftData,
+                                    tokenMetaData: {
+                                      ...prevNftData.tokenMetaData,
+                                      mergable: true,
+                                      timeable: false,
+                                    },
+                                  }));
+                                } else {
+                                  setNftData((prevNftData) => ({
+                                    ...prevNftData,
+                                    tokenMetaData: {
+                                      ...prevNftData.tokenMetaData,
+                                      mergable: !clonedData.tokenMetaData.mergable,
+                                      // timeable: clonedData.tokenMetaData.mergable,
+                                    },
+                                  }));
+                                }
                               } else {
                                 clonedData.tokenMetaData.mergable = !clonedData.tokenMetaData.mergable;
                                 setNftData(clonedData);
@@ -477,17 +488,26 @@ export const CreateNft = () => {
                             onChange={() => {
                               const clonedData = { ...nftData };
                               if (selectedCollection.reporting_mode == OwnerReverseLookupMode.Complate) {
-                                setNftData((prevNftData) => ({
-                                  ...prevNftData,
-                                  tokenMetaData: {
-                                    ...prevNftData.tokenMetaData,
-                                    mergable: clonedData.tokenMetaData.timeable,
-                                    timeable: !clonedData.tokenMetaData.timeable,
-                                  },
-                                }));
+                                if (clonedData.tokenMetaData.mergable) {
+                                  setNftData((prevNftData) => ({
+                                    ...prevNftData,
+                                    tokenMetaData: {
+                                      ...prevNftData.tokenMetaData,
+                                      mergable: false,
+                                      timeable: true,
+                                    },
+                                  }));
+                                } else {
+                                  setNftData((prevNftData) => ({
+                                    ...prevNftData,
+                                    tokenMetaData: {
+                                      ...prevNftData.tokenMetaData,
+                                      timeable: !clonedData.tokenMetaData.timeable,
+                                    },
+                                  }));
+                                }
                               } else {
                                 clonedData.tokenMetaData.timeable = !clonedData.tokenMetaData.timeable;
-
                                 setNftData(clonedData);
                               }
                             }}
