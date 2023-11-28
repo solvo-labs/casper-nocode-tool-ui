@@ -3,8 +3,8 @@ import { CircularProgress, Divider, Grid, MenuItem, SelectChangeEvent, Theme, Ty
 import { makeStyles } from "@mui/styles";
 import { CollectionMetada, NFT } from "../../utils/types";
 // @ts-ignore
-import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { useOutletContext } from "react-router-dom";
+import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder, CLKey, CLByteArray } from "casper-js-sdk";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { SERVER_API, fetchCep78NamedKeys, getAllNftsByOwned, getNftCollection, getNftCollectionDetails, getNftMetadata } from "../../utils/api";
 import { CasperHelpers, MERGABLE_NFT_CONTRACT, removeDuplicates } from "../../utils";
 import { CustomSelect } from "../../components/CustomSelect";
@@ -12,6 +12,7 @@ import { NftCard } from "../../components/NftCard";
 import { CustomButton } from "../../components/CustomButton";
 import axios from "axios";
 import { BurnMode, MetadataMutability, MintingMode } from "../../utils/enum";
+import toastr from "toastr";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -34,11 +35,13 @@ const MergeNFT = () => {
   const classes = useStyles();
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
   const [collections, setCollections] = useState<CollectionMetada[]>([]);
-  const [nfts, setNFTS] = useState<NFT[]>([]);
+  const [nfts, setNFTS] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedCollection, setSelectedCollection] = useState<CollectionMetada | undefined>();
   const [selectedTokenIds, setSelectedTokenIds] = useState<number[]>([]);
   const [nftLoading, setNFTLoading] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const init = async () => {
@@ -86,6 +89,7 @@ const MergeNFT = () => {
   useEffect(() => {
     const fetchNft = async () => {
       if (selectedCollection) {
+        setSelectedTokenIds([]);
         setNFTLoading(true);
         const nftCollection = await getNftCollection(selectedCollection.contractHash);
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
@@ -102,7 +106,6 @@ const MergeNFT = () => {
         const nftMetas = await Promise.all(promises);
 
         setNFTS(nftMetas.filter((nf) => nf.burnt === false));
-        console.log(nftMetas);
 
         setNFTLoading(false);
       }
@@ -111,9 +114,53 @@ const MergeNFT = () => {
     fetchNft();
   }, [selectedCollection]);
 
+  const approve = async () => {
+    toastr.warning("Running this operation executes set_approve_for_all. Please make sure that you want to perform this operation.");
+
+    try {
+      if (selectedCollection) {
+        setLoading(true);
+        const contract = new Contracts.Contract();
+        contract.setContractHash(selectedCollection.contractHash);
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+        const args = RuntimeArgs.fromMap({
+          token_owner: ownerPublicKey,
+          approve_all: CLValueBuilder.bool(true),
+          operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(MERGABLE_NFT_CONTRACT, "hex")))),
+        });
+
+        const deploy = contract.callEntrypoint("set_approval_for_all", args, ownerPublicKey, "casper-test", "10000000000");
+
+        const deployJson = DeployUtil.deployToJson(deploy);
+
+        try {
+          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+          const data = DeployUtil.deployToJson(signedDeploy.val);
+          const response = await axios.post(SERVER_API + "deploy", data, {
+            headers: { "Content-Type": "application/json" },
+          });
+
+          toastr.success(response.data, "Approve for all deployed successfully.");
+          setLoading(false);
+        } catch (error: any) {
+          toastr.error("Error: " + error);
+          setLoading(false);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toastr.error("error");
+      setLoading(false);
+    }
+  };
+
   const merge = async () => {
     try {
       if (selectedCollection && selectedTokenIds.length > 0) {
+        setLoading(true);
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
         const contract = new Contracts.Contract();
         contract.setContractHash("hash-" + MERGABLE_NFT_CONTRACT);
@@ -123,7 +170,7 @@ const MergeNFT = () => {
           token_ids: CLValueBuilder.list(selectedTokenIds.map((id: any) => CLValueBuilder.u64(id))),
         });
 
-        const fee = (2 * selectedTokenIds.length + 3) * Math.pow(10, 9);
+        const fee = (5 * selectedTokenIds.length + 1) * Math.pow(10, 9);
 
         const deploy = contract.callEntrypoint("merge", args, ownerPublicKey, "casper-test", fee);
 
@@ -143,14 +190,18 @@ const MergeNFT = () => {
           const response = await axios.post(SERVER_API + "deploy", deployedData, {
             headers: { "Content-Type": "application/json" },
           });
-          // toastr.success(response.data, selectedToken.name + " Token minted successfully.");
+
+          toastr.success(response.data, "Merge Nft deployed successfully.");
           window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
-          // navigate("/my-tokens");
-          // setActionLoader(false);
+          navigate("/my-collections");
+
+          setLoading(false);
         } catch (error: any) {
           alert(error.message);
         }
       }
+
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -226,10 +277,11 @@ const MergeNFT = () => {
         )}
         {!nftLoading && nfts.length != 0 && (
           <Grid container display={"flex"} marginTop={"2rem"} alignItems={"center"} direction={"column"}>
-            <Grid item width={"50%"}>
+            <Grid item width={"50%"} display={"flex"} alignItems={"center"} justifyContent={"space-between"}>
               <Typography variant="subtitle1" marginTop={"2rem"}>
                 Now, select the NFTs you want to merge to create a new NFT.
               </Typography>
+              <CustomButton disabled={false} label="Approve Collection" onClick={approve}></CustomButton>
             </Grid>
             <Divider
               // textAlign="left"
@@ -260,6 +312,7 @@ const MergeNFT = () => {
                           : setSelectedTokenIds(selectedTokenIds.filter((item) => item !== nft.index));
                       }}
                       isSelected={selectedTokenIds.includes(nft.index)}
+                      amIOwner={nft.isMyNft}
                     ></NftCard>
                   </Grid>
                 ))}

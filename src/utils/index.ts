@@ -70,7 +70,7 @@ export const sleep = (ms: number) => {
 
 export const STORE_RAFFLE_CONTRACT_HASH = "6cbf0ee026d1d6ebc0364308213ce859895278f73bb15744b5089f8335adb8c8";
 export const lootboxStorageContract = "0e99476bb8b2cdade2f916bfaad7f844120bd0bb1d3ab170d7ab501b4fa850ba";
-export const MERGABLE_NFT_CONTRACT = "9c05cd692df83244424dbd0a5b5758b72967155097ac37402c8fbd5685ceeb9a";
+export const MERGABLE_NFT_CONTRACT = "0fd47c1f089cdec3be2e7d02080ea808712f8124826a97f43e51f9f33f87ca2d";
 
 const rarityLevelExplanationTitleArray: string[] = [
   "COMMON: This level is given to the most frequently encountered items inside loot boxes. These items are generally common and widely found.",
