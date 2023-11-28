@@ -146,6 +146,8 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
       navigate("/my-lootboxes");
     } else if (a === NFT_PAGE.MERGE_NFT) {
       navigate("/merge-nft");
+    } else if (a === NFT_PAGE.TIMEABLE_NFTS) {
+      navigate("/timeable-nfts");
     } else if (a === TOKENOMICS_PAGE.CREATE_TOKENOMICS) {
       navigate("/tokenomics");
     } else if (a === TOKENOMICS_PAGE.MANAGE_TOKENOMICS) {

@@ -36,6 +36,7 @@ export enum NFT_PAGE {
   CREATE_LOOTBOX = "Create Lootbox",
   MY_LOOTBOXES = "My Lootboxes",
   MERGE_NFT = "Merge NFT",
+  TIMEABLE_NFTS = "Timeable NFT's",
 }
 
 export enum RAFFLE_PAGE {
