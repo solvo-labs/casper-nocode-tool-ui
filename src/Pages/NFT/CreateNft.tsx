@@ -82,6 +82,7 @@ export const CreateNft = () => {
   const [collections, setCollections] = useState<any>([]);
   const [selectedCollection, setSelectedCollection] = useState<any>();
   const [tablValue, setTabValue] = useState("1");
+  const [showCustomNft, setShowCustomNft] = useState<boolean>(true);
 
   const [switchValue, setSwitchValue] = useState<{ mergable: boolean; timable: boolean }>({
     mergable: false,
@@ -105,6 +106,14 @@ export const CreateNft = () => {
         const currentCollection = await getNftCollectionDetails(params.collectionHash);
 
         setSelectedCollection(currentCollection);
+
+        if (
+          currentCollection.metadata_mutability != MetadataMutability.Immutable ||
+          currentCollection.minting_mode != MintingMode.Public ||
+          currentCollection.burn_mode != BurnMode.Burnable
+        ) {
+          setShowCustomNft(false);
+        }
       } else {
         const data = await fetchCep78NamedKeys(publicKey);
 
@@ -256,7 +265,7 @@ export const CreateNft = () => {
           </Grid>
           <Box sx={{ width: "100%", typography: "body1", marginTop: "2rem" }}>
             <TabContext value={tablValue}>
-              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <TabList
                   sx={{
                     "& .Mui-selected": {
@@ -275,7 +284,7 @@ export const CreateNft = () => {
                   onChange={handleTabChange}
                 >
                   <Tab label="Standart NFT" value="1" />
-                  <Tab label="Custom NFT" value="2" />
+                  {showCustomNft && <Tab label="Custom NFT" value="2" />}
                 </TabList>
               </Box>
               <TabPanel value="1">
