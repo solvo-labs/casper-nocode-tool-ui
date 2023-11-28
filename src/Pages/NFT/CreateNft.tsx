@@ -5,7 +5,6 @@ import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { SERVER_API, fetchCep78NamedKeys, getNftCollectionDetails } from "../../utils/api";
 import axios from "axios";
 import toastr from "toastr";
-import { NFT } from "../../utils/types";
 import { Box, CircularProgress, Divider, FormControlLabel, Grid, MenuItem, SelectChangeEvent, Stack, Switch, Tab, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
@@ -19,6 +18,7 @@ import TabPanel from "@mui/lab/TabPanel";
 import { CustomDateTime } from "../../components/CustomDateTime";
 import moment, { Moment } from "moment";
 import { BurnMode, MetadataMutability, MintingMode, OwnerReverseLookupMode } from "../../utils/enum";
+import { CasperHelpers, DAPPEND_NFT_CONTRACT } from "../../utils";
 // import CreatorRouter from "../../components/CreatorRouter";
 // import { DONT_HAVE_ANYTHING } from "../../utils/enum";
 
@@ -62,7 +62,7 @@ export const CreateNft = () => {
 
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
   const classes = useStyles();
-  const [nftData, setNftData] = useState<NFT>({
+  const [nftData, setNftData] = useState<any>({
     index: 0,
     contractHash: "",
     tokenMetaData: {
@@ -72,6 +72,7 @@ export const CreateNft = () => {
       mergable: false,
       timeable: false,
       timestamp: moment().unix(),
+      targetAddress: "",
     },
   });
 
@@ -165,16 +166,75 @@ export const CreateNft = () => {
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
-      const clonedMetadata = { ...nftData.tokenMetaData };
+      let finalMetadata: any = { name: nftData.tokenMetaData.name, description: nftData.tokenMetaData.description, asset: nftData.tokenMetaData.asset };
 
-      clonedMetadata.timestamp = (clonedMetadata?.timestamp || 0) * 100;
+      if (nftData.tokenMetaData.mergable) {
+        finalMetadata.mergable = nftData.tokenMetaData.mergable;
+        // finalMetadata.timeable = false;
+        // finalMetadata.timestamp = 0;
+      }
 
       const args = RuntimeArgs.fromMap({
         token_owner: CLValueBuilder.key(ownerPublicKey),
-        token_meta_data: CLValueBuilder.string(JSON.stringify(clonedMetadata)),
+        token_meta_data: CLValueBuilder.string(JSON.stringify(finalMetadata)),
       });
 
       const deploy = contract.callEntrypoint("mint", args, ownerPublicKey, "casper-test", "4000000000");
+
+      const deployJson = DeployUtil.deployToJson(deploy);
+
+      try {
+        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+
+        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+
+        const deployData = DeployUtil.deployToJson(signedDeploy.val);
+
+        const response = await axios.post(SERVER_API + "deploy", deployData, {
+          headers: { "Content-Type": "application/json" },
+        });
+        setActionLoader(false);
+
+        toastr.success(response.data, "Mint completed successfully.");
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
+        navigate("/my-collections");
+      } catch (error: any) {
+        toastr.error("Error: " + error);
+        setActionLoader(false);
+      }
+    } catch (error) {
+      setActionLoader(false);
+      toastr.error("Error: " + error);
+    }
+  };
+
+  const createTimeableNft = async () => {
+    setActionLoader(true);
+    const contract = new Contracts.Contract();
+    contract.setContractHash("hash-" + DAPPEND_NFT_CONTRACT);
+
+    try {
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+      const targetAddress = CLPublicKey.fromHex(nftData.tokenMetaData.targetAddress);
+
+      let finalMetadata: any = {
+        name: nftData.tokenMetaData.name,
+        description: nftData.tokenMetaData.description,
+        asset: nftData.tokenMetaData.asset,
+        timeable: true,
+        timestamp: nftData.tokenMetaData.timeable * 1000,
+        mergable: false,
+      };
+
+      const args = RuntimeArgs.fromMap({
+        collection: CasperHelpers.stringToKey(selectedCollection.contractHash),
+        metadata: CLValueBuilder.string(JSON.stringify(finalMetadata)),
+        target_address: CLValueBuilder.key(targetAddress),
+      });
+
+      const deploy = contract.callEntrypoint("mint_timeable_nft", args, ownerPublicKey, "casper-test", "6000000000");
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -456,7 +516,7 @@ export const CreateNft = () => {
                             onChange={() => {
                               const clonedData = { ...nftData };
                               if (selectedCollection.reporting_mode == OwnerReverseLookupMode.Complate) {
-                                setNftData((prevNftData) => ({
+                                setNftData((prevNftData: any) => ({
                                   ...prevNftData,
                                   tokenMetaData: {
                                     ...prevNftData.tokenMetaData,
@@ -485,7 +545,7 @@ export const CreateNft = () => {
                             onChange={() => {
                               const clonedData = { ...nftData };
                               if (selectedCollection.reporting_mode == OwnerReverseLookupMode.Complate) {
-                                setNftData((prevNftData) => ({
+                                setNftData((prevNftData: any) => ({
                                   ...prevNftData,
                                   tokenMetaData: {
                                     ...prevNftData.tokenMetaData,
@@ -508,20 +568,20 @@ export const CreateNft = () => {
                     {nftData.tokenMetaData.timeable && (
                       <>
                         <CustomInput
-                          placeholder="Timable Target Address"
-                          label="Timable Target Address"
+                          placeholder="NFT Target Address"
+                          label="NFT Target Address"
                           name="timableTargetAddress"
                           type="text"
                           onChange={(e: any) => {
-                            // setNftData({
-                            //   ...nftData,
-                            //   tokenMetaData: {
-                            //     ...nftData.tokenMetaData,
-                            //     description: e.target.value,
-                            //   },
-                            // });
+                            setNftData({
+                              ...nftData,
+                              tokenMetaData: {
+                                ...nftData.tokenMetaData,
+                                targetAddress: e.target.value,
+                              },
+                            });
                           }}
-                          value={"nftData.tokenMetaData.targetAddres"}
+                          value={nftData.tokenMetaData.targetAddres}
                           disable={fileLoading}
                           floor="dark"
                         ></CustomInput>
@@ -538,7 +598,7 @@ export const CreateNft = () => {
                     )}
                     <Grid paddingTop={2} container justifyContent={"center"}>
                       <CustomButton
-                        onClick={createNft}
+                        onClick={nftData.tokenMetaData.timeable ? createTimeableNft : createNft}
                         disabled={disable || nftData.tokenMetaData.timeable ? nftData.tokenMetaData.timestamp! <= moment().unix() : false}
                         label="Create Custom NFT"
                       />

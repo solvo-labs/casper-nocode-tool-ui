@@ -6,7 +6,7 @@ import { CollectionMetada } from "../../utils/types";
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder, CLKey, CLByteArray } from "casper-js-sdk";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { SERVER_API, fetchCep78NamedKeys, getAllNftsByOwned, getNftCollection, getNftCollectionDetails, getNftMetadata } from "../../utils/api";
-import { CasperHelpers, MERGABLE_NFT_CONTRACT, removeDuplicates } from "../../utils";
+import { CasperHelpers, DAPPEND_NFT_CONTRACT, removeDuplicates } from "../../utils";
 import { CustomSelect } from "../../components/CustomSelect";
 import { NftCard } from "../../components/NftCard";
 import { CustomButton } from "../../components/CustomButton";
@@ -127,7 +127,7 @@ const MergeNFT = () => {
         const args = RuntimeArgs.fromMap({
           token_owner: ownerPublicKey,
           approve_all: CLValueBuilder.bool(true),
-          operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(MERGABLE_NFT_CONTRACT, "hex")))),
+          operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(DAPPEND_NFT_CONTRACT, "hex")))),
         });
 
         const deploy = contract.callEntrypoint("set_approval_for_all", args, ownerPublicKey, "casper-test", "10000000000");
@@ -163,7 +163,7 @@ const MergeNFT = () => {
         setLoading(true);
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
         const contract = new Contracts.Contract();
-        contract.setContractHash("hash-" + MERGABLE_NFT_CONTRACT);
+        contract.setContractHash("hash-" + DAPPEND_NFT_CONTRACT);
 
         const args = RuntimeArgs.fromMap({
           collection: CasperHelpers.stringToKey(selectedCollection.contractHash),
