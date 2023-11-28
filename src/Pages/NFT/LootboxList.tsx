@@ -171,9 +171,11 @@ export const LootboxList = () => {
 
         const ownersData = await getLootboxItemOwner(selectedLootbox.key);
 
-        const finalData = nfts.map((nft: any, index: number) => {
-          return { ...nft, ...items[index], itemOwner: ownersData[index] };
-        });
+        const finalData = nfts
+          .filter((nf) => nf.burnt === false)
+          .map((nft: any, index: number) => {
+            return { ...nft, ...items[index], itemOwner: ownersData[index] };
+          });
 
         const filterData = finalData.filter((fltr) => fltr.owner == selectedLootbox.key.slice(5));
 

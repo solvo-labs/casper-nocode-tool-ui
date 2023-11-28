@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
-import { SERVER_API, fetchCep78NamedKeys, getNftCollection } from "../../utils/api";
+import { SERVER_API, fetchCep78NamedKeys, getNftCollectionDetails } from "../../utils/api";
 import axios from "axios";
 import toastr from "toastr";
 import { NFT } from "../../utils/types";
@@ -18,6 +18,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { CustomDateTime } from "../../components/CustomDateTime";
 import moment, { Moment } from "moment";
+import { BurnMode, MetadataMutability, MintingMode, OwnerReverseLookupMode } from "../../utils/enum";
 // import CreatorRouter from "../../components/CreatorRouter";
 // import { DONT_HAVE_ANYTHING } from "../../utils/enum";
 
@@ -68,9 +69,9 @@ export const CreateNft = () => {
       name: "",
       description: "",
       asset: "",
-      mergable: true,
-      timeable: true,
-      endTime: moment().unix(),
+      mergable: false,
+      timeable: false,
+      timestamp: moment().unix(),
     },
   });
 
@@ -81,6 +82,11 @@ export const CreateNft = () => {
   const [collections, setCollections] = useState<any>([]);
   const [selectedCollection, setSelectedCollection] = useState<any>();
   const [tablValue, setTabValue] = useState("1");
+
+  const [switchValue, setSwitchValue] = useState<{ mergable: boolean; timable: boolean }>({
+    mergable: false,
+    timable: false,
+  });
 
   const navigate = useNavigate();
 
@@ -96,15 +102,16 @@ export const CreateNft = () => {
   useEffect(() => {
     const init = async () => {
       if (params.collectionHash) {
-        const currentCollection = await getNftCollection(params.collectionHash);
+        const currentCollection = await getNftCollectionDetails(params.collectionHash);
 
         setSelectedCollection(currentCollection);
       } else {
         const data = await fetchCep78NamedKeys(publicKey);
 
-        const promises = data.map((data) => getNftCollection(data.key));
+        const promises = data.map((data) => getNftCollectionDetails(data.key));
 
         const result = await Promise.all(promises);
+        console.log(result);
 
         setCollections(result);
       }
@@ -126,6 +133,22 @@ export const CreateNft = () => {
     return disable;
   }, [nftData, selectedCollection, fileLoading]);
 
+  useEffect(() => {
+    const init = () => {
+      if (selectedCollection) {
+        if (selectedCollection.reporting_mode != OwnerReverseLookupMode.Complate) {
+          nftData.tokenMetaData.timeable = false;
+          setSwitchValue({ ...switchValue, timable: true });
+        } else {
+          setSwitchValue({ ...switchValue, timable: false });
+          nftData.tokenMetaData.mergable = true;
+          nftData.tokenMetaData.timeable = false;
+        }
+      }
+    };
+    init();
+  }, [selectedCollection]);
+
   const createNft = async () => {
     setActionLoader(true);
     const contract = new Contracts.Contract();
@@ -134,9 +157,13 @@ export const CreateNft = () => {
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
+      const clonedMetadata = { ...nftData.tokenMetaData };
+
+      clonedMetadata.timestamp = (clonedMetadata?.timestamp || 0) * 100;
+
       const args = RuntimeArgs.fromMap({
         token_owner: CLValueBuilder.key(ownerPublicKey),
-        token_meta_data: CLValueBuilder.string(JSON.stringify(nftData.tokenMetaData)),
+        token_meta_data: CLValueBuilder.string(JSON.stringify(clonedMetadata)),
       });
 
       const deploy = contract.callEntrypoint("mint", args, ownerPublicKey, "casper-test", "4000000000");
@@ -155,11 +182,11 @@ export const CreateNft = () => {
         const response = await axios.post(SERVER_API + "deploy", deployData, {
           headers: { "Content-Type": "application/json" },
         });
+        setActionLoader(false);
+
         toastr.success(response.data, "Mint completed successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
-
-        navigate("/my-collections");
-        setActionLoader(false);
+        // navigate("/my-collections");
       } catch (error: any) {
         toastr.error("Error: " + error);
         setActionLoader(false);
@@ -348,13 +375,17 @@ export const CreateNft = () => {
                       <MenuItem value="default">
                         <em>{params.collectionHash ? selectedCollection.collection_name : "Select a Collection"}</em>
                       </MenuItem>
-                      {collections.map((tk: any) => {
-                        return (
-                          <MenuItem key={tk.contractHash} value={tk.contractHash}>
-                            {tk.collection_name}
-                          </MenuItem>
-                        );
-                      })}
+                      {collections
+                        .filter(
+                          (col: any) => col.metadata_mutability == MetadataMutability.Immutable && col.minting_mode == MintingMode.Public && col.burn_mode == BurnMode.Burnable
+                        )
+                        .map((tk: any) => {
+                          return (
+                            <MenuItem key={tk.contractHash} value={tk.contractHash}>
+                              {tk.collection_name}
+                            </MenuItem>
+                          );
+                        })}
                     </CustomSelect>
                     <Divider
                       // textAlign="left"
@@ -403,7 +434,7 @@ export const CreateNft = () => {
                         });
                       }}
                       value={nftData.tokenMetaData.description}
-                      disable={fileLoading}
+                      disable={fileLoading || switchValue.mergable}
                       floor="dark"
                     ></CustomInput>
                     <Stack>
@@ -416,47 +447,93 @@ export const CreateNft = () => {
                             color="error"
                             onChange={() => {
                               const clonedData = { ...nftData };
-                              clonedData.tokenMetaData.mergable = !clonedData.tokenMetaData.mergable;
-
-                              setNftData(clonedData);
+                              if (selectedCollection.reporting_mode == OwnerReverseLookupMode.Complate) {
+                                setNftData((prevNftData) => ({
+                                  ...prevNftData,
+                                  tokenMetaData: {
+                                    ...prevNftData.tokenMetaData,
+                                    mergable: !clonedData.tokenMetaData.mergable,
+                                    timeable: clonedData.tokenMetaData.mergable,
+                                  },
+                                }));
+                              } else {
+                                clonedData.tokenMetaData.mergable = !clonedData.tokenMetaData.mergable;
+                                setNftData(clonedData);
+                              }
                             }}
                           />
                         }
                         label="Mergeable NFT"
-                        disabled={fileLoading}
+                        disabled={fileLoading || switchValue.mergable}
                       />
                       <FormControlLabel
                         sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
                         labelPlacement="start"
                         control={
                           <Switch
+                            disabled={true}
                             checked={nftData.tokenMetaData.timeable}
                             color="error"
                             onChange={() => {
                               const clonedData = { ...nftData };
-                              clonedData.tokenMetaData.timeable = !clonedData.tokenMetaData.timeable;
+                              if (selectedCollection.reporting_mode == OwnerReverseLookupMode.Complate) {
+                                setNftData((prevNftData) => ({
+                                  ...prevNftData,
+                                  tokenMetaData: {
+                                    ...prevNftData.tokenMetaData,
+                                    mergable: clonedData.tokenMetaData.timeable,
+                                    timeable: !clonedData.tokenMetaData.timeable,
+                                  },
+                                }));
+                              } else {
+                                clonedData.tokenMetaData.timeable = !clonedData.tokenMetaData.timeable;
 
-                              setNftData(clonedData);
+                                setNftData(clonedData);
+                              }
                             }}
                           />
                         }
                         label="Timeable NFT"
-                        disabled={fileLoading}
+                        disabled={fileLoading || switchValue.timable}
                       />
                     </Stack>
                     {nftData.tokenMetaData.timeable && (
-                      <Grid item sx={{ maxWidth: "400px" }}>
-                        <CustomDateTime
-                          onChange={(e: Moment) => setNftData({ ...nftData, tokenMetaData: { ...nftData.tokenMetaData, endTime: e.unix() } })}
-                          value={nftData.tokenMetaData.endTime}
-                          dateLabel="Select end date"
-                          clockLabel="Select end time"
-                          theme="Dark"
-                        ></CustomDateTime>
-                      </Grid>
+                      <>
+                        <CustomInput
+                          placeholder="Timable Target Address"
+                          label="Timable Target Address"
+                          name="timableTargetAddress"
+                          type="text"
+                          onChange={(e: any) => {
+                            // setNftData({
+                            //   ...nftData,
+                            //   tokenMetaData: {
+                            //     ...nftData.tokenMetaData,
+                            //     description: e.target.value,
+                            //   },
+                            // });
+                          }}
+                          value={"nftData.tokenMetaData.targetAddres"}
+                          disable={fileLoading}
+                          floor="dark"
+                        ></CustomInput>
+                        <Grid item sx={{ maxWidth: "400px" }}>
+                          <CustomDateTime
+                            onChange={(e: Moment) => setNftData({ ...nftData, tokenMetaData: { ...nftData.tokenMetaData, timestamp: e.unix() } })}
+                            value={nftData.tokenMetaData.timestamp}
+                            dateLabel="Select end date"
+                            clockLabel="Select end time"
+                            theme="Dark"
+                          ></CustomDateTime>
+                        </Grid>
+                      </>
                     )}
                     <Grid paddingTop={2} container justifyContent={"center"}>
-                      <CustomButton onClick={createNft} disabled={disable || nftData.tokenMetaData.endTime! <= moment().unix()} label="Create Custom NFT" />
+                      <CustomButton
+                        onClick={createNft}
+                        disabled={disable || nftData.tokenMetaData.timeable ? nftData.tokenMetaData.timestamp! <= moment().unix() : false}
+                        label="Create Custom NFT"
+                      />
                     </Grid>
                   </Stack>
                 </Grid>

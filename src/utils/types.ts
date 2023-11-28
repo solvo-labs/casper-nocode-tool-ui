@@ -76,7 +76,7 @@ export type NFT = {
     asset: string;
     mergable?: boolean;
     timeable?: boolean;
-    endTime?: number;
+    timestamp?: number;
   };
 };
 
@@ -134,6 +134,7 @@ export const enum APPROVE_TYPE {
   MARKETPLACE = "marketplace",
   RAFFLE = "raffle",
   LOOTBOX = "lootbox",
+  CUSTOM_NFT = "custom-nft",
 }
 
 export type RaffleMetadata = {

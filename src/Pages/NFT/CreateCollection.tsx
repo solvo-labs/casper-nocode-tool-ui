@@ -5,7 +5,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
 import { Collection } from "../../utils/types";
-import { CircularProgress, Divider, Grid, MenuItem, Stack, Theme, Typography } from "@mui/material";
+import { CircularProgress, Divider, Grid, MenuItem, Stack, Theme, Tooltip, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
@@ -24,6 +24,8 @@ import {
 } from "../../utils/enum";
 import { CustomSelect } from "../../components/CustomSelect";
 import toastr from "toastr";
+import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
+import { BURN_MODE_EXPLANATION, METADATA_MUTABILITY_EXPLANATION, MINTING_MODE_EXPLANATION, OWNER_REVERSE_LOOKUP_MODE_EXPLANATION } from "../../utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -115,7 +117,7 @@ export const CreateCollection = () => {
         burn_mode: CLValueBuilder.u8(collectionData.burnMode),
         holder_mode: CLValueBuilder.u8(collectionData.holderMode),
         named_key_convention: CLValueBuilder.u8(collectionData.namedKeyConventionMode),
-        owner_reverse_lookup_mode: CLValueBuilder.u8(collectionData.namedKeyConventionMode),
+        owner_reverse_lookup_mode: CLValueBuilder.u8(collectionData.ownerReverseLookupMode),
         events_mode: CLValueBuilder.u8(2),
       });
 
@@ -334,51 +336,105 @@ export const CreateCollection = () => {
               >
                 {listSelectItem(NFTIdentifierMode)}
               </CustomSelect>
-              <CustomSelect
-                id="metadataMutability"
-                value={collectionData.metadataMutability}
-                label="Metadata Mutability"
-                onChange={(e: any) => {
-                  setCollectionData({
-                    ...collectionData,
-                    metadataMutability: e.target.value,
-                  });
-                }}
-                titlePosition={"relative"}
-                titleTop={"10px"}
-              >
-                {listSelectItem(MetadataMutability)}
-              </CustomSelect>
-              <CustomSelect
-                id="mintingMode"
-                value={collectionData.mintingMode}
-                label="Minting Mode"
-                onChange={(e: any) => {
-                  setCollectionData({
-                    ...collectionData,
-                    mintingMode: e.target.value,
-                  });
-                }}
-                titlePosition={"relative"}
-                titleTop={"10px"}
-              >
-                {listSelectItem(MintingMode)}
-              </CustomSelect>
-              <CustomSelect
-                id="burnMode"
-                value={collectionData.burnMode}
-                label="Burn Mode"
-                onChange={(e: any) => {
-                  setCollectionData({
-                    ...collectionData,
-                    burnMode: e.target.value,
-                  });
-                }}
-                titlePosition={"relative"}
-                titleTop={"10px"}
-              >
-                {listSelectItem(BurnMode)}
-              </CustomSelect>
+              <Stack direction={"row"} spacing={2} justifyContent={"center"} alignItems={"center"}>
+                <CustomSelect
+                  id="metadataMutability"
+                  value={collectionData.metadataMutability}
+                  label="Metadata Mutability"
+                  onChange={(e: any) => {
+                    setCollectionData({
+                      ...collectionData,
+                      metadataMutability: e.target.value,
+                    });
+                  }}
+                  titlePosition={"relative"}
+                  titleTop={"10px"}
+                >
+                  {listSelectItem(MetadataMutability)}
+                </CustomSelect>
+                <Tooltip title={<div style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>{METADATA_MUTABILITY_EXPLANATION}</div>}>
+                  <div
+                    style={{
+                      background: "gray",
+                      borderRadius: "12px",
+                      height: "24px",
+                      width: "24px",
+                      display: "flex",
+                      justifyItems: "center",
+                      alignItems: "center",
+                      marginTop: "1rem",
+                    }}
+                  >
+                    <QuestionMarkIcon sx={{ color: "white", height: "16px" }}></QuestionMarkIcon>
+                  </div>
+                </Tooltip>
+              </Stack>
+              <Stack direction={"row"} spacing={2} justifyContent={"center"} alignItems={"center"}>
+                <CustomSelect
+                  id="mintingMode"
+                  value={collectionData.mintingMode}
+                  label="Minting Mode"
+                  onChange={(e: any) => {
+                    setCollectionData({
+                      ...collectionData,
+                      mintingMode: e.target.value,
+                    });
+                  }}
+                  titlePosition={"relative"}
+                  titleTop={"10px"}
+                >
+                  {listSelectItem(MintingMode)}
+                </CustomSelect>
+                <Tooltip title={<div style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>{MINTING_MODE_EXPLANATION}</div>}>
+                  <div
+                    style={{
+                      background: "gray",
+                      borderRadius: "12px",
+                      height: "24px",
+                      width: "24px",
+                      display: "flex",
+                      justifyItems: "center",
+                      alignItems: "center",
+                      marginTop: "1rem",
+                    }}
+                  >
+                    <QuestionMarkIcon sx={{ color: "white", height: "16px" }}></QuestionMarkIcon>
+                  </div>
+                </Tooltip>
+              </Stack>
+              <Stack direction={"row"} spacing={2} justifyContent={"center"} alignItems={"center"}>
+                <CustomSelect
+                  id="burnMode"
+                  value={collectionData.burnMode}
+                  label="Burn Mode"
+                  onChange={(e: any) => {
+                    setCollectionData({
+                      ...collectionData,
+                      burnMode: e.target.value,
+                    });
+                  }}
+                  titlePosition={"relative"}
+                  titleTop={"10px"}
+                >
+                  {listSelectItem(BurnMode)}
+                </CustomSelect>
+                <Tooltip title={<div style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>{BURN_MODE_EXPLANATION}</div>}>
+                  <div
+                    style={{
+                      background: "gray",
+                      borderRadius: "12px",
+                      height: "24px",
+                      width: "24px",
+                      display: "flex",
+                      justifyItems: "center",
+                      alignItems: "center",
+                      marginTop: "1rem",
+                    }}
+                  >
+                    <QuestionMarkIcon sx={{ color: "white", height: "16px" }}></QuestionMarkIcon>
+                  </div>
+                </Tooltip>
+              </Stack>
               <CustomSelect
                 id="holderMode"
                 value={collectionData.holderMode}
@@ -409,21 +465,39 @@ export const CreateCollection = () => {
               >
                 {listSelectItem(NamedKeyConventionMode)}
               </CustomSelect>
-              <CustomSelect
-                id="ownerReverseLookupMode"
-                value={collectionData.ownerReverseLookupMode}
-                label="Owner Reverse Lookup Mode"
-                onChange={(e: any) => {
-                  setCollectionData({
-                    ...collectionData,
-                    ownerReverseLookupMode: e.target.value,
-                  });
-                }}
-                titlePosition={"relative"}
-                titleTop={"10px"}
-              >
-                {listSelectItem(OwnerReverseLookupMode)}
-              </CustomSelect>
+              <Stack direction={"row"} spacing={2} justifyContent={"center"} alignItems={"center"}>
+                <CustomSelect
+                  id="ownerReverseLookupMode"
+                  value={collectionData.ownerReverseLookupMode}
+                  label="Owner Reverse Lookup Mode"
+                  onChange={(e: any) => {
+                    setCollectionData({
+                      ...collectionData,
+                      ownerReverseLookupMode: e.target.value,
+                    });
+                  }}
+                  titlePosition={"relative"}
+                  titleTop={"10px"}
+                >
+                  {listSelectItem(OwnerReverseLookupMode)}
+                </CustomSelect>
+                <Tooltip title={<div style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>{OWNER_REVERSE_LOOKUP_MODE_EXPLANATION}</div>}>
+                  <div
+                    style={{
+                      background: "gray",
+                      borderRadius: "12px",
+                      height: "24px",
+                      width: "24px",
+                      display: "flex",
+                      justifyItems: "center",
+                      alignItems: "center",
+                      marginTop: "1rem",
+                    }}
+                  >
+                    <QuestionMarkIcon sx={{ color: "white", height: "16px" }}></QuestionMarkIcon>
+                  </div>
+                </Tooltip>
+              </Stack>
               <Grid paddingTop={2} container justifyContent={"center"}>
                 <CustomButton onClick={mintCollection} disabled={disable} label="Create Collection" />
               </Grid>

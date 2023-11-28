@@ -70,12 +70,22 @@ export const sleep = (ms: number) => {
 
 export const STORE_RAFFLE_CONTRACT_HASH = "6cbf0ee026d1d6ebc0364308213ce859895278f73bb15744b5089f8335adb8c8";
 export const lootboxStorageContract = "0e99476bb8b2cdade2f916bfaad7f844120bd0bb1d3ab170d7ab501b4fa850ba";
+export const MERGABLE_NFT_CONTRACT = "0fd47c1f089cdec3be2e7d02080ea808712f8124826a97f43e51f9f33f87ca2d";
+
 const rarityLevelExplanationTitleArray: string[] = [
   "COMMON: This level is given to the most frequently encountered items inside loot boxes. These items are generally common and widely found.",
   "RARE: This level is given to less common and more special items. These items are rarer within the general population and possess special value.",
   "LEGENDARY: This is the highest level, given to the rarest and most special items found in loot boxes. They are often of unique value and highly esteemed within the community.",
 ];
 export const rarityLevelExplanationTitle = rarityLevelExplanationTitleArray.join("\n");
+
 export const delay = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
+
+export const METADATA_MUTABILITY_EXPLANATION =
+  "If you want to create Custom NFTs or Timable NFTs for your collection, it is necessary to select the metadata mutability mode as immutable.";
+export const MINTING_MODE_EXPLANATION = "If you want to create Custom NFTs or Timable NFTs for your collection, it is necessary to select the minting mode as public.";
+export const BURN_MODE_EXPLANATION = "If you want to create Custom NFTs or Timable NFTs for your collection, it is necessary to select the burn mode as burnable.";
+export const OWNER_REVERSE_LOOKUP_MODE_EXPLANATION =
+  "If you want your collection to have the Mergable feature, the Owner Reverse Lookup Mode must be either 'NoLookup' or 'TransfersOnly'. If you want it to be a Timable NFT, you should select the 'Complete' mode.";

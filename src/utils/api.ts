@@ -204,14 +204,23 @@ export const initTokens = async (accountHash: string, pubkey: string) => {
 
 export const getNftCollection = async (contractHash: string, amICreator = true) => {
   const response = await axios.get<any>(SERVER_API + "getCollection?contractHash=" + contractHash);
-  // console.log("response", response.data.json_schema);
+  // console.log("response", response.data);
+  return { ...response.data, contractHash, amICreator };
+};
+
+export const getNftCollectionDetails = async (contractHash: string, amICreator = true) => {
+  const response = await axios.get<any>(SERVER_API + "getCollectionDetails?contractHash=" + contractHash);
   return { ...response.data, contractHash, amICreator };
 };
 
 export const getNftMetadata = async (contractHash: string, index: string, accoutHash: string) => {
   const response = (await axios.get<any>(SERVER_API + "getNftMetadata?contractHash=" + contractHash + "&index=" + index)).data;
 
-  return { ...JSON.parse(response.metadata), owner: response.owner, isMyNft: response.owner === accoutHash, index: Number(index) };
+  if (response.burnt === false) {
+    return { ...JSON.parse(response.metadata), owner: response.owner, isMyNft: response.owner === accoutHash, index: Number(index), burnt: response.burnt };
+  }
+
+  return { index: Number(index), burnt: response.burnt };
 };
 
 export const fetchMarketplaceData = async (contractHash: string) => {
@@ -302,7 +311,6 @@ export const getBalance = async (publicKey: string) => {
 
 export const getAllNftsByOwned = async (accountHash: string) => {
   const response = (await axios.get(service_api + "accounts/" + accountHash.slice(13) + "/nft-tokens?fields=contract_package&page=1&limit=100")).data.data;
-  console.log(response);
   const collectionHashPromises = response.map((r: any) => contractPackageHashToContractHash(r.contract_package_hash));
   const collections = await Promise.all(collectionHashPromises);
 
