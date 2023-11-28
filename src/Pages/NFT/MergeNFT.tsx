@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CircularProgress, Divider, Grid, MenuItem, SelectChangeEvent, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { CollectionMetada, NFT } from "../../utils/types";
+import { CollectionMetada } from "../../utils/types";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder, CLKey, CLByteArray } from "casper-js-sdk";
 import { useNavigate, useOutletContext } from "react-router-dom";
