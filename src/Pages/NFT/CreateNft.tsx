@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 // @ts-ignore
-import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
+import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder, CLKey, CLByteArray } from "casper-js-sdk";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { SERVER_API, fetchCep78NamedKeys, getNftCollectionDetails } from "../../utils/api";
 import axios from "axios";
@@ -19,8 +19,6 @@ import { CustomDateTime } from "../../components/CustomDateTime";
 import moment, { Moment } from "moment";
 import { BurnMode, MetadataMutability, MintingMode, OwnerReverseLookupMode } from "../../utils/enum";
 import { CasperHelpers, DAPPEND_NFT_CONTRACT } from "../../utils";
-// import CreatorRouter from "../../components/CreatorRouter";
-// import { DONT_HAVE_ANYTHING } from "../../utils/enum";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -170,8 +168,6 @@ export const CreateNft = () => {
 
       if (nftData.tokenMetaData.mergable) {
         finalMetadata.mergable = nftData.tokenMetaData.mergable;
-        // finalMetadata.timeable = false;
-        // finalMetadata.timestamp = 0;
       }
 
       const args = RuntimeArgs.fromMap({
@@ -210,7 +206,51 @@ export const CreateNft = () => {
     }
   };
 
+  const approve = async () => {
+    toastr.warning("Running this operation executes set_approve_for_all. Please make sure that you want to perform this operation.");
+
+    try {
+      if (selectedCollection) {
+        const contract = new Contracts.Contract();
+        contract.setContractHash(selectedCollection.contractHash);
+        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+        const args = RuntimeArgs.fromMap({
+          token_owner: ownerPublicKey,
+          approve_all: CLValueBuilder.bool(true),
+          operator: new CLKey(new CLByteArray(Uint8Array.from(Buffer.from(DAPPEND_NFT_CONTRACT, "hex")))),
+        });
+
+        const deploy = contract.callEntrypoint("set_approval_for_all", args, ownerPublicKey, "casper-test", "10000000000");
+
+        const deployJson = DeployUtil.deployToJson(deploy);
+
+        try {
+          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+          const data = DeployUtil.deployToJson(signedDeploy.val);
+          const response = await axios.post(SERVER_API + "deploy", data, {
+            headers: { "Content-Type": "application/json" },
+          });
+
+          toastr.success(response.data, "Approve for all deployed successfully.");
+          setLoading(false);
+        } catch (error: any) {
+          toastr.error("Error: " + error);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toastr.error("error");
+    }
+  };
+
   const createTimeableNft = async () => {
+    // if (selectedCollection.number_of_minted_tokens === 0) {
+    //   await approve();
+    // }
+
     setActionLoader(true);
     const contract = new Contracts.Contract();
     contract.setContractHash("hash-" + DAPPEND_NFT_CONTRACT);
@@ -224,8 +264,7 @@ export const CreateNft = () => {
         description: nftData.tokenMetaData.description,
         asset: nftData.tokenMetaData.asset,
         timeable: true,
-        timestamp: nftData.tokenMetaData.timeable * 1000,
-        mergable: false,
+        timestamp: nftData.tokenMetaData.timestamp * 1000,
       };
 
       const args = RuntimeArgs.fromMap({
@@ -234,7 +273,7 @@ export const CreateNft = () => {
         target_address: CLValueBuilder.key(targetAddress),
       });
 
-      const deploy = contract.callEntrypoint("mint_timeable_nft", args, ownerPublicKey, "casper-test", "6000000000");
+      const deploy = contract.callEntrypoint("mint_timeable_nft", args, ownerPublicKey, "casper-test", "15000000000");
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
