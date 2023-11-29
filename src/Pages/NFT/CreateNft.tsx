@@ -247,9 +247,9 @@ export const CreateNft = () => {
   };
 
   const createTimeableNft = async () => {
-    // if (selectedCollection.number_of_minted_tokens === 0) {
-    //   await approve();
-    // }
+    if (selectedCollection.number_of_minted_tokens === 0) {
+      await approve();
+    }
 
     setActionLoader(true);
     const contract = new Contracts.Contract();
@@ -543,7 +543,7 @@ export const CreateNft = () => {
                       value={nftData.tokenMetaData.description}
                       disable={fileLoading || switchValue.mergable}
                       floor="dark"
-                    ></CustomInput>
+                    />
                     <Stack>
                       <FormControlLabel
                         sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
