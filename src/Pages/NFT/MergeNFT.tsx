@@ -298,7 +298,7 @@ const MergeNFT = () => {
             </Divider>
             <Grid container width={"80%"} marginTop={"2rem"}>
               {nfts
-                .filter((fltr: any) => fltr.mergable == true)
+                .filter((fltr: any) => fltr.mergeable == true)
                 .map((nft: any) => (
                   <Grid item lg={3} md={3} sm={6} xs={12} key={nft.index}>
                     <NftCard

@@ -146,3 +146,9 @@ export enum RarityLevel {
   Rare,
   Legendary,
 }
+
+export enum NFT_TYPES {
+  Standart,
+  Mergeable,
+  Timeable,
+}

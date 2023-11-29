@@ -109,15 +109,17 @@ export const MyCollections = () => {
         <Typography className={classes.title} variant="h4">
           My Collections
         </Typography>
-        <Stack direction={"row"} spacing={2}>
-          <CustomButton
-            disabled={false}
-            label="Mint NFT"
-            onClick={() => {
-              navigate("/create-nft");
-            }}
-          ></CustomButton>
-        </Stack>
+        {collections.length > 0 && (
+          <Stack direction={"row"} spacing={2}>
+            <CustomButton
+              disabled={false}
+              label="Mint NFT"
+              onClick={() => {
+                navigate("/create-nft");
+              }}
+            ></CustomButton>
+          </Stack>
+        )}
       </Grid>
       <Grid container sx={{ marginTop: "2rem" }}>
         <Grid container width={"100%"} justifyContent={"flex-start"}>

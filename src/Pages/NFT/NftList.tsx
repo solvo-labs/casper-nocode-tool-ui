@@ -113,7 +113,7 @@ export const NftList = () => {
               owner={e.owner.slice(0, 20)}
               amIOwner={e.isMyNft}
               timeable={e.timeable}
-              mergable={e.mergable}
+              mergeable={e.mergeable}
             ></NftCard>
           </Grid>
         ))}
