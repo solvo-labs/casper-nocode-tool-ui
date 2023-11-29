@@ -11,7 +11,7 @@ import { CustomSelect } from "../../components/CustomSelect";
 import { NftCard } from "../../components/NftCard";
 import { CustomButton } from "../../components/CustomButton";
 import axios from "axios";
-import { BurnMode, MetadataMutability, MintingMode } from "../../utils/enum";
+import { BurnMode, MetadataMutability, MintingMode, OwnerReverseLookupMode } from "../../utils/enum";
 import toastr from "toastr";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -252,7 +252,13 @@ const MergeNFT = () => {
               <em>Select a Collection</em>
             </MenuItem>
             {collections
-              .filter((col: any) => col.metadata_mutability == MetadataMutability.Immutable && col.minting_mode == MintingMode.Public && col.burn_mode == BurnMode.Burnable)
+              .filter(
+                (col: any) =>
+                  col.metadata_mutability == MetadataMutability.Immutable &&
+                  col.minting_mode == MintingMode.Public &&
+                  col.burn_mode == BurnMode.Burnable &&
+                  col.reporting_mode != OwnerReverseLookupMode.Complate
+              )
               .map((collection: any) => {
                 return (
                   <MenuItem key={collection.contractHash} value={collection.contractHash}>
