@@ -466,7 +466,7 @@ export const CreateNft = () => {
                   <CustomButton
                     onClick={nftMetadata.timeable ? createTimeableNft : createNft}
                     disabled={disable || nftMetadata.timeable ? nftMetadata.timestamp! <= moment().unix() : false}
-                    label="Create Custom NFT"
+                    label="Create NFT"
                   />
                 </Grid>
               </Stack>
