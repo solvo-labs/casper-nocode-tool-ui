@@ -343,3 +343,9 @@ export const getLootboxItemOwner = async (contractHash: string) => {
   const response = await axios.get<any[]>(SERVER_API + "fetch_lootbox_item_owners?contractHash=" + contractHash);
   return response.data;
 };
+
+export const fetchMarketplaceWhitelistData = async (contractHash: string, collectionHash: string) => {
+  const response = await axios.get(SERVER_API + "getMarketplaceWhitelistInfo?contractHash=" + contractHash + "&collectionHash=" + collectionHash);
+
+  return response.data;
+};
