@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 // @ts-ignore
-import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder, CLKey, CLByteArray } from "casper-js-sdk";
+import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder, CLKey, CLByteArray, CLAccountHash } from "casper-js-sdk";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { SERVER_API, fetchCep78NamedKeys, getNftCollectionDetails } from "../../utils/api";
 import axios from "axios";
@@ -58,7 +58,23 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const CreateNft = () => {
   const params = useParams();
 
-  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
+  const [publicKey, provider, , , , , , , , , , timeableNftDepositWasm] =
+    useOutletContext<
+      [
+        publickey: string,
+        provider: any,
+        cep18Wasm: any,
+        cep78Wasm: any,
+        marketplaceWasm: any,
+        vestingWasm: any,
+        executeListingWasm: any,
+        raffleWasm: any,
+        buyTicketWasm: any,
+        lootboxWasm: any,
+        lootboxDepositWasm: any,
+        timeableNftDepositWasm: any
+      ]
+    >();
   const classes = useStyles();
 
   const [nftMetadata, setNftMetadata] = useState<NftMetadataForm>(defaultNftMetadata);
@@ -97,12 +113,6 @@ export const CreateNft = () => {
     };
 
     init();
-
-    const interval = setInterval(() => init(), 30000);
-
-    return () => {
-      clearInterval(interval);
-    };
   }, []);
 
   useEffect(() => {
@@ -222,10 +232,9 @@ export const CreateNft = () => {
     }
 
     setActionLoader(true);
-    const contract = new Contracts.Contract();
-    contract.setContractHash("hash-" + DAPPEND_NFT_CONTRACT);
 
     try {
+      const contract = new Contracts.Contract();
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
       const targetAddress = CLPublicKey.fromHex(nftMetadata.targetAddress);
 
@@ -238,9 +247,18 @@ export const CreateNft = () => {
         collection: CasperHelpers.stringToKey(selectedCollection.contractHash),
         metadata: CLValueBuilder.string(JSON.stringify(finalMetadata)),
         target_address: CLValueBuilder.key(targetAddress),
+        amount: CLValueBuilder.u512(5 * 1_000_000_000),
+        nft_contract_hash: new CLAccountHash(Buffer.from(DAPPEND_NFT_CONTRACT, "hex")),
       });
 
-      const deploy = contract.callEntrypoint("mint_timeable_nft", args, ownerPublicKey, "casper-test", "15000000000");
+      const deploy = contract.install(
+        new Uint8Array(timeableNftDepositWasm),
+        args,
+        "3000000000",
+        ownerPublicKey,
+        "casper-test"
+        // [publicKey]
+      );
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
