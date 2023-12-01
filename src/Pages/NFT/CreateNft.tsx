@@ -254,7 +254,7 @@ export const CreateNft = () => {
       const deploy = contract.install(
         new Uint8Array(timeableNftDepositWasm),
         args,
-        "3000000000",
+        "20000000000",
         ownerPublicKey,
         "casper-test"
         // [publicKey]
