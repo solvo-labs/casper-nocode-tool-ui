@@ -118,7 +118,11 @@ export const NftCard: React.FC<Props> = ({
             </>
           )}
           {chipTitle && <Chip sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }} label={chipTitle} color={status} size="small"></Chip>}
-          {timeable && <Chip sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }} label={"Timable"} color={"warning"} size="small"></Chip>}
+          {timeable ? (
+            <Chip sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }} label={"Valid"} color={"success"} size="small"></Chip>
+          ) : (
+            <Chip sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }} label={"Expired"} color={"error"} size="small"></Chip>
+          )}
           {mergable && <Chip sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }} label={"Mergable"} color={"warning"} size="small"></Chip>}
         </CardContent>
       </Card>
