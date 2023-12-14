@@ -78,7 +78,7 @@ export const timeDifference = (start: number, end: number): string => {
   var hoursDiff = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   var minutesDiff = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
 
-  return ": " + daysDiff + "d " + hoursDiff + "h " + minutesDiff + "m";
+  return daysDiff + "d " + hoursDiff + "h " + minutesDiff + "m";
 };
 
 export const STORE_RAFFLE_CONTRACT_HASH = "6cbf0ee026d1d6ebc0364308213ce859895278f73bb15744b5089f8335adb8c8";
