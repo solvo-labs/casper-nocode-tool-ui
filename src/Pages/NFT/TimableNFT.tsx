@@ -6,7 +6,6 @@ import { CLPublicKey } from "casper-js-sdk";
 import { getAllNftsByOwned } from "../../utils/api";
 import { useOutletContext } from "react-router-dom";
 import { NftCard } from "../../components/NftCard";
-import moment from "moment";
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleContainer: {

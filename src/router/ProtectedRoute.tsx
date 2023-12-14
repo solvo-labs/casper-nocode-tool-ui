@@ -32,7 +32,7 @@ const ProtectedRoute: React.FC = () => {
   const [buyTicketWasm, setBuyTicketWasm] = useState<ArrayBuffer>();
   const [lootboxWasm, setLootboxWasm] = useState<ArrayBuffer>();
   const [lootboxDepositWasm, setLootboxDepositWasm] = useState<ArrayBuffer>();
-  const [timable_mergableWasm, setTimable_mergableWasm] = useState<ArrayBuffer>();
+  const [, setTimableMergableWasm] = useState<ArrayBuffer>();
 
   useEffect(() => {
     const init = async () => {
@@ -65,7 +65,7 @@ const ProtectedRoute: React.FC = () => {
           setBuyTicketWasm(buy_ticket_contract);
           setLootboxWasm(lootbox_contract);
           setLootboxDepositWasm(lootbox_deposit_contract);
-          setTimable_mergableWasm(timable_mergable_contract);
+          setTimableMergableWasm(timable_mergable_contract);
 
           setProvider(provider);
           setPublicKey(activePublicKey);

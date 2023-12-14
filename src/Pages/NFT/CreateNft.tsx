@@ -526,13 +526,13 @@ export const CreateNft = () => {
                           name="timableTargetAddress"
                           type="text"
                           onChange={(e: any) => {
-                            // setNftData({
-                            //   ...nftData,
-                            //   tokenMetaData: {
-                            //     ...nftData.tokenMetaData,
-                            //     description: e.target.value,
-                            //   },
-                            // });
+                            setNftData({
+                              ...nftData,
+                              tokenMetaData: {
+                                ...nftData.tokenMetaData,
+                                description: e.target.value,
+                              },
+                            });
                           }}
                           value={"nftData.tokenMetaData.targetAddres"}
                           disable={fileLoading}
