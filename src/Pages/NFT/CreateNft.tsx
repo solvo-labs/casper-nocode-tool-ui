@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 import { SERVER_API, fetchCep78NamedKeys, getNftCollectionDetails } from "../../utils/api";
 import axios from "axios";
 import toastr from "toastr";
@@ -19,8 +19,6 @@ import TabPanel from "@mui/lab/TabPanel";
 import { CustomDateTime } from "../../components/CustomDateTime";
 import moment, { Moment } from "moment";
 import { BurnMode, MetadataMutability, MintingMode, OwnerReverseLookupMode } from "../../utils/enum";
-// import CreatorRouter from "../../components/CreatorRouter";
-// import { DONT_HAVE_ANYTHING } from "../../utils/enum";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -71,7 +69,7 @@ export const CreateNft = () => {
       asset: "",
       mergable: false,
       timeable: false,
-      timestamp: moment().unix(),
+      timestamp: moment().valueOf(),
     },
   });
 
@@ -87,8 +85,6 @@ export const CreateNft = () => {
     mergable: false,
     timable: false,
   });
-
-  const navigate = useNavigate();
 
   const handleClear = () => {
     setFile(null);
@@ -129,7 +125,12 @@ export const CreateNft = () => {
   }, []);
 
   const disable = useMemo(() => {
-    const disable = !selectedCollection || !nftData.tokenMetaData.name || !nftData.tokenMetaData.description || fileLoading;
+    let disable: boolean;
+    if (nftData.tokenMetaData.timeable) {
+      disable = !selectedCollection || !nftData.tokenMetaData.name || !nftData.tokenMetaData.description || fileLoading || nftData.tokenMetaData.timestamp! <= moment().unix();
+    } else {
+      disable = !selectedCollection || !nftData.tokenMetaData.name || !nftData.tokenMetaData.description || fileLoading;
+    }
     return disable;
   }, [nftData.tokenMetaData, selectedCollection, fileLoading]);
 
@@ -159,7 +160,7 @@ export const CreateNft = () => {
 
       const clonedMetadata = { ...nftData.tokenMetaData };
 
-      clonedMetadata.timestamp = (clonedMetadata?.timestamp || 0) * 100;
+      clonedMetadata.timestamp = (clonedMetadata?.timestamp || 0) * 1000;
 
       const args = RuntimeArgs.fromMap({
         token_owner: CLValueBuilder.key(ownerPublicKey),
@@ -549,11 +550,7 @@ export const CreateNft = () => {
                       </>
                     )}
                     <Grid paddingTop={2} container justifyContent={"center"}>
-                      <CustomButton
-                        onClick={createNft}
-                        disabled={disable || nftData.tokenMetaData.timeable ? nftData.tokenMetaData.timestamp! <= moment().unix() : false}
-                        label="Create Custom NFT"
-                      />
+                      <CustomButton onClick={createNft} disabled={disable} label="Create Custom NFT" />
                     </Grid>
                   </Stack>
                 </Grid>
