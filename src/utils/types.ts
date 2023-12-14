@@ -74,7 +74,7 @@ export type NFT = {
     name: string;
     description: string;
     asset: string;
-    mergable?: boolean;
+    mergeable?: boolean;
     timeable?: boolean;
     timestamp?: number;
   };
@@ -195,4 +195,14 @@ export type LootboxItem = {
   rarityValue: number;
   tokenIdValue: number;
   nameText: string;
+};
+
+export type NftMetadataForm = {
+  name: string;
+  description: string;
+  asset: string;
+  mergeable?: boolean;
+  timeable?: boolean;
+  timestamp?: number;
+  targetAddress?: string;
 };

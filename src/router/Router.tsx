@@ -34,7 +34,7 @@ import MyLootboxes from "../Pages/NFT/MyLootboxes";
 import { LootboxList } from "../Pages/NFT/LootboxList";
 import JoinRaffle from "../Pages/Raffle/JoinRaffle";
 import MergeNFT from "../Pages/NFT/MergeNFT";
-import TimableNFT from "../Pages/NFT/TimableNFT";
+import TimeableNFT from "../Pages/NFT/TimableNFT";
 
 const Router: React.FC = () => {
   return (
@@ -64,18 +64,18 @@ const Router: React.FC = () => {
             <Route path="/create-nft/:collectionHash?" index element={<CreateNft />} />
             <Route path="/nft-list/:collectionHash" index element={<NftList />} />
             <Route path="/approve-nft" index element={<ApproveNFT />} />
-            <Route path="/create-lootbox" index element={<CreateLootbox />}></Route>
-            <Route path="/my-lootboxes" index element={<MyLootboxes />}></Route>
-            <Route path="/merge-nft" index element={<MergeNFT />}></Route>
-            <Route path="/timable-nft" index element={<TimableNFT />}></Route>
+            <Route path="/create-lootbox" index element={<CreateLootbox />} />
+            <Route path="/my-lootboxes" index element={<MyLootboxes />} />
+            <Route path="/merge-nft" index element={<MergeNFT />} />
+            <Route path="/timeable-nfts" index element={<TimeableNFT />} />
             {/* MARKETPLACE */}
             <Route path="/marketplace" index element={<ListMarketplace />} />
             <Route path="/create-marketplace" index element={<CreateMarketplace />} />
             <Route path="/marketplace/:marketplaceHash" index element={<MarketplaceManager />} />
             <Route path="/add-nft-to-marketplace/:marketplaceHash" index element={<AddNftToMarketplace />} />
             <Route path="/buy-nft" index element={<BuyNft />} />
-            <Route path="/buy-lootbox" index element={<LootboxList />}></Route>
-            <Route path="/join-raffle" index element={<JoinRaffle />}></Route>
+            <Route path="/buy-lootbox" index element={<LootboxList />} />
+            <Route path="/join-raffle" index element={<JoinRaffle />} />
             {/* RAFFLE */}
             <Route path="/manage-raffle" index element={<ManageRaffle />} />
 

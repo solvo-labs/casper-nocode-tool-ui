@@ -2,7 +2,7 @@ import { CircularProgress, Grid, Stack, Step, StepLabel, Stepper, Theme, Typogra
 import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { CustomButton } from "../../components/CustomButton";
-import { fetchCep78NamedKeys, fetchMarketplaceData, getNftCollection, getNftMetadata, storeListing } from "../../utils/api";
+import { fetchCep78NamedKeys, fetchMarketplaceData, fetchMarketplaceWhitelistData, getNftCollection, getNftMetadata, storeListing } from "../../utils/api";
 import { CasperHelpers } from "../../utils";
 import { DONT_HAVE_ANYTHING } from "../../utils/enum";
 // @ts-ignore
@@ -131,7 +131,9 @@ const AddNftToMarketplace = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const addWhiteList = async (contract: any, ownerPublicKey: any) => {
+  const addWhiteList = async () => {
+    const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+    const contract = new Contracts.Contract();
     contract.setContractHash(marketplaceHash);
 
     const whitelistArgs = RuntimeArgs.fromMap({
@@ -162,8 +164,7 @@ const AddNftToMarketplace = () => {
       try {
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
         const contract = new Contracts.Contract();
-
-        await addWhiteList(contract, ownerPublicKey);
+        contract.setContractHash(marketplaceHash);
 
         const args = RuntimeArgs.fromMap({
           collection: CasperHelpers.stringToKey(selectedCollection.slice(5)),
@@ -237,6 +238,14 @@ const AddNftToMarketplace = () => {
       }
 
       const nftMetas = await Promise.all(promises);
+
+      const whiteListInfo = await fetchMarketplaceWhitelistData(marketplaceHash || "", selectedCollection.slice(5));
+      console.log(whiteListInfo);
+      if (whiteListInfo != true) {
+        toastr.warning("You must to add whitelist to this marketplace. Please confirm this transaction.");
+        addWhiteList();
+      }
+
       setNftData(nftMetas.filter((nf) => nf.burnt === false));
       setLoading(false);
     }

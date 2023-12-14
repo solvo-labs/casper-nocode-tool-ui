@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const TimableNFT = () => {
+const TimeableNFT = () => {
   const classes = useStyles();
   const [publicKey] = useOutletContext<[publickey: string]>();
   const [loading, setLoading] = useState<boolean>(true);
@@ -100,4 +100,4 @@ const TimableNFT = () => {
   );
 };
 
-export default TimableNFT;
+export default TimeableNFT;

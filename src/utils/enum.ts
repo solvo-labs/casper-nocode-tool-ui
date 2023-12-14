@@ -36,7 +36,7 @@ export enum NFT_PAGE {
   CREATE_LOOTBOX = "Create Lootbox",
   MY_LOOTBOXES = "My Lootboxes",
   MERGE_NFT = "Merge NFT",
-  TIMABLE_NFT = "Timable NFT",
+  TIMEABLE_NFTS = "Timeable NFT's",
 }
 
 export enum RAFFLE_PAGE {
@@ -145,4 +145,10 @@ export enum RarityLevel {
   Common,
   Rare,
   Legendary,
+}
+
+export enum NFT_TYPES {
+  Standart,
+  Mergeable,
+  Timeable,
 }

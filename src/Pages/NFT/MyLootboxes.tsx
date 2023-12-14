@@ -110,6 +110,8 @@ const MyLootboxes = () => {
   }, [selectedNFTIndex, rarity]);
 
   const approve = async () => {
+    toastr.warning("Running this operation executes set_approve_for_all. Please make sure that you want to perform this operation.");
+
     setLoading(true);
     try {
       if (selectedLootbox) {

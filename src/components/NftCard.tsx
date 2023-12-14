@@ -1,9 +1,9 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import { Card, CardActionArea, CardContent, CardMedia, Chip, Theme, Typography } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle"; // Örnek bir ikon, gerekirse değiştirebilirsiniz
-import { RarityLevel } from "../utils/enum";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import moment from "moment";
+import { RarityLevel } from "../utils/enum";
 import { timeDifference } from "../utils";
 
 const useStyles = makeStyles((_theme: Theme) => ({
@@ -35,7 +35,7 @@ type Props = {
   rarity?: RarityLevel;
   timeable?: boolean;
   timestamp?: number;
-  mergable?: boolean;
+  mergeable?: boolean;
   onClick?: () => void;
 };
 
@@ -53,7 +53,7 @@ export const NftCard: React.FC<Props> = ({
   rarity,
   timeable,
   timestamp,
-  mergable,
+  mergeable,
   onClick,
 }) => {
   const classes = useStyles();
@@ -136,7 +136,7 @@ export const NftCard: React.FC<Props> = ({
               )}
             </>
           )}
-          {mergable && <Chip sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }} label={"Mergable"} color={"warning"} size="small"></Chip>}
+          {mergeable && <Chip sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }} label={"Mergeable"} color={"warning"} size="small"></Chip>}
         </CardContent>
       </Card>
     </CardActionArea>

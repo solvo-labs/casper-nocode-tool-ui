@@ -84,6 +84,7 @@ export const timeDifference = (start: number, end: number): string => {
 export const STORE_RAFFLE_CONTRACT_HASH = "6cbf0ee026d1d6ebc0364308213ce859895278f73bb15744b5089f8335adb8c8";
 export const lootboxStorageContract = "0e99476bb8b2cdade2f916bfaad7f844120bd0bb1d3ab170d7ab501b4fa850ba";
 export const MERGABLE_NFT_CONTRACT = "c6366b7f5932fb3d52ed4d0e33ff19c9a7b1f336736507900c8833079d4713d4";
+export const DAPPEND_NFT_CONTRACT = "940fd61d953f76ee0a478d0386e503d664d7f9e17702f6cfc0e7708b540be1cd";
 
 const rarityLevelExplanationTitleArray: string[] = [
   "COMMON: This level is given to the most frequently encountered items inside loot boxes. These items are generally common and widely found.",
@@ -101,4 +102,4 @@ export const METADATA_MUTABILITY_EXPLANATION =
 export const MINTING_MODE_EXPLANATION = "If you want to create Custom NFTs or Timable NFTs for your collection, it is necessary to select the minting mode as public.";
 export const BURN_MODE_EXPLANATION = "If you want to create Custom NFTs or Timable NFTs for your collection, it is necessary to select the burn mode as burnable.";
 export const OWNER_REVERSE_LOOKUP_MODE_EXPLANATION =
-  "If you want your collection to have the Mergable feature, the Owner Reverse Lookup Mode must be either 'NoLookup' or 'TransfersOnly'. If you want it to be a Timable NFT, you should select the 'Complete' mode.";
+  "If you want your collection to have the Mergeable feature, the Owner Reverse Lookup Mode must be either 'NoLookup' or 'TransfersOnly'. If you want it to be a Timable NFT, you should select the 'Complete' mode.";

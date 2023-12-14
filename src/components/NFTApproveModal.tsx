@@ -21,7 +21,7 @@ import { CustomButton } from "./CustomButton.tsx";
 import React from "react";
 import { CustomSelect } from "./CustomSelect.tsx";
 import CustomRadioButton from "./CustomRadioIcon.tsx";
-import { MERGABLE_NFT_CONTRACT } from "../utils/index.ts";
+import { DAPPEND_NFT_CONTRACT } from "../utils/index.ts";
 
 const style = {
   position: "absolute" as "absolute",
@@ -189,7 +189,7 @@ export const ApproveNFTModal: React.FC<ApproveModal> = ({
                     label="Custom NFT"
                     onClick={(e: any) => {
                       approveOperatorOnChange(e.target.value);
-                      selectedOnChange("hash-" + MERGABLE_NFT_CONTRACT);
+                      selectedOnChange("hash-" + DAPPEND_NFT_CONTRACT);
                     }}
                   />
                 </RadioGroup>
@@ -249,7 +249,7 @@ export const ApproveNFTModal: React.FC<ApproveModal> = ({
               {approveOperatorType == APPROVE_TYPE.CUSTOM_NFT && (
                 <div>
                   <Typography>Custom NFT contract:</Typography>
-                  <Typography variant="subtitle1">{MERGABLE_NFT_CONTRACT}</Typography>
+                  <Typography variant="subtitle1">{DAPPEND_NFT_CONTRACT}</Typography>
                 </div>
               )}
               <Stack direction={"row"} spacing={"2rem"} justifyContent={"center"}>
