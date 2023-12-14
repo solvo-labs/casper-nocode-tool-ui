@@ -137,11 +137,10 @@ export const CreateNft = () => {
   }, [selectedCollection]);
 
   const disable = useMemo(() => {
-    let disable: boolean;
     if (nftMetadata.timeable) {
-      return (disable = !selectedCollection || !nftMetadata.name || !nftMetadata.description || fileLoading || nftMetadata.timestamp! <= moment().unix());
+      return !selectedCollection || !nftMetadata.name || !nftMetadata.description || fileLoading || nftMetadata.timestamp! <= moment().unix();
     } else {
-      return (disable = !selectedCollection || !nftMetadata.name || !nftMetadata.description || fileLoading);
+      return !selectedCollection || !nftMetadata.name || !nftMetadata.description || fileLoading;
     }
   }, [nftMetadata, selectedCollection, fileLoading]);
 
