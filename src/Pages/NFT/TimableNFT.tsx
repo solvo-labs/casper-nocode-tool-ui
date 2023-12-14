@@ -47,9 +47,6 @@ const TimableNFT = () => {
       const finalData = incomingData.filter((nft: any) => nft.metadata.timeable);
       setTimeableNFTs(finalData);
       setLoading(false);
-      console.log(finalData);
-
-      console.log(moment().valueOf());
     };
 
     init();
@@ -85,8 +82,8 @@ const TimableNFT = () => {
         </Stack>
       </Grid>
       <Grid container className={classes.container}>
-        {timeableNFTs.map((e: any) => (
-          <Grid item xl={3} lg={4} md={4} sm={6} xs={6} key={e.token_id}>
+        {timeableNFTs.map((e: any, index: number) => (
+          <Grid item xl={3} lg={4} md={4} sm={6} xs={6} key={index}>
             <NftCard
               description={e.metadata.description}
               name={e.metadata.name}
@@ -94,7 +91,8 @@ const TimableNFT = () => {
               index={e.token_id}
               owner={e.owner_public_key.slice(0, 20)}
               amIOwner={e.isMyNft}
-              timeable={e.metadata.timestamp > moment().valueOf()}
+              timeable={e.metadata.timeable}
+              timestamp={e.metadata.timestamp}
             ></NftCard>
           </Grid>
         ))}
