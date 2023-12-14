@@ -68,6 +68,19 @@ export const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
+export const timeDifference = (start: number, end: number): string => {
+  var startDate = new Date(start);
+  var endDate = new Date(end);
+
+  var timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
+
+  var daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+  var hoursDiff = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var minutesDiff = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+  return ": " + daysDiff + "d " + hoursDiff + "h " + minutesDiff + "m";
+};
+
 export const STORE_RAFFLE_CONTRACT_HASH = "6cbf0ee026d1d6ebc0364308213ce859895278f73bb15744b5089f8335adb8c8";
 export const lootboxStorageContract = "0e99476bb8b2cdade2f916bfaad7f844120bd0bb1d3ab170d7ab501b4fa850ba";
 export const MERGABLE_NFT_CONTRACT = "c6366b7f5932fb3d52ed4d0e33ff19c9a7b1f336736507900c8833079d4713d4";
