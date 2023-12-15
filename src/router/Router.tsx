@@ -34,7 +34,7 @@ import MyLootboxes from "../Pages/NFT/MyLootboxes";
 import { LootboxList } from "../Pages/NFT/LootboxList";
 import JoinRaffle from "../Pages/Raffle/JoinRaffle";
 import MergeNFT from "../Pages/NFT/MergeNFT";
-import { TimeableNFT } from "../Pages/NFT/TimeableNFT";
+import TimeableNFT from "../Pages/NFT/TimableNFT";
 
 const Router: React.FC = () => {
   return (

@@ -57,6 +57,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const CreateNft = () => {
   const params = useParams();
+  const navigate = useNavigate();
+  const classes = useStyles();
 
   const [publicKey, provider, , , , , , , , , , timeableNftDepositWasm] =
     useOutletContext<
@@ -75,7 +77,6 @@ export const CreateNft = () => {
         timeableNftDepositWasm: any
       ]
     >();
-  const classes = useStyles();
 
   const [nftMetadata, setNftMetadata] = useState<NftMetadataForm>(defaultNftMetadata);
   const [file, setFile] = useState<any>();
@@ -85,8 +86,6 @@ export const CreateNft = () => {
   const [collections, setCollections] = useState<any>([]);
   const [selectedCollection, setSelectedCollection] = useState<any>();
   const [nftType, setNftType] = useState<NFT_TYPES>(NFT_TYPES.Standart);
-
-  const navigate = useNavigate();
 
   const handleClear = () => {
     setFile(null);
@@ -138,8 +137,11 @@ export const CreateNft = () => {
   }, [selectedCollection]);
 
   const disable = useMemo(() => {
-    const disable = !selectedCollection || !nftMetadata.name || !nftMetadata.description || fileLoading;
-    return disable;
+    if (nftMetadata.timeable) {
+      return !selectedCollection || !nftMetadata.name || !nftMetadata.description || fileLoading || nftMetadata.timestamp! <= moment().unix();
+    } else {
+      return !selectedCollection || !nftMetadata.name || !nftMetadata.description || fileLoading;
+    }
   }, [nftMetadata, selectedCollection, fileLoading]);
 
   const createNft = async () => {
@@ -413,7 +415,7 @@ export const CreateNft = () => {
                   floor="dark"
                 />
                 {nftType != NFT_TYPES.Standart && (
-                  <Stack>
+                  <>
                     {nftType == NFT_TYPES.Mergeable && (
                       <FormControlLabel
                         sx={{ justifyContent: "start", alignItems: "center", ".MuiFormControlLabel-label.Mui-disabled": { color: "gray" } }}
@@ -431,10 +433,20 @@ export const CreateNft = () => {
                         disabled={fileLoading}
                       />
                     )}
-                  </Stack>
+                  </>
                 )}
                 {nftType == NFT_TYPES.Timeable && (
                   <>
+                    <Divider
+                      sx={{
+                        color: "white",
+                        "&::before, &::after": {
+                          borderTop: "thin solid red !important",
+                        },
+                      }}
+                    >
+                      Timeable NFT Features
+                    </Divider>
                     <CustomInput
                       placeholder="NFT Target Address"
                       label="NFT Target Address"
@@ -463,11 +475,7 @@ export const CreateNft = () => {
                   </>
                 )}
                 <Grid paddingTop={2} container justifyContent={"center"}>
-                  <CustomButton
-                    onClick={nftMetadata.timeable ? createTimeableNft : createNft}
-                    disabled={disable || nftMetadata.timeable ? nftMetadata.timestamp! <= moment().unix() : false}
-                    label="Create NFT"
-                  />
+                  <CustomButton onClick={nftMetadata.timeable ? createTimeableNft : createNft} disabled={disable} label="Create NFT" />
                 </Grid>
               </Stack>
             </Grid>

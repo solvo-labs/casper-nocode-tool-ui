@@ -1,8 +1,10 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import { Card, CardActionArea, CardContent, CardMedia, Chip, Theme, Typography } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle"; // Örnek bir ikon, gerekirse değiştirebilirsiniz
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import moment from "moment";
 import { RarityLevel } from "../utils/enum";
+import { timeDifference } from "../utils";
 
 const useStyles = makeStyles((_theme: Theme) => ({
   card: {
@@ -32,6 +34,7 @@ type Props = {
   isSelected?: boolean;
   rarity?: RarityLevel;
   timeable?: boolean;
+  timestamp?: number;
   mergeable?: boolean;
   onClick?: () => void;
 };
@@ -49,6 +52,7 @@ export const NftCard: React.FC<Props> = ({
   isSelected = false,
   rarity,
   timeable,
+  timestamp,
   mergeable,
   onClick,
 }) => {
@@ -118,7 +122,20 @@ export const NftCard: React.FC<Props> = ({
             </>
           )}
           {chipTitle && <Chip sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }} label={chipTitle} color={status} size="small"></Chip>}
-          {timeable && <Chip sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }} label={"Timable"} color={"warning"} size="small"></Chip>}
+          {timeable && (
+            <>
+              {timestamp! > moment().valueOf() ? (
+                <Chip
+                  sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }}
+                  label={"Remaining: " + timeDifference(timestamp!, moment().valueOf())}
+                  color={"success"}
+                  size="small"
+                ></Chip>
+              ) : (
+                <Chip sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }} label={"Expired"} color={"error"} size="small"></Chip>
+              )}
+            </>
+          )}
           {mergeable && <Chip sx={{ marginTop: "0.5rem", marginX: "0.1rem", fontSize: "1rem" }} label={"Mergeable"} color={"warning"} size="small"></Chip>}
         </CardContent>
       </Card>
