@@ -108,7 +108,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const Stake = () => {
+const StakeCasper = () => {
   const classes = useStyles();
   const [amount, setAmount] = useState<number>();
   const [loading, setLoading] = useState<boolean>(true);
@@ -495,3 +495,5 @@ export const Stake = () => {
     </div>
   );
 };
+
+export default StakeCasper;
