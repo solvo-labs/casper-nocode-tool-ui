@@ -12,6 +12,8 @@ import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from 
 import { CasperHelpers } from "../../utils";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
+import { CustomInput } from "../../components/CustomInput";
+import { CustomDateTime } from "../../components/CustomDateTime";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -35,9 +37,28 @@ const StakeCep18Token = () => {
   const navigate = useNavigate();
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
   const { tokens, loading } = useGetTokens(publicKey);
-  const [stakeForm, setStakeForm] = useState<{ token: ERC20Token | null; duration: number }>({
-    duration: DURATION["Monthly"],
+  const [stakeForm, setStakeForm] = useState<{
+    token: ERC20Token | null;
+    lockPeriod: number;
+    minStake: number;
+    maxStake: number;
+    maxCap: number;
+    fixedApr: number;
+    minApr: number;
+    maxApr: number;
+    depositStartTime: number;
+    depositEndTime: number;
+  }>({
+    lockPeriod: DURATION["Monthly"],
     token: null,
+    minStake: 0,
+    maxStake: 0,
+    maxCap: 0,
+    fixedApr: 0,
+    minApr: 0,
+    maxApr: 0,
+    depositStartTime: Date.now() / 1000,
+    depositEndTime: Date.now() / 1000,
   });
   const [durationList, setDurationList] = useState<string[]>([]);
 
@@ -55,7 +76,7 @@ const StakeCep18Token = () => {
       const contract = new Contracts.Contract();
       const args = RuntimeArgs.fromMap({
         staked_token: CasperHelpers.stringToKey(stakeForm.token?.contractHash!),
-        duration: CLValueBuilder.u64(stakeForm.duration),
+        duration: CLValueBuilder.u64(stakeForm.lockPeriod),
       });
       // const deploy = contract.install(stakeWasm, args, "80000000000", ownerPublicKey, "casper-test");
       // const deployJson = DeployUtil.deployToJson(deploy);
@@ -84,7 +105,7 @@ const StakeCep18Token = () => {
   };
 
   const disable = useMemo(() => {
-    return !stakeForm.duration || !stakeForm.token;
+    return !stakeForm.lockPeriod || !stakeForm.token;
   }, [stakeForm]);
 
   if (loading) {
@@ -134,12 +155,83 @@ const StakeCep18Token = () => {
               );
             })}
           </CustomSelect>
+          <CustomInput
+            placeholder="Min Stake"
+            label="Min Stake"
+            id="minStake"
+            name="minStake"
+            type="number"
+            value={stakeForm.minStake || ""}
+            onChange={(e: any) => setStakeForm({ ...stakeForm, minStake: Number(e.target.value) })}
+          />
+          <CustomInput
+            placeholder="Max Stake"
+            label="Max Stake"
+            id="maxStake"
+            name="maxStake"
+            type="number"
+            value={stakeForm.maxStake || ""}
+            onChange={(e: any) => setStakeForm({ ...stakeForm, maxStake: Number(e.target.value) })}
+          />
+          <CustomInput
+            placeholder="Max Cap"
+            label="Max Cap"
+            id="maxCap"
+            name="maxCap"
+            type="number"
+            value={stakeForm.maxCap || ""}
+            onChange={(e: any) => setStakeForm({ ...stakeForm, maxCap: Number(e.target.value) })}
+          />
+          <CustomInput
+            placeholder="Fixed APR %"
+            label="Fixed APR"
+            id="fixedApr"
+            name="fixedApr"
+            type="number"
+            value={stakeForm.fixedApr || ""}
+            onChange={(e: any) => setStakeForm({ ...stakeForm, fixedApr: Number(e.target.value) })}
+          />{" "}
+          <CustomInput
+            placeholder="Min APR %"
+            label="Min APR"
+            id="minApr"
+            name="minApr"
+            type="number"
+            value={stakeForm.minApr || ""}
+            onChange={(e: any) => setStakeForm({ ...stakeForm, minApr: Number(e.target.value) })}
+          />
+          <CustomInput
+            placeholder="Max APR %"
+            label="Max APR"
+            id="maxApr"
+            name="maxApr"
+            type="number"
+            value={stakeForm.maxApr || ""}
+            onChange={(e: any) => setStakeForm({ ...stakeForm, maxApr: Number(e.target.value) })}
+          />
+          <CustomDateTime
+            value={stakeForm.depositStartTime}
+            label="Deposit Start Time"
+            theme={"Dark"}
+            onChange={function (e: any): void {
+              console.log(e);
+            }}
+          />
+          <CustomDateTime
+            value={stakeForm.depositStartTime}
+            label="Deposit End Time"
+            theme={"Dark"}
+            onChange={function (e: any): void {
+              console.log(e);
+            }}
+          />
+          {/* <CustomDateTime></CustomDateTime> */}
           <CustomSelect
-            value={stakeForm.duration ? DURATION[stakeForm.duration] : "default"}
+            value={stakeForm.lockPeriod ? DURATION[stakeForm.lockPeriod] : "default"}
             label="Stake Period"
             onChange={(event: SelectChangeEvent<{ value: unknown }>) => {
               const selectedValue = event.target.value as keyof typeof DURATION;
-              setStakeForm({ ...stakeForm, duration: DURATION[selectedValue] });
+              setStakeForm({ ...stakeForm, lockPeriod: DURATION[selectedValue] });
             }}
             id={"custom-select"}
           >
@@ -154,7 +246,7 @@ const StakeCep18Token = () => {
               );
             })}
           </CustomSelect>
-          <CustomButton disabled={disable} label="Click" onClick={() => console.log(stakeForm)}></CustomButton>
+          <CustomButton disabled={disable} label="Stake" onClick={() => console.log(stakeForm)}></CustomButton>
         </Stack>
       </Grid>
     </Grid>
