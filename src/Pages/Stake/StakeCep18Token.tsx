@@ -6,10 +6,10 @@ import { ERC20Token } from "../../utils/types";
 import { useGetTokens } from "../../hooks/useGetTokens";
 import { useOutletContext } from "react-router-dom";
 import { CustomButton } from "../../components/CustomButton";
-import { DURATION } from "../../utils/enum";
+import { PERIOD } from "../../utils/enum";
 // @ts-ignore
-import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { CasperHelpers } from "../../utils";
+import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder, CLAccountHash } from "casper-js-sdk";
+import { CasperHelpers, STORE_CEP_18_STAKE_CONTRACT } from "../../utils";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
 import { CustomInput } from "../../components/CustomInput";
@@ -66,7 +66,7 @@ const StakeCep18Token = () => {
     depositStartTime: number;
     depositEndTime: number;
   }>({
-    lockPeriod: DURATION["Monthly"],
+    lockPeriod: PERIOD["A Week"],
     token: null,
     minStake: 0,
     maxStake: 0,
@@ -78,10 +78,11 @@ const StakeCep18Token = () => {
     depositEndTime: Date.now() / 1000,
   });
   const [durationList, setDurationList] = useState<string[]>([]);
+  const [isFixedApr, setIsFixedApr] = useState<boolean>(false);
 
   useEffect(() => {
     const init = async () => {
-      const durationArray: string[] = Object.keys(DURATION).filter((key) => isNaN(Number(key)));
+      const durationArray: string[] = Object.keys(PERIOD).filter((key) => isNaN(Number(key)));
       setDurationList(durationArray);
     };
     init();
@@ -102,13 +103,15 @@ const StakeCep18Token = () => {
           max_cap: CLValueBuilder.u256(stakeForm.maxCap * Math.pow(10, decimal)),
 
           // fixed case
-          fixed_apr: CLValueBuilder.u64(stakeForm.fixedApr),
-          min_apr: CLValueBuilder.u64(stakeForm.minApr),
-          max_apr: CLValueBuilder.u64(stakeForm.maxApr),
+          fixed_apr: CLValueBuilder.u64(isFixedApr ? stakeForm.fixedApr : 0),
+          min_apr: CLValueBuilder.u64(isFixedApr ? 0 : stakeForm.minApr),
+          max_apr: CLValueBuilder.u64(isFixedApr ? 0 : stakeForm.maxApr),
 
           lock_period: CLValueBuilder.u64(stakeForm.lockPeriod),
           deposit_start_time: CLValueBuilder.u64(stakeForm.depositStartTime * 1000),
           deposit_end_time: CLValueBuilder.u64(stakeForm.depositEndTime * 1000),
+
+          storage_key: new CLAccountHash(Buffer.from(STORE_CEP_18_STAKE_CONTRACT, "hex")),
         });
 
         const deploy = contract.install(stakeWasm, args, "80000000000", ownerPublicKey, "casper-test");
@@ -258,11 +261,11 @@ const StakeCep18Token = () => {
           />
           {/* <CustomDateTime></CustomDateTime> */}
           <CustomSelect
-            value={stakeForm.lockPeriod ? DURATION[stakeForm.lockPeriod] : "default"}
+            value={stakeForm.lockPeriod ? PERIOD[stakeForm.lockPeriod] : "default"}
             label="Stake Period"
             onChange={(event: SelectChangeEvent<{ value: unknown }>) => {
-              const selectedValue = event.target.value as keyof typeof DURATION;
-              setStakeForm({ ...stakeForm, lockPeriod: DURATION[selectedValue] });
+              const selectedValue = event.target.value as keyof typeof PERIOD;
+              setStakeForm({ ...stakeForm, lockPeriod: PERIOD[selectedValue] });
             }}
             id={"custom-select"}
           >
