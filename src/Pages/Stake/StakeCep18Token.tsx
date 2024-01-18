@@ -4,7 +4,7 @@ import { CustomSelect } from "../../components/CustomSelect";
 import { useEffect, useMemo, useState } from "react";
 import { ERC20Token } from "../../utils/types";
 import { useGetTokens } from "../../hooks/useGetTokens";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import { CustomButton } from "../../components/CustomButton";
 import { DURATION } from "../../utils/enum";
 // @ts-ignore
@@ -35,7 +35,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const StakeCep18Token = () => {
   const classes = useStyles();
-  const navigate = useNavigate();
   const [publicKey, provider, , , , , , , , , , , stakeWasm] =
     useOutletContext<
       [
