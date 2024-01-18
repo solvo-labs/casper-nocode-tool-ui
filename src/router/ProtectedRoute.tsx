@@ -33,6 +33,7 @@ const ProtectedRoute: React.FC = () => {
   const [lootboxWasm, setLootboxWasm] = useState<ArrayBuffer>();
   const [lootboxDepositWasm, setLootboxDepositWasm] = useState<ArrayBuffer>();
   const [timeableNftDepositWasm, setTimeableNftDepositWasm] = useState<ArrayBuffer>();
+  const [stakeWasm, setStakeWasm] = useState<ArrayBuffer>();
 
   useEffect(() => {
     const init = async () => {
@@ -55,6 +56,7 @@ const ProtectedRoute: React.FC = () => {
           const lootbox_contract = await fetchContract("/lootbox.wasm");
           const lootbox_deposit_contract = await fetchContract("/lootbox_deposit_contract.wasm");
           const timeable_nft_deposit_contract = await fetchContract("/timeable_nft_deposit.wasm");
+          const stake_contract = await fetchContract("/stake.wasm");
 
           setCep18Wasm(cep18_contract);
           setCep78Wasm(cep78_contract);
@@ -66,6 +68,7 @@ const ProtectedRoute: React.FC = () => {
           setLootboxWasm(lootbox_contract);
           setLootboxDepositWasm(lootbox_deposit_contract);
           setTimeableNftDepositWasm(timeable_nft_deposit_contract);
+          setStakeWasm(stake_contract);
 
           setProvider(provider);
           setPublicKey(activePublicKey);
@@ -130,6 +133,7 @@ const ProtectedRoute: React.FC = () => {
                 lootboxWasm,
                 lootboxDepositWasm,
                 timeableNftDepositWasm,
+                stakeWasm,
               ]}
             />
           </Grid>
