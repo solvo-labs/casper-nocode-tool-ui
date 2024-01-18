@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
-import { APP_NAME, MARKETPLACE_PAGE, NFT_PAGE, PAGES_NAME, RAFFLE_PAGE, TOKEN_PAGE, TOKENOMICS_PAGE } from "../utils/enum";
+import { APP_NAME, MARKETPLACE_PAGE, NFT_PAGE, PAGES_NAME, RAFFLE_PAGE, STAKE_PAGE, TOKEN_PAGE, TOKENOMICS_PAGE } from "../utils/enum";
 import { AppBar, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -44,6 +44,8 @@ type Props = {
 };
 
 const TopBar: React.FC<Props> = ({ publicKey }) => {
+  const [stakeAnchorEl, setAnchorElStake] = React.useState<null | HTMLElement>(null);
+  const openStake = Boolean(stakeAnchorEl);
   const [nftAnchorEl, setAnchorElForNFT] = React.useState<null | HTMLElement>(null);
   const openNFT = Boolean(nftAnchorEl);
   const [tokenAnchorEl, setAnchorElForToken] = React.useState<null | HTMLElement>(null);
@@ -164,6 +166,12 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
       navigate("/join-raffle");
     } else if (a === RAFFLE_PAGE.MANAGE_RAFFLE) {
       navigate("/manage-raffle");
+    } else if (a === STAKE_PAGE.STAKTE_CASPER) {
+      navigate("stake-casper");
+    } else if (a === STAKE_PAGE.STAKE_TOKEN) {
+      navigate("/stake-cep18-token");
+    } else if (a === STAKE_PAGE.MANAGE_STAKE) {
+      navigate("/manage-stake");
     }
 
     setAnchorElForNFT(null);
@@ -172,6 +180,7 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
     setAnchorElForProfile(null);
     setAnchorElForMarketplace(null);
     setAnchorElForRaffle(null);
+    setAnchorElStake(null);
   };
 
   const listMenuItem = (pages: object) => {
@@ -194,16 +203,38 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
               {APP_NAME.CASPER}
             </Typography>
             <Box sx={{ flexGrow: 1, display: "flex" }}>
-              <Button
-                onClick={() => {
-                  navigate("/stake");
-                }}
-              >
-                <Typography className={classes.menuTitle}>{PAGES_NAME.STAKE}</Typography>
-              </Button>
-              {/* <Button onClick={() => {}}>
-                <Typography className={classes.menuTitle}>{PAGES_NAME.DAO}</Typography>
-              </Button> */}
+              <Box>
+                <Button
+                  onClick={(e: any) => handleClick(e, setAnchorElStake)}
+                  onMouseOver={(e: any) => handleClick(e, setAnchorElStake)}
+                  onMouseOut={(e: any) => handleClick(e, setAnchorElStake)}
+                >
+                  <Typography className={classes.menuTitle}>{PAGES_NAME.STAKE}</Typography>
+                </Button>
+                <Menu
+                  id="nftMenu"
+                  anchorEl={stakeAnchorEl}
+                  open={openStake}
+                  onClose={() => setAnchorElStake(null)}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  sx={{
+                    "& .MuiPaper-root": {
+                      background: "#0F1429",
+                      color: "#FFFFFF",
+                      border: "1px solid #FF0011",
+                    },
+                  }}
+                >
+                  {listMenuItem(STAKE_PAGE)}
+                </Menu>
+              </Box>
               <Box>
                 <Button
                   onClick={(e: any) => handleClick(e, setAnchorElForNFT)}

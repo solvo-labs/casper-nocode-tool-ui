@@ -28,13 +28,15 @@ import ListMarketplace from "../Pages/Marketplace/ListMarketplace";
 import AddNftToMarketplace from "../Pages/Marketplace/AddNftToMarketplace";
 import BuyNft from "../Pages/Marketplace/BuyNft";
 import ManageRaffle from "../Pages/Raffle/ManageRaffle";
-import { Stake } from "../Pages/Stake/Stake";
+import StakeCasper from "../Pages/Stake/StakeCasper";
 import CreateLootbox from "../Pages/NFT/CreateLootbox";
 import MyLootboxes from "../Pages/NFT/MyLootboxes";
 import { LootboxList } from "../Pages/NFT/LootboxList";
 import JoinRaffle from "../Pages/Raffle/JoinRaffle";
 import MergeNFT from "../Pages/NFT/MergeNFT";
 import TimeableNFT from "../Pages/NFT/TimableNFT";
+import StakeCep18Token from "../Pages/Stake/StakeCep18Token";
+import ManageStakes from "../Pages/Stake/ManageStakes";
 
 const Router: React.FC = () => {
   return (
@@ -81,7 +83,9 @@ const Router: React.FC = () => {
 
             {/* STAKE */}
 
-            <Route path="/stake" index element={<Stake />} />
+            <Route path="/stake-casper" index element={<StakeCasper />} />
+            <Route path="/stake-cep18-token" index element={<StakeCep18Token />} />
+            <Route path="/manage-stake" index element={<ManageStakes />} />
           </Route>
           <Route path="/login" index element={<Login />} />
         </Routes>

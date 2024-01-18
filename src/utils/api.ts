@@ -349,3 +349,19 @@ export const fetchMarketplaceWhitelistData = async (contractHash: string, collec
 
   return response.data;
 };
+
+export const fetchStakeKeys = async (pubkey: string) => {
+  const namedKeys = await fetchNamedKeys(pubkey);
+
+  const filteredNamedKeys = namedKeys.filter((ky: NamedKey) => {
+    return ky.name.startsWith("stake_contract_hash");
+  });
+
+  return filteredNamedKeys;
+};
+
+export const getStakes = async (contractHash: string) => {
+  const response = await axios.get<any>(SERVER_API + "getStakeDetails?contractHash=" + contractHash);
+  // console.log("response", response.data);
+  return { ...response.data };
+};

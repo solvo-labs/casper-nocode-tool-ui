@@ -2,6 +2,12 @@ export enum APP_NAME {
   CASPER = "CASPER NOCODE TOOL",
 }
 
+export enum STAKE_PAGE {
+  STAKTE_CASPER = "Stake Casper",
+  STAKE_TOKEN = "Stake Cep-18 Token",
+  MANAGE_STAKE = "Manage Stakes",
+}
+
 export enum PAGES_NAME {
   STAKE = "STAKE",
   DAO = "DAO",
@@ -151,4 +157,13 @@ export enum NFT_TYPES {
   Standart,
   Mergeable,
   Timeable,
+}
+
+export enum DURATION {
+  "Yearly" = 31536000000,
+  "Semi Annual" = 15768000000,
+  "Quarterly" = 7884000000,
+  "Four Month" = 10512000000,
+  "Monthly" = 2628000000,
+  "Weekly" = 604800000,
 }
