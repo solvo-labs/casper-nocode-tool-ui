@@ -14,6 +14,7 @@ import axios from "axios";
 import { SERVER_API } from "../../utils/api";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomDateTime } from "../../components/CustomDateTime";
+import { Moment } from "moment";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -35,7 +36,24 @@ const useStyles = makeStyles((theme: Theme) => ({
 const StakeCep18Token = () => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
+  const [publicKey, provider, , , , , , , , , , , stakeWasm] =
+    useOutletContext<
+      [
+        publickey: string,
+        provider: any,
+        cep18Wasm: any,
+        cep78Wasm: any,
+        marketplaceWasm: any,
+        vestingWasm: any,
+        executeListingWasm: any,
+        raffleWasm: any,
+        buyTicketWasm: any,
+        lootboxWasm: any,
+        lootboxDepositWasm: any,
+        timeableNftDepositWasm: any,
+        stakeWasm: any
+      ]
+    >();
   const { tokens, loading } = useGetTokens(publicKey);
   const [stakeForm, setStakeForm] = useState<{
     token: ERC20Token | null;
@@ -74,29 +92,47 @@ const StakeCep18Token = () => {
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
       const contract = new Contracts.Contract();
-      const args = RuntimeArgs.fromMap({
-        staked_token: CasperHelpers.stringToKey(stakeForm.token?.contractHash!),
-        duration: CLValueBuilder.u64(stakeForm.lockPeriod),
-      });
-      // const deploy = contract.install(stakeWasm, args, "80000000000", ownerPublicKey, "casper-test");
-      // const deployJson = DeployUtil.deployToJson(deploy);
-      try {
-        // const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-        // console.log("sign", sign);
-        // let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
-        // signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-        // console.log("signedDeploy", signedDeploy);
-        // const data = DeployUtil.deployToJson(signedDeploy.val);
-        // const response = await axios.post(SERVER_API + "deploy", data, {
-        //   headers: { "Content-Type": "application/json" },
-        // });
-        // toastr.success(response.data, "ERC-20 Token deployed successfully.");
-        // navigate("/");
-        // loading
-        // window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
-      } catch (error: any) {
-        // loading
-        toastr.error("Something went wrong. Error: " + error);
+
+      if (stakeForm.token) {
+        const decimal = Number(stakeForm.token.decimals.hex);
+
+        const args = RuntimeArgs.fromMap({
+          token: CasperHelpers.stringToKey(stakeForm.token.contractHash),
+          min_stake: CLValueBuilder.u256(stakeForm.minStake * Math.pow(10, decimal)),
+          max_stake: CLValueBuilder.u256(stakeForm.maxStake * Math.pow(10, decimal)),
+          max_cap: CLValueBuilder.u256(stakeForm.maxCap * Math.pow(10, decimal)),
+
+          // fixed case
+          fixed_apr: CLValueBuilder.u64(stakeForm.fixedApr),
+          min_apr: CLValueBuilder.u64(stakeForm.minApr),
+          max_apr: CLValueBuilder.u64(stakeForm.maxApr),
+
+          lock_period: CLValueBuilder.u64(stakeForm.lockPeriod),
+          deposit_start_time: CLValueBuilder.u64(stakeForm.depositStartTime * 1000),
+          deposit_end_time: CLValueBuilder.u64(stakeForm.depositEndTime * 1000),
+        });
+
+        const deploy = contract.install(stakeWasm, args, "80000000000", ownerPublicKey, "casper-test");
+        const deployJson = DeployUtil.deployToJson(deploy);
+        try {
+          const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+
+          let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+          signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+
+          const data = DeployUtil.deployToJson(signedDeploy.val);
+          const response = await axios.post(SERVER_API + "deploy", data, {
+            headers: { "Content-Type": "application/json" },
+          });
+
+          toastr.success(response.data, "CEP-18 Stake Contract deployed successfully.");
+          // navigate("/");
+
+          window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
+        } catch (error: any) {
+          // loading
+          toastr.error("Something went wrong. Error: " + error);
+        }
       }
     } catch (error: any) {
       // loading
@@ -213,17 +249,13 @@ const StakeCep18Token = () => {
             value={stakeForm.depositStartTime}
             label="Deposit Start Time"
             theme={"Dark"}
-            onChange={function (e: any): void {
-              console.log(e);
-            }}
+            onChange={(e: Moment) => setStakeForm({ ...stakeForm, depositStartTime: e.unix() })}
           />
           <CustomDateTime
-            value={stakeForm.depositStartTime}
+            value={stakeForm.depositEndTime}
             label="Deposit End Time"
             theme={"Dark"}
-            onChange={function (e: any): void {
-              console.log(e);
-            }}
+            onChange={(e: Moment) => setStakeForm({ ...stakeForm, depositEndTime: e.unix() })}
           />
           {/* <CustomDateTime></CustomDateTime> */}
           <CustomSelect
@@ -246,7 +278,7 @@ const StakeCep18Token = () => {
               );
             })}
           </CustomSelect>
-          <CustomButton disabled={disable} label="Stake" onClick={() => console.log(stakeForm)}></CustomButton>
+          <CustomButton disabled={disable} label="Stake" onClick={createStake}></CustomButton>
         </Stack>
       </Grid>
     </Grid>
