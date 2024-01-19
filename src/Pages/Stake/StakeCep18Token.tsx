@@ -1,4 +1,4 @@
-import { CircularProgress, Grid, MenuItem, SelectChangeEvent, Stack, Theme, Typography } from "@mui/material";
+import { CircularProgress, FormControlLabel, Grid, MenuItem, SelectChangeEvent, Stack, Switch, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomSelect } from "../../components/CustomSelect";
 import { useEffect, useMemo, useState } from "react";
@@ -15,6 +15,7 @@ import { SERVER_API } from "../../utils/api";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomDateTime } from "../../components/CustomDateTime";
 import { Moment } from "moment";
+import toastr from "toastr";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -101,21 +102,18 @@ const StakeCep18Token = () => {
           min_stake: CLValueBuilder.u256(stakeForm.minStake * Math.pow(10, decimal)),
           max_stake: CLValueBuilder.u256(stakeForm.maxStake * Math.pow(10, decimal)),
           max_cap: CLValueBuilder.u256(stakeForm.maxCap * Math.pow(10, decimal)),
-
-          // fixed case
           fixed_apr: CLValueBuilder.u64(isFixedApr ? stakeForm.fixedApr : 0),
           min_apr: CLValueBuilder.u64(isFixedApr ? 0 : stakeForm.minApr),
           max_apr: CLValueBuilder.u64(isFixedApr ? 0 : stakeForm.maxApr),
-
           lock_period: CLValueBuilder.u64(stakeForm.lockPeriod),
           deposit_start_time: CLValueBuilder.u64(stakeForm.depositStartTime * 1000),
           deposit_end_time: CLValueBuilder.u64(stakeForm.depositEndTime * 1000),
-
           storage_key: new CLAccountHash(Buffer.from(STORE_CEP_18_STAKE_CONTRACT, "hex")),
         });
 
-        const deploy = contract.install(stakeWasm, args, "80000000000", ownerPublicKey, "casper-test");
+        const deploy = contract.install(new Uint8Array(stakeWasm), args, "90000000000", ownerPublicKey, "casper-test");
         const deployJson = DeployUtil.deployToJson(deploy);
+
         try {
           const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
 
@@ -220,33 +218,45 @@ const StakeCep18Token = () => {
             value={stakeForm.maxCap || ""}
             onChange={(e: any) => setStakeForm({ ...stakeForm, maxCap: Number(e.target.value) })}
           />
-          <CustomInput
-            placeholder="Fixed APR %"
-            label="Fixed APR"
-            id="fixedApr"
-            name="fixedApr"
-            type="number"
-            value={stakeForm.fixedApr || ""}
-            onChange={(e: any) => setStakeForm({ ...stakeForm, fixedApr: Number(e.target.value) })}
-          />{" "}
-          <CustomInput
-            placeholder="Min APR %"
-            label="Min APR"
-            id="minApr"
-            name="minApr"
-            type="number"
-            value={stakeForm.minApr || ""}
-            onChange={(e: any) => setStakeForm({ ...stakeForm, minApr: Number(e.target.value) })}
+          <FormControlLabel
+            style={{ justifyContent: "start" }}
+            labelPlacement="start"
+            control={<Switch checked={isFixedApr} color="warning" onChange={() => setIsFixedApr(!isFixedApr)} />}
+            label="Fixed Apr"
           />
-          <CustomInput
-            placeholder="Max APR %"
-            label="Max APR"
-            id="maxApr"
-            name="maxApr"
-            type="number"
-            value={stakeForm.maxApr || ""}
-            onChange={(e: any) => setStakeForm({ ...stakeForm, maxApr: Number(e.target.value) })}
-          />
+          {isFixedApr ? (
+            <CustomInput
+              placeholder="Fixed APR %"
+              label="Fixed APR"
+              id="fixedApr"
+              name="fixedApr"
+              type="number"
+              value={stakeForm.fixedApr || ""}
+              onChange={(e: any) => setStakeForm({ ...stakeForm, fixedApr: Number(e.target.value) })}
+            />
+          ) : (
+            <>
+              <CustomInput
+                placeholder="Min APR %"
+                label="Min APR"
+                id="minApr"
+                name="minApr"
+                type="number"
+                value={stakeForm.minApr || ""}
+                onChange={(e: any) => setStakeForm({ ...stakeForm, minApr: Number(e.target.value) })}
+              />
+              <CustomInput
+                placeholder="Max APR %"
+                label="Max APR"
+                id="maxApr"
+                name="maxApr"
+                type="number"
+                value={stakeForm.maxApr || ""}
+                onChange={(e: any) => setStakeForm({ ...stakeForm, maxApr: Number(e.target.value) })}
+              />
+            </>
+          )}
+
           <CustomDateTime
             value={stakeForm.depositStartTime}
             label="Deposit Start Time"
