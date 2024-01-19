@@ -365,3 +365,8 @@ export const getStakes = async (contractHash: string) => {
   // console.log("response", response.data);
   return { ...response.data };
 };
+
+export const getAllCep18StakePools = async (contractHash: string) => {
+  const response = await axios.get<any>(SERVER_API + "get_all_stakes?contractHash=" + contractHash);
+  return response.data;
+};
