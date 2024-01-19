@@ -7,10 +7,7 @@ const ManageStakes = () => {
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
 
   useEffect(() => {
-    const init = async () => {
-      const la = await fetchStakeKeys(publicKey);
-      const ka = await getStakes(la[0].key);
-    };
+    const init = async () => {};
     init();
   }, []);
 

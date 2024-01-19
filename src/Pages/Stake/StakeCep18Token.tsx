@@ -164,7 +164,7 @@ const StakeCep18Token = () => {
     <Grid container className={classes.container} direction={"column"}>
       <Grid item display={"flex"} justifyContent={"center"}>
         <Typography variant="h5" className={classes.title}>
-          Stake Cep18 Token
+          Create Cep18 Stake Pool
         </Typography>
       </Grid>
       <Grid item marginTop={"5rem"} width={"50%"}>
