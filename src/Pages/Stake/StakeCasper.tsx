@@ -27,7 +27,7 @@ import { SERVER_API, getValidators } from "../../utils/api";
 import toastr from "toastr";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder, CLPublicKeyTag } from "casper-js-sdk";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -119,6 +119,7 @@ const StakeCasper = () => {
   const [modal, setModal] = useState<boolean>(false);
   const [value, setValue] = useState<object>({});
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const init = () => {
@@ -166,7 +167,7 @@ const StakeCasper = () => {
         const ownerPublicKey = CLPublicKey.fromHex(publicKey);
         const contract = new Contracts.Contract();
         contract.setContractHash("hash-93d923e336b20a4c4ca14d592b60e5bd3fe330775618290104f9beb326db7ae2");
-        console.log(selectedValidator.public_key);
+
         // parameters
         const args = RuntimeArgs.fromMap({
           validator: CLValueBuilder.publicKey(Buffer.from(selectedValidator.public_key.substring(2), "hex"), CLPublicKeyTag.ED25519),
@@ -198,7 +199,7 @@ const StakeCasper = () => {
           });
           toastr.success(response.data, "Delegate created successfully.");
           window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
-
+          navigate("/manage-stake");
           setLoading(false);
         } catch (error: any) {
           alert(error.message);
