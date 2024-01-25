@@ -4,7 +4,7 @@ import { CustomSelect } from "../../components/CustomSelect";
 import { useEffect, useMemo, useState } from "react";
 import { ERC20Token } from "../../utils/types";
 import { useGetTokens } from "../../hooks/useGetTokens";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { CustomButton } from "../../components/CustomButton";
 import { PERIOD } from "../../utils/enum";
 // @ts-ignore
@@ -80,16 +80,17 @@ const StakeCep18Token = () => {
   });
   const [durationList, setDurationList] = useState<string[]>([]);
   const [isFixedApr, setIsFixedApr] = useState<boolean>(false);
+  const [actionLoading, setActionLoading] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const init = async () => {
-      const durationArray: string[] = Object.keys(PERIOD).filter((key) => isNaN(Number(key)));
-      setDurationList(durationArray);
-    };
-    init();
+    const durationArray: string[] = Object.keys(PERIOD).filter((key) => isNaN(Number(key)));
+    setDurationList(durationArray);
   }, []);
 
   const createStake = async () => {
+    setActionLoading(true);
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
       const contract = new Contracts.Contract();
@@ -126,16 +127,19 @@ const StakeCep18Token = () => {
           });
 
           toastr.success(response.data, "CEP-18 Stake Contract deployed successfully.");
-          // navigate("/");
+          navigate("/manage-stake");
 
           window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
+          setActionLoading(false);
         } catch (error: any) {
           // loading
           toastr.error("Something went wrong. Error: " + error);
+          setActionLoading(false);
         }
       }
     } catch (error: any) {
       // loading
+      setActionLoading(false);
       toastr.error(error);
     }
   };
@@ -144,7 +148,7 @@ const StakeCep18Token = () => {
     return !stakeForm.lockPeriod || !stakeForm.token;
   }, [stakeForm]);
 
-  if (loading) {
+  if (loading || actionLoading) {
     return (
       <div
         style={{

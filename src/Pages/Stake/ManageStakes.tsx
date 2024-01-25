@@ -1,7 +1,7 @@
-import { Box, Card, CardActions, CardContent, CircularProgress, Modal, Typography } from "@mui/material";
+import { Box, Card, CardActions, CardContent, CircularProgress, Input, Modal, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { SERVER_API, contractHashToContractPackageHash, fetchErc20TokenDetails, getAllCep18StakePools } from "../../utils/api";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { CasperHelpers, STORE_CEP_18_STAKE_CONTRACT } from "../../utils";
 import { CustomButton } from "../../components/CustomButton";
 import moment from "moment";
@@ -17,7 +17,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 600,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -79,51 +79,94 @@ const ManageStakes = () => {
       setLoading(false);
     };
     init();
+
+    const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const increaseAllowance = async () => {
-    console.log(showStakeModal.selectedPool);
+    setLoading(true);
     if (showStakeModal.selectedPool) {
       const contract = new Contracts.Contract();
       const selectedPool = showStakeModal.selectedPool;
+
       contract.setContractHash("hash-" + selectedPool.token);
 
       const contractPackageHash = await contractHashToContractPackageHash(selectedPool.key.slice(5));
-
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-
       const args = RuntimeArgs.fromMap({
         spender: CasperHelpers.stringToKey(contractPackageHash),
         amount: CLValueBuilder.u256(showStakeModal.amount * Math.pow(10, selectedPool.decimal)),
       });
 
       const deploy = contract.callEntrypoint("increase_allowance", args, ownerPublicKey, "casper-test", "1000000000");
-
       const deployJson = DeployUtil.deployToJson(deploy);
 
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-
-        // setActionLoader(true);
-
         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
-
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
 
         const data = DeployUtil.deployToJson(signedDeploy.val);
-
         const response = await axios.post(SERVER_API + "deploy", data, {
           headers: { "Content-Type": "application/json" },
         });
-        toastr.success(response.data, "Allowance created successfully.");
+
+        toastr.success(response.data, "Allowance increased successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
-        // setActionLoader(false);
+        setLoading(false);
       } catch (error: any) {
         alert(error.message);
+        setLoading(false);
       }
     } else {
       toastr.error("Please Select a token for allowance");
+      setLoading(false);
+    }
+  };
+
+  const stake = async () => {
+    setLoading(true);
+
+    const contract = new Contracts.Contract();
+    const selectedPool = showStakeModal.selectedPool;
+    contract.setContractHash(selectedPool.key);
+
+    const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+    const args = RuntimeArgs.fromMap({
+      amount: CLValueBuilder.u256(showStakeModal.amount * Math.pow(10, selectedPool.decimal)),
+    });
+
+    const deploy = contract.callEntrypoint("stake", args, ownerPublicKey, "casper-test", "2000000000");
+
+    const deployJson = DeployUtil.deployToJson(deploy);
+
+    try {
+      const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+
+      let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+
+      signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+
+      const data = DeployUtil.deployToJson(signedDeploy.val);
+
+      const response = await axios.post(SERVER_API + "deploy", data, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      toastr.success(response.data, "Allowance increased successfully.");
+
+      window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
+      setShowStakeModal({ show: false, amount: 0 });
+      setLoading(false);
+    } catch (error: any) {
+      alert(error.message);
+      setLoading(false);
     }
   };
 
@@ -156,9 +199,9 @@ const ManageStakes = () => {
       <Typography style={{ borderBottom: "1px solid #FF0011 !important", marginBottom: "1rem", textAlign: "center" }} variant="h5">
         STAKE CEP-18 TOKEN
       </Typography>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", padding: "1rem" }}>
         {pools.map((pl: any, index: number) => (
-          <Card key={index} sx={{ minWidth: 500, flex: "1 0 30%", marginBottom: "16px" }}>
+          <Card key={index} sx={{ width: 400, marginBottom: "16px" }}>
             <CardContent>
               <Typography variant="h5" component="div">
                 {pl.name}({pl.symbol}) Stake Pool
@@ -173,32 +216,23 @@ const ManageStakes = () => {
               <Typography variant="body2">
                 APR : {pl.fixedApr > 0 ? "Fixed APR : " + pl.fixedApr + "%" : "Min APR:" + pl.minApr + "%" + " - Max APR: " + pl.maxApr + "%"}
                 <br />
-                Cap : {pl.cap} ({pl.symbol}) , Min Stake : {pl.minStake} ({pl.symbol}) , Max Stake : {pl.maxStake} ({pl.symbol})
+                Cap : {pl.maxCap} ({pl.symbol}) , Min Stake : {pl.minStake} ({pl.symbol}) , Max Stake : {pl.maxStake} ({pl.symbol})
                 <br />
                 Lock Period : {PERIOD[pl.lockPeriod - pl.depositEndTime]}
               </Typography>
             </CardContent>
             <CardActions style={{ justifyContent: "center" }}>
-              {pl.depositEndTime > Date.now() ? (
+              {pl.depositEndTime > Date.now() && (
                 <>
                   <CustomButton
                     onClick={() => {
                       setShowStakeModal({ show: true, action: "stake", amount: 0, selectedPool: pl });
                       toastr.warning("Before staking, you need to provide an allowance.");
                     }}
-                    label="Stake"
-                    disabled={false}
-                  />
-                  <CustomButton
-                    onClick={() => {
-                      setShowStakeModal({ show: true, action: "unstake", amount: 0, selectedPool: pl });
-                    }}
-                    label="UnStake"
-                    disabled={false}
+                    label={pl.depositStartTime > Date.now() ? "Waiting For Start Deposit" : "Stake"}
+                    disabled={pl.depositStartTime > Date.now()}
                   />
                 </>
-              ) : (
-                <CustomButton onClick={() => {}} label="Claim" disabled={false} />
               )}
             </CardActions>
           </Card>
@@ -217,28 +251,39 @@ const ManageStakes = () => {
                 {showStakeModal.action === "stake" ? "Stake CEP-18 Token" : "UnStake CEP-18 Token"}
               </Typography>
               <Typography id="modal-modal-description" sx={{ mt: 2 }} style={{ color: "black" }}>
-                <CustomInput
+                <Input
                   placeholder="Stake Amount"
-                  label="Stake Amount"
                   id="amount"
                   name="amount"
                   type="text"
-                  floor="light"
-                  style={{ textColor: "pink" }}
                   onChange={(e: any) => {
                     setShowStakeModal({ ...showStakeModal, amount: Number(e.target.value) });
                   }}
+                  style={{ width: "100%" }}
                   value={showStakeModal.amount}
                 />
               </Typography>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: "1rem" }}>
-                <CustomButton
-                  onClick={() => {
-                    if (showStakeModal.action === "stake") increaseAllowance();
-                  }}
-                  label={showStakeModal.action || ""}
-                  disabled={showStakeModal.amount <= 0}
-                />
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: "1rem", gap: "1rem" }}>
+                {showStakeModal.action === "stake" ? (
+                  <>
+                    <CustomButton
+                      onClick={() => {
+                        stake();
+                      }}
+                      label={showStakeModal.action || ""}
+                      disabled={showStakeModal.amount <= 0}
+                    />
+                    <CustomButton
+                      onClick={() => {
+                        increaseAllowance();
+                      }}
+                      label={"Increase Allowance"}
+                      disabled={showStakeModal.amount <= 0}
+                    />
+                  </>
+                ) : (
+                  <></>
+                )}
               </div>
             </Box>
           </Modal>
