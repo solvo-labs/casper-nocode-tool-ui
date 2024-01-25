@@ -366,7 +366,7 @@ export const getStakes = async (contractHash: string) => {
   return { ...response.data };
 };
 
-export const getAllCep18StakePools = async (contractHash: string) => {
-  const response = await axios.get<any>(SERVER_API + "get_all_stakes?contractHash=" + contractHash);
+export const getAllCep18StakePools = async (contractHash: string, account_hash: string) => {
+  const response = await axios.get<any>(SERVER_API + "get_all_stakes?contractHash=" + contractHash + "&accountHash=" + account_hash);
   return response.data;
 };

@@ -1,13 +1,12 @@
 import { Box, Card, CardActions, CardContent, CircularProgress, Input, Modal, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { SERVER_API, contractHashToContractPackageHash, fetchErc20TokenDetails, getAllCep18StakePools } from "../../utils/api";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import { CasperHelpers, STORE_CEP_18_STAKE_CONTRACT } from "../../utils";
 import { CustomButton } from "../../components/CustomButton";
 import moment from "moment";
 import { PERIOD } from "../../utils/enum";
 import toastr from "toastr";
-import { CustomInput } from "../../components/CustomInput";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
 import axios from "axios";
@@ -32,7 +31,10 @@ const ManageStakes = () => {
 
   useEffect(() => {
     const init = async () => {
-      const data = await getAllCep18StakePools("hash-" + STORE_CEP_18_STAKE_CONTRACT);
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+      const accountHash = ownerPublicKey.toAccountHashStr();
+
+      const data = await getAllCep18StakePools("hash-" + STORE_CEP_18_STAKE_CONTRACT, accountHash.slice(13));
 
       if (data.length > 0) {
         const tokenDetailPromises = data.map((dt: any) => fetchErc20TokenDetails("hash-" + dt.token));
