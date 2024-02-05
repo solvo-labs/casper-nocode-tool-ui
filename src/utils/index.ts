@@ -81,7 +81,7 @@ export const timeDifference = (start: number, end: number): string => {
   return daysDiff + "d " + hoursDiff + "h " + minutesDiff + "m";
 };
 
-export const STORE_RAFFLE_CONTRACT_HASH = "8610261d8422a45d4f4084011d2875b9f212cb940257477e23506f40a92301b5";
+export const STORE_RAFFLE_CONTRACT_HASH = "59812f78dbbbf46bb68f54cca99f665acdf270c4e5c344c0e8d2d1ef0fa9ebc8";
 export const lootboxStorageContract = "0e99476bb8b2cdade2f916bfaad7f844120bd0bb1d3ab170d7ab501b4fa850ba";
 export const MERGABLE_NFT_CONTRACT = "c6366b7f5932fb3d52ed4d0e33ff19c9a7b1f336736507900c8833079d4713d4";
 export const DAPPEND_NFT_CONTRACT = "940fd61d953f76ee0a478d0386e503d664d7f9e17702f6cfc0e7708b540be1cd";

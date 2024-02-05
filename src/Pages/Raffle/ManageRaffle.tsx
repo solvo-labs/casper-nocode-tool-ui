@@ -266,7 +266,7 @@ const ManageRaffle = () => {
             headers: { "Content-Type": "application/json" },
           });
 
-          toastr.success(response.data, "Approve deployed successfully.");
+          toastr.success(response.data, "Draw deployed successfully.");
           setApproveModal(false);
           setLoading(false);
           // navigate("/marketplace");
@@ -305,7 +305,7 @@ const ManageRaffle = () => {
           headers: { "Content-Type": "application/json" },
         });
 
-        toastr.success(response.data, "Approve deployed successfully.");
+        toastr.success(response.data, "Cancel deployed successfully.");
         setApproveModal(false);
         setLoading(false);
         // navigate("/marketplace");
