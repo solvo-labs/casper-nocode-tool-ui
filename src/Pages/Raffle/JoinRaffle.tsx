@@ -1,7 +1,7 @@
 import { Grid, Paper, Typography, TableContainer, Table, TableHead, TableCell, TableRow, TablePagination, TableBody, CircularProgress, Theme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { RaffleMetadata } from "../../utils/types";
+import { RAFFLE_STATUS, RaffleMetadata } from "../../utils/types";
 //@ts-ignore
 import { CLAccountHash, CLByteArray, CLKey, CLPublicKey, CLValueBuilder, Contracts, DeployUtil, RuntimeArgs } from "casper-js-sdk";
 import { SERVER_API, getAllRafflesForJoin } from "../../utils/api";
@@ -72,15 +72,11 @@ const JoinRaffle = () => {
       });
 
       const lastData = finalJoinData.filter((raffle: any) => {
-        if (raffle.claimed) {
-          return !raffle.claimed;
-        }
-
         if (raffle.winner_account) {
           return raffle.winner_account === accountHash;
         }
 
-        return raffle.owner != accountHash && moment.unix(raffle.end_date).unix() >= Date.now();
+        return raffle.owner != accountHash && raffle.status === RAFFLE_STATUS.ONGOING;
       });
       setJoinableRaffle(lastData);
       setLoading(false);
