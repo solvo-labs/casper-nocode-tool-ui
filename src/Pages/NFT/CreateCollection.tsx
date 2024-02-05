@@ -124,7 +124,7 @@ export const CreateCollection = () => {
       const deploy = contract.install(
         new Uint8Array(cep78Wasm),
         args,
-        "300000000000",
+        "490000000000",
         ownerPublicKey,
         "casper-test"
         // [publicKey]

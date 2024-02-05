@@ -94,7 +94,7 @@ const TokenMint: React.FC = () => {
         enable_mint_burn: CLValueBuilder.bool(data.enableMintBurn),
       });
 
-      const deploy = contract.install(new Uint8Array(cep18Wasm), args, "150000000000", ownerPublicKey, "casper-test");
+      const deploy = contract.install(new Uint8Array(cep18Wasm), args, "260000000000", ownerPublicKey, "casper-test");
 
       const deployJson = DeployUtil.deployToJson(deploy);
 

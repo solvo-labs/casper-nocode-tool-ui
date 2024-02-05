@@ -146,7 +146,7 @@ const ManageStakes = () => {
       amount: CLValueBuilder.u256(showStakeModal.amount * Math.pow(10, selectedPool.decimal)),
     });
 
-    const deploy = contract.callEntrypoint("stake", args, ownerPublicKey, "casper-test", "2000000000");
+    const deploy = contract.callEntrypoint("stake", args, ownerPublicKey, "casper-test", "2500000000");
 
     const deployJson = DeployUtil.deployToJson(deploy);
 

@@ -67,6 +67,7 @@ const JoinRaffle = () => {
           price: Number(raffle.price.hex),
           claimed: raffle.claimed,
           status: raffle.status,
+          partipiciant_count: Number(raffle.partipiciant_count?.hex || 0),
         };
       });
 
@@ -220,6 +221,11 @@ const JoinRaffle = () => {
                       NFT ID
                     </Typography>
                   </TableCell>
+                  <TableCell key="ticket-count" align="left">
+                    <Typography fontWeight="bold" color="#0f1429">
+                      Ticket Count
+                    </Typography>
+                  </TableCell>
                   <TableCell key="raffle-price" align="left">
                     <Typography fontWeight="bold" color="#0f1429">
                       Price
@@ -251,6 +257,9 @@ const JoinRaffle = () => {
                         </TableCell>
                         <TableCell align="left">
                           <Typography color="#0f1429">{raffle.nft_index}</Typography>
+                        </TableCell>
+                        <TableCell align="left">
+                          <Typography color="#0f1429">{raffle.partipiciant_count}</Typography>
                         </TableCell>
                         <TableCell align="left">
                           <Typography color="#0f1429">{raffle.price / Math.pow(10, 9)}</Typography>

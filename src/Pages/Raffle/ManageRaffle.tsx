@@ -189,7 +189,7 @@ const ManageRaffle = () => {
 
         const args = RuntimeArgs.fromMap({});
 
-        const deploy = contract.callEntrypoint("deposit", args, ownerPublicKey, "casper-test", "5000000000");
+        const deploy = contract.callEntrypoint("deposit", args, ownerPublicKey, "casper-test", "15000000000");
 
         const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -310,7 +310,7 @@ const ManageRaffle = () => {
           storage_key: new CLAccountHash(Buffer.from(STORE_RAFFLE_CONTRACT_HASH, "hex")),
         });
 
-        const deploy = contract.install(new Uint8Array(raffleWasm), args, "150000000000", ownerPublicKey, "casper-test");
+        const deploy = contract.install(new Uint8Array(raffleWasm), args, "260000000000", ownerPublicKey, "casper-test");
         const deployJson = DeployUtil.deployToJson(deploy);
 
         try {
@@ -351,10 +351,10 @@ const ManageRaffle = () => {
 
     init();
 
-    const interval = setInterval(() => init(), 30000);
+    const interval1 = setInterval(() => init(), 10000);
 
     return () => {
-      clearInterval(interval);
+      clearInterval(interval1);
     };
   }, []);
 
@@ -381,10 +381,10 @@ const ManageRaffle = () => {
 
     init(true);
 
-    const interval = setInterval(() => init(false), 30000);
+    const interval2 = setInterval(() => init(false), 30000);
 
     return () => {
-      clearInterval(interval);
+      clearInterval(interval2);
     };
   }, [raffleData.collectionHash]);
 
@@ -406,6 +406,7 @@ const ManageRaffle = () => {
           start_date: Number(raffle.start_date.hex),
           end_date: Number(raffle.end_date.hex),
           price: Number(raffle.price.hex),
+          partipiciant_count: Number(raffle.partipiciant_count?.hex || 0),
           claimed: raffle.claimed,
           status: raffle.status,
           cancelable: raffle.cancelable,
@@ -415,7 +416,14 @@ const ManageRaffle = () => {
       setRaffles(finalData);
       setLoading(false);
     };
+
     init();
+
+    const interval3 = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval3);
+    };
   }, []);
 
   const disable = useMemo(() => {
@@ -432,12 +440,12 @@ const ManageRaffle = () => {
       return "Waiting Deposit";
     }
 
-    if (status === RAFFLE_STATUS.ONGOING) {
-      return "Ongoing";
+    if (status === RAFFLE_STATUS.WAITING_START) {
+      return "Waiting Start Raffle";
     }
 
-    if (status === RAFFLE_STATUS.FINISHED) {
-      return "Finished";
+    if (status === RAFFLE_STATUS.ONGOING) {
+      return "Ongoing";
     }
 
     if (status === RAFFLE_STATUS.WAITING_DRAW) {
@@ -521,6 +529,11 @@ const ManageRaffle = () => {
                         Price
                       </Typography>
                     </TableCell>
+                    <TableCell key="ticket-count" align="left">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        Ticket Count
+                      </Typography>
+                    </TableCell>
                     <TableCell key="status" align="left">
                       <Typography fontWeight="bold" color="#0f1429">
                         Status
@@ -557,6 +570,9 @@ const ManageRaffle = () => {
                           </TableCell>
                           <TableCell align="left">
                             <Typography color="#0f1429">{raffle.price / Math.pow(10, 9)} CSPR</Typography>
+                          </TableCell>{" "}
+                          <TableCell align="left">
+                            <Typography color="#0f1429">{raffle.partipiciant_count}</Typography>
                           </TableCell>
                           <TableCell align="left">
                             <Typography color="#0f1429">{getStatus(raffle.status)}</Typography>

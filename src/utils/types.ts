@@ -123,8 +123,8 @@ export type RaffleNamedKeys = {
 
 export const enum RAFFLE_STATUS {
   WAITING_DEPOSIT,
+  WAITING_START,
   ONGOING,
-  FINISHED,
   WAITING_DRAW,
   WAITING_CLAIM,
   COMPLETED,
@@ -150,6 +150,7 @@ export type RaffleMetadata = {
   winner_account?: string;
   status: RAFFLE_STATUS;
   cancelable: boolean;
+  partipiciant_count: NumberMeta;
 };
 
 export type NumberMeta = { hex: string; type: string };

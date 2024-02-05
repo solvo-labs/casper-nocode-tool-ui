@@ -147,7 +147,7 @@ const CreateRaffleModal: React.FC<Props> = ({ raffle, createRaffle, open, onClos
                 </CustomSelect>
               )}
               <TextField
-                label="Price"
+                label="Price (CSPR)"
                 name="price"
                 onChange={(e: any) => raffleOnChange({ ...raffle, price: Number(e.target.value) })}
                 placeholder="Price"
