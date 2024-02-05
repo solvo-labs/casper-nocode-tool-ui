@@ -151,7 +151,7 @@ const JoinRaffle = () => {
           headers: { "Content-Type": "application/json" },
         });
 
-        toastr.success(response.data, "Approve deployed successfully.");
+        toastr.success(response.data, "Claim deployed successfully.");
         setLoading(false);
       } catch (error: any) {
         alert(error.message);
