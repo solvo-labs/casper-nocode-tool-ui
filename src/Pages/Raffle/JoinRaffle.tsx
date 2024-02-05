@@ -1,16 +1,17 @@
 import { Grid, Paper, Typography, TableContainer, Table, TableHead, TableCell, TableRow, TablePagination, TableBody, CircularProgress, Theme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { RAFFLE_STATUS, RaffleMetadata } from "../../utils/types";
+import { NFT, RAFFLE_STATUS, RaffleMetadata } from "../../utils/types";
 //@ts-ignore
 import { CLAccountHash, CLByteArray, CLKey, CLPublicKey, CLValueBuilder, Contracts, DeployUtil, RuntimeArgs } from "casper-js-sdk";
-import { SERVER_API, getAllRafflesForJoin } from "../../utils/api";
+import { SERVER_API, getAllRafflesForJoin, getNftMetadata } from "../../utils/api";
 import { STORE_RAFFLE_CONTRACT_HASH, uint32ArrayToHex } from "../../utils";
 import { CustomButton } from "../../components/CustomButton";
 import { makeStyles } from "@mui/styles";
 import moment from "moment";
 import axios from "axios";
 import toastr from "toastr";
+import { NftDetailModal } from "../../components/NftDetailModal";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -19,6 +20,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: "2rem",
     [theme.breakpoints.down("lg")]: {
       minWidth: "80vw",
+    },
+  },
+  nftIndex: {
+    "&:hover": {
+      backgroundColor: "#E5E4E2",
+      borderRadius: "12px",
     },
   },
 }));
@@ -34,6 +41,11 @@ const JoinRaffle = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [joinableRaffle, setJoinableRaffle] = useState<RaffleMetadata[]>();
 
+  const [nftDetailModal, setNftDetailModal] = useState<boolean>(false);
+  const [loadingNftDetail, setLoadingNftDetail] = useState<boolean>(false);
+  const [modalData, setModalData] = useState<{ collectionHash: string; nftIndex: string }>();
+  const [nftDetailData, setNftDetailData] = useState<NFT>();
+
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -43,8 +55,22 @@ const JoinRaffle = () => {
     setPage(0);
   };
 
+  const handleClose = (state: any) => state(false);
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  useEffect(() => {
+    setLoadingNftDetail(true);
+    const init = async () => {
+      if (modalData) {
+        const result = await getNftMetadata("hash-" + modalData.collectionHash, modalData.nftIndex, publicKey);
+        setNftDetailData(result);
+        setLoadingNftDetail(false);
+      }
+    };
+    init();
+  }, [modalData]);
 
   useEffect(() => {
     const init = async () => {
@@ -192,37 +218,37 @@ const JoinRaffle = () => {
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell key="name" align="left">
+                  <TableCell key="name" align="center">
                     <Typography fontWeight="bold" color="#0f1429">
                       Name
                     </Typography>
                   </TableCell>
-                  <TableCell key="symbol" align="left">
+                  <TableCell key="symbol" align="center">
                     <Typography fontWeight="bold" color="#0f1429">
                       Start
                     </Typography>
                   </TableCell>
-                  <TableCell key="decimal" align="left">
+                  <TableCell key="decimal" align="center">
                     <Typography fontWeight="bold" color="#0f1429">
                       End
                     </Typography>
                   </TableCell>
-                  <TableCell key="collection" align="left">
+                  <TableCell key="collection" align="center">
                     <Typography fontWeight="bold" color="#0f1429">
                       Collection
                     </Typography>
                   </TableCell>
-                  <TableCell key="nft-id" align="left">
+                  <TableCell key="nft-id" align="center">
                     <Typography fontWeight="bold" color="#0f1429">
                       NFT ID
                     </Typography>
                   </TableCell>
-                  <TableCell key="ticket-count" align="left">
+                  <TableCell key="ticket-count" align="center">
                     <Typography fontWeight="bold" color="#0f1429">
                       Ticket Count
                     </Typography>
                   </TableCell>
-                  <TableCell key="raffle-price" align="left">
+                  <TableCell key="raffle-price" align="center">
                     <Typography fontWeight="bold" color="#0f1429">
                       Price
                     </Typography>
@@ -239,33 +265,41 @@ const JoinRaffle = () => {
                   joinableRaffle.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((raffle: any, index: number) => {
                     return (
                       <TableRow style={{ cursor: "pointer" }} onClick={() => {}} hover role="checkbox" tabIndex={-1} key={index}>
-                        <TableCell align="left">
+                        <TableCell align="center">
                           <Typography color="#0f1429">{raffle.name}</Typography>
                         </TableCell>
-                        <TableCell align="left">
+                        <TableCell align="center">
                           <Typography color="#0f1429">{moment.unix(raffle.start_date / 1000).format("MM/DD/YYYY h:mm A")}</Typography>
                         </TableCell>
-                        <TableCell align="left">
+                        <TableCell align="center">
                           <Typography color="#0f1429">{moment.unix(raffle.end_date / 1000).format("MM/DD/YYYY h:mm A")}</Typography>
                         </TableCell>{" "}
-                        <TableCell align="left">
+                        <TableCell align="center">
                           <Typography color="#0f1429">{raffle.collection.substring(0, 10) + "..." + raffle.collection.substring(54)}</Typography>
                         </TableCell>
-                        <TableCell align="left">
+                        <TableCell
+                          align="center"
+                          onClick={() => {
+                            setNftDetailModal(true);
+                            setModalData({ ...modalData, collectionHash: raffle.collection, nftIndex: raffle.nft_index.toString() });
+                          }}
+                          className={classes.nftIndex}
+                        >
                           <Typography color="#0f1429">{raffle.nft_index}</Typography>
                         </TableCell>
-                        <TableCell align="left">
+                        <NftDetailModal open={nftDetailModal} nft={nftDetailData} handleClose={() => handleClose(setNftDetailModal)} loading={loadingNftDetail}></NftDetailModal>
+                        <TableCell align="center">
                           <Typography color="#0f1429">{raffle.partipiciant_count}</Typography>
                         </TableCell>
-                        <TableCell align="left">
+                        <TableCell align="center">
                           <Typography color="#0f1429">{raffle.price / Math.pow(10, 9)}</Typography>
                         </TableCell>
                         {moment.unix(raffle.end_date).unix() < Date.now() ? (
-                          <TableCell align="left">
+                          <TableCell align="center">
                             <CustomButton disabled={false} label="Claim" onClick={() => claim(raffle)}></CustomButton>
                           </TableCell>
                         ) : (
-                          <TableCell align="left">
+                          <TableCell align="center">
                             <CustomButton disabled={false} label="buy ticket" onClick={() => buy_ticket(raffle)}></CustomButton>
                           </TableCell>
                         )}
