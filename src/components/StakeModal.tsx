@@ -1,4 +1,4 @@
-import { Box, Input, Modal, TextField, Typography } from "@mui/material";
+import { Box, Modal, TextField, Typography } from "@mui/material";
 import React from "react";
 import { CustomButton } from "./CustomButton";
 
