@@ -107,6 +107,7 @@ const JoinRaffle = () => {
       setJoinableRaffle(lastData);
       setLoading(false);
     };
+
     init();
 
     const interval = setInterval(() => init(), 30000);

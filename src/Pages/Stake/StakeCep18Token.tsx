@@ -106,7 +106,7 @@ const StakeCep18Token = () => {
           fixed_apr: CLValueBuilder.u64(isFixedApr ? stakeForm.fixedApr : 0),
           min_apr: CLValueBuilder.u64(isFixedApr ? 0 : stakeForm.minApr),
           max_apr: CLValueBuilder.u64(isFixedApr ? 0 : stakeForm.maxApr),
-          lock_period: CLValueBuilder.u64(1200000),
+          lock_period: CLValueBuilder.u64(stakeForm.lockPeriod),
           deposit_start_time: CLValueBuilder.u64(stakeForm.depositStartTime * 1000),
           deposit_end_time: CLValueBuilder.u64(stakeForm.depositEndTime * 1000),
           storage_key: new CLAccountHash(Buffer.from(STORE_CEP_18_STAKE_CONTRACT, "hex")),
@@ -276,7 +276,7 @@ const StakeCep18Token = () => {
           {/* <CustomDateTime></CustomDateTime> */}
           <CustomSelect
             value={stakeForm.lockPeriod ? PERIOD[stakeForm.lockPeriod] : "default"}
-            label="Stake Period"
+            label="Stake Lock Period"
             onChange={(event: SelectChangeEvent<{ value: unknown }>) => {
               const selectedValue = event.target.value as keyof typeof PERIOD;
               setStakeForm({ ...stakeForm, lockPeriod: PERIOD[selectedValue] });
@@ -294,7 +294,7 @@ const StakeCep18Token = () => {
               );
             })}
           </CustomSelect>
-          <CustomButton disabled={disable} label="Stake" onClick={createStake}></CustomButton>
+          <CustomButton disabled={disable} label="Create Stake Pool" onClick={createStake}></CustomButton>
         </Stack>
       </Grid>
     </Grid>

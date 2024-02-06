@@ -325,7 +325,17 @@ const ManageStakes = () => {
                 </>
               )}
 
-              {pl.lockPeriod <= Date.now() && pl.my_balance > 0 && pl.my_balance > 0 && pl.depositEndTime < Date.now() && (
+              {pl.lockPeriod + pl.depositEndTime >= Date.now() && pl.depositStartTime <= Date.now() && (
+                <CustomButton
+                  onClick={() => {
+                    // setShowStakeModal({ show: true, action: "unstake", amount: 0, selectedPool: pl });
+                  }}
+                  label={"This is lock period"}
+                  disabled={true}
+                />
+              )}
+
+              {pl.lockPeriod + pl.depositEndTime <= Date.now() && pl.my_balance > 0 && pl.my_balance > 0 && (
                 <>
                   <CustomButton
                     onClick={() => {
