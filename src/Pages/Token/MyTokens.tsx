@@ -9,6 +9,7 @@ import { useOutletContext } from "react-router-dom";
 // @ts-ignore
 import { CLPublicKey } from "casper-js-sdk";
 import { initTokens } from "../../utils/api";
+import { getTokens } from "../../utils/csprCloud";
 
 const useStyles = makeStyles(() => ({
   title: {
@@ -36,6 +37,7 @@ const MyTokens: React.FC = () => {
   const [data, setData] = useState<ERC20Token[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [myTokenList, setMyTokenList] = useState<any>([]);
+  const [tokenInWallet, setTokenOInWallet] = useState<any>([]);
 
   const [publicKey] = useOutletContext<[publickey: string]>();
 
@@ -59,6 +61,20 @@ const MyTokens: React.FC = () => {
     init();
 
     const interval = setInterval(() => init(), 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
+    const init = async () => {
+      const result = await getTokens(publicKey);
+      setTokenOInWallet(result);
+    };
+    init();
+
+    const interval = setInterval(() => init(), 10000);
 
     return () => {
       clearInterval(interval);
@@ -257,7 +273,7 @@ const MyTokens: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {myTokenList.slice(page2 * rowsPerPage2, page2 * rowsPerPage2 + rowsPerPage2).map((row: any, index: number) => {
+                  {tokenInWallet.slice(page2 * rowsPerPage2, page2 * rowsPerPage2 + rowsPerPage2).map((row: any, index: number) => {
                     return (
                       <TableRow
                         hover
@@ -268,16 +284,16 @@ const MyTokens: React.FC = () => {
                         style={{ cursor: "pointer" }}
                       >
                         <TableCell align="left">
-                          <Typography color="#0f1429">{row.name}</Typography>
+                          <Typography color="#0f1429">{row.contract_package.metadata.name}</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">{row.symbol}</Typography>
+                          <Typography color="#0f1429">{row.contract_package.metadata.symbol}</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">{row.decimals}</Typography>
+                          <Typography color="#0f1429">{row.contract_package.metadata.decimals}</Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Typography color="#0f1429">{row.balance}</Typography>
+                          <Typography color="#0f1429">{row.balance / Math.pow(10, row.contract_package.metadata.decimals)}</Typography>
                         </TableCell>
                       </TableRow>
                     );
