@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { getNftCollection, getNftMetadata } from "../../utils/api";
+import { useEffect, useMemo, useState } from "react";
+import { getNftCollection } from "../../utils/api";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { CircularProgress, Grid, Stack, Theme, Typography } from "@mui/material";
 import { NftCard } from "../../components/NftCard";
@@ -8,7 +8,7 @@ import { NFT } from "../../utils/types";
 import { CreateCollectionCard } from "../../components/CreateCollectionCard";
 // @ts-ignore
 import { CLPublicKey } from "casper-js-sdk";
-// import { CollectionMetada } from "../../utils/types";
+import { getContractPackageNFTs } from "../../utils/csprCloud";
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleContainer: {
@@ -21,7 +21,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     maxWidth: "70vw",
     minWidth: "70vw",
     marginTop: "4rem",
-    // backgroundColor: "darkgray",
     [theme.breakpoints.down("lg")]: {
       minWidth: "90vw",
       marginTop: "4rem",
@@ -44,25 +43,16 @@ export const NftList = () => {
   const [publicKey] = useOutletContext<[publickey: string]>();
 
   useEffect(() => {
+    setLoading(true);
     const init = async () => {
       if (nftCollectionHash) {
         const nftCollection = await getNftCollection(nftCollectionHash);
-        const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
-        const accountHash = ownerPublicKey.toAccountHashStr();
+        const nftMetas = await getContractPackageNFTs(nftCollectionHash!.slice(5));
+        console.log(nftMetas);
 
         setCollectionData(nftCollection);
-
-        const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
-
-        let promises = [];
-        for (let index = 0; index < nftCount; index++) {
-          promises.push(getNftMetadata(nftCollectionHash, index.toString(), accountHash.slice(13)));
-        }
-
-        const nftMetas = await Promise.all(promises);
-
-        setNftData(nftMetas.filter((nf) => nf.burnt === false));
+        setNftData(nftMetas.filter((nft: any) => nft.is_burned === false));
         setLoading(false);
       }
     };
@@ -75,6 +65,48 @@ export const NftList = () => {
       clearInterval(interval);
     };
   }, []);
+
+  let accountHash = useMemo(() => {
+    const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+    const accountHash = ownerPublicKey.toAccountHashStr();
+    console.log(accountHash.slice(13));
+
+    return accountHash.slice(13);
+  }, [publicKey]);
+
+  // useEffect(() => {
+  //   const init = async () => {
+  //     if (nftCollectionHash) {
+  //       const nftCollection = await getNftCollection(nftCollectionHash);
+  //       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+  //       const accountHash = ownerPublicKey.toAccountHashStr();
+
+  //       setCollectionData(nftCollection);
+  //       console.log(nftCollection);
+
+  //       const nftCount = parseInt(nftCollection.number_of_minted_tokens.hex);
+
+  //       let promises = [];
+  //       for (let index = 0; index < nftCount; index++) {
+  //         promises.push(getNftMetadata(nftCollectionHash, index.toString(), accountHash.slice(13)));
+  //       }
+
+  //       const nftMetas = await Promise.all(promises);
+
+  //       setNftData(nftMetas.filter((nf) => nf.burnt === false));
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   init();
+
+  //   const interval = setInterval(() => init(), 30000);
+
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []);
 
   if (loading) {
     return (
@@ -103,17 +135,17 @@ export const NftList = () => {
         </Stack>
       </Grid>
       <Grid container className={classes.container}>
-        {nftData.map((e: any) => (
-          <Grid item xl={3} lg={4} md={4} sm={6} xs={6} key={e.index}>
+        {nftData.map((nft: any) => (
+          <Grid item xl={3} lg={4} md={4} sm={6} xs={6} key={nft.token_id}>
             <NftCard
-              description={e.description}
-              name={e.name}
-              asset={e.asset}
-              index={e.index}
-              owner={e.owner.slice(0, 20)}
-              amIOwner={e.isMyNft}
-              timeable={e.timeable}
-              mergeable={e.mergeable}
+              description={nft.onchain_metadata.description}
+              name={nft.onchain_metadata.name}
+              asset={nft.onchain_metadata.asset}
+              index={nft.token_id}
+              owner={nft.owner_hash.slice(0, 10)}
+              amIOwner={nft.owner_hash == accountHash ? true : false}
+              timeable={false} // TODO timable will adding onchain_metadata
+              mergeable={false} // TODO mergeble will adding onchain_metadata
             ></NftCard>
           </Grid>
         ))}
