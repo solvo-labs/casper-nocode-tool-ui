@@ -111,8 +111,7 @@ const StakeCep18Token = () => {
           fixed_apr: CLValueBuilder.u64(isFixedApr ? stakeForm.fixedApr : 0),
           min_apr: CLValueBuilder.u64(isFixedApr ? 0 : stakeForm.minApr),
           max_apr: CLValueBuilder.u64(isFixedApr ? 0 : stakeForm.maxApr),
-          // lock_period: CLValueBuilder.u64(stakeForm.lockPeriod),
-          lock_period: CLValueBuilder.u64(600000),
+          lock_period: CLValueBuilder.u64(stakeForm.lockPeriod),
           deposit_start_time: CLValueBuilder.u64(stakeForm.depositStartTime * 1000),
           deposit_end_time: CLValueBuilder.u64(stakeForm.depositEndTime * 1000),
           storage_key: new CLAccountHash(Buffer.from(STORE_CEP_18_STAKE_CONTRACT, "hex")),
@@ -151,7 +150,23 @@ const StakeCep18Token = () => {
   };
 
   const disable = useMemo(() => {
-    return !stakeForm.lockPeriod || !stakeForm.token;
+    let aprLimit: boolean;
+    if (isFixedApr) {
+      aprLimit = !stakeForm.fixedApr;
+    } else {
+      aprLimit = !stakeForm.minApr || !stakeForm.maxApr || stakeForm.minApr >= stakeForm.maxApr;
+    }
+    const timeLimit = stakeForm.depositStartTime * 1000 <= Date.now() || stakeForm.depositEndTime <= stakeForm.depositStartTime;
+    return (
+      !stakeForm.maxCap ||
+      !stakeForm.maxStake ||
+      !stakeForm.minStake ||
+      stakeForm.minStake > stakeForm.maxStake ||
+      stakeForm.maxCap <= stakeForm.maxStake ||
+      stakeForm.maxCap <= stakeForm.minStake ||
+      aprLimit ||
+      timeLimit
+    );
   }, [stakeForm]);
 
   if (loading || actionLoading) {
@@ -184,9 +199,7 @@ const StakeCep18Token = () => {
             label="ERC-20 Token"
             onChange={(event: SelectChangeEvent) => {
               const data = tokens.find((tk) => tk.contractHash === event.target.value);
-              if (data) {
-                setStakeForm({ ...stakeForm, token: data });
-              }
+              data ? setStakeForm({ ...stakeForm, token: data }) : setStakeForm({ ...stakeForm, token: null });
             }}
             id={"custom-select"}
           >
@@ -300,7 +313,7 @@ const StakeCep18Token = () => {
               );
             })}
           </CustomSelect>
-          <CustomButton disabled={disable} label="Create Stake Pool" onClick={createStake}></CustomButton>
+          <CustomButton disabled={disable} label="Create Stake Pool" onClick={() => console.log(stakeForm)}></CustomButton>
         </Stack>
       </Grid>
     </Grid>
