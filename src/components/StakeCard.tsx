@@ -47,9 +47,9 @@ const StakeCard: React.FC<Props> = ({ stake, stakeModal }) => {
             <Typography variant="body2" color="text.secondary">
               Token: {stake.symbol}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            {/* <Typography variant="body2" color="text.secondary">
               Liquidity: {stake.totalSupply} {stake.symbol}
-            </Typography>
+            </Typography> */}
             {/* {stake.my_balance > 0 && (
               <Typography variant="body2" color="text.secondary">
                 My Stake Amount: {stake.my_balance}
