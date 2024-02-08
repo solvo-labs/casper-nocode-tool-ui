@@ -172,6 +172,8 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
       navigate("/stake-cep18-token");
     } else if (a === STAKE_PAGE.MANAGE_STAKE) {
       navigate("/manage-stake");
+    } else if (a === STAKE_PAGE.JOIN_STAKES) {
+      navigate("/join-stakes");
     }
 
     setAnchorElForNFT(null);

@@ -37,6 +37,7 @@ import MergeNFT from "../Pages/NFT/MergeNFT";
 import TimeableNFT from "../Pages/NFT/TimableNFT";
 import StakeCep18Token from "../Pages/Stake/StakeCep18Token";
 import ManageStakes from "../Pages/Stake/ManageStakes";
+import JoinStakes from "../Pages/Stake/JoinStakes";
 
 const Router: React.FC = () => {
   return (
@@ -86,6 +87,7 @@ const Router: React.FC = () => {
             <Route path="/stake-casper" index element={<StakeCasper />} />
             <Route path="/stake-cep18-token" index element={<StakeCep18Token />} />
             <Route path="/manage-stake" index element={<ManageStakes />} />
+            <Route path="/join-stakes" index element={<JoinStakes />} />
           </Route>
           <Route path="/login" index element={<Login />} />
         </Routes>

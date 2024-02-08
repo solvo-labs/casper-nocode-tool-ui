@@ -5,7 +5,8 @@ export enum APP_NAME {
 export enum STAKE_PAGE {
   STAKTE_CASPER = "Stake Casper",
   STAKE_TOKEN = "Create CEP-18 Stake Pool",
-  MANAGE_STAKE = "Stake CEP-18 Token",
+  MANAGE_STAKE = "Manage Stake CEP-18 Token",
+  JOIN_STAKES = "Join Stake CEP-18 Token",
 }
 
 export enum PAGES_NAME {
