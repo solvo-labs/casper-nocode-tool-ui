@@ -32,7 +32,10 @@ const ManageStakes = () => {
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
   const [loading, setLoading] = useState<boolean>(true);
   const [pools, setPools] = useState<any>([]);
-  const [showStakeModal, setShowStakeModal] = useState<{ show: boolean; amount: number; action?: "stake" | "unstake" | "claim"; selectedPool?: any }>({ show: false, amount: 0 });
+  const [showStakeModal, setShowStakeModal] = useState<{ show: boolean; amount: number; action?: "stake" | "unstake" | "claim" | "notify"; selectedPool?: any }>({
+    show: false,
+    amount: 0,
+  });
 
   useEffect(() => {
     const init = async () => {
@@ -53,13 +56,12 @@ const ManageStakes = () => {
           const minStake = parseInt(dt.min_stake.hex, 16) / Math.pow(10, decimal);
           const maxStake = parseInt(dt.max_stake.hex, 16) / Math.pow(10, decimal);
           const maxCap = parseInt(dt.max_cap.hex, 16) / Math.pow(10, decimal);
-          const totalSupply = parseInt(dt.total_supply.hex, 16) / Math.pow(10, decimal);
+          const totalSupply = dt.total_supply ? parseInt(dt.total_supply.hex, 16) / Math.pow(10, decimal) : 0;
           const depositEndTime = moment(parseInt(dt.deposit_end_time.hex, 16));
           const depositStartTime = moment(parseInt(dt.deposit_start_time.hex, 16));
           const depositStartTimeFormatted = moment(parseInt(dt.deposit_start_time.hex, 16)).format("MMMM Do YYYY, HH:mm");
           const depositEndTimeFormatted = moment(parseInt(dt.deposit_end_time.hex, 16)).format("MMMM Do YYYY, HH:mm");
           const lockPeriod = moment(parseInt(dt.lock_period.hex, 16));
-          const my_balance = Number(dt.my_balance / Math.pow(10, decimal));
 
           return {
             key: dt.key,
@@ -79,11 +81,11 @@ const ManageStakes = () => {
             depositStartTimeFormatted,
             token: dt.token,
             decimal,
-            my_balance,
+            notified: dt.notified,
+            amIOwner: dt.amIOwner,
           };
         });
         setPools(finalData);
-        console.log(finalData);
       }
 
       setLoading(false);
