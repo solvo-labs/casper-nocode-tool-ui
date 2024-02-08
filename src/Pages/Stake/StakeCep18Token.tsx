@@ -23,7 +23,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: "4rem",
+    [theme.breakpoints.down("lg")]: {
+      minWidth: "80vw",
+    },
     [theme.breakpoints.down("sm")]: {
+      minWidth: "90vw",
       marginBottom: 2,
       marginTop: 2,
       padding: "24px",
@@ -172,7 +177,7 @@ const StakeCep18Token = () => {
           Create Cep18 Stake Pool
         </Typography>
       </Grid>
-      <Grid item marginTop={"5rem"} width={"50%"}>
+      <Grid item marginTop={"4rem"}>
         <Stack spacing={4}>
           <CustomSelect
             value={stakeForm.token ? stakeForm.token?.contractHash : "default"}
