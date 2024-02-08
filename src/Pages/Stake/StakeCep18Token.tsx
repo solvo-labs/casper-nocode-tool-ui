@@ -244,7 +244,16 @@ const StakeCep18Token = () => {
           <FormControlLabel
             style={{ justifyContent: "start" }}
             labelPlacement="start"
-            control={<Switch checked={isFixedApr} color="warning" onChange={() => setIsFixedApr(!isFixedApr)} />}
+            control={
+              <Switch
+                checked={isFixedApr}
+                color="warning"
+                onChange={() => {
+                  setIsFixedApr(!isFixedApr);
+                  setStakeForm({ ...stakeForm, minApr: 0, maxApr: 0, fixedApr: 0 });
+                }}
+              />
+            }
             label="Fixed Apr"
           />
           {isFixedApr ? (
@@ -313,7 +322,7 @@ const StakeCep18Token = () => {
               );
             })}
           </CustomSelect>
-          <CustomButton disabled={disable} label="Create Stake Pool" onClick={() => console.log(stakeForm)}></CustomButton>
+          <CustomButton disabled={disable} label="Create Stake Pool" onClick={createStake}></CustomButton>
         </Stack>
       </Grid>
     </Grid>
