@@ -3,13 +3,13 @@ import { makeStyles } from "@mui/styles";
 import { Card, CardActions, CardContent, Chip, Grid, Stack, Theme, Typography } from "@mui/material";
 import { PERIOD } from "../utils/enum";
 import { CustomButton } from "./CustomButton";
+import toastr from "toastr";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
     minWidth: "800px",
-    margin: "1rem",
     [theme.breakpoints.down("lg")]: {
-      maxHeight: "240px",
+      maxHeight: "260px",
       minWidth: "720px",
     },
   },
@@ -26,6 +26,7 @@ type Props = {
 
 const StakeCard: React.FC<Props> = ({ stake, stakeModal }) => {
   const classes = useStyles();
+
   return (
     <Card className={classes.card}>
       <CardContent>
@@ -33,9 +34,12 @@ const StakeCard: React.FC<Props> = ({ stake, stakeModal }) => {
           <Typography variant="h5">
             {stake.name} ({stake.symbol}) Stake Pool
           </Typography>
-
-          {!stake.notified && <Chip size="small" label="Waiting Notify Reward" color="error" />}
-          {/* <Chip size="small" label="ON GOING" color="success" /> */}
+          <Grid gap={1} display={"flex"}>
+            {!stake.notified && <Chip size="small" label="Waiting Notify Reward" color="error" />}
+            {stake.notified && <Chip size="small" label="Notify Reward Complated" color="info" />}
+            {Date.now() < stake.depositEndTime._i && Date.now() > stake.depositStartTime._i && <Chip size="small" label="Active" color="success" />}
+            {Date.now() > stake.depositEndTime._i && <Chip size="small" label="Deposit Time Ended" color="warning" />}
+          </Grid>
         </Grid>
         <Grid container direction={"row"} justifyContent={"space-between"} style={{ paddingLeft: "1rem", paddingRight: "1rem" }}>
           <Grid item>
@@ -72,11 +76,12 @@ const StakeCard: React.FC<Props> = ({ stake, stakeModal }) => {
           </Grid>
           <Grid item display={"flex"}>
             <Stack spacing={2} justifyContent={"flex-end"}>
+              {/* // Notify */}
               {!stake.notified && stake.amIOwner && (
                 <>
                   <CustomButton
                     onClick={() => {
-                      stakeModal({ show: true, action: "stake", amount: 0, selectedPool: stake });
+                      stakeModal({ show: true, action: "notify reward", amount: 0, selectedPool: stake });
                       toastr.warning("Before Notify Reward, you need to provide an allowance.");
                     }}
                     label={"Notify Reward"}
@@ -84,29 +89,9 @@ const StakeCard: React.FC<Props> = ({ stake, stakeModal }) => {
                   />
                 </>
               )}
-
-              {/* {stake.depositEndTime > Date.now() && (
-                <>
-                  <CustomButton
-                    onClick={() => {
-                      stakeModal({ show: true, action: "stake", amount: 0, selectedPool: stake });
-                      toastr.warning("Before staking, you need to provide an allowance.");
-                    }}
-                    label={stake.depositStartTime > Date.now() ? "Waiting For Start Deposit" : "Stake"}
-                    disabled={stake.depositStartTime > Date.now()}
-                  />
-                </>
-              )} */}
-              {/* {stake.lockPeriod + stake.depositEndTime >= Date.now() && stake.depositStartTime <= Date.now() && (
-                <CustomButton
-                  onClick={() => {
-                    stakeModal({ show: true, action: "unstake", amount: 0, selectedPool: stake });
-                  }}
-                  label={"This is lock period"}
-                  disabled={true}
-                />
-              )} */}
-              {/* {stake.lockPeriod + stake.depositEndTime <= Date.now() && stake.my_balance > 0 && stake.my_balance > 0 && (
+              {/* Claim & Unstake */}
+              {/* TODO check balance */}
+              {stake.lockPeriod + stake.depositEndTime <= Date.now() && (
                 <>
                   <CustomButton
                     onClick={() => {
@@ -123,7 +108,20 @@ const StakeCard: React.FC<Props> = ({ stake, stakeModal }) => {
                     disabled={false}
                   />
                 </>
-              )} */}
+              )}
+              {/* Stake */}
+              {stake.depositEndTime > Date.now() && (
+                <>
+                  <CustomButton
+                    onClick={() => {
+                      stakeModal({ show: true, action: "stake", amount: 0, selectedPool: stake });
+                      toastr.warning("Before staking, you need to provide an allowance.");
+                    }}
+                    label={stake.depositStartTime > Date.now() ? "Wait For Stake" : "Stake"}
+                    disabled={stake.depositStartTime > Date.now()}
+                  />
+                </>
+              )}
             </Stack>
           </Grid>
         </Grid>
