@@ -1,7 +1,7 @@
 import { CircularProgress, Grid, Theme, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { SERVER_API, contractHashToContractPackageHash, fetchErc20TokenDetails, getAllCep18StakePools } from "../../utils/api";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { CasperHelpers, STORE_CEP_18_STAKE_CONTRACT } from "../../utils";
 import moment from "moment";
 import toastr from "toastr";
@@ -15,6 +15,7 @@ import StakeModal from "../../components/StakeModal";
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
     minWidth: "80vw",
+    marginBottom: "2rem",
     justifyContent: "center !important",
     [theme.breakpoints.down("lg")]: {
       maxWidth: "60vw",
@@ -29,6 +30,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const ManageStakes = () => {
   const classes = useStyles();
+  const navigate = useNavigate();
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
   const [loading, setLoading] = useState<boolean>(true);
   const [pools, setPools] = useState<any>([]);
@@ -47,7 +49,7 @@ const ManageStakes = () => {
       if (data.length > 0) {
         const tokenDetailPromises = data.map((dt: any) => fetchErc20TokenDetails("hash-" + dt.token));
         const tokenDetails = await Promise.all(tokenDetailPromises);
-        const finalData = data.map((dt: any, index: number) => {
+        const allPoolsData = data.map((dt: any, index: number) => {
           const currentToken = tokenDetails[index];
           const decimal = parseInt(currentToken.decimals.hex, 16);
           const maxApr = parseInt(dt.max_apr.hex, 16);
@@ -85,6 +87,7 @@ const ManageStakes = () => {
             amIOwner: dt.amIOwner,
           };
         });
+        const finalData = allPoolsData.filter((pool: any) => pool.amIOwner);
         setPools(finalData);
       }
 
@@ -137,6 +140,44 @@ const ManageStakes = () => {
       }
     } else {
       toastr.error("Please Select a token for allowance");
+      setLoading(false);
+    }
+  };
+
+  const notify = async () => {
+    setLoading(true);
+    if (showStakeModal.selectedPool) {
+      const contract = new Contracts.Contract();
+      const selectedPool = showStakeModal.selectedPool;
+      contract.setContractHash(selectedPool.key);
+
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+      const args = RuntimeArgs.fromMap({});
+
+      const deploy = contract.callEntrypoint("notify", args, ownerPublicKey, "casper-test", "3000000000");
+      const deployJson = DeployUtil.deployToJson(deploy);
+
+      try {
+        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+
+        const data = DeployUtil.deployToJson(signedDeploy.val);
+        const response = await axios.post(SERVER_API + "deploy", data, {
+          headers: { "Content-Type": "application/json" },
+        });
+
+        toastr.success(response.data, "Allowance increased successfully.");
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
+
+        setLoading(false);
+        navigate("/manage-stake");
+      } catch (error: any) {
+        alert(error.message);
+        setLoading(false);
+      }
+    } else {
+      toastr.error("Please select a pool for notify reward");
       setLoading(false);
     }
   };
@@ -290,12 +331,12 @@ const ManageStakes = () => {
     <Grid container className={classes.container}>
       <Grid item style={{ display: "flex" }}>
         <Typography className={classes.title} variant="h5">
-          STAKE CEP-18 TOKEN
+          MANAGE YOUR STAKE CEP-18 TOKEN
         </Typography>
       </Grid>
       <Grid container style={{ display: "flex", justifyContent: "center" }}>
         {pools.map((pl: any, index: number) => (
-          <Grid item xl={8} style={{ display: "flex", justifyContent: "center", marginBottom: "1rem", marginTop: "1rem" }}>
+          <Grid item key={index} xl={8} style={{ display: "flex", justifyContent: "center", marginBottom: "0.5rem", marginTop: "0.5rem" }}>
             <StakeCard stake={pl} key={index} stakeModal={setShowStakeModal}></StakeCard>
             <StakeModal
               handleStakeModal={setShowStakeModal}
@@ -304,6 +345,7 @@ const ManageStakes = () => {
               stake={stake}
               unStake={unStake}
               increaseAllowance={increaseAllowance}
+              notify={notify}
             ></StakeModal>
           </Grid>
         ))}
