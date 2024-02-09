@@ -67,6 +67,8 @@ const ManageStakes = () => {
           const liquidity = dt.liquidity ? parseInt(dt.liquidity.hex, 16) / Math.pow(10, decimal) : 0;
           const apr = dt.apr ? parseInt(dt.apr.hex, 16) : 0;
           const total_reward = dt.total_reward ? parseInt(dt.total_reward.hex, 16) / Math.pow(10, decimal) : 0;
+          const my_balance = dt.my_balance ? dt.my_balance / Math.pow(10, decimal) : 0;
+          const my_claimed = dt.my_claimed ? dt.my_claimed / Math.pow(10, decimal) : 0;
 
           return {
             key: dt.key,
@@ -88,8 +90,10 @@ const ManageStakes = () => {
             decimal,
             notified: dt.notified,
             amIOwner: dt.amIOwner,
-            liquidity,
             apr,
+            liquidity,
+            my_balance,
+            my_claimed,
             total_reward,
           };
         });
