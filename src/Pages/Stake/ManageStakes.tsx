@@ -164,7 +164,7 @@ const ManageStakes = () => {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
       const args = RuntimeArgs.fromMap({});
 
-      const deploy = contract.callEntrypoint("notify", args, ownerPublicKey, "casper-test", "3000000000");
+      const deploy = contract.callEntrypoint("notify", args, ownerPublicKey, "casper-test", "4000000000");
       const deployJson = DeployUtil.deployToJson(deploy);
 
       try {
