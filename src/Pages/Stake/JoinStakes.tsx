@@ -49,6 +49,7 @@ const JoinStakes = () => {
         const tokenDetailPromises = data.map((dt: any) => fetchErc20TokenDetails("hash-" + dt.token));
         const tokenDetails = await Promise.all(tokenDetailPromises);
 
+        // console.log(finalData);
         const allPoolsData = data.map((dt: any, index: number) => {
           const currentToken = tokenDetails[index];
           const decimal = parseInt(currentToken.decimals.hex, 16);
@@ -64,6 +65,7 @@ const JoinStakes = () => {
           const depositStartTimeFormatted = moment(parseInt(dt.deposit_start_time.hex, 16)).format("MMMM Do YYYY, HH:mm");
           const depositEndTimeFormatted = moment(parseInt(dt.deposit_end_time.hex, 16)).format("MMMM Do YYYY, HH:mm");
           const lockPeriod = moment(parseInt(dt.lock_period.hex, 16));
+          const apr = dt.apr ? parseInt(dt.apr.hex, 16) : undefined;
 
           return {
             key: dt.key,
@@ -85,9 +87,11 @@ const JoinStakes = () => {
             decimal,
             notified: dt.notified,
             amIOwner: dt.amIOwner,
+            apr,
           };
         });
         const finalData = allPoolsData.filter((pool: any) => !pool.amIOwner);
+
         setPools(finalData);
       }
 

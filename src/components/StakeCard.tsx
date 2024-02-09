@@ -39,6 +39,7 @@ const StakeCard: React.FC<Props> = ({ stake, stakeModal }) => {
             {stake.notified && <Chip size="small" label="Notify Reward Complated" color="info" />}
             {Date.now() < stake.depositEndTime._i && Date.now() > stake.depositStartTime._i && <Chip size="small" label="Active" color="success" />}
             {Date.now() > stake.depositEndTime._i && <Chip size="small" label="Deposit Time Ended" color="warning" />}
+            {stake.notified && <Chip size="small" label={"APR: " + stake.apr + "%"} color="success" />}
           </Grid>
         </Grid>
         <Grid container direction={"row"} justifyContent={"space-between"} style={{ paddingLeft: "1rem", paddingRight: "1rem" }}>
