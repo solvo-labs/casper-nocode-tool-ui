@@ -166,7 +166,8 @@ const StakeModal: React.FC<Props> = ({ showStakeModal, handleStakeModal, stake, 
                 }}
                 label={showStakeModal.action || ""}
                 disabled={
-                  showStakeModal.amount <= 0 || showStakeModal.amount > showStakeModal.selectedPool?.maxStake || showStakeModal.amount < showStakeModal.selectedPool?.minStake
+                  // TODO chech account balance
+                  showStakeModal.amount <= 0
                 }
               />
               <CustomButton
@@ -206,7 +207,6 @@ const StakeModal: React.FC<Props> = ({ showStakeModal, handleStakeModal, stake, 
                   unStake();
                 }}
                 label={showStakeModal.action || ""}
-                // TODO chech wallet balance control
                 disabled={showStakeModal.amount <= 0}
               />
             </>
