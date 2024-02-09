@@ -101,7 +101,7 @@ const StakeCard: React.FC<Props> = ({ stake, stakeModal }) => {
                           stakeModal({ show: true, action: "unstake", amount: stake.my_balance, selectedPool: stake });
                         }}
                         label={"Unstake"}
-                        disabled={stake.my_balance < 0}
+                        disabled={stake.my_balance <= 0}
                       />
                       <CustomButton
                         onClick={() => {
