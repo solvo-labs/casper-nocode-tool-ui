@@ -64,6 +64,9 @@ const ManageStakes = () => {
           const depositStartTimeFormatted = moment(parseInt(dt.deposit_start_time.hex, 16)).format("MMMM Do YYYY, HH:mm");
           const depositEndTimeFormatted = moment(parseInt(dt.deposit_end_time.hex, 16)).format("MMMM Do YYYY, HH:mm");
           const lockPeriod = moment(parseInt(dt.lock_period.hex, 16));
+          const liquidity = dt.liquidity ? parseInt(dt.liquidity.hex, 16) / Math.pow(10, decimal) : 0;
+          const apr = dt.apr ? parseInt(dt.apr.hex, 16) : 0;
+          const total_reward = dt.total_reward ? parseInt(dt.total_reward.hex, 16) / Math.pow(10, decimal) : 0;
 
           return {
             key: dt.key,
@@ -85,6 +88,9 @@ const ManageStakes = () => {
             decimal,
             notified: dt.notified,
             amIOwner: dt.amIOwner,
+            liquidity,
+            apr,
+            total_reward,
           };
         });
         const finalData = allPoolsData.filter((pool: any) => pool.amIOwner);

@@ -49,7 +49,6 @@ const JoinStakes = () => {
         const tokenDetailPromises = data.map((dt: any) => fetchErc20TokenDetails("hash-" + dt.token));
         const tokenDetails = await Promise.all(tokenDetailPromises);
 
-        // console.log(finalData);
         const allPoolsData = data.map((dt: any, index: number) => {
           const currentToken = tokenDetails[index];
           const decimal = parseInt(currentToken.decimals.hex, 16);
@@ -59,13 +58,16 @@ const JoinStakes = () => {
           const minStake = parseInt(dt.min_stake.hex, 16) / Math.pow(10, decimal);
           const maxStake = parseInt(dt.max_stake.hex, 16) / Math.pow(10, decimal);
           const maxCap = parseInt(dt.max_cap.hex, 16) / Math.pow(10, decimal);
-          const totalSupply = dt.total_supply ? parseInt(dt.total_supply.hex, 16) / Math.pow(10, decimal) : 0;
           const depositEndTime = moment(parseInt(dt.deposit_end_time.hex, 16));
           const depositStartTime = moment(parseInt(dt.deposit_start_time.hex, 16));
           const depositStartTimeFormatted = moment(parseInt(dt.deposit_start_time.hex, 16)).format("MMMM Do YYYY, HH:mm");
           const depositEndTimeFormatted = moment(parseInt(dt.deposit_end_time.hex, 16)).format("MMMM Do YYYY, HH:mm");
           const lockPeriod = moment(parseInt(dt.lock_period.hex, 16));
-          const apr = dt.apr ? parseInt(dt.apr.hex, 16) : undefined;
+          const liquidity = dt.liquidity ? parseInt(dt.liquidity.hex, 16) / Math.pow(10, decimal) : 0;
+          const apr = dt.apr ? parseInt(dt.apr.hex, 16) : 0;
+          const my_balance = dt.my_balance ? dt.my_balance / Math.pow(10, decimal) : 0;
+          const my_claimed = dt.my_claimed ? dt.my_claimed / Math.pow(10, decimal) : 0;
+          const total_reward = dt.total_reward ? parseInt(dt.total_reward.hex, 16) / Math.pow(10, decimal) : 0;
 
           return {
             key: dt.key,
@@ -79,7 +81,6 @@ const JoinStakes = () => {
             minStake,
             maxStake,
             maxCap,
-            totalSupply,
             lockPeriod,
             depositEndTimeFormatted,
             depositStartTimeFormatted,
@@ -88,8 +89,13 @@ const JoinStakes = () => {
             notified: dt.notified,
             amIOwner: dt.amIOwner,
             apr,
+            liquidity,
+            my_balance,
+            my_claimed,
+            total_reward,
           };
         });
+
         const finalData = allPoolsData.filter((pool: any) => !pool.amIOwner);
 
         setPools(finalData);
