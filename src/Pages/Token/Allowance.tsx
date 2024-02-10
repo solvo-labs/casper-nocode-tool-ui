@@ -151,7 +151,7 @@ const Allowance: React.FC = () => {
     return (
       <div
         style={{
-          height: "calc(100vh - 8rem)",
+          height: "60vh",
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -182,7 +182,7 @@ const Allowance: React.FC = () => {
                 </Typography>
               </Grid>
               <Grid container className={classes.gridContainer}>
-                <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>
+                <Stack spacing={4} direction={"column"} marginTop={4} className={classes.stackContainer}>
                   <CustomSelect
                     value={selectedToken?.contractHash || "default"}
                     label="ERC-20 Token"

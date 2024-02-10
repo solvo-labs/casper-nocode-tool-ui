@@ -238,7 +238,7 @@ const MintAndBurn: React.FC = () => {
                 </Typography>
               </Grid>
               <Grid container className={classes.gridContainer}>
-                <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>
+                <Stack spacing={4} direction={"column"} marginTop={8} className={classes.stackContainer}>
                   <CustomSelect
                     value={selectedToken?.contractHash || "default"}
                     label="ERC-20 Token"
