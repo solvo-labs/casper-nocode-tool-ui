@@ -202,6 +202,7 @@ const ApproveNFT = () => {
           setOpenApprove(false);
 
           toastr.success(response.data, "Approve deployed successfully.");
+          window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
         } catch (error: any) {
           alert(error.message);
           setLoading(false);
