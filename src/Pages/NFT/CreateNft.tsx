@@ -5,7 +5,7 @@ import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { SERVER_API, fetchCep78NamedKeys, getNftCollectionDetails } from "../../utils/api";
 import axios from "axios";
 import toastr from "toastr";
-import { Box, CircularProgress, Divider, FormControlLabel, Grid, MenuItem, SelectChangeEvent, Stack, Switch, Theme, Typography } from "@mui/material";
+import { Box, Checkbox, CircularProgress, Divider, FormControlLabel, Grid, MenuItem, SelectChangeEvent, Stack, Switch, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
@@ -60,6 +60,7 @@ export const CreateNft = () => {
   const params = useParams();
   const navigate = useNavigate();
   const classes = useStyles();
+  const [checked, setChecked] = useState(false);
 
   const [publicKey, provider, , , , , , , , , , timeableNftDepositWasm] =
     useOutletContext<
@@ -91,6 +92,11 @@ export const CreateNft = () => {
   const handleClear = () => {
     setFile(null);
     setNftMetadata({ ...nftMetadata, asset: "" });
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
+    event.target.checked ? setNftMetadata({ ...nftMetadata, targetAddress: publicKey }) : setNftMetadata({ ...nftMetadata, targetAddress: "" });
   };
 
   useEffect(() => {
@@ -459,11 +465,25 @@ export const CreateNft = () => {
 
                             targetAddress: e.target.value,
                           });
+                          e.target.value == publicKey ? setChecked(true) : setChecked(false);
                         }}
                         value={nftMetadata.targetAddress || ""}
                         disable={fileLoading}
                         floor="dark"
                       />
+                      <Stack direction={"row"} alignItems={"center"}>
+                        <Checkbox
+                          checked={checked}
+                          onChange={handleChange}
+                          sx={{
+                            color: "red",
+                            "&.Mui-checked": {
+                              color: "red",
+                            },
+                          }}
+                        />
+                        <Typography>I want to use the wallet address I logged in with.</Typography>
+                      </Stack>
                       <Grid item sx={{ maxWidth: "400px" }}>
                         <CustomDateTime
                           onChange={(e: Moment) => setNftMetadata({ ...nftMetadata, timestamp: e.unix() })}
