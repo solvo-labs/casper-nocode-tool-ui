@@ -124,7 +124,7 @@ export const MyCollections = () => {
       </Grid>
       <Grid container sx={{ marginTop: "2rem" }}>
         <Grid container width={"100%"} justifyContent={"flex-start"}>
-          <Grid item lg={4} md={4} sm={6} xs={6}>
+          <Grid item lg={4} md={4} sm={6} xs={12}>
             <CreateCollectionCard
               onClick={() => {
                 navigate("/create-collection");
@@ -132,13 +132,12 @@ export const MyCollections = () => {
             />
           </Grid>
           {collections.map((e: any, index: number) => (
-            <Grid item lg={4} md={4} sm={6} xs={6} key={index}>
+            <Grid item lg={4} md={4} sm={6} xs={12} key={index}>
               <CollectionCard
                 cardHeight={"360px"}
                 mediaHeight={"200px"}
                 cardContentPadding={"1rem"}
                 cardContentTitle={"24px"}
-                cardContentSymbol={"20px"}
                 cardContentContractHash={"14px"}
                 image={"/images/casper.png"}
                 onClick={() => navigate("/nft-list/" + e.contractHash)}
