@@ -1,4 +1,4 @@
-import { CircularProgress, Grid } from "@mui/material";
+import { CircularProgress, Grid, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@mui/styles";
 import { useNavigate, useOutletContext } from "react-router-dom";
@@ -114,26 +114,29 @@ const Main: React.FC = () => {
 
   return (
     <Grid container spacing={4} className={classes.container}>
-      <Grid item xl={4} lg={5} md={12} sm={12} xs={12} display={"flex"} direction={"column"} gap={4}>
-        <WalletCard handleClick={() => handleCopyClick(publicKey)} tooltip={copyTooltip} publicKey={publicKey} casperBalance={balance} CSPRPrice={CSPRPrice}></WalletCard>
-        <CreateSomething handleClick={() => navigate("/token")} title="Token"></CreateSomething>
-        <CreateSomething handleClick={() => navigate("/create-nft")} title="NFT"></CreateSomething>
+      <Grid item xl={4} lg={5} md={12} sm={12} xs={12}>
+        <Stack spacing={4}>
+          <WalletCard handleClick={() => handleCopyClick(publicKey)} tooltip={copyTooltip} publicKey={publicKey} casperBalance={balance} CSPRPrice={CSPRPrice}></WalletCard>
+          <CreateSomething handleClick={() => navigate("/token")} title="Token"></CreateSomething>
+          <CreateSomething handleClick={() => navigate("/create-nft")} title="NFT"></CreateSomething>
+        </Stack>
       </Grid>
-      <Grid item xl={8} lg={7} md={12} sm={12} xs={12} display={"flex"} direction={"column"} gap={4}>
-        <CollectionListMainMenu
-          handleCollectionDetail={(contractHash) => navigate("/nft-list/" + contractHash)}
-          handleCreateCollection={() => navigate("/create-collection")}
-          collections={collections}
-        ></CollectionListMainMenu>
-        <TokenListMainMenu
-          page={page}
-          rowsPerPage={rowsPerPage}
-          handleChangePage={() => handleChangePage}
-          handleChangeRowsPerPage={() => handleChangeRowsPerPage}
-          tokens={myTokenList}
-        ></TokenListMainMenu>
+      <Grid item xl={8} lg={7} md={12} sm={12} xs={12}>
+        <Stack spacing={4}>
+          <CollectionListMainMenu
+            handleCollectionDetail={(contractHash) => navigate("/nft-list/" + contractHash)}
+            handleCreateCollection={() => navigate("/create-collection")}
+            collections={collections}
+          ></CollectionListMainMenu>
+          <TokenListMainMenu
+            page={page}
+            rowsPerPage={rowsPerPage}
+            handleChangePage={() => handleChangePage}
+            handleChangeRowsPerPage={() => handleChangeRowsPerPage}
+            tokens={myTokenList}
+          ></TokenListMainMenu>
+        </Stack>
       </Grid>
-      <Grid item xl={8} lg={7} md={12} sm={12} xs={12}></Grid>
     </Grid>
   );
 };
