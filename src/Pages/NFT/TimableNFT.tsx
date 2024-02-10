@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 // @ts-ignore
 import { CLPublicKey } from "casper-js-sdk";
 import { getAllNftsByOwned } from "../../utils/api";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { NftCard } from "../../components/NftCard";
+import CreatorRouter from "../../components/CreatorRouter";
+import { DONT_HAVE_ANYTHING } from "../../utils/enum";
 
 const useStyles = makeStyles((theme: Theme) => ({
   titleContainer: {
@@ -32,6 +34,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const TimeableNFT = () => {
   const classes = useStyles();
+  const navigate = useNavigate();
   const [publicKey] = useOutletContext<[publickey: string]>();
   const [loading, setLoading] = useState<boolean>(true);
   const [timeableNFTs, setTimeableNFTs] = useState<any>([]);
@@ -75,27 +78,36 @@ const TimeableNFT = () => {
 
   return (
     <Grid container direction={"column"} marginBottom={"2rem"}>
-      <Grid container className={classes.titleContainer}>
-        <Stack direction={"row"} spacing={2} className={classes.title}>
-          <Typography variant="h4">Timeable NFTs</Typography>
-        </Stack>
-      </Grid>
-      <Grid container className={classes.container}>
-        {timeableNFTs.map((e: any, index: number) => (
-          <Grid item xl={3} lg={4} md={4} sm={6} xs={6} key={index}>
-            <NftCard
-              description={e.metadata.description}
-              name={e.metadata.name}
-              asset={e.metadata.asset}
-              index={e.token_id}
-              owner={e.owner_public_key.slice(0, 20)}
-              amIOwner={e.isMyNft}
-              timeable={e.metadata.timeable}
-              timestamp={e.metadata.timestamp}
-            ></NftCard>
+      {timeableNFTs.length <= 0 && (
+        <Grid container>
+          <CreatorRouter explain={DONT_HAVE_ANYTHING.TIMEABLE_NFTS} handleOnClick={() => navigate("/create-collection")}></CreatorRouter>
+        </Grid>
+      )}
+      {timeableNFTs.length > 0 && (
+        <>
+          <Grid container className={classes.titleContainer}>
+            <Stack direction={"row"} spacing={2} className={classes.title}>
+              <Typography variant="h4">Timeable NFTs</Typography>
+            </Stack>
           </Grid>
-        ))}
-      </Grid>
+          <Grid container className={classes.container}>
+            {timeableNFTs.map((e: any, index: number) => (
+              <Grid item xl={3} lg={4} md={4} sm={6} xs={6} key={index}>
+                <NftCard
+                  description={e.metadata.description}
+                  name={e.metadata.name}
+                  asset={e.metadata.asset}
+                  index={e.token_id}
+                  owner={e.owner_public_key.slice(0, 20)}
+                  amIOwner={e.isMyNft}
+                  timeable={e.metadata.timeable}
+                  timestamp={e.metadata.timestamp}
+                ></NftCard>
+              </Grid>
+            ))}
+          </Grid>
+        </>
+      )}
     </Grid>
   );
 };
