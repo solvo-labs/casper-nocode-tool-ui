@@ -4,9 +4,10 @@ import { ERC20Token } from "../utils/types";
 
 export function useGetTokens(publickey: string) {
   const [tokens, setTokens] = useState<ERC20Token[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    setLoading(true);
     const init = async () => {
       listofCreatorERC20Tokens(publickey)
         .then((result) => {

@@ -3,13 +3,13 @@ import { makeStyles } from "@mui/styles";
 import { Card, CardActions, CardContent, Chip, Grid, Stack, Theme, Typography } from "@mui/material";
 import { PERIOD } from "../utils/enum";
 import { CustomButton } from "./CustomButton";
+import toastr from "toastr";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
     minWidth: "800px",
-    margin: "1rem",
     [theme.breakpoints.down("lg")]: {
-      maxHeight: "240px",
+      maxHeight: "260px",
       minWidth: "720px",
     },
   },
@@ -26,12 +26,21 @@ type Props = {
 
 const StakeCard: React.FC<Props> = ({ stake, stakeModal }) => {
   const classes = useStyles();
+
   return (
     <Card className={classes.card}>
       <CardContent>
         <Grid item className={classes.title} style={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="h5">{stake.name} Stake Pool</Typography>
-          <Chip size="small" label="ON GOING" color="success" />
+          <Typography variant="h5">
+            {stake.name} ({stake.symbol}) Stake Pool
+          </Typography>
+          <Grid gap={1} display={"flex"}>
+            {!stake.notified && <Chip size="small" label="Waiting Notify Reward" color="error" />}
+            {stake.notified && <Chip size="small" label="Notify Reward Complated" color="info" />}
+            {Date.now() < stake.depositEndTime._i && Date.now() > stake.depositStartTime._i && <Chip size="small" label="Active" color="success" />}
+            {Date.now() > stake.depositEndTime._i && <Chip size="small" label="Deposit Time Ended" color="warning" />}
+            {stake.notified && <Chip size="small" label={"APR: " + stake.apr + "%"} color="success" />}
+          </Grid>
         </Grid>
         <Grid container direction={"row"} justifyContent={"space-between"} style={{ paddingLeft: "1rem", paddingRight: "1rem" }}>
           <Grid item>
@@ -40,24 +49,19 @@ const StakeCard: React.FC<Props> = ({ stake, stakeModal }) => {
               Token: {stake.symbol}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Liquidity: {stake.totalSupply}
+              Liquidity: {stake.liquidity} {stake.symbol}
             </Typography>
-            {stake.my_balance > 0 && (
-              <Typography variant="body2" color="text.secondary">
-                My Stake Amount: {stake.my_balance}
-              </Typography>
-            )}
+            <Typography variant="body2" color="text.secondary">
+              Total Reward: {stake.total_reward} {stake.symbol}
+            </Typography>
             <Typography variant="body2" color="text.secondary">
               APR: {stake.fixedApr > 0 ? "Fixed: " + stake.fixedApr + "%" : "Min: " + stake.minApr + "%" + " - Max: " + stake.maxApr + "%"}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Capacity: {stake.maxCap}
+              Capacity: {stake.maxCap} {stake.symbol}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Min Stake: {stake.minStake}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Max Stake: {stake.maxStake}
+              Min Stake: {stake.minStake} {stake.symbol} - Max Stake: {stake.maxStake} {stake.symbol}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Lock Period: {PERIOD[stake.lockPeriod._i]}
@@ -67,47 +71,62 @@ const StakeCard: React.FC<Props> = ({ stake, stakeModal }) => {
             </Typography>
           </Grid>
           <Grid item display={"flex"}>
-            <Stack spacing={2} justifyContent={"flex-end"}>
-              {stake.depositEndTime > Date.now() && (
-                <>
-                  <CustomButton
-                    onClick={() => {
-                      stakeModal({ show: true, action: "stake", amount: 0, selectedPool: stake });
-                      toastr.warning("Before staking, you need to provide an allowance.");
-                    }}
-                    label={stake.depositStartTime > Date.now() ? "Waiting For Start Deposit" : "Stake"}
-                    disabled={stake.depositStartTime > Date.now()}
-                  />
-                </>
-              )}
-              {stake.lockPeriod + stake.depositEndTime >= Date.now() && stake.depositStartTime <= Date.now() && (
-                <CustomButton
-                  onClick={() => {
-                    stakeModal({ show: true, action: "unstake", amount: 0, selectedPool: stake });
-                  }}
-                  label={"This is lock period"}
-                  disabled={true}
-                />
-              )}
-              {stake.lockPeriod + stake.depositEndTime <= Date.now() && stake.my_balance > 0 && stake.my_balance > 0 && (
-                <>
-                  <CustomButton
-                    onClick={() => {
-                      stakeModal({ show: true, action: "unstake", amount: 0, selectedPool: stake });
-                    }}
-                    label={"UnStake"}
-                    disabled={false}
-                  />
-                  <CustomButton
-                    onClick={() => {
-                      stakeModal({ show: true, action: "claim", amount: 0, selectedPool: stake });
-                    }}
-                    label={"Claim"}
-                    disabled={false}
-                  />
-                </>
-              )}
-            </Stack>
+            <Grid container direction={"column"} display={"flex"} justifyContent={"space-between"}>
+              <Grid item>
+                <Typography variant="body2" color="text.secondary">
+                  Stake Balance: {stake.my_balance}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Claimed Reward: {stake.my_claimed}
+                </Typography>
+              </Grid>
+              <Grid item display={"flex"} justifyContent="flex-end">
+                <Stack spacing={1}>
+                  {!stake.notified && stake.amIOwner && (
+                    <>
+                      <CustomButton
+                        onClick={() => {
+                          stakeModal({ show: true, action: "notify reward", amount: 0, selectedPool: stake });
+                          toastr.warning("Before Notify Reward, you need to provide an allowance.");
+                        }}
+                        label={"Notify Reward"}
+                        disabled={stake.depositEndTime < Date.now()}
+                      />
+                    </>
+                  )}
+                  {stake.lockPeriod + stake.depositEndTime <= Date.now() && (
+                    <>
+                      <CustomButton
+                        onClick={() => {
+                          stakeModal({ show: true, action: "unstake", amount: stake.my_balance, selectedPool: stake });
+                        }}
+                        label={"Unstake"}
+                        disabled={stake.my_balance <= 0}
+                      />
+                      <CustomButton
+                        onClick={() => {
+                          stakeModal({ show: true, action: "claim", amount: 0, selectedPool: stake });
+                        }}
+                        label={"Claim"}
+                        disabled={stake.my_claimed > 0}
+                      />
+                    </>
+                  )}
+                  {stake.depositEndTime > Date.now() && (
+                    <>
+                      <CustomButton
+                        onClick={() => {
+                          stakeModal({ show: true, action: "stake", amount: 0, selectedPool: stake });
+                          toastr.warning("Before staking, you need to provide an allowance.");
+                        }}
+                        label={stake.depositStartTime > Date.now() ? "Wait For Stake" : "Stake"}
+                        disabled={stake.depositStartTime > Date.now()}
+                      />
+                    </>
+                  )}
+                </Stack>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </CardContent>

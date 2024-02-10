@@ -1,7 +1,7 @@
 import { CircularProgress, Grid, Theme, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { SERVER_API, contractHashToContractPackageHash, fetchErc20TokenDetails, getAllCep18StakePools } from "../../utils/api";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import { CasperHelpers, STORE_CEP_18_STAKE_CONTRACT } from "../../utils";
 import moment from "moment";
 import toastr from "toastr";
@@ -28,12 +28,11 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const ManageStakes = () => {
+const JoinStakes = () => {
   const classes = useStyles();
-  const navigate = useNavigate();
-  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
   const [loading, setLoading] = useState<boolean>(true);
   const [pools, setPools] = useState<any>([]);
+  const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
   const [showStakeModal, setShowStakeModal] = useState<{ show: boolean; amount: number; action?: "stake" | "unstake" | "claim" | "notify"; selectedPool?: any }>({
     show: false,
     amount: 0,
@@ -49,6 +48,7 @@ const ManageStakes = () => {
       if (data.length > 0) {
         const tokenDetailPromises = data.map((dt: any) => fetchErc20TokenDetails("hash-" + dt.token));
         const tokenDetails = await Promise.all(tokenDetailPromises);
+
         const allPoolsData = data.map((dt: any, index: number) => {
           const currentToken = tokenDetails[index];
           const decimal = parseInt(currentToken.decimals.hex, 16);
@@ -58,7 +58,6 @@ const ManageStakes = () => {
           const minStake = parseInt(dt.min_stake.hex, 16) / Math.pow(10, decimal);
           const maxStake = parseInt(dt.max_stake.hex, 16) / Math.pow(10, decimal);
           const maxCap = parseInt(dt.max_cap.hex, 16) / Math.pow(10, decimal);
-          const totalSupply = dt.total_supply ? parseInt(dt.total_supply.hex, 16) / Math.pow(10, decimal) : 0;
           const depositEndTime = moment(parseInt(dt.deposit_end_time.hex, 16));
           const depositStartTime = moment(parseInt(dt.deposit_start_time.hex, 16));
           const depositStartTimeFormatted = moment(parseInt(dt.deposit_start_time.hex, 16)).format("MMMM Do YYYY, HH:mm");
@@ -66,9 +65,9 @@ const ManageStakes = () => {
           const lockPeriod = moment(parseInt(dt.lock_period.hex, 16));
           const liquidity = dt.liquidity ? parseInt(dt.liquidity.hex, 16) / Math.pow(10, decimal) : 0;
           const apr = dt.apr ? parseInt(dt.apr.hex, 16) : 0;
-          const total_reward = dt.total_reward ? parseInt(dt.total_reward.hex, 16) / Math.pow(10, decimal) : 0;
           const my_balance = dt.my_balance ? dt.my_balance / Math.pow(10, decimal) : 0;
           const my_claimed = dt.my_claimed ? dt.my_claimed / Math.pow(10, decimal) : 0;
+          const total_reward = dt.total_reward ? parseInt(dt.total_reward.hex, 16) / Math.pow(10, decimal) : 0;
 
           return {
             key: dt.key,
@@ -82,7 +81,6 @@ const ManageStakes = () => {
             minStake,
             maxStake,
             maxCap,
-            totalSupply,
             lockPeriod,
             depositEndTimeFormatted,
             depositStartTimeFormatted,
@@ -97,7 +95,9 @@ const ManageStakes = () => {
             total_reward,
           };
         });
-        const finalData = allPoolsData.filter((pool: any) => pool.amIOwner);
+
+        const finalData = allPoolsData.filter((pool: any) => !pool.amIOwner && pool.liquidity !== 0);
+
         setPools(finalData);
       }
 
@@ -150,44 +150,6 @@ const ManageStakes = () => {
       }
     } else {
       toastr.error("Please Select a token for allowance");
-      setLoading(false);
-    }
-  };
-
-  const notify = async () => {
-    setLoading(true);
-    if (showStakeModal.selectedPool) {
-      const contract = new Contracts.Contract();
-      const selectedPool = showStakeModal.selectedPool;
-      contract.setContractHash(selectedPool.key);
-
-      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-      const args = RuntimeArgs.fromMap({});
-
-      const deploy = contract.callEntrypoint("notify", args, ownerPublicKey, "casper-test", "4000000000");
-      const deployJson = DeployUtil.deployToJson(deploy);
-
-      try {
-        const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-        let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
-        signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-
-        const data = DeployUtil.deployToJson(signedDeploy.val);
-        const response = await axios.post(SERVER_API + "deploy", data, {
-          headers: { "Content-Type": "application/json" },
-        });
-
-        toastr.success(response.data, "Allowance increased successfully.");
-        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
-
-        setLoading(false);
-        navigate("/manage-stake");
-      } catch (error: any) {
-        alert(error.message);
-        setLoading(false);
-      }
-    } else {
-      toastr.error("Please select a pool for notify reward");
       setLoading(false);
     }
   };
@@ -276,8 +238,8 @@ const ManageStakes = () => {
 
   const claim = async () => {
     setLoading(true);
-
     const contract = new Contracts.Contract();
+
     const selectedPool = showStakeModal.selectedPool;
     contract.setContractHash(selectedPool.key);
 
@@ -285,7 +247,7 @@ const ManageStakes = () => {
 
     const args = RuntimeArgs.fromMap({});
 
-    const deploy = contract.callEntrypoint("claim_reward", args, ownerPublicKey, "casper-test", "2000000000");
+    const deploy = contract.callEntrypoint("claim", args, ownerPublicKey, "casper-test", "2000000000");
 
     const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -341,12 +303,12 @@ const ManageStakes = () => {
     <Grid container className={classes.container}>
       <Grid item style={{ display: "flex" }}>
         <Typography className={classes.title} variant="h5">
-          MANAGE YOUR STAKE CEP-18 TOKEN
+          JOIN POOL STAKE CEP-18 TOKEN
         </Typography>
       </Grid>
       <Grid container style={{ display: "flex", justifyContent: "center" }}>
         {pools.map((pl: any, index: number) => (
-          <Grid item key={index} xl={8} style={{ display: "flex", justifyContent: "center", marginBottom: "0.5rem", marginTop: "0.5rem" }}>
+          <Grid item key={index} xl={8} style={{ display: "flex", justifyContent: "center", marginBottom: "1rem", marginTop: "1rem" }}>
             <StakeCard stake={pl} key={index} stakeModal={setShowStakeModal}></StakeCard>
             <StakeModal
               handleStakeModal={setShowStakeModal}
@@ -355,7 +317,6 @@ const ManageStakes = () => {
               stake={stake}
               unStake={unStake}
               increaseAllowance={increaseAllowance}
-              notify={notify}
             ></StakeModal>
           </Grid>
         ))}
@@ -364,4 +325,4 @@ const ManageStakes = () => {
   );
 };
 
-export default ManageStakes;
+export default JoinStakes;

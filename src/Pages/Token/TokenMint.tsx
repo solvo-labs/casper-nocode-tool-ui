@@ -78,12 +78,8 @@ const TokenMint: React.FC = () => {
     setMintLoading(true);
     try {
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
-      console.log("ownerPublicKey", ownerPublicKey);
-
       // contract
-
       const contract = new Contracts.Contract();
-      console.log("contract", contract);
 
       // parameters
       const args = RuntimeArgs.fromMap({
@@ -101,13 +97,9 @@ const TokenMint: React.FC = () => {
       // signer logic
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-        console.log("sign", sign);
 
         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
-
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-        console.log("signedDeploy", signedDeploy);
-
         const data = DeployUtil.deployToJson(signedDeploy.val);
 
         const response = await axios.post(SERVER_API + "deploy", data, {

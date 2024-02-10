@@ -28,9 +28,10 @@ type Props = {
   increaseAllowance: () => void;
   unStake: () => void;
   claim: () => void;
+  notify?: () => void;
 };
 
-const StakeModal: React.FC<Props> = ({ showStakeModal, handleStakeModal, stake, increaseAllowance, unStake, claim }) => {
+const StakeModal: React.FC<Props> = ({ showStakeModal, handleStakeModal, stake, increaseAllowance, unStake, claim, notify }) => {
   return (
     <Modal
       open={showStakeModal.show}
@@ -44,7 +45,43 @@ const StakeModal: React.FC<Props> = ({ showStakeModal, handleStakeModal, stake, 
         <Typography marginY={2} align="center" variant="h6" component="h2">
           {showStakeModal.action?.toUpperCase() + " CEP-18 Token"}
         </Typography>
-
+        {showStakeModal.action === "notify reward" && (
+          <Typography sx={{ mt: 2 }}>
+            <TextField
+              label="Award Amount"
+              name="notifyAmount"
+              placeholder="Award Amount"
+              type="text"
+              value={showStakeModal.amount}
+              onChange={(e: any) => {
+                handleStakeModal({ ...showStakeModal, amount: Number(e.target.value) });
+              }}
+              sx={{
+                width: "100%",
+                my: "1rem",
+                "& .MuiOutlinedInput-root": {
+                  color: "white",
+                  "& fieldset": {
+                    borderRadius: "1rem",
+                    border: "1px solid #BFBFBF",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#FF0011",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#FF0011",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  color: "white",
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "#FF0011",
+                },
+              }}
+            ></TextField>
+          </Typography>
+        )}
         {showStakeModal.action === "stake" && (
           <Typography sx={{ mt: 2 }}>
             <TextField
@@ -121,6 +158,27 @@ const StakeModal: React.FC<Props> = ({ showStakeModal, handleStakeModal, stake, 
         )}
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: "1rem", gap: "1rem" }}>
+          {showStakeModal.action === "notify reward" && (
+            <>
+              <CustomButton
+                onClick={() => {
+                  if (notify) notify();
+                }}
+                label={showStakeModal.action || ""}
+                disabled={
+                  // TODO chech account balance
+                  showStakeModal.amount <= 0
+                }
+              />
+              <CustomButton
+                onClick={() => {
+                  increaseAllowance();
+                }}
+                label={"Increase Allowance"}
+                disabled={showStakeModal.amount <= 0}
+              />
+            </>
+          )}
           {showStakeModal.action === "stake" && (
             <>
               <CustomButton
@@ -149,7 +207,7 @@ const StakeModal: React.FC<Props> = ({ showStakeModal, handleStakeModal, stake, 
                   unStake();
                 }}
                 label={showStakeModal.action || ""}
-                disabled={showStakeModal.amount <= 0 || showStakeModal.amount > Number(showStakeModal.selectedPool?.my_balance || 0)}
+                disabled={showStakeModal.amount <= 0}
               />
             </>
           )}

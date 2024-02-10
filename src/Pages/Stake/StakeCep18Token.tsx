@@ -23,7 +23,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: "4rem",
+    [theme.breakpoints.down("lg")]: {
+      minWidth: "80vw",
+    },
     [theme.breakpoints.down("sm")]: {
+      minWidth: "90vw",
       marginBottom: 2,
       marginTop: 2,
       padding: "24px",
@@ -112,7 +117,7 @@ const StakeCep18Token = () => {
           storage_key: new CLAccountHash(Buffer.from(STORE_CEP_18_STAKE_CONTRACT, "hex")),
         });
 
-        const deploy = contract.install(new Uint8Array(stakeWasm), args, "130000000000", ownerPublicKey, "casper-test");
+        const deploy = contract.install(new Uint8Array(stakeWasm), args, "150000000000", ownerPublicKey, "casper-test");
         const deployJson = DeployUtil.deployToJson(deploy);
 
         try {
@@ -145,7 +150,23 @@ const StakeCep18Token = () => {
   };
 
   const disable = useMemo(() => {
-    return !stakeForm.lockPeriod || !stakeForm.token;
+    let aprLimit: boolean;
+    if (isFixedApr) {
+      aprLimit = !stakeForm.fixedApr;
+    } else {
+      aprLimit = !stakeForm.minApr || !stakeForm.maxApr || stakeForm.minApr >= stakeForm.maxApr;
+    }
+    const timeLimit = stakeForm.depositStartTime * 1000 <= Date.now() || stakeForm.depositEndTime <= stakeForm.depositStartTime;
+    return (
+      !stakeForm.maxCap ||
+      !stakeForm.maxStake ||
+      !stakeForm.minStake ||
+      stakeForm.minStake > stakeForm.maxStake ||
+      stakeForm.maxCap <= stakeForm.maxStake ||
+      stakeForm.maxCap <= stakeForm.minStake ||
+      aprLimit ||
+      timeLimit
+    );
   }, [stakeForm]);
 
   if (loading || actionLoading) {
@@ -171,16 +192,14 @@ const StakeCep18Token = () => {
           Create Cep18 Stake Pool
         </Typography>
       </Grid>
-      <Grid item marginTop={"5rem"} width={"50%"}>
+      <Grid item marginTop={"4rem"}>
         <Stack spacing={4}>
           <CustomSelect
             value={stakeForm.token ? stakeForm.token?.contractHash : "default"}
             label="ERC-20 Token"
             onChange={(event: SelectChangeEvent) => {
               const data = tokens.find((tk) => tk.contractHash === event.target.value);
-              if (data) {
-                setStakeForm({ ...stakeForm, token: data });
-              }
+              data ? setStakeForm({ ...stakeForm, token: data }) : setStakeForm({ ...stakeForm, token: null });
             }}
             id={"custom-select"}
           >
@@ -225,7 +244,16 @@ const StakeCep18Token = () => {
           <FormControlLabel
             style={{ justifyContent: "start" }}
             labelPlacement="start"
-            control={<Switch checked={isFixedApr} color="warning" onChange={() => setIsFixedApr(!isFixedApr)} />}
+            control={
+              <Switch
+                checked={isFixedApr}
+                color="warning"
+                onChange={() => {
+                  setIsFixedApr(!isFixedApr);
+                  setStakeForm({ ...stakeForm, minApr: 0, maxApr: 0, fixedApr: 0 });
+                }}
+              />
+            }
             label="Fixed Apr"
           />
           {isFixedApr ? (
