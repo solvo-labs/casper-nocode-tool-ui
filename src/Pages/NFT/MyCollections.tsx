@@ -73,7 +73,6 @@ export const MyCollections = () => {
         setCollections([...ownedCollections, ...missingCollections]);
       } else {
         setCollections(ownedCollections);
-        console.log(ownedCollections);
       }
 
       setLoading(false);
