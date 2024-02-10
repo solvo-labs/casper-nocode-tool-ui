@@ -260,7 +260,6 @@ const ApproveNFT = () => {
                   mediaHeight={""}
                   cardContentPadding={""}
                   cardContentTitle={""}
-                  cardContentSymbol={""}
                   cardContentContractHash={""}
                   tokenCountText={parseInt(e.number_of_minted_tokens.hex).toString() + "/" + parseInt(e.total_token_supply.hex).toString()}
                 ></CollectionCardAlternate>
