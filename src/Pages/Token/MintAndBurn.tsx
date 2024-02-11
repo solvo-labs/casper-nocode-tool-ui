@@ -189,7 +189,7 @@ const MintAndBurn: React.FC = () => {
 
         const deployedData = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post(SERVER_API + deploy, deployedData, {
+        const response = await axios.post(SERVER_API + "deploy", deployedData, {
           headers: { "Content-Type": "application/json" },
         });
         toastr.success(response.data, selectedToken.name + " Token burned successfully.");
