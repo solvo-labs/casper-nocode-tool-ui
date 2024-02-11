@@ -172,7 +172,7 @@ const StakeCasper = () => {
         const args = RuntimeArgs.fromMap({
           validator: CLValueBuilder.publicKey(Buffer.from(selectedValidator.public_key.substring(2), "hex"), CLPublicKeyTag.ED25519),
           amount: CLValueBuilder.u512(amount * 1000000000),
-          delegator: CLValueBuilder.publicKey(Buffer.from(publicKey.substring(2), "hex"), CLPublicKeyTag.SECP256K1),
+          delegator: CLValueBuilder.publicKey(Buffer.from(publicKey.substring(2), "hex"), CLPublicKeyTag.ED25519),
         });
 
         const deploy = contract.callEntrypoint("delegate", args, ownerPublicKey, "casper-test", "2500000000");
@@ -240,7 +240,7 @@ const StakeCasper = () => {
       const args = RuntimeArgs.fromMap({
         validator: CLValueBuilder.publicKey(Buffer.from(value.delegatee.substring(2), "hex"), CLPublicKeyTag.ED25519),
         amount: CLValueBuilder.u512(value.staked_amount),
-        delegator: CLValueBuilder.publicKey(Buffer.from(publicKey.substring(2), "hex"), CLPublicKeyTag.SECP256K1),
+        delegator: CLValueBuilder.publicKey(Buffer.from(publicKey.substring(2), "hex"), CLPublicKeyTag.ED25519),
       });
 
       const deploy = contract.callEntrypoint("undelegate", args, ownerPublicKey, "casper-test", "2500000000");
