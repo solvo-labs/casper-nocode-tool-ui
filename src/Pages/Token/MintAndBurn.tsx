@@ -118,6 +118,7 @@ const MintAndBurn: React.FC = () => {
   }, []);
 
   const mint = async () => {
+    setLoading(true);
     if (selectedToken) {
       const contract = new Contracts.Contract();
       contract.setContractHash(selectedToken.contractHash);
@@ -151,7 +152,7 @@ const MintAndBurn: React.FC = () => {
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
-        // setActionLoader(false);
+        setLoading(false);
       } catch (error: any) {
         alert(error.message);
       }
@@ -161,6 +162,7 @@ const MintAndBurn: React.FC = () => {
   };
 
   const burn = async () => {
+    setLoading(true);
     if (selectedToken) {
       const contract = new Contracts.Contract();
       contract.setContractHash(selectedToken.contractHash);
@@ -194,7 +196,7 @@ const MintAndBurn: React.FC = () => {
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
-        // setActionLoader(false);
+        setLoading(false);
       } catch (error: any) {
         alert(error.message);
       }
@@ -207,7 +209,7 @@ const MintAndBurn: React.FC = () => {
     return (
       <div
         style={{
-          height: "calc(100vh - 8rem)",
+          height: "60vh",
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -263,7 +265,7 @@ const MintAndBurn: React.FC = () => {
                   <CustomInput placeholder="Amount" label="Amount" id="amount" name="amount" type="number" value={data} onChange={(e: any) => setData(e.target.value)} />
                   <Grid container direction={"row"} paddingTop={"2rem"} justifyContent={"space-around"}>
                     <Grid item>
-                      <CustomButton onClick={mint} disabled={data <= 0 || selectedToken === undefined} label="Mint" />
+                      <CustomButton onClick={mint} disabled={disable} label="Mint" />
                     </Grid>
                     <Grid item>
                       <CustomButton onClick={burn} disabled={disable} label="Burn" />

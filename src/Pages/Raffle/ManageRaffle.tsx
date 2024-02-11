@@ -192,7 +192,6 @@ const ManageRaffle = () => {
           setLoading(false);
 
           deposit();
-          // navigate("/marketplace");
         } catch (error: any) {
           alert(error.message);
           setLoading(false);
@@ -230,7 +229,7 @@ const ManageRaffle = () => {
 
           toastr.success(response.data, "Deposit successfully.");
           setLoading(false);
-          // navigate("/marketplace");
+          window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
         } catch (error: any) {
           alert(error.message);
         }
@@ -269,7 +268,7 @@ const ManageRaffle = () => {
           toastr.success(response.data, "Draw deployed successfully.");
           setApproveModal(false);
           setLoading(false);
-          // navigate("/marketplace");
+          window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
         } catch (error: any) {
           alert(error.message);
           setLoading(false);
@@ -308,7 +307,7 @@ const ManageRaffle = () => {
         toastr.success(response.data, "Cancel deployed successfully.");
         setApproveModal(false);
         setLoading(false);
-        // navigate("/marketplace");
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
       } catch (error: any) {
         alert(error.message);
       }
@@ -350,7 +349,7 @@ const ManageRaffle = () => {
           toastr.success(response.data, "Raffle deployed successfully.");
           setRaffleOpen(false);
           setLoading(false);
-          // navigate("/marketplace");
+          window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
         } catch (error: any) {
           alert(error.message);
           setLoading(false);

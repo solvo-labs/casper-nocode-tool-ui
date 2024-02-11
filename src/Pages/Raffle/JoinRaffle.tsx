@@ -144,6 +144,7 @@ const JoinRaffle = () => {
 
           toastr.success(response.data, "Deposit successfully.");
           setLoading(false);
+          window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
         } catch (error: any) {
           alert(error.message);
           setLoading(false);
@@ -166,7 +167,6 @@ const JoinRaffle = () => {
       const args = RuntimeArgs.fromMap({});
 
       const deploy = contract.callEntrypoint("claim", args, ownerPublicKey, "casper-test", "5000000000");
-      console.log(deploy);
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -181,6 +181,7 @@ const JoinRaffle = () => {
 
         toastr.success(response.data, "Claim deployed successfully.");
         setLoading(false);
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
       } catch (error: any) {
         alert(error.message);
       }
@@ -216,12 +217,12 @@ const JoinRaffle = () => {
       </Grid>
       {joinableRaffle?.length! <= 0 && (
         <>
-          <Grid container display={"flex"} justifyContent={"center"} marginTop={12} padding={16}>
+          <Grid container display={"flex"} justifyContent={"center"} marginTop={16} padding={8}>
             <Typography variant="h4">There is no raffle that you can actively participate in.</Typography>
           </Grid>
         </>
       )}
-      {joinableRaffle?.length! < 0 && (
+      {joinableRaffle?.length! > 0 && (
         <Grid item sx={{ marginTop: "2rem" }}>
           <Paper>
             <TableContainer>

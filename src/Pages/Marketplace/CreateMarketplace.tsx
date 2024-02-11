@@ -61,6 +61,7 @@ const CreateMarketplace = () => {
           headers: { "Content-Type": "application/json" },
         });
         toastr.success(response.data, "Marketplace deployed successfully.");
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/marketplace");
       } catch (error: any) {

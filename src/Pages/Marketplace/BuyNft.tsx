@@ -47,7 +47,6 @@ const BuyNft = () => {
       const listingData = await getAllListingForSale();
       setListings(listingData);
       setLoading(false);
-      console.log(listingData);
     };
 
     init();
@@ -65,8 +64,8 @@ const BuyNft = () => {
   };
 
   const buyNft = async (listing: Listing) => {
+    setLoading(true);
     try {
-      setLoading(true);
       const ownerPublicKey = CLPublicKey.fromHex(publicKey);
       const contract = new Contracts.Contract();
 
@@ -79,17 +78,14 @@ const BuyNft = () => {
       const deploy = contract.install(new Uint8Array(executeListingWasm!), args, "15000000000", ownerPublicKey, "casper-test");
 
       const deployJson = DeployUtil.deployToJson(deploy);
-      console.log("deployJson", deployJson);
 
       // signer logic
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-        console.log("sign", sign);
 
         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
-        console.log("signedDeploy", signedDeploy);
 
         const data = DeployUtil.deployToJson(signedDeploy.val);
 
@@ -99,7 +95,6 @@ const BuyNft = () => {
         toastr.success(response.data, "Sold successfully.");
 
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
-
         soldNft(listing.id || "");
         navigate("/buy-nft");
         setLoading(false);
@@ -117,7 +112,7 @@ const BuyNft = () => {
     return (
       <div
         style={{
-          height: "50vh",
+          height: "60vh",
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -138,30 +133,39 @@ const BuyNft = () => {
           </Typography>
         </Stack>
       </Grid>
-      <Grid item marginTop={"2rem"}>
-        <Typography variant="h5">List of NFT's</Typography>
-      </Grid>
-      <Grid container>
-        {listings.map((lst, index: number) => {
-          return (
-            <Grid item lg={3} md={4} sm={6} xs={6} key={index}>
-              <NftCard
-                description={lst.nftDescription}
-                name={lst.nftName}
-                asset={lst.nftImage}
-                price={lst.price}
-                onClick={() => {
-                  detailPage(lst.collection_hash.slice(5), lst.tokenId);
-                }}
-                index={0}
-              ></NftCard>
-              <div style={{ display: "flex", alignItems: "center ", justifyContent: "center" }}>
-                <CustomButton onClick={() => buyNft(lst)} label={"BUY THIS NFT"} disabled={false}></CustomButton>
-              </div>
-            </Grid>
-          );
-        })}
-      </Grid>
+      {listings.length <= 0 && (
+        <Grid container display={"flex"} justifyContent={"center"} padding={8} marginTop={"4rem"}>
+          <Typography variant="h5">No NFT has been listed.</Typography>
+        </Grid>
+      )}
+      {listings.length > 0 && (
+        <>
+          <Grid item marginTop={"2rem"}>
+            <Typography variant="h5">List of NFT's</Typography>
+          </Grid>
+          <Grid container>
+            {listings.map((lst, index: number) => {
+              return (
+                <Grid item lg={3} md={4} sm={6} xs={6} key={index}>
+                  <NftCard
+                    description={lst.nftDescription}
+                    name={lst.nftName}
+                    asset={lst.nftImage}
+                    price={lst.price}
+                    onClick={() => {
+                      detailPage(lst.collection_hash.slice(5), lst.tokenId);
+                    }}
+                    index={0}
+                  ></NftCard>
+                  <div style={{ display: "flex", alignItems: "center ", justifyContent: "center" }}>
+                    <CustomButton onClick={() => buyNft(lst)} label={"BUY THIS NFT"} disabled={false}></CustomButton>
+                  </div>
+                </Grid>
+              );
+            })}
+          </Grid>
+        </>
+      )}
     </Grid>
   );
 };
