@@ -195,7 +195,7 @@ const IncreaseDecreaseAllowance: React.FC = () => {
     return (
       <div
         style={{
-          height: "calc(100vh - 8rem)",
+          height: "60vh",
           width: "100%",
           display: "flex",
           justifyContent: "center",

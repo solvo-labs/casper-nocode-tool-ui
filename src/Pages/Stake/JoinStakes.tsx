@@ -96,7 +96,7 @@ const JoinStakes = () => {
           };
         });
 
-        const finalData = allPoolsData.filter((pool: any) => !pool.amIOwner && pool.liquidity !== 0);
+        const finalData = allPoolsData.filter((pool: any) => !pool.amIOwner);
 
         setPools(finalData);
       }

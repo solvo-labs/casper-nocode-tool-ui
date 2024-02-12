@@ -18,11 +18,11 @@ type Props = {
   image: string;
   contractHash: string;
   onClick: () => void;
-  cardHeight: string;
+  cardHeight?: string;
+  cardWidth?: string;
   mediaHeight: string;
   cardContentPadding: string;
   cardContentTitle: string;
-  cardContentSymbol: string;
   cardContentContractHash: string;
   tokenCountText: string;
   amICreator?: boolean;
@@ -35,33 +35,32 @@ const CollectionCard: React.FC<Props> = ({
   image,
   onClick,
   cardHeight,
+  cardWidth,
   mediaHeight,
   cardContentPadding,
   cardContentTitle,
-  cardContentSymbol,
   cardContentContractHash,
   tokenCountText,
   amICreator = false,
 }) => {
   return (
-    <CardActionArea>
-      <Card style={{ height: `${cardHeight}`, margin: "1rem" }} onClick={onClick}>
+    <Card style={{ height: `${cardHeight}`, width: `${cardWidth}`, margin: "1rem" }} onClick={onClick}>
+      <CardActionArea>
         <CardMedia component="img" height={mediaHeight} image={image} alt="collection-image" />
         <CardContent style={{ padding: `${cardContentPadding}` }}>
           <Stack direction={"row"} alignItems={"baseline"} spacing={1}>
             <Typography sx={{ fontSize: `${cardContentTitle}`, marginBottom: "5px" }} fontWeight={"bold"}>
-              {title}
+              {title} ({symbol})
             </Typography>
-            <Typography sx={{ fontSize: `${cardContentSymbol}`, marginBottom: "5px" }}>{symbol}</Typography>
           </Stack>
           <Typography sx={{ fontSize: `${cardContentContractHash}`, marginBottom: "5px" }} fontWeight={"bold"}>
             ({tokenCountText})
           </Typography>
-          <Typography sx={{ fontSize: `${cardContentContractHash}` }}>{contractHash.slice(0, 40)}</Typography>
+          <Typography sx={{ fontSize: `${cardContentContractHash}` }}>{contractHash.slice(0, 10) + "..." + contractHash.slice(-4)}</Typography>
           <Chip sx={{ marginTop: "0.5rem" }} label={amICreator ? "I'm owner" : "I'm a participant"} color={amICreator ? "success" : "warning"} size="small" />
         </CardContent>
-      </Card>
-    </CardActionArea>
+      </CardActionArea>
+    </Card>
   );
 };
 
@@ -78,7 +77,7 @@ export const CollectionCardAlternate: React.FC<Props> = ({ title, symbol, contra
           <Typography variant="subtitle1">({symbol})</Typography>
           <Typography variant="subtitle1">{tokenCountText}</Typography>
           <Typography variant="body2" color="text.secondary">
-            {contractHash.slice(0, 20)}
+            {contractHash.slice(0, 5)}
           </Typography>
         </CardContent>
       </Card>

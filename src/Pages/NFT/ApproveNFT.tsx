@@ -202,6 +202,7 @@ const ApproveNFT = () => {
           setOpenApprove(false);
 
           toastr.success(response.data, "Approve deployed successfully.");
+          window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
         } catch (error: any) {
           alert(error.message);
           setLoading(false);
@@ -260,7 +261,6 @@ const ApproveNFT = () => {
                   mediaHeight={""}
                   cardContentPadding={""}
                   cardContentTitle={""}
-                  cardContentSymbol={""}
                   cardContentContractHash={""}
                   tokenCountText={parseInt(e.number_of_minted_tokens.hex).toString() + "/" + parseInt(e.total_token_supply.hex).toString()}
                 ></CollectionCardAlternate>

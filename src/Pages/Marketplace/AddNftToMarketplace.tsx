@@ -187,6 +187,7 @@ const AddNftToMarketplace = () => {
           await storeListing(marketplaceHash, selectedCollection, selectedNftIndex, price, nftData[selectedNftIndex], Number(parseInt(marketplaceData.listingCount.hex)));
 
           toastr.success(response.data, "Listing created successfully.");
+          window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
           navigate("/marketplace");
           setLoading(false);
         } catch (error: any) {
@@ -240,7 +241,6 @@ const AddNftToMarketplace = () => {
       const nftMetas = await Promise.all(promises);
 
       const whiteListInfo = await fetchMarketplaceWhitelistData(marketplaceHash || "", selectedCollection.slice(5));
-      console.log(whiteListInfo);
       if (whiteListInfo != true) {
         toastr.warning("You must to add whitelist to this marketplace. Please confirm this transaction.");
         addWhiteList();
@@ -320,7 +320,6 @@ const AddNftToMarketplace = () => {
                   mediaHeight={""}
                   cardContentPadding={""}
                   cardContentTitle={""}
-                  cardContentSymbol={""}
                   cardContentContractHash={""}
                   tokenCountText={parseInt(e.number_of_minted_tokens.hex).toString() + "/" + parseInt(e.total_token_supply.hex).toString()}
                 ></CollectionCardAlternate>

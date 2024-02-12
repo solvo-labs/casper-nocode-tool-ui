@@ -102,6 +102,7 @@ export const LootboxList = () => {
 
           setLoading(false);
           toastr.success(response.data, "Lootbox deployed successfully.");
+          window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
         } catch (error: any) {
           setLoading(false);
           toastr.error("Lootbox couldn't be deploy. Error: " + error);
@@ -138,6 +139,7 @@ export const LootboxList = () => {
           });
 
           toastr.success(response.data, "Claim successfully.");
+          window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
           setLoading(false);
         } catch (error: any) {
           alert(error.message);

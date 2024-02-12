@@ -102,16 +102,14 @@ export const VestingList = () => {
 
   const [recipients, setRecipients] = useState<VestingRecipient[]>([]);
 
-  const [vestingOpen, setVestingOpen] = useState(false);
+  const [vestingOpen, setVestingOpen] = useState<boolean>(false);
   const [selectedVesting, setSelectedVesting] = useState<string>();
   const handleOpen = (setState: any, key: string) => {
     setState(true);
     setSelectedVesting(key);
-    console.log(selectedVesting);
   };
   const handleClose = (setState: any) => {
     setState(false);
-    // setSelectedVesting(undefined);
   };
 
   const getTimestamp = () => {
@@ -352,7 +350,6 @@ export const VestingList = () => {
           className={classes.tableRow}
           key={index}
           onClick={() => {
-            console.log(e);
             handleOpen(setVestingOpen, e.key);
           }}
         >
@@ -384,7 +381,6 @@ export const VestingList = () => {
           </TableCell>
           <TableCell align="center">{e.recipient_count}</TableCell>
           <TableCell align="center">{e.released ? "TRUE" : "FALSE"}</TableCell>
-
           <TableCell align="center">
             <CustomButton
               onClick={(event: any) => {
@@ -414,16 +410,12 @@ export const VestingList = () => {
         <TableCell>{e.contract_name}</TableCell>
         <TableCell align="center">{getStatusIcon(e.release_date.hex / 1000, e.end_date.hex / 1000)}</TableCell>
         <TableCell align="center">{e.v_index}</TableCell>
-        <TableCell align="center">{e.v_contract}</TableCell>
+        <TableCell align="center">{e.v_contract.slice(0, 10) + "..." + e.v_contract.slice(-5)}</TableCell>
         <TableCell align="center">{timestampToDate(e.release_date.hex / 1000)}</TableCell>
         <TableCell align="center">{timestampToDate(e.end_date.hex / 1000)}</TableCell>
         <TableCell align="center">{parseInt(e.cliff_timestamp.hex) + " sec"}</TableCell>
-        <TableCell align="center">{e.v_token}</TableCell>
-        <TableCell align="center">
-          {Object.values(e.owner)
-            .map((byte: any) => byte.toString(16).padStart(2, "0"))
-            .join("")}
-        </TableCell>
+        <TableCell align="center">{e.v_token.slice(0, 10) + "..." + e.v_token.slice(-5)}</TableCell>
+        <TableCell align="center">{"hash-" + uint32ArrayToHex(e.owner).slice(0, 10) + "..." + uint32ArrayToHex(e.owner).slice(-5)}</TableCell>
 
         <TableCell align="center">{parseInt(e.vesting_amount.hex)}</TableCell>
         <TableCell align="center">{parseInt(e.allocation)}</TableCell>
@@ -494,7 +486,7 @@ export const VestingList = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        {tableHeaders.map((header, index) => (
+                        {tableHeaders.map((header, index: number) => (
                           <TableCell key={index} className={classes.tableTitle} align="center">
                             {header}
                           </TableCell>
@@ -533,7 +525,7 @@ export const VestingList = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        {tableHeadersIncoming.map((header, index) => (
+                        {tableHeadersIncoming.map((header, index: number) => (
                           <TableCell key={index} className={classes.tableTitle}>
                             {header}
                           </TableCell>

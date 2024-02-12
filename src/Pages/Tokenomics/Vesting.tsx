@@ -211,7 +211,7 @@ export const Vesting = () => {
         cliff_timestamp: CLValueBuilder.u64(activateCliff ? vestParams.cliffDuration * vestParams.selectedCliffDuration * 1000 : 0),
       });
 
-      const deploy = contract.install(new Uint8Array(vestingWasm!), args, "150000000000", ownerPublicKey, "casper-test");
+      const deploy = contract.install(new Uint8Array(vestingWasm!), args, "210000000000", ownerPublicKey, "casper-test");
 
       const deployJson = DeployUtil.deployToJson(deploy);
 

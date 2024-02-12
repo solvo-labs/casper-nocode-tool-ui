@@ -16,6 +16,7 @@ import { NftDetailModal } from "../../components/NftDetailModal";
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
     minWidth: "70vw",
+    maxWidth: "70vw",
     justifyContent: "center",
     marginBottom: "2rem",
     [theme.breakpoints.down("lg")]: {
@@ -143,6 +144,7 @@ const JoinRaffle = () => {
 
           toastr.success(response.data, "Deposit successfully.");
           setLoading(false);
+          window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
         } catch (error: any) {
           alert(error.message);
           setLoading(false);
@@ -165,7 +167,6 @@ const JoinRaffle = () => {
       const args = RuntimeArgs.fromMap({});
 
       const deploy = contract.callEntrypoint("claim", args, ownerPublicKey, "casper-test", "5000000000");
-      console.log(deploy);
 
       const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -180,6 +181,7 @@ const JoinRaffle = () => {
 
         toastr.success(response.data, "Claim deployed successfully.");
         setLoading(false);
+        window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
       } catch (error: any) {
         alert(error.message);
       }
@@ -194,7 +196,7 @@ const JoinRaffle = () => {
     return (
       <div
         style={{
-          height: "50vh",
+          height: "60vh",
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -213,114 +215,123 @@ const JoinRaffle = () => {
           Join Raffle
         </Typography>
       </Grid>
-      <Grid item sx={{ marginTop: "2rem" }}>
-        <Paper>
-          <TableContainer>
-            <Table stickyHeader>
-              <TableHead>
-                <TableRow>
-                  <TableCell key="name" align="center">
-                    <Typography fontWeight="bold" color="#0f1429">
-                      Name
-                    </Typography>
-                  </TableCell>
-                  <TableCell key="symbol" align="center">
-                    <Typography fontWeight="bold" color="#0f1429">
-                      Start
-                    </Typography>
-                  </TableCell>
-                  <TableCell key="decimal" align="center">
-                    <Typography fontWeight="bold" color="#0f1429">
-                      End
-                    </Typography>
-                  </TableCell>
-                  <TableCell key="collection" align="center">
-                    <Typography fontWeight="bold" color="#0f1429">
-                      Collection
-                    </Typography>
-                  </TableCell>
-                  <TableCell key="nft-id" align="center">
-                    <Typography fontWeight="bold" color="#0f1429">
-                      NFT ID
-                    </Typography>
-                  </TableCell>
-                  <TableCell key="ticket-count" align="center">
-                    <Typography fontWeight="bold" color="#0f1429">
-                      Ticket Count
-                    </Typography>
-                  </TableCell>
-                  <TableCell key="raffle-price" align="center">
-                    <Typography fontWeight="bold" color="#0f1429">
-                      Price
-                    </Typography>
-                  </TableCell>
-                  <TableCell key="raffle-actions" align="center">
-                    <Typography fontWeight="bold" color="#0f1429">
-                      Actions
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {joinableRaffle &&
-                  joinableRaffle.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((raffle: any, index: number) => {
-                    return (
-                      <TableRow style={{ cursor: "pointer" }} onClick={() => {}} hover role="checkbox" tabIndex={-1} key={index}>
-                        <TableCell align="center">
-                          <Typography color="#0f1429">{raffle.name}</Typography>
-                        </TableCell>
-                        <TableCell align="center">
-                          <Typography color="#0f1429">{moment.unix(raffle.start_date / 1000).format("MM/DD/YYYY h:mm A")}</Typography>
-                        </TableCell>
-                        <TableCell align="center">
-                          <Typography color="#0f1429">{moment.unix(raffle.end_date / 1000).format("MM/DD/YYYY h:mm A")}</Typography>
-                        </TableCell>{" "}
-                        <TableCell align="center">
-                          <Typography color="#0f1429">{raffle.collection.substring(0, 10) + "..." + raffle.collection.substring(54)}</Typography>
-                        </TableCell>
-                        <TableCell
-                          align="center"
-                          onClick={() => {
-                            setNftDetailModal(true);
-                            setModalData({ ...modalData, collectionHash: raffle.collection, nftIndex: raffle.nft_index.toString() });
-                          }}
-                          className={classes.nftIndex}
-                        >
-                          <Typography color="#0f1429">{raffle.nft_index}</Typography>
-                        </TableCell>
-                        <NftDetailModal open={nftDetailModal} nft={nftDetailData} handleClose={() => handleClose(setNftDetailModal)} loading={loadingNftDetail}></NftDetailModal>
-                        <TableCell align="center">
-                          <Typography color="#0f1429">{raffle.partipiciant_count}</Typography>
-                        </TableCell>
-                        <TableCell align="center">
-                          <Typography color="#0f1429">{raffle.price / Math.pow(10, 9)}</Typography>
-                        </TableCell>
-                        {moment.unix(raffle.end_date).unix() < Date.now() ? (
+      {joinableRaffle?.length! <= 0 && (
+        <>
+          <Grid container display={"flex"} justifyContent={"center"} marginTop={16} padding={8}>
+            <Typography variant="h4">There is no raffle that you can actively participate in.</Typography>
+          </Grid>
+        </>
+      )}
+      {joinableRaffle?.length! > 0 && (
+        <Grid item sx={{ marginTop: "2rem" }}>
+          <Paper>
+            <TableContainer>
+              <Table stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    <TableCell key="name" align="center">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        Name
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="symbol" align="center">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        Start
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="decimal" align="center">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        End
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="collection" align="center">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        Collection
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="nft-id" align="center">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        NFT ID
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="ticket-count" align="center">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        Ticket Count
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="raffle-price" align="center">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        Price
+                      </Typography>
+                    </TableCell>
+                    <TableCell key="raffle-actions" align="center">
+                      <Typography fontWeight="bold" color="#0f1429">
+                        Actions
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {joinableRaffle &&
+                    joinableRaffle.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((raffle: any, index: number) => {
+                      return (
+                        <TableRow style={{ cursor: "pointer" }} onClick={() => {}} hover role="checkbox" tabIndex={-1} key={index}>
                           <TableCell align="center">
-                            <CustomButton disabled={false} label="Claim" onClick={() => claim(raffle)}></CustomButton>
+                            <Typography color="#0f1429">{raffle.name}</Typography>
                           </TableCell>
-                        ) : (
                           <TableCell align="center">
-                            <CustomButton disabled={false} label="buy ticket" onClick={() => buy_ticket(raffle)}></CustomButton>
+                            <Typography color="#0f1429">{moment.unix(raffle.start_date / 1000).format("MM/DD/YYYY h:mm A")}</Typography>
                           </TableCell>
-                        )}
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[1, 5, 10]}
-            component="div"
-            count={joinableRaffle?.length || 0}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Paper>
-      </Grid>
+                          <TableCell align="center">
+                            <Typography color="#0f1429">{moment.unix(raffle.end_date / 1000).format("MM/DD/YYYY h:mm A")}</Typography>
+                          </TableCell>{" "}
+                          <TableCell align="center">
+                            <Typography color="#0f1429">{raffle.collection.substring(0, 10) + "..." + raffle.collection.substring(54)}</Typography>
+                          </TableCell>
+                          <TableCell
+                            align="center"
+                            onClick={() => {
+                              setNftDetailModal(true);
+                              setModalData({ ...modalData, collectionHash: raffle.collection, nftIndex: raffle.nft_index.toString() });
+                            }}
+                            className={classes.nftIndex}
+                          >
+                            <Typography color="#0f1429">{raffle.nft_index}</Typography>
+                          </TableCell>
+                          <NftDetailModal open={nftDetailModal} nft={nftDetailData} handleClose={() => handleClose(setNftDetailModal)} loading={loadingNftDetail}></NftDetailModal>
+                          <TableCell align="center">
+                            <Typography color="#0f1429">{raffle.partipiciant_count}</Typography>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Typography color="#0f1429">{raffle.price / Math.pow(10, 9)}</Typography>
+                          </TableCell>
+                          {moment.unix(raffle.end_date).unix() < Date.now() ? (
+                            <TableCell align="center">
+                              <CustomButton disabled={false} label="Claim" onClick={() => claim(raffle)}></CustomButton>
+                            </TableCell>
+                          ) : (
+                            <TableCell align="center">
+                              <CustomButton disabled={false} label="buy ticket" onClick={() => buy_ticket(raffle)}></CustomButton>
+                            </TableCell>
+                          )}
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[1, 5, 10]}
+              component="div"
+              count={joinableRaffle?.length || 0}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Paper>
+        </Grid>
+      )}
     </Grid>
   );
 };

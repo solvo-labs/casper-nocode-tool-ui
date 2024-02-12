@@ -145,7 +145,8 @@ export enum DONT_HAVE_ANYTHING {
   COLLECTION = "You don't own any collection.",
   NFT = "You don't have an NFT belonging to the collection.",
   LOOTBOX = "You don't own any lootbox.",
-  APPROVE = "You don't have any Collections",
+  APPROVE = "You don't have any Collections.",
+  TIMEABLE_NFTS = "You don't have any Timable NFTs",
 }
 
 export enum RarityLevel {

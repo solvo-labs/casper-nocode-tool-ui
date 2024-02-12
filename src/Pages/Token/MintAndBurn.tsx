@@ -118,6 +118,7 @@ const MintAndBurn: React.FC = () => {
   }, []);
 
   const mint = async () => {
+    setLoading(true);
     if (selectedToken) {
       const contract = new Contracts.Contract();
       contract.setContractHash(selectedToken.contractHash);
@@ -151,7 +152,7 @@ const MintAndBurn: React.FC = () => {
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
-        // setActionLoader(false);
+        setLoading(false);
       } catch (error: any) {
         alert(error.message);
       }
@@ -161,6 +162,7 @@ const MintAndBurn: React.FC = () => {
   };
 
   const burn = async () => {
+    setLoading(true);
     if (selectedToken) {
       const contract = new Contracts.Contract();
       contract.setContractHash(selectedToken.contractHash);
@@ -187,14 +189,14 @@ const MintAndBurn: React.FC = () => {
 
         const deployedData = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post(SERVER_API + deploy, deployedData, {
+        const response = await axios.post(SERVER_API + "deploy", deployedData, {
           headers: { "Content-Type": "application/json" },
         });
         toastr.success(response.data, selectedToken.name + " Token burned successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
-        // setActionLoader(false);
+        setLoading(false);
       } catch (error: any) {
         alert(error.message);
       }
@@ -207,7 +209,7 @@ const MintAndBurn: React.FC = () => {
     return (
       <div
         style={{
-          height: "calc(100vh - 8rem)",
+          height: "60vh",
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -238,7 +240,7 @@ const MintAndBurn: React.FC = () => {
                 </Typography>
               </Grid>
               <Grid container className={classes.gridContainer}>
-                <Stack spacing={2} direction={"column"} marginTop={4} className={classes.stackContainer}>
+                <Stack spacing={4} direction={"column"} marginTop={8} className={classes.stackContainer}>
                   <CustomSelect
                     value={selectedToken?.contractHash || "default"}
                     label="ERC-20 Token"
@@ -263,7 +265,7 @@ const MintAndBurn: React.FC = () => {
                   <CustomInput placeholder="Amount" label="Amount" id="amount" name="amount" type="number" value={data} onChange={(e: any) => setData(e.target.value)} />
                   <Grid container direction={"row"} paddingTop={"2rem"} justifyContent={"space-around"}>
                     <Grid item>
-                      <CustomButton onClick={mint} disabled={data <= 0 || selectedToken === undefined} label="Mint" />
+                      <CustomButton onClick={mint} disabled={disable} label="Mint" />
                     </Grid>
                     <Grid item>
                       <CustomButton onClick={burn} disabled={disable} label="Burn" />

@@ -95,7 +95,7 @@ export const CreateLootbox = () => {
           storage_key: new CLAccountHash(Buffer.from(lootboxStorageContract, "hex")),
         });
 
-        const deploy = contract.install(new Uint8Array(lootboxWasm), args, "130000000000", ownerPublicKey, "casper-test");
+        const deploy = contract.install(new Uint8Array(lootboxWasm), args, "210000000000", ownerPublicKey, "casper-test");
         const deployJson = DeployUtil.deployToJson(deploy);
 
         try {
@@ -108,6 +108,7 @@ export const CreateLootbox = () => {
           });
           setLoadingCreateLootbox(false);
           toastr.success(response.data, "Lootbox deployed successfully.");
+          window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
           navigate("/my-lootboxes");
         } catch (error: any) {
           setLoadingCreateLootbox(false);
