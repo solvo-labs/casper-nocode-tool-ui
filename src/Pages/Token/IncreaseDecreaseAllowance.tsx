@@ -3,16 +3,17 @@ import { CircularProgress, Grid, MenuItem, SelectChangeEvent, Stack, Theme, Typo
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
-import { ERC20Token } from "../../utils/types";
+import { Token } from "../../utils/types";
 import { useOutletContext, useNavigate } from "react-router-dom";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { SERVER_API, listofCreatorERC20Tokens } from "../../utils/api";
+import { SERVER_API, initTokens } from "../../utils/api";
 import axios from "axios";
 import toastr from "toastr";
 import { CustomSelect } from "../../components/CustomSelect";
 import CreatorRouter from "../../components/CreatorRouter";
 import { DONT_HAVE_ANYTHING } from "../../utils/enum";
+import { tokenSupplyBN } from "../../utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -76,9 +77,9 @@ const IncreaseDecreaseAllowance: React.FC = () => {
   const classes = useStyles();
 
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
-  const [tokens, setTokens] = useState<ERC20Token[]>([]);
+  const [tokens, setTokens] = useState<Token[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedToken, setSelectedToken] = useState<ERC20Token>();
+  const [selectedToken, setSelectedToken] = useState<Token>();
 
   const navigate = useNavigate();
 
@@ -88,13 +89,18 @@ const IncreaseDecreaseAllowance: React.FC = () => {
 
   useEffect(() => {
     const init = async () => {
-      listofCreatorERC20Tokens(publicKey)
-        .then((result) => {
-          setTokens(result);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+      const accountHash = ownerPublicKey.toAccountHashStr();
+
+      const { finalData } = await initTokens(accountHash, publicKey);
+
+      const filteredFinalData = finalData.filter((fd) => fd.balance > 0);
+
+      setTokens(filteredFinalData);
+      console.log(filteredFinalData);
+
+      setLoading(false);
     };
 
     init();
@@ -107,6 +113,7 @@ const IncreaseDecreaseAllowance: React.FC = () => {
   }, []);
 
   const increase = async () => {
+    setLoading(true);
     if (selectedToken) {
       const contract = new Contracts.Contract();
       contract.setContractHash(selectedToken.contractHash);
@@ -115,7 +122,7 @@ const IncreaseDecreaseAllowance: React.FC = () => {
 
       const args = RuntimeArgs.fromMap({
         spender: CLValueBuilder.key(CLPublicKey.fromHex(data.spenderPubkey)),
-        amount: CLValueBuilder.u256(Number(data.amount * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
+        amount: CLValueBuilder.u256(tokenSupplyBN(data.amount, selectedToken.decimals)),
       });
 
       const deploy = contract.callEntrypoint("increase_allowance", args, ownerPublicKey, "casper-test", "1000000000");
@@ -124,8 +131,6 @@ const IncreaseDecreaseAllowance: React.FC = () => {
 
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-
-        // setActionLoader(true);
 
         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
@@ -140,9 +145,10 @@ const IncreaseDecreaseAllowance: React.FC = () => {
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
-        // setActionLoader(false);
+        setLoading(false);
       } catch (error: any) {
-        alert(error.message);
+        toastr.error(error);
+        setLoading(false);
       }
     } else {
       toastr.error("Please Select a token for transfer");
@@ -150,6 +156,7 @@ const IncreaseDecreaseAllowance: React.FC = () => {
   };
 
   const decrease = async () => {
+    setLoading(true);
     if (selectedToken) {
       const contract = new Contracts.Contract();
       contract.setContractHash(selectedToken.contractHash);
@@ -158,7 +165,7 @@ const IncreaseDecreaseAllowance: React.FC = () => {
 
       const args = RuntimeArgs.fromMap({
         spender: CLValueBuilder.key(CLPublicKey.fromHex(data.spenderPubkey)),
-        amount: CLValueBuilder.u256(Number(data.amount * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
+        amount: CLValueBuilder.u256(tokenSupplyBN(data.amount, selectedToken.decimals)),
       });
 
       const deploy = contract.callEntrypoint("decrease_allowance", args, ownerPublicKey, "casper-test", "1000000000");
@@ -167,8 +174,6 @@ const IncreaseDecreaseAllowance: React.FC = () => {
 
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-
-        // setActionLoader(true);
 
         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
@@ -183,9 +188,10 @@ const IncreaseDecreaseAllowance: React.FC = () => {
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
-        // setActionLoader(false);
+        setLoading(false);
       } catch (error: any) {
-        alert(error.message);
+        toastr.error(error);
+        setLoading(false);
       }
     } else {
       toastr.error("Please Select a token for transfer");
@@ -213,8 +219,6 @@ const IncreaseDecreaseAllowance: React.FC = () => {
       {tokens.length > 0 && (
         <div
           style={{
-            // height: "calc(100vh-5rem)",
-            // minWidth: "21rem",
             padding: "1rem",
           }}
         >
