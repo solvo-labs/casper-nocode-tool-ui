@@ -21,6 +21,15 @@ export type ERC20Token = {
   enable_mint_burn: { type: string; hex: string };
 };
 
+export type Token = {
+  name: string;
+  symbol: string;
+  decimals: number;
+  balance: number;
+  contractPackageHash: string;
+  contractHash: string;
+};
+
 export type ERC20TokenForm = {
   name: string;
   symbol: string;
