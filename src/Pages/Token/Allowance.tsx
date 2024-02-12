@@ -113,7 +113,7 @@ const Allowance: React.FC = () => {
 
       const args = RuntimeArgs.fromMap({
         owner: CLValueBuilder.key(ownerPublicKey),
-        recipient: CLValueBuilder.key(CLPublicKey.fromHex(receipentPubkey)),
+        spender: CLValueBuilder.key(CLPublicKey.fromHex(receipentPubkey)),
       });
 
       const deploy = contract.callEntrypoint("allowance", args, ownerPublicKey, "casper-test", "1000000000");
