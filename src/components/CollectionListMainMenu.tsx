@@ -40,20 +40,21 @@ const CollectionListMainMenu: React.FC<Props> = ({ collections, handleCollection
         {collections.length > 0 && (
           <Grid container marginTop={"1rem"}>
             {collections.slice(0, 6).map((e: any, index: number) => (
-              <Grid item xl={3} lg={4} md={4} sm={6} xs={12} key={index}>
+              <Grid item xl={3} lg={4} md={6} sm={6} xs={12} key={index}>
                 <CollectionCard
+                  cardHeight={"24rem"}
+                  mediaHeight={"200px"}
+                  cardContentPadding={"1rem"}
+                  cardContentTitle={"1.2rem"}
+                  cardContentContractHash={"14px"}
                   image={"/images/casper.png"}
                   onClick={() => handleCollectionDetail(e.contractHash)}
                   title={e.collection_name}
                   contractHash={e.contractHash}
                   symbol={e.collection_symbol}
-                  mediaHeight={"80"}
-                  cardContentPadding={"5px"}
-                  cardContentTitle={"14px"}
-                  cardContentContractHash={"12px"}
                   amICreator={e.amICreator}
-                  tokenCountText={parseInt(e.number_of_minted_tokens.hex).toString() + "/" + parseInt(e.total_token_supply.hex).toString()}
-                />
+                  tokenCountText={parseInt(e.number_of_minted_tokens.hex, 16) + " / " + parseInt(e.total_token_supply.hex, 16)}
+                ></CollectionCard>
               </Grid>
             ))}
           </Grid>

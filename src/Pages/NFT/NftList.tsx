@@ -49,7 +49,6 @@ export const NftList = () => {
         const nftCollection = await getNftCollection(nftCollectionHash);
 
         const nftMetas = await getContractPackageNFTs(nftCollectionHash!.slice(5));
-        console.log(nftMetas);
 
         setCollectionData(nftCollection);
         setNftData(nftMetas.filter((nft: any) => nft.is_burned === false));
@@ -69,8 +68,6 @@ export const NftList = () => {
   let accountHash = useMemo(() => {
     const ownerPublicKey = CLPublicKey.fromHex(publicKey);
     const accountHash = ownerPublicKey.toAccountHashStr();
-    console.log(accountHash.slice(13));
-
     return accountHash.slice(13);
   }, [publicKey]);
 

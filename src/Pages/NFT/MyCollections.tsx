@@ -21,9 +21,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   container: {
     maxWidth: "70vw",
     minWidth: "70vw",
-    // marginTop: "4rem",
     marginBottom: "2rem",
-    // backgroundColor: "darkgray",
     [theme.breakpoints.down("lg")]: {
       minWidth: "90vw",
       marginTop: "4rem",
@@ -133,7 +131,7 @@ export const MyCollections = () => {
           {collections.map((e: any, index: number) => (
             <Grid item lg={4} md={4} sm={6} xs={12} key={index}>
               <CollectionCard
-                cardHeight={"360px"}
+                cardHeight={"24rem"}
                 mediaHeight={"200px"}
                 cardContentPadding={"1rem"}
                 cardContentTitle={"24px"}

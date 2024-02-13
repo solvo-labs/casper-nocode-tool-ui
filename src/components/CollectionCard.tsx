@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import { Card, CardActionArea, CardContent, CardMedia, Chip, Stack, Theme, Typography } from "@mui/material";
+import { Card, CardActionArea, CardContent, CardMedia, Chip, Grid, Theme, Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme: Theme) => ({
   alternateCard: {
@@ -44,20 +44,24 @@ const CollectionCard: React.FC<Props> = ({
   amICreator = false,
 }) => {
   return (
-    <Card style={{ height: `${cardHeight}`, width: `${cardWidth}`, margin: "1rem" }} onClick={onClick}>
-      <CardActionArea>
+    <Card style={{ height: `${cardHeight}`, width: `${cardWidth ? cardWidth : "unset"}`, margin: "1rem" }}>
+      <CardActionArea onClick={onClick} style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-start" }}>
         <CardMedia component="img" height={mediaHeight} image={image} alt="collection-image" />
-        <CardContent style={{ padding: `${cardContentPadding}` }}>
-          <Stack direction={"row"} alignItems={"baseline"} spacing={1}>
-            <Typography sx={{ fontSize: `${cardContentTitle}`, marginBottom: "5px" }} fontWeight={"bold"}>
-              {title} ({symbol})
-            </Typography>
-          </Stack>
-          <Typography sx={{ fontSize: `${cardContentContractHash}`, marginBottom: "5px" }} fontWeight={"bold"}>
-            ({tokenCountText})
-          </Typography>
-          <Typography sx={{ fontSize: `${cardContentContractHash}` }}>{contractHash.slice(0, 10) + "..." + contractHash.slice(-4)}</Typography>
-          <Chip sx={{ marginTop: "0.5rem" }} label={amICreator ? "I'm owner" : "I'm a participant"} color={amICreator ? "success" : "warning"} size="small" />
+        <CardContent style={{ display: "flex", height: "100%", width: "100%", flexDirection: "column", padding: "0px" }}>
+          <Grid container display={"flex"} direction={"column"} justifyContent={"space-between"} padding={cardContentPadding} height={"100%"}>
+            <Grid item>
+              <Typography sx={{ fontSize: `${cardContentTitle}`, marginBottom: "5px" }} fontWeight={"bold"}>
+                {title} ({symbol})
+              </Typography>
+              <Typography sx={{ fontSize: `${cardContentContractHash}`, marginBottom: "5px" }} fontWeight={"bold"}>
+                ({tokenCountText})
+              </Typography>
+              <Typography sx={{ fontSize: `${cardContentContractHash}` }}>{contractHash.slice(0, 10) + "..." + contractHash.slice(-4)}</Typography>
+            </Grid>
+            <Grid item>
+              <Chip sx={{ marginTop: "0.5rem" }} label={amICreator ? "I'm owner" : "I'm a participant"} color={amICreator ? "success" : "warning"} size="small" />
+            </Grid>
+          </Grid>
         </CardContent>
       </CardActionArea>
     </Card>
