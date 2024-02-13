@@ -12,6 +12,16 @@ import { makeStyles } from "@mui/styles";
 import StakeCard from "../../components/StakeCard";
 import StakeModal from "../../components/StakeModal";
 
+export enum STAKE_STATUS {
+  WAITING_NOTIFY,
+  WAITING_START_STAKE,
+  STAKEABLE,
+  WAITING_LOCK_PERIOD,
+  UNSTAKEBLE,
+  FINISHED,
+  FAIL,
+}
+
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
     minWidth: "80vw",
@@ -45,6 +55,7 @@ const ManageStakes = () => {
       const accountHash = ownerPublicKey.toAccountHashStr();
 
       const data = await getAllCep18StakePools("hash-" + STORE_CEP_18_STAKE_CONTRACT, accountHash.slice(13));
+      const now = Date.now();
 
       if (data.length > 0) {
         const tokenDetailPromises = data.map((dt: any) => fetchErc20TokenDetails("hash-" + dt.token));
@@ -59,23 +70,52 @@ const ManageStakes = () => {
           const maxStake = parseInt(dt.max_stake.hex, 16) / Math.pow(10, decimal);
           const maxCap = parseInt(dt.max_cap.hex, 16) / Math.pow(10, decimal);
           const totalSupply = dt.total_supply ? parseInt(dt.total_supply.hex, 16) / Math.pow(10, decimal) : 0;
-          const depositEndTime = moment(parseInt(dt.deposit_end_time.hex, 16));
-          const depositStartTime = moment(parseInt(dt.deposit_start_time.hex, 16));
-          const depositStartTimeFormatted = moment(parseInt(dt.deposit_start_time.hex, 16)).format("MMMM Do YYYY, HH:mm");
-          const depositEndTimeFormatted = moment(parseInt(dt.deposit_end_time.hex, 16)).format("MMMM Do YYYY, HH:mm");
+          const depositEndTime = parseInt(dt.deposit_end_time.hex, 16);
+          const depositStartTime = parseInt(dt.deposit_start_time.hex, 16);
+          const depositStartTimeFormatted = moment(depositStartTime).format("MMMM Do YYYY, HH:mm");
+          const depositEndTimeFormatted = moment(depositEndTime).format("MMMM Do YYYY, HH:mm");
           const lockPeriod = moment(parseInt(dt.lock_period.hex, 16));
           const liquidity = dt.liquidity ? parseInt(dt.liquidity.hex, 16) / Math.pow(10, decimal) : 0;
           const apr = dt.apr ? parseInt(dt.apr.hex, 16) : 0;
           const total_reward = dt.total_reward ? parseInt(dt.total_reward.hex, 16) / Math.pow(10, decimal) : 0;
           const my_balance = dt.my_balance ? dt.my_balance / Math.pow(10, decimal) : 0;
           const my_claimed = dt.my_claimed ? dt.my_claimed / Math.pow(10, decimal) : 0;
+          const notified = dt.notified;
+          let notifyAmount = 0;
+
+          let status;
+
+          if (!notified && now > depositEndTime) {
+            status = STAKE_STATUS.FAIL;
+          }
+
+          if (!notified && now < depositEndTime) {
+            const aprCalc = fixedApr > 0 ? fixedApr : maxApr;
+            notifyAmount = (maxCap * aprCalc) / 100;
+
+            status = STAKE_STATUS.WAITING_NOTIFY;
+          }
+
+          if (notified && now <= depositStartTime) {
+            status = STAKE_STATUS.WAITING_START_STAKE;
+          }
+
+          if (notified && now >= depositStartTime && now <= depositEndTime) {
+            status = STAKE_STATUS.STAKEABLE;
+          }
+
+          if (notified && now > depositEndTime) {
+            status = STAKE_STATUS.WAITING_LOCK_PERIOD;
+          }
+
+          if (notified && now > depositEndTime + parseInt(dt.lock_period.hex, 16)) {
+            status = STAKE_STATUS.UNSTAKEBLE;
+          }
 
           return {
             key: dt.key,
             name: currentToken.name,
             symbol: currentToken.symbol,
-            depositStartTime,
-            depositEndTime,
             maxApr,
             minApr,
             fixedApr,
@@ -88,13 +128,14 @@ const ManageStakes = () => {
             depositStartTimeFormatted,
             token: dt.token,
             decimal,
-            notified: dt.notified,
             amIOwner: dt.amIOwner,
             apr,
             liquidity,
             my_balance,
             my_claimed,
             total_reward,
+            status,
+            notifyAmount,
           };
         });
         const finalData = allPoolsData.filter((pool: any) => pool.amIOwner);
@@ -181,7 +222,7 @@ const ManageStakes = () => {
 
         toastr.success(response.data, "Allowance increased successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
-
+        setShowStakeModal({ show: false, amount: 0 });
         setLoading(false);
         navigate("/manage-stake");
       } catch (error: any) {
@@ -398,7 +439,7 @@ const ManageStakes = () => {
               increaseAllowance={increaseAllowance}
               notify={notify}
               refundReward={refund_reward}
-            ></StakeModal>
+            />
           </Grid>
         ))}
       </Grid>
