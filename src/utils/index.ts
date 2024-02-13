@@ -1,4 +1,6 @@
 // @ts-ignore
+import { BN } from "bn.js";
+// @ts-ignore
 import { CLValueBuilder } from "casper-js-sdk";
 
 export const timestampToDate = (timestamp: number) => {
@@ -104,3 +106,12 @@ export const MINTING_MODE_EXPLANATION = "If you want to create Custom NFTs or Ti
 export const BURN_MODE_EXPLANATION = "If you want to create Custom NFTs or Timable NFTs for your collection, it is necessary to select the burn mode as burnable.";
 export const OWNER_REVERSE_LOOKUP_MODE_EXPLANATION =
   "If you want your collection to have the Mergeable feature, the Owner Reverse Lookup Mode must be either 'NoLookup' or 'TransfersOnly'. If you want it to be a Timable NFT, you should select the 'Complete' mode.";
+
+export const tokenSupplyBN = (supplyData: number, decimalData: number): string => {
+  const bnSupply = new BN(supplyData);
+  const bnDecimal = new BN(decimalData);
+  const bnTen = new BN("10");
+  const tokenDecimal = bnTen.pow(bnDecimal);
+  const tokenSupply = bnSupply.mul(tokenDecimal);
+  return tokenSupply.toString();
+};

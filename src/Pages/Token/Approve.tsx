@@ -3,16 +3,17 @@ import { CircularProgress, Grid, MenuItem, SelectChangeEvent, Stack, Theme, Typo
 import { makeStyles } from "@mui/styles";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
-import { ERC20Token, TokenApprove } from "../../utils/types";
+import { Token, TokenApprove } from "../../utils/types";
 import { useOutletContext, useNavigate } from "react-router-dom";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { SERVER_API, listofCreatorERC20Tokens } from "../../utils/api";
+import { SERVER_API, initTokens } from "../../utils/api";
 import axios from "axios";
 import toastr from "toastr";
 import { CustomSelect } from "../../components/CustomSelect";
 import CreatorRouter from "../../components/CreatorRouter";
 import { DONT_HAVE_ANYTHING } from "../../utils/enum";
+import { tokenSupplyBN } from "../../utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -76,9 +77,9 @@ const Approve: React.FC = () => {
   const classes = useStyles();
 
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
-  const [tokens, setTokens] = useState<ERC20Token[]>([]);
+  const [tokens, setTokens] = useState<Token[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedToken, setSelectedToken] = useState<ERC20Token>();
+  const [selectedToken, setSelectedToken] = useState<Token>();
 
   const navigate = useNavigate();
 
@@ -88,13 +89,17 @@ const Approve: React.FC = () => {
 
   useEffect(() => {
     const init = async () => {
-      listofCreatorERC20Tokens(publicKey)
-        .then((result) => {
-          setTokens(result);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+      const accountHash = ownerPublicKey.toAccountHashStr();
+
+      const { finalData } = await initTokens(accountHash, publicKey);
+
+      const filteredFinalData = finalData.filter((fd) => fd.balance > 0);
+
+      setTokens(filteredFinalData);
+
+      setLoading(false);
     };
 
     init();
@@ -115,7 +120,7 @@ const Approve: React.FC = () => {
 
       const args = RuntimeArgs.fromMap({
         spender: CLValueBuilder.key(CLPublicKey.fromHex(data.spenderPubkey)),
-        amount: CLValueBuilder.u256(Number(data.amount * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
+        amount: CLValueBuilder.u256(tokenSupplyBN(data.amount, selectedToken.decimals)),
       });
 
       const deploy = contract.callEntrypoint("approve", args, ownerPublicKey, "casper-test", "1000000000");
@@ -140,9 +145,8 @@ const Approve: React.FC = () => {
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
-        // setActionLoader(false);
       } catch (error: any) {
-        alert(error.message);
+        toastr.error(error);
       }
     } else {
       toastr.error("Please Select a token for transfer");
@@ -153,7 +157,7 @@ const Approve: React.FC = () => {
     return (
       <div
         style={{
-          height: "calc(100vh - 8rem)",
+          height: "60vh",
           width: "100%",
           display: "flex",
           justifyContent: "center",

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ERC20Token, Listing, LootboxData, LootboxItem, RaffleNamedKeys } from "./types";
+import { ERC20Token, Listing, LootboxData, LootboxItem, RaffleNamedKeys, Token } from "./types";
 
 const service_api = "https://event-store-api-clarity-testnet.make.services/";
 export const SERVER_API = import.meta.env.DEV ? "http://localhost:3000/api/" : "https://casperdev.dappend.com/api/";
@@ -144,15 +144,6 @@ export const contractPackageHashToContractHash = async (contractPackageHash: str
   );
 
   return response.data.data[0].contract_hash;
-};
-
-export type Token = {
-  name: string;
-  symbol: string;
-  decimals: number;
-  balance: number;
-  contractPackageHash: string;
-  contractHash: string;
 };
 
 export const allTokensFromWallet = async (accountHash: string) => {

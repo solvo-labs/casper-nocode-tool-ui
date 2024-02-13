@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { ERC20Token } from "../../utils/types";
+import { Token } from "../../utils/types";
 import { Grid, Stack, Theme, CircularProgress, MenuItem, Typography } from "@mui/material";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
@@ -9,12 +9,13 @@ import axios from "axios";
 import toastr from "toastr";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { SERVER_API, listofCreatorERC20Tokens } from "../../utils/api";
+import { SERVER_API, initTokens } from "../../utils/api";
 
 import { SelectChangeEvent } from "@mui/material/Select";
 import { CustomSelect } from "../../components/CustomSelect";
 import CreatorRouter from "../../components/CreatorRouter";
 import { DONT_HAVE_ANYTHING } from "../../utils/enum";
+import { tokenSupplyBN } from "../../utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -71,41 +72,31 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const MintAndBurn: React.FC = () => {
   const [data, setData] = useState<number>(0);
-  const [tokens, setTokens] = useState<ERC20Token[]>([]);
+  const [tokens, setTokens] = useState<Token[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedToken, setSelectedToken] = useState<ERC20Token>();
+  const [selectedToken, setSelectedToken] = useState<Token>();
 
   const [publicKey, provider] = useOutletContext<[publickey: string, provider: any]>();
 
   const classes = useStyles();
   const navigate = useNavigate();
 
-  const calculateSupply = () => {
-    if (selectedToken) {
-      return parseInt(selectedToken.total_supply.hex || "", 16) / Math.pow(10, parseInt(selectedToken.decimals.hex, 16));
-    }
-
-    return 0;
-  };
-
   const disable = useMemo(() => {
-    const supply = calculateSupply();
-    return data <= 0 || data > supply || selectedToken === undefined;
+    return data <= 0 || selectedToken === undefined;
   }, [data, selectedToken]);
 
   useEffect(() => {
     const init = async () => {
-      listofCreatorERC20Tokens(publicKey)
-        .then((result) => {
-          const filteredData = result.filter((rs) => {
-            return parseInt(rs.enable_mint_burn.hex, 16);
-          });
+      const ownerPublicKey = CLPublicKey.fromHex(publicKey);
 
-          setTokens(filteredData);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      const accountHash = ownerPublicKey.toAccountHashStr();
+
+      const { finalData } = await initTokens(accountHash, publicKey);
+
+      const filteredFinalData = finalData.filter((fd) => fd.balance > 0);
+
+      setTokens(filteredFinalData);
+      setLoading(false);
     };
 
     init();
@@ -127,7 +118,7 @@ const MintAndBurn: React.FC = () => {
 
       const args = RuntimeArgs.fromMap({
         owner: CLValueBuilder.key(ownerPublicKey),
-        amount: CLValueBuilder.u256(Number(data * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
+        amount: CLValueBuilder.u256(tokenSupplyBN(data, selectedToken.decimals)),
       });
 
       const deploy = contract.callEntrypoint("mint", args, ownerPublicKey, "casper-test", "1000000000");
@@ -136,8 +127,6 @@ const MintAndBurn: React.FC = () => {
 
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-
-        // setActionLoader(true);
 
         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
@@ -154,7 +143,8 @@ const MintAndBurn: React.FC = () => {
         navigate("/my-tokens");
         setLoading(false);
       } catch (error: any) {
-        alert(error.message);
+        setLoading(false);
+        toastr.error(error);
       }
     } else {
       toastr.error("Please Select a token for transfer");
@@ -171,7 +161,7 @@ const MintAndBurn: React.FC = () => {
 
       const args = RuntimeArgs.fromMap({
         owner: CLValueBuilder.key(ownerPublicKey),
-        amount: CLValueBuilder.u256(Number(data * Math.pow(10, parseInt(selectedToken.decimals.hex, 16)))),
+        amount: CLValueBuilder.u256(tokenSupplyBN(data, selectedToken.decimals)),
       });
 
       const deploy = contract.callEntrypoint("burn", args, ownerPublicKey, "casper-test", "1000000000");
@@ -180,8 +170,6 @@ const MintAndBurn: React.FC = () => {
 
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
-
-        // setActionLoader(true);
 
         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
@@ -198,7 +186,8 @@ const MintAndBurn: React.FC = () => {
         navigate("/my-tokens");
         setLoading(false);
       } catch (error: any) {
-        alert(error.message);
+        toastr.error(error);
+        setLoading(false);
       }
     } else {
       toastr.error("Please Select a token for transfer");
@@ -227,8 +216,6 @@ const MintAndBurn: React.FC = () => {
       {tokens.length > 0 && (
         <div
           style={{
-            // height: "calc(100vh-5rem)",
-            // minWidth: "21rem",
             padding: "1rem",
           }}
         >
@@ -261,14 +248,14 @@ const MintAndBurn: React.FC = () => {
                       );
                     })}
                   </CustomSelect>
-                  {selectedToken && <span>Total Supply : {calculateSupply()}</span>}
+                  {selectedToken && <span>Total Supply: {selectedToken.balance}</span>}
                   <CustomInput placeholder="Amount" label="Amount" id="amount" name="amount" type="number" value={data} onChange={(e: any) => setData(e.target.value)} />
                   <Grid container direction={"row"} paddingTop={"2rem"} justifyContent={"space-around"}>
                     <Grid item>
                       <CustomButton onClick={mint} disabled={disable} label="Mint" />
                     </Grid>
                     <Grid item>
-                      <CustomButton onClick={burn} disabled={disable} label="Burn" />
+                      <CustomButton onClick={burn} disabled={disable || selectedToken?.balance! < data} label="Burn" />
                     </Grid>
                   </Grid>
                 </Stack>

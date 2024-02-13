@@ -11,6 +11,7 @@ import { CustomButton } from "../../components/CustomButton";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import toastr from "toastr";
 import { SERVER_API } from "../../utils/api";
+import { tokenSupplyBN } from "../../utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -86,7 +87,7 @@ const TokenMint: React.FC = () => {
         name: CLValueBuilder.string(data.name),
         symbol: CLValueBuilder.string(data.symbol),
         decimals: CLValueBuilder.u8(data.decimal),
-        total_supply: CLValueBuilder.u256(data.supply * Math.pow(10, data.decimal)),
+        total_supply: CLValueBuilder.u256(tokenSupplyBN(data.supply, data.decimal)),
         enable_mint_burn: CLValueBuilder.bool(data.enableMintBurn),
       });
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { TokenTransfer } from "../../utils/types";
+import { Token, TokenTransfer } from "../../utils/types";
 import { Grid, Stack, Theme, CircularProgress, MenuItem } from "@mui/material";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomButton } from "../../components/CustomButton";
@@ -9,12 +9,13 @@ import axios from "axios";
 import toastr from "toastr";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { SERVER_API, Token, initTokens } from "../../utils/api";
+import { SERVER_API, initTokens } from "../../utils/api";
 
 import { SelectChangeEvent } from "@mui/material/Select";
 import { CustomSelect } from "../../components/CustomSelect";
 import CreatorRouter from "../../components/CreatorRouter";
 import { DONT_HAVE_ANYTHING } from "../../utils/enum";
+import { tokenSupplyBN } from "../../utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -88,7 +89,7 @@ const Transfer: React.FC = () => {
   const navigate = useNavigate();
 
   const disable = useMemo(() => {
-    return data.amount <= 0 || data.receipentPubkey == "" || selectedToken == undefined;
+    return data.amount <= 0 || selectedToken?.balance! < data.amount || data.receipentPubkey == "" || selectedToken == undefined;
   }, [data]);
 
   useEffect(() => {
@@ -124,7 +125,7 @@ const Transfer: React.FC = () => {
 
       const args = RuntimeArgs.fromMap({
         recipient: CLValueBuilder.key(CLPublicKey.fromHex(data.receipentPubkey)),
-        amount: CLValueBuilder.u256(Number(data.amount * Math.pow(10, selectedToken.decimals))),
+        amount: CLValueBuilder.u256(tokenSupplyBN(data.amount, selectedToken.decimals)),
       });
 
       const deploy = contract.callEntrypoint("transfer", args, ownerPublicKey, "casper-test", "1000000000");
@@ -147,9 +148,8 @@ const Transfer: React.FC = () => {
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
-        // setActionLoader(false);
       } catch (error: any) {
-        alert(error.message);
+        toastr.error(error);
       }
     } else {
       toastr.error("Please Select a token for transfer");
@@ -160,7 +160,7 @@ const Transfer: React.FC = () => {
     return (
       <div
         style={{
-          height: "50vh",
+          height: "60vh",
           width: "100%",
           display: "flex",
           justifyContent: "center",

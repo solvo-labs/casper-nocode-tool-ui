@@ -7,12 +7,14 @@ import axios from "axios";
 import toastr from "toastr";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder } from "casper-js-sdk";
-import { SERVER_API, Token, initTokens } from "../../utils/api";
+import { SERVER_API, initTokens } from "../../utils/api";
 
 import { SelectChangeEvent } from "@mui/material/Select";
 import { CustomSelect } from "../../components/CustomSelect";
 import CreatorRouter from "../../components/CreatorRouter";
 import { DONT_HAVE_ANYTHING } from "../../utils/enum";
+import { Token } from "../../utils/types";
+import { tokenSupplyBN } from "../../utils";
 
 const TransferFrom: React.FC = () => {
   const [data, setData] = useState<any>({
@@ -51,6 +53,7 @@ const TransferFrom: React.FC = () => {
   }, []);
 
   const transferData = async () => {
+    setLoading(true);
     if (selectedToken) {
       const contract = new Contracts.Contract();
       contract.setContractHash(selectedToken.contractHash);
@@ -60,7 +63,7 @@ const TransferFrom: React.FC = () => {
       const args = RuntimeArgs.fromMap({
         owner: CLValueBuilder.key(CLPublicKey.fromHex(data.fromPubkey)),
         recipient: CLValueBuilder.key(CLPublicKey.fromHex(data.receipentPubkey)),
-        amount: CLValueBuilder.u256(Number(data.amount * Math.pow(10, selectedToken.decimals))),
+        amount: CLValueBuilder.u256(tokenSupplyBN(data.amount, selectedToken.decimals)),
       });
 
       const deploy = contract.callEntrypoint("transfer_from", args, ownerPublicKey, "casper-test", "2000000000");
@@ -70,22 +73,24 @@ const TransferFrom: React.FC = () => {
       try {
         const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
 
-        // setActionLoader(true);
-
         let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
 
         signedDeploy = DeployUtil.validateDeploy(signedDeploy);
 
-        const data = DeployUtil.deployToJson(signedDeploy.val);
+        const deployedData = DeployUtil.deployToJson(signedDeploy.val);
 
-        const response = await axios.post(SERVER_API + "deploy", data, { headers: { "Content-Type": "application/json" } });
+        const response = await axios.post(SERVER_API + "deploy", deployedData, {
+          headers: { "Content-Type": "application/json" },
+        });
+
         toastr.success(response.data, "ERC-20 Token transfered successfully.");
         window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
 
         navigate("/my-tokens");
-        // setActionLoader(false);
+        setLoading(false);
       } catch (error: any) {
-        alert(error.message);
+        toastr.error(error);
+        setLoading(false);
       }
     } else {
       toastr.error("Please Select a token for transfer");
