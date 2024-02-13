@@ -160,7 +160,7 @@ const StakeCep18Token = () => {
     return (
       <div
         style={{
-          height: "calc(100vh - 8rem)",
+          height: "60vh",
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -288,27 +288,6 @@ const StakeCep18Token = () => {
             theme={"Dark"}
             onChange={(e: Moment) => setStakeForm({ ...stakeForm, depositEndTime: e.unix() })}
           />
-          {/* <CustomDateTime></CustomDateTime> */}
-          {/* <CustomSelect
-            value={stakeForm.lockPeriod ? PERIOD[stakeForm.lockPeriod] : "default"}
-            label="Stake Lock Period"
-            onChange={(event: SelectChangeEvent<{ value: unknown }>) => {
-              const selectedValue = event.target.value as keyof typeof PERIOD;
-              setStakeForm({ ...stakeForm, lockPeriod: PERIOD[selectedValue] });
-            }}
-            id={"custom-select"}
-          >
-            <MenuItem value="default">
-              <em>Select Stake Period</em>
-            </MenuItem>
-            {durationList.map((dur: string) => {
-              return (
-                <MenuItem key={dur} value={dur}>
-                  {dur}
-                </MenuItem>
-              );
-            })}
-          </CustomSelect> */}
           <CustomStakeDateSelect stakeForm={stakeForm} handleState={setStakeForm}></CustomStakeDateSelect>
           <CustomButton disabled={disable} label="Create Stake Pool" onClick={createStake}></CustomButton>
         </Stack>
