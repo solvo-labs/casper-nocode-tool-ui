@@ -1,7 +1,7 @@
 //@ts-ignore
 import { CLPublicKey } from "casper-js-sdk";
-import { Token, fetchErc20TokenDetails, fetchVestingNamedKeys, getVestingDetails, initTokens } from "../../utils/api";
-import { Section } from "../../utils/types";
+import { fetchErc20TokenDetails, fetchVestingNamedKeys, getVestingDetails, initTokens } from "../../utils/api";
+import { Section, Token } from "../../utils/types";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";

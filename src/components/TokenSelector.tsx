@@ -1,7 +1,7 @@
 import React from "react";
 import { MenuItem, SelectChangeEvent } from "@mui/material";
-import { Token } from "../utils/api";
 import { CustomSelect } from "./CustomSelect";
+import { Token } from "../utils/types";
 
 type Props = {
   tokens: Token[];
