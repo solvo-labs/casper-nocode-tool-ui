@@ -2,7 +2,7 @@ import { CircularProgress, FormControlLabel, Grid, MenuItem, SelectChangeEvent, 
 import { makeStyles } from "@mui/styles";
 import { CustomSelect } from "../../components/CustomSelect";
 import { useEffect, useMemo, useState } from "react";
-import { ERC20Token } from "../../utils/types";
+import { ERC20Token, StakeForm } from "../../utils/types";
 import { useGetTokens } from "../../hooks/useGetTokens";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { CustomButton } from "../../components/CustomButton";
@@ -16,6 +16,7 @@ import { CustomInput } from "../../components/CustomInput";
 import { CustomDateTime } from "../../components/CustomDateTime";
 import { Moment } from "moment";
 import toastr from "toastr";
+import CustomStakeDateSelect from "../../components/CustomStakeDateSelect";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -60,19 +61,11 @@ const StakeCep18Token = () => {
       ]
     >();
   const { tokens, loading } = useGetTokens(publicKey);
-  const [stakeForm, setStakeForm] = useState<{
-    token: ERC20Token | null;
-    lockPeriod: number;
-    minStake: number;
-    maxStake: number;
-    maxCap: number;
-    fixedApr: number;
-    minApr: number;
-    maxApr: number;
-    depositStartTime: number;
-    depositEndTime: number;
-  }>({
-    lockPeriod: PERIOD["A Week"],
+  const [stakeForm, setStakeForm] = useState<StakeForm>({
+    lockPeriod: {
+      unit: 1,
+      period: PERIOD["Day"],
+    },
     token: null,
     minStake: 0,
     maxStake: 0,
@@ -83,16 +76,10 @@ const StakeCep18Token = () => {
     depositStartTime: Date.now() / 1000,
     depositEndTime: Date.now() / 1000,
   });
-  const [durationList, setDurationList] = useState<string[]>([]);
   const [isFixedApr, setIsFixedApr] = useState<boolean>(false);
   const [actionLoading, setActionLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const durationArray: string[] = Object.keys(PERIOD).filter((key) => isNaN(Number(key)));
-    setDurationList(durationArray);
-  }, []);
 
   const createStake = async () => {
     setActionLoading(true);
@@ -103,6 +90,7 @@ const StakeCep18Token = () => {
       if (stakeForm.token) {
         const decimal = Number(stakeForm.token.decimals.hex);
 
+        const periodMilisec = stakeForm.lockPeriod.period * stakeForm.lockPeriod.unit;
         const args = RuntimeArgs.fromMap({
           token: CasperHelpers.stringToKey(stakeForm.token.contractHash),
           min_stake: CLValueBuilder.u256(stakeForm.minStake * Math.pow(10, decimal)),
@@ -111,8 +99,7 @@ const StakeCep18Token = () => {
           fixed_apr: CLValueBuilder.u64(isFixedApr ? stakeForm.fixedApr : 0),
           min_apr: CLValueBuilder.u64(isFixedApr ? 0 : stakeForm.minApr),
           max_apr: CLValueBuilder.u64(isFixedApr ? 0 : stakeForm.maxApr),
-          // lock_period: CLValueBuilder.u64(stakeForm.lockPeriod),
-          lock_period: CLValueBuilder.u64(30000),
+          lock_period: CLValueBuilder.u64(periodMilisec),
           deposit_start_time: CLValueBuilder.u64(stakeForm.depositStartTime * 1000),
           deposit_end_time: CLValueBuilder.u64(stakeForm.depositEndTime * 1000),
           storage_key: new CLAccountHash(Buffer.from(STORE_CEP_18_STAKE_CONTRACT, "hex")),
@@ -303,7 +290,7 @@ const StakeCep18Token = () => {
             onChange={(e: Moment) => setStakeForm({ ...stakeForm, depositEndTime: e.unix() })}
           />
           {/* <CustomDateTime></CustomDateTime> */}
-          <CustomSelect
+          {/* <CustomSelect
             value={stakeForm.lockPeriod ? PERIOD[stakeForm.lockPeriod] : "default"}
             label="Stake Lock Period"
             onChange={(event: SelectChangeEvent<{ value: unknown }>) => {
@@ -322,7 +309,8 @@ const StakeCep18Token = () => {
                 </MenuItem>
               );
             })}
-          </CustomSelect>
+          </CustomSelect> */}
+          <CustomStakeDateSelect stakeForm={stakeForm} handleState={setStakeForm}></CustomStakeDateSelect>
           <CustomButton disabled={disable} label="Create Stake Pool" onClick={createStake}></CustomButton>
         </Stack>
       </Grid>
