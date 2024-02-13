@@ -94,6 +94,17 @@ const StakeCard: React.FC<Props> = ({ stake, stakeModal }) => {
                       />
                     </>
                   )}
+                  {stake.amIOwner && (
+                    <>
+                      <CustomButton
+                        onClick={() => {
+                          stakeModal({ show: true, action: "refund reward", amount: 0, selectedPool: stake });
+                        }}
+                        label={"Refund reward"}
+                        disabled={stake.lockPeriod + stake.depositEndTime > Date.now()}
+                      />
+                    </>
+                  )}
                   {stake.lockPeriod + stake.depositEndTime <= Date.now() && (
                     <>
                       <CustomButton

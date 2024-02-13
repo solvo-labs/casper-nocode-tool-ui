@@ -98,6 +98,8 @@ const ManageStakes = () => {
           };
         });
         const finalData = allPoolsData.filter((pool: any) => pool.amIOwner);
+        console.log(finalData);
+
         setPools(finalData);
       }
 
@@ -285,7 +287,46 @@ const ManageStakes = () => {
 
     const args = RuntimeArgs.fromMap({});
 
-    const deploy = contract.callEntrypoint("claim_reward", args, ownerPublicKey, "casper-test", "2000000000");
+    const deploy = contract.callEntrypoint("claim", args, ownerPublicKey, "casper-test", "2000000000");
+
+    const deployJson = DeployUtil.deployToJson(deploy);
+
+    try {
+      const sign = await provider.sign(JSON.stringify(deployJson), publicKey);
+
+      let signedDeploy = DeployUtil.setSignature(deploy, sign.signature, ownerPublicKey);
+
+      signedDeploy = DeployUtil.validateDeploy(signedDeploy);
+
+      const data = DeployUtil.deployToJson(signedDeploy.val);
+
+      const response = await axios.post(SERVER_API + "deploy", data, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      toastr.success(response.data, "Claimed successfully.");
+
+      window.open("https://testnet.cspr.live/deploy/" + response.data, "_blank");
+      setShowStakeModal({ show: false, amount: 0 });
+      setLoading(false);
+    } catch (error: any) {
+      alert(error.message);
+      setLoading(false);
+    }
+  };
+
+  const refund_reward = async () => {
+    setLoading(true);
+
+    const contract = new Contracts.Contract();
+    const selectedPool = showStakeModal.selectedPool;
+    contract.setContractHash(selectedPool.key);
+
+    const ownerPublicKey = CLPublicKey.fromHex(publicKey);
+
+    const args = RuntimeArgs.fromMap({});
+
+    const deploy = contract.callEntrypoint("refund_reward", args, ownerPublicKey, "casper-test", "2000000000");
 
     const deployJson = DeployUtil.deployToJson(deploy);
 
@@ -356,6 +397,7 @@ const ManageStakes = () => {
               unStake={unStake}
               increaseAllowance={increaseAllowance}
               notify={notify}
+              refundReward={refund_reward}
             ></StakeModal>
           </Grid>
         ))}

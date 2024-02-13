@@ -29,9 +29,10 @@ type Props = {
   unStake: () => void;
   claim: () => void;
   notify?: () => void;
+  refundReward?: () => void;
 };
 
-const StakeModal: React.FC<Props> = ({ showStakeModal, handleStakeModal, stake, increaseAllowance, unStake, claim, notify }) => {
+const StakeModal: React.FC<Props> = ({ showStakeModal, handleStakeModal, stake, increaseAllowance, unStake, claim, notify, refundReward }) => {
   return (
     <Modal
       open={showStakeModal.show}
@@ -157,7 +158,7 @@ const StakeModal: React.FC<Props> = ({ showStakeModal, handleStakeModal, stake, 
           </Typography>
         )}
 
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: "1rem", gap: "1rem" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: "2rem", gap: "1rem" }}>
           {showStakeModal.action === "notify reward" && (
             <>
               <CustomButton
@@ -221,6 +222,15 @@ const StakeModal: React.FC<Props> = ({ showStakeModal, handleStakeModal, stake, 
                 disabled={false}
               />
             </>
+          )}
+          {showStakeModal.action === "refund reward" && (
+            <CustomButton
+              onClick={() => {
+                if (refundReward) refundReward();
+              }}
+              label={showStakeModal.action || ""}
+              disabled={false}
+            />
           )}
         </div>
       </Box>
