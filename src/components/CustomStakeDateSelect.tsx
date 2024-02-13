@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { CustomSelect } from "./CustomSelect";
 import { StakeForm } from "../utils/types";
 import { PERIOD } from "../utils/enum";
-// import { PERIOD } from "../utils/enum";
 
 type Props = {
   stakeForm: StakeForm;
@@ -26,7 +25,6 @@ const CustomStakeDateSelect: React.FC<Props> = ({ stakeForm, handleState }) => {
           value={stakeForm.lockPeriod.unit ? stakeForm.lockPeriod.unit : "default"}
           label="Stake Unit"
           onChange={(event: SelectChangeEvent) => {
-            console.log(event.target.value);
             handleState({
               ...stakeForm,
               lockPeriod: {

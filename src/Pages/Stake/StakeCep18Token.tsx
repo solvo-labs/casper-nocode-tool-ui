@@ -9,7 +9,7 @@ import { CustomButton } from "../../components/CustomButton";
 import { PERIOD } from "../../utils/enum";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder, CLAccountHash } from "casper-js-sdk";
-import { CasperHelpers, STORE_CEP_18_STAKE_CONTRACT } from "../../utils";
+import { CasperHelpers, STORE_CEP_18_STAKE_CONTRACT, tokenSupplyBN } from "../../utils";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
 import { CustomInput } from "../../components/CustomInput";
@@ -90,16 +90,15 @@ const StakeCep18Token = () => {
       if (stakeForm.token) {
         const decimal = Number(stakeForm.token.decimals.hex);
 
-        const periodMilisec = stakeForm.lockPeriod.period * stakeForm.lockPeriod.unit;
         const args = RuntimeArgs.fromMap({
           token: CasperHelpers.stringToKey(stakeForm.token.contractHash),
-          min_stake: CLValueBuilder.u256(stakeForm.minStake * Math.pow(10, decimal)),
-          max_stake: CLValueBuilder.u256(stakeForm.maxStake * Math.pow(10, decimal)),
-          max_cap: CLValueBuilder.u256(stakeForm.maxCap * Math.pow(10, decimal)),
+          min_stake: CLValueBuilder.u256(tokenSupplyBN(stakeForm.minStake, decimal)),
+          max_stake: CLValueBuilder.u256(tokenSupplyBN(stakeForm.maxStake, decimal)),
+          max_cap: CLValueBuilder.u256(tokenSupplyBN(stakeForm.maxCap, decimal)),
           fixed_apr: CLValueBuilder.u64(isFixedApr ? stakeForm.fixedApr : 0),
           min_apr: CLValueBuilder.u64(isFixedApr ? 0 : stakeForm.minApr),
           max_apr: CLValueBuilder.u64(isFixedApr ? 0 : stakeForm.maxApr),
-          lock_period: CLValueBuilder.u64(periodMilisec),
+          lock_period: CLValueBuilder.u64(stakeForm.lockPeriod.period * stakeForm.lockPeriod.unit),
           deposit_start_time: CLValueBuilder.u64(stakeForm.depositStartTime * 1000),
           deposit_end_time: CLValueBuilder.u64(stakeForm.depositEndTime * 1000),
           storage_key: new CLAccountHash(Buffer.from(STORE_CEP_18_STAKE_CONTRACT, "hex")),
