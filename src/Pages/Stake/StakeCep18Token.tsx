@@ -1,21 +1,22 @@
 import { CircularProgress, FormControlLabel, Grid, MenuItem, SelectChangeEvent, Stack, Switch, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomSelect } from "../../components/CustomSelect";
-import { useEffect, useMemo, useState } from "react";
-import { ERC20Token } from "../../utils/types";
+import { useMemo, useState } from "react";
+import { StakeForm } from "../../utils/types";
 import { useGetTokens } from "../../hooks/useGetTokens";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { CustomButton } from "../../components/CustomButton";
 import { PERIOD } from "../../utils/enum";
 // @ts-ignore
 import { Contracts, RuntimeArgs, CLPublicKey, DeployUtil, CLValueBuilder, CLAccountHash } from "casper-js-sdk";
-import { CasperHelpers, STORE_CEP_18_STAKE_CONTRACT } from "../../utils";
+import { CasperHelpers, STORE_CEP_18_STAKE_CONTRACT, tokenSupplyBN } from "../../utils";
 import axios from "axios";
 import { SERVER_API } from "../../utils/api";
 import { CustomInput } from "../../components/CustomInput";
 import { CustomDateTime } from "../../components/CustomDateTime";
 import { Moment } from "moment";
 import toastr from "toastr";
+import CustomStakeDateSelect from "../../components/CustomStakeDateSelect";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -60,19 +61,11 @@ const StakeCep18Token = () => {
       ]
     >();
   const { tokens, loading } = useGetTokens(publicKey);
-  const [stakeForm, setStakeForm] = useState<{
-    token: ERC20Token | null;
-    lockPeriod: number;
-    minStake: number;
-    maxStake: number;
-    maxCap: number;
-    fixedApr: number;
-    minApr: number;
-    maxApr: number;
-    depositStartTime: number;
-    depositEndTime: number;
-  }>({
-    lockPeriod: PERIOD["A Week"],
+  const [stakeForm, setStakeForm] = useState<StakeForm>({
+    lockPeriod: {
+      unit: 1,
+      period: PERIOD["Day"],
+    },
     token: null,
     minStake: 0,
     maxStake: 0,
@@ -83,16 +76,10 @@ const StakeCep18Token = () => {
     depositStartTime: Date.now() / 1000,
     depositEndTime: Date.now() / 1000,
   });
-  const [durationList, setDurationList] = useState<string[]>([]);
   const [isFixedApr, setIsFixedApr] = useState<boolean>(false);
   const [actionLoading, setActionLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const durationArray: string[] = Object.keys(PERIOD).filter((key) => isNaN(Number(key)));
-    setDurationList(durationArray);
-  }, []);
 
   const createStake = async () => {
     setActionLoading(true);
@@ -105,13 +92,13 @@ const StakeCep18Token = () => {
 
         const args = RuntimeArgs.fromMap({
           token: CasperHelpers.stringToKey(stakeForm.token.contractHash),
-          min_stake: CLValueBuilder.u256(stakeForm.minStake * Math.pow(10, decimal)),
-          max_stake: CLValueBuilder.u256(stakeForm.maxStake * Math.pow(10, decimal)),
-          max_cap: CLValueBuilder.u256(stakeForm.maxCap * Math.pow(10, decimal)),
+          min_stake: CLValueBuilder.u256(tokenSupplyBN(stakeForm.minStake, decimal)),
+          max_stake: CLValueBuilder.u256(tokenSupplyBN(stakeForm.maxStake, decimal)),
+          max_cap: CLValueBuilder.u256(tokenSupplyBN(stakeForm.maxCap, decimal)),
           fixed_apr: CLValueBuilder.u64(isFixedApr ? stakeForm.fixedApr : 0),
           min_apr: CLValueBuilder.u64(isFixedApr ? 0 : stakeForm.minApr),
           max_apr: CLValueBuilder.u64(isFixedApr ? 0 : stakeForm.maxApr),
-          lock_period: CLValueBuilder.u64(stakeForm.lockPeriod),
+          lock_period: CLValueBuilder.u64(stakeForm.lockPeriod.period * stakeForm.lockPeriod.unit),
           deposit_start_time: CLValueBuilder.u64(stakeForm.depositStartTime * 1000),
           deposit_end_time: CLValueBuilder.u64(stakeForm.depositEndTime * 1000),
           storage_key: new CLAccountHash(Buffer.from(STORE_CEP_18_STAKE_CONTRACT, "hex")),
@@ -173,7 +160,7 @@ const StakeCep18Token = () => {
     return (
       <div
         style={{
-          height: "calc(100vh - 8rem)",
+          height: "60vh",
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -301,27 +288,7 @@ const StakeCep18Token = () => {
             theme={"Dark"}
             onChange={(e: Moment) => setStakeForm({ ...stakeForm, depositEndTime: e.unix() })}
           />
-          {/* <CustomDateTime></CustomDateTime> */}
-          <CustomSelect
-            value={stakeForm.lockPeriod ? PERIOD[stakeForm.lockPeriod] : "default"}
-            label="Stake Lock Period"
-            onChange={(event: SelectChangeEvent<{ value: unknown }>) => {
-              const selectedValue = event.target.value as keyof typeof PERIOD;
-              setStakeForm({ ...stakeForm, lockPeriod: PERIOD[selectedValue] });
-            }}
-            id={"custom-select"}
-          >
-            <MenuItem value="default">
-              <em>Select Stake Period</em>
-            </MenuItem>
-            {durationList.map((dur: string) => {
-              return (
-                <MenuItem key={dur} value={dur}>
-                  {dur}
-                </MenuItem>
-              );
-            })}
-          </CustomSelect>
+          <CustomStakeDateSelect stakeForm={stakeForm} handleState={setStakeForm}></CustomStakeDateSelect>
           <CustomButton disabled={disable} label="Create Stake Pool" onClick={createStake}></CustomButton>
         </Stack>
       </Grid>

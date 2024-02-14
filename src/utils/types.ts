@@ -216,3 +216,19 @@ export type NftMetadataForm = {
   timestamp?: number;
   targetAddress?: string;
 };
+
+export type StakeForm = {
+  token: ERC20Token | null;
+  lockPeriod: {
+    unit: number;
+    period: number;
+  };
+  minStake: number;
+  maxStake: number;
+  maxCap: number;
+  fixedApr: number;
+  minApr: number;
+  maxApr: number;
+  depositStartTime: number;
+  depositEndTime: number;
+};

@@ -11,6 +11,7 @@ import axios from "axios";
 import { makeStyles } from "@mui/styles";
 import StakeCard from "../../components/StakeCard";
 import StakeModal from "../../components/StakeModal";
+import { STAKE_STATUS } from "../../utils/enum";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -44,11 +45,11 @@ const JoinStakes = () => {
       const accountHash = ownerPublicKey.toAccountHashStr();
 
       const data = await getAllCep18StakePools("hash-" + STORE_CEP_18_STAKE_CONTRACT, accountHash.slice(13));
+      const now = Date.now();
 
       if (data.length > 0) {
         const tokenDetailPromises = data.map((dt: any) => fetchErc20TokenDetails("hash-" + dt.token));
         const tokenDetails = await Promise.all(tokenDetailPromises);
-
         const allPoolsData = data.map((dt: any, index: number) => {
           const currentToken = tokenDetails[index];
           const decimal = parseInt(currentToken.decimals.hex, 16);
@@ -58,45 +59,81 @@ const JoinStakes = () => {
           const minStake = parseInt(dt.min_stake.hex, 16) / Math.pow(10, decimal);
           const maxStake = parseInt(dt.max_stake.hex, 16) / Math.pow(10, decimal);
           const maxCap = parseInt(dt.max_cap.hex, 16) / Math.pow(10, decimal);
-          const depositEndTime = moment(parseInt(dt.deposit_end_time.hex, 16));
-          const depositStartTime = moment(parseInt(dt.deposit_start_time.hex, 16));
-          const depositStartTimeFormatted = moment(parseInt(dt.deposit_start_time.hex, 16)).format("MMMM Do YYYY, HH:mm");
-          const depositEndTimeFormatted = moment(parseInt(dt.deposit_end_time.hex, 16)).format("MMMM Do YYYY, HH:mm");
+          const totalSupply = dt.total_supply ? parseInt(dt.total_supply.hex, 16) / Math.pow(10, decimal) : 0;
+          const depositEndTime = parseInt(dt.deposit_end_time.hex, 16);
+          const depositStartTime = parseInt(dt.deposit_start_time.hex, 16);
+          const depositStartTimeFormatted = moment(depositStartTime).format("MMMM Do YYYY, HH:mm");
+          const depositEndTimeFormatted = moment(depositEndTime).format("MMMM Do YYYY, HH:mm");
           const lockPeriod = moment(parseInt(dt.lock_period.hex, 16));
           const liquidity = dt.liquidity ? parseInt(dt.liquidity.hex, 16) / Math.pow(10, decimal) : 0;
           const apr = dt.apr ? parseInt(dt.apr.hex, 16) : 0;
+          const total_reward = dt.total_reward ? parseInt(dt.total_reward.hex, 16) / Math.pow(10, decimal) : 0;
           const my_balance = dt.my_balance ? dt.my_balance / Math.pow(10, decimal) : 0;
           const my_claimed = dt.my_claimed ? dt.my_claimed / Math.pow(10, decimal) : 0;
-          const total_reward = dt.total_reward ? parseInt(dt.total_reward.hex, 16) / Math.pow(10, decimal) : 0;
+          const notified = dt.notified;
+          let notifyAmount = 0;
+
+          let status;
+          const lockPeriodTime = depositEndTime + parseInt(dt.lock_period.hex, 16);
+
+          if (!notified && now > depositEndTime) {
+            status = STAKE_STATUS.FAIL;
+          }
+
+          if (!notified && now < depositEndTime) {
+            status = STAKE_STATUS.WAITING_NOTIFY;
+          }
+
+          if (notified && now < depositStartTime) {
+            status = STAKE_STATUS.WAITING_START_STAKE;
+          }
+
+          if (notified && now >= depositStartTime && now <= depositEndTime) {
+            status = STAKE_STATUS.STAKEABLE;
+          }
+
+          if (notified && now > depositEndTime && now < lockPeriodTime) {
+            status = STAKE_STATUS.WAITING_LOCK_PERIOD;
+          }
+
+          if (notified && now > lockPeriodTime) {
+            status = STAKE_STATUS.UNSTAKEBLE;
+          }
+
+          if (notified && now > lockPeriodTime && my_balance <= 0 && my_claimed > 0) {
+            status = STAKE_STATUS.FINISHED;
+          }
 
           return {
             key: dt.key,
             name: currentToken.name,
             symbol: currentToken.symbol,
-            depositStartTime,
-            depositEndTime,
             maxApr,
             minApr,
             fixedApr,
             minStake,
             maxStake,
             maxCap,
+            totalSupply,
             lockPeriod,
             depositEndTimeFormatted,
             depositStartTimeFormatted,
             token: dt.token,
             decimal,
-            notified: dt.notified,
             amIOwner: dt.amIOwner,
             apr,
             liquidity,
             my_balance,
             my_claimed,
             total_reward,
+            status,
+            notifyAmount,
           };
         });
 
-        const finalData = allPoolsData.filter((pool: any) => !pool.amIOwner);
+        const finalData = allPoolsData.filter(
+          (pool: any) => !pool.amIOwner && pool.status !== STAKE_STATUS.FINISHED && pool.status !== STAKE_STATUS.WAITING_NOTIFY && pool.status !== STAKE_STATUS.FAIL
+        );
 
         setPools(finalData);
       }
