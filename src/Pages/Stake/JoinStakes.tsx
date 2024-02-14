@@ -11,7 +11,7 @@ import axios from "axios";
 import { makeStyles } from "@mui/styles";
 import StakeCard from "../../components/StakeCard";
 import StakeModal from "../../components/StakeModal";
-import { STAKE_STATUS } from "./ManageStakes";
+import { STAKE_STATUS } from "../../utils/enum";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -48,7 +48,7 @@ const JoinStakes = () => {
       const now = Date.now();
 
       if (data.length > 0) {
-        const tokenDetailPromises = data.map((dt: any) => fetchErc20TokenDetails("hash-" + dt.token));
+        const tokenDetailPromises = data.map((dt: any, index: number) => fetchErc20TokenDetails("hash-" + dt.token));
         const tokenDetails = await Promise.all(tokenDetailPromises);
         const allPoolsData = data.map((dt: any, index: number) => {
           const currentToken = tokenDetails[index];
@@ -74,8 +74,17 @@ const JoinStakes = () => {
           let notifyAmount = 0;
 
           let status;
+          const lockPeriodTime = depositEndTime + parseInt(dt.lock_period.hex, 16);
 
-          if (notified && now <= depositStartTime) {
+          if (!notified && now > depositEndTime) {
+            status = STAKE_STATUS.FAIL;
+          }
+
+          if (!notified && now < depositEndTime) {
+            status = STAKE_STATUS.WAITING_NOTIFY;
+          }
+
+          if (notified && now < depositStartTime) {
             status = STAKE_STATUS.WAITING_START_STAKE;
           }
 
@@ -83,12 +92,16 @@ const JoinStakes = () => {
             status = STAKE_STATUS.STAKEABLE;
           }
 
-          if (notified && now > depositEndTime) {
+          if (notified && now > depositEndTime && now < lockPeriodTime) {
             status = STAKE_STATUS.WAITING_LOCK_PERIOD;
           }
 
-          if (notified && now > depositEndTime + parseInt(dt.lock_period.hex, 16)) {
+          if (notified && now > lockPeriodTime) {
             status = STAKE_STATUS.UNSTAKEBLE;
+          }
+
+          if (notified && now > lockPeriodTime && my_balance <= 0 && my_claimed > 0) {
+            status = STAKE_STATUS.FINISHED;
           }
 
           return {
@@ -118,7 +131,9 @@ const JoinStakes = () => {
           };
         });
 
-        const finalData = allPoolsData.filter((pool: any) => !pool.amIOwner);
+        const finalData = allPoolsData.filter(
+          (pool: any) => !pool.amIOwner && pool.status !== STAKE_STATUS.FINISHED && pool.status !== STAKE_STATUS.WAITING_NOTIFY && pool.status !== STAKE_STATUS.FAIL
+        );
 
         setPools(finalData);
       }
