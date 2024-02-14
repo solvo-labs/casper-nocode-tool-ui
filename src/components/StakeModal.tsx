@@ -33,7 +33,6 @@ type Props = {
 };
 
 const StakeModal: React.FC<Props> = ({ showStakeModal, handleStakeModal, stake, increaseAllowance, unStake, claim, notify, refundReward }) => {
-  console.log(showStakeModal);
   return (
     <Modal
       open={showStakeModal.show}
@@ -94,42 +93,16 @@ const StakeModal: React.FC<Props> = ({ showStakeModal, handleStakeModal, stake, 
           </Typography>
         )}
         {showStakeModal.action === "unstake" && (
-          <Typography>
-            <TextField
-              label="Amount"
-              name="unstakeAmount"
-              placeholder="Unstake Amount"
-              type="text"
-              value={showStakeModal.amount}
-              onChange={(e: any) => {
-                handleStakeModal({ ...showStakeModal, amount: Number(e.target.value) });
-              }}
-              sx={{
-                width: "100%",
-                my: "1rem",
-                "& .MuiOutlinedInput-root": {
-                  color: "white",
-                  "& fieldset": {
-                    borderRadius: "1rem",
-                    border: "1px solid #BFBFBF",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#FF0011",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#FF0011",
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  color: "white",
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  color: "#FF0011",
-                },
-              }}
-            ></TextField>
+          <Typography sx={{ mt: 2 }}>
+            Unstake{" "}
+            <b>
+              {showStakeModal.selectedPool.my_balance} {showStakeModal.selectedPool.symbol}
+            </b>{" "}
+            Token.
           </Typography>
         )}
+        {showStakeModal.action === "claim" && <Typography sx={{ mt: 2 }}>Claim your reward.</Typography>}
+        {showStakeModal.action === "refund" && <Typography sx={{ mt: 2 }}>Get your reward refunded.</Typography>}
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: "2rem", gap: "1rem" }}>
           {showStakeModal.action === "notify" && (
@@ -193,7 +166,7 @@ const StakeModal: React.FC<Props> = ({ showStakeModal, handleStakeModal, stake, 
               />
             </>
           )}
-          {showStakeModal.action === "refund reward" && (
+          {showStakeModal.action === "refund" && (
             <CustomButton
               onClick={() => {
                 if (refundReward) refundReward();
