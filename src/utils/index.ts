@@ -87,7 +87,7 @@ export const STORE_RAFFLE_CONTRACT_HASH = "59812f78dbbbf46bb68f54cca99f665acdf27
 export const lootboxStorageContract = "0e99476bb8b2cdade2f916bfaad7f844120bd0bb1d3ab170d7ab501b4fa850ba";
 export const MERGABLE_NFT_CONTRACT = "c6366b7f5932fb3d52ed4d0e33ff19c9a7b1f336736507900c8833079d4713d4";
 export const DAPPEND_NFT_CONTRACT = "940fd61d953f76ee0a478d0386e503d664d7f9e17702f6cfc0e7708b540be1cd";
-export const STORE_CEP_18_STAKE_CONTRACT = "c274655045a27c38eac3cbe8613b5a5954cd78a2a0933e2c037319a75f12b6b9";
+export const STORE_CEP_18_STAKE_CONTRACT = "c22d04ec1b43d5197943de195aa196e4810629b273ba658ef9670abd69d4452a";
 
 const rarityLevelExplanationTitleArray: string[] = [
   "COMMON: This level is given to the most frequently encountered items inside loot boxes. These items are generally common and widely found.",
