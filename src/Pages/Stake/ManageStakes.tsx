@@ -11,16 +11,7 @@ import axios from "axios";
 import { makeStyles } from "@mui/styles";
 import StakeCard from "../../components/StakeCard";
 import StakeModal from "../../components/StakeModal";
-
-export enum STAKE_STATUS {
-  WAITING_NOTIFY,
-  WAITING_START_STAKE,
-  STAKEABLE,
-  WAITING_LOCK_PERIOD,
-  UNSTAKEBLE,
-  FINISHED,
-  FAIL,
-}
+import { STAKE_STATUS } from "../../utils/enum";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -84,6 +75,7 @@ const ManageStakes = () => {
           let notifyAmount = 0;
 
           let status;
+          const lockPeriodTime = depositEndTime + parseInt(dt.lock_period.hex, 16);
 
           if (!notified && now > depositEndTime) {
             status = STAKE_STATUS.FAIL;
@@ -96,7 +88,7 @@ const ManageStakes = () => {
             status = STAKE_STATUS.WAITING_NOTIFY;
           }
 
-          if (notified && now <= depositStartTime) {
+          if (notified && now < depositStartTime) {
             status = STAKE_STATUS.WAITING_START_STAKE;
           }
 
@@ -104,13 +96,19 @@ const ManageStakes = () => {
             status = STAKE_STATUS.STAKEABLE;
           }
 
-          if (notified && now > depositEndTime) {
+          if (notified && now > depositEndTime && now < lockPeriodTime) {
             status = STAKE_STATUS.WAITING_LOCK_PERIOD;
           }
 
-          if (notified && now > depositEndTime + parseInt(dt.lock_period.hex, 16)) {
+          if (notified && now > lockPeriodTime) {
             status = STAKE_STATUS.UNSTAKEBLE;
           }
+
+          if (notified && lockPeriodTime < now && liquidity === 0) {
+            status = STAKE_STATUS.FINISHED;
+          }
+
+          console.log(status);
 
           return {
             key: dt.key,
@@ -139,7 +137,6 @@ const ManageStakes = () => {
           };
         });
         const finalData = allPoolsData.filter((pool: any) => pool.amIOwner);
-        console.log(finalData);
 
         setPools(finalData);
       }
