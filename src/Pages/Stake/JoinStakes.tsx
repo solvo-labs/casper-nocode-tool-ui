@@ -48,7 +48,7 @@ const JoinStakes = () => {
       const now = Date.now();
 
       if (data.length > 0) {
-        const tokenDetailPromises = data.map((dt: any, index: number) => fetchErc20TokenDetails("hash-" + dt.token));
+        const tokenDetailPromises = data.map((dt: any) => fetchErc20TokenDetails("hash-" + dt.token));
         const tokenDetails = await Promise.all(tokenDetailPromises);
         const allPoolsData = data.map((dt: any, index: number) => {
           const currentToken = tokenDetails[index];
