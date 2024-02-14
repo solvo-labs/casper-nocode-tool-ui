@@ -170,26 +170,21 @@ export enum DURATION {
   "Weekly" = 604800000,
 }
 
-// export enum PERIOD {
-//   "A Day" = 86400000,
-//   "2 Days" = 172800000,
-//   "3 Days" = 259200000,
-//   "4 Days" = 345600000,
-//   "5 Days" = 432000000,
-//   "6 Days" = 518400000,
-//   "A Week" = 604800017,
-//   "2 Weeks" = 1209600033,
-//   "3 Weeks" = 1814400050,
-//   "A Month" = 2629800000,
-//   "2 Months" = 5259600000,
-//   "3 Months" = 7889400000,
-//   "A Year" = 31557600000,
-// }
-
 export enum PERIOD {
+  "Minute" = 60000,
   "Hour" = 3600000,
   "Day" = 86400000,
   "Week" = 604800000,
   "Month" = 2629800000,
   "Year" = 31557600000,
+}
+
+export enum STAKE_STATUS {
+  FAIL,
+  WAITING_NOTIFY,
+  WAITING_START_STAKE,
+  STAKEABLE,
+  WAITING_LOCK_PERIOD,
+  UNSTAKEBLE,
+  FINISHED,
 }
