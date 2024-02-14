@@ -2,7 +2,7 @@ import axios from "axios";
 import { ERC20Token, Listing, LootboxData, LootboxItem, RaffleNamedKeys, Token } from "./types";
 
 const service_api = "https://event-store-api-clarity-testnet.make.services/";
-export const SERVER_API = import.meta.env.DEV ? "http://localhost:3000/api/" : "https://casperdev.dappend.com/api/";
+export const SERVER_API = import.meta.env.DEV ? "http://localhost:3000/api/" : "https://dapp4cspr.com/api/";
 
 export type ERC20TokenInfo = {
   account_hash: string;
