@@ -1,8 +1,8 @@
 import { CircularProgress, FormControlLabel, Grid, MenuItem, SelectChangeEvent, Stack, Switch, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { CustomSelect } from "../../components/CustomSelect";
-import { useEffect, useMemo, useState } from "react";
-import { ERC20Token, StakeForm } from "../../utils/types";
+import { useMemo, useState } from "react";
+import { StakeForm } from "../../utils/types";
 import { useGetTokens } from "../../hooks/useGetTokens";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { CustomButton } from "../../components/CustomButton";
