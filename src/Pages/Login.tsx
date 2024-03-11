@@ -1,10 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Grid, Theme, Typography } from "@mui/material";
+import { CircularProgress, Grid, Theme, Typography } from "@mui/material";
 import { WALLETS_NAME } from "../utils/enum";
 import { CustomButton } from "../components/CustomButton";
 import { makeStyles } from "@mui/styles";
 import casperImage from "../assets/casper_wallet.png";
+import { ClickUI, ThemeModeType, useClickRef } from "@make-software/csprclick-ui";
+import { AccountType } from "@make-software/csprclick-core-types";
 
 const useStyles = makeStyles((_theme: Theme) => ({
   outerContainer: { padding: "1rem", border: "1px solid #BF000C", borderRadius: "0.5rem", justifyContent: "center", alignItems: "center" },
@@ -16,58 +18,71 @@ const useStyles = makeStyles((_theme: Theme) => ({
 const Login: React.FC = () => {
   const classes = useStyles();
   const navigate = useNavigate();
+  const clickRef = useClickRef();
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const init = async () => {
-      const CasperWalletProvider = window.CasperWalletProvider;
+    if (clickRef) {
+      const activeAccount = clickRef.getActiveAccount();
 
-      const provider = CasperWalletProvider();
-
-      const isConnected = await provider.isConnected();
-      let activePublickey = "";
-
-      try {
-        activePublickey = await provider.getActivePublicKey();
-      } catch {}
-
-      if (isConnected && activePublickey !== "") {
+      if (activeAccount) {
         navigate("/");
       }
-    };
 
-    init();
-  }, []);
+      setLoading(false);
+    }
+  }, [clickRef]);
 
-  const connect = () => {
-    const CasperWalletProvider = window.CasperWalletProvider;
-    const provider = CasperWalletProvider();
+  useEffect(() => {
+    clickRef?.on("csprclick:signed_in", async (evt: any) => {
+      navigate("/");
+    });
+  }, [clickRef?.on]);
 
-    provider
-      .requestConnection()
-      .then(() => {
-        navigate("/");
-      })
-      .catch((err: any) => {
-        console.log(err);
-      });
-  };
+  if (loading) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "14rem",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <Grid container className={classes.outerContainer}>
+      <div style={{ display: "flex", flexDirection: "row", width: "100%", margin: "0 auto", padding: "0 12px" }}>
+        <ClickUI themeMode={ThemeModeType.dark} />
+      </div>
       <Grid container direction="column" className={classes.innerContainer}>
         <Typography variant="h6" className={classes.typography}>
           {WALLETS_NAME.CASPER_WALLET}
         </Typography>
         <img className={classes.image} width={200} src={casperImage} />
       </Grid>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
-        <CustomButton onClick={connect} label="SIGN IN" disabled={false} />
-        <br />
+      <div
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          display: "flex",
+          flexDirection: "row",
+          width: "100%",
+          margin: "0 auto",
+          padding: "0 12px",
+        }}
+      >
         <CustomButton
-          onClick={() => {
-            window.open("https://chrome.google.com/webstore/detail/casper-wallet/abkahkcbhngaebpcgfmhkoioedceoigp", "_blank");
+          onClick={(event: any) => {
+            event.preventDefault();
+            window.csprclick.signIn();
           }}
-          label="INSTALL"
+          label="SIGN IN"
           disabled={false}
         />
       </div>

@@ -3,6 +3,7 @@ import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
 import { APP_NAME, MARKETPLACE_PAGE, NFT_PAGE, PAGES_NAME, RAFFLE_PAGE, STAKE_PAGE, TOKEN_PAGE, TOKENOMICS_PAGE } from "../utils/enum";
 import { AppBar, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
+import { useClickRef } from "@make-software/csprclick-ui";
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -60,61 +61,16 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
   const openForProfile = Boolean(anchorElForProfile);
   const classes = useStyles();
   const navigate = useNavigate();
+  const clickRef = useClickRef();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>, setState: any) => {
     setState(event.currentTarget);
   };
 
-  // function tokenMint() {
-  //   navigate("/token");
-  //   setAnchorEl(null);
-  // }
+  const logout = () => {
+    clickRef?.disconnect();
 
-  // const myTokens = () => {
-  //   navigate("/my-tokens");
-  //   setAnchorEl(null);
-  // };
-
-  // const transfer = () => {
-  //   navigate("/transfer");
-  //   setAnchorEl(null);
-  // };
-
-  // const approve = () => {
-  //   navigate("/approve");
-  //   setAnchorEl(null);
-  // };
-
-  // const mintAndBurn = () => {
-  //   navigate("/mint-and-burn");
-  //   setAnchorEl(null);
-  // };
-
-  // const allowance = () => {
-  //   navigate("/allowance");
-  //   setAnchorEl(null);
-  // };
-
-  // const increaseDecreaseAllowance = () => {
-  //   navigate("/increase-decrease-allowance");
-  //   setAnchorEl(null);
-  // };
-
-  // const transferFrom = () => {
-  //   navigate("/transfer-from");
-  //   setAnchorEl(null);
-  // };
-
-  const logout = async () => {
-    const CasperWalletProvider = window.CasperWalletProvider;
-    const provider = CasperWalletProvider();
-
-    const disconnectFromSite = await provider.disconnectFromSite();
-
-    if (disconnectFromSite) {
-      navigate("/login");
-      setAnchorElForProfile(null);
-    }
+    navigate("/login");
   };
 
   const handleRouter = (a: any) => {

@@ -14,11 +14,15 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@make-software/csprclick-core-client": "^1.3.0",
+    "@make-software/csprclick-core-types": "^1.3.0",
+    "@make-software/csprclick-ui": "^1.3.0",
     "@mui/icons-material": "^5.11.16",
     "@mui/lab": "^5.0.0-alpha.143",
     "@mui/material": "^5.13.4",
     "@mui/styles": "^5.13.2",
     "@mui/x-date-pickers": "^6.12.1",
+    "@types/styled-components": "^5.1.34",
     "axios": "^1.4.0",
     "bn.js": "^5.2.1",
     "buffer": "^6.0.3",
@@ -29,6 +33,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.1",
+    "styled-components": "5.3.11",
     "toastr": "^2.1.4"
   },
   "devDependencies": {
