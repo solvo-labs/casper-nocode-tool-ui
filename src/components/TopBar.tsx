@@ -67,10 +67,11 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
     setState(event.currentTarget);
   };
 
-  const logout = () => {
-    clickRef?.disconnect();
-
+  const logout = async () => {
+    // clickRef?.disconnect();
+    clickRef?.signOut();
     navigate("/login");
+    window.location.reload();
   };
 
   const handleRouter = (a: any) => {
