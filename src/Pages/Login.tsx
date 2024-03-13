@@ -6,12 +6,11 @@ import { CustomButton } from "../components/CustomButton";
 import { makeStyles } from "@mui/styles";
 import casperImage from "../assets/casper_wallet.png";
 import { ClickUI, ThemeModeType, useClickRef } from "@make-software/csprclick-ui";
-import { AccountType } from "@make-software/csprclick-core-types";
 
 const useStyles = makeStyles((_theme: Theme) => ({
-  outerContainer: { padding: "1rem", border: "1px solid #BF000C", borderRadius: "0.5rem", justifyContent: "center", alignItems: "center" },
-  innerContainer: { justifyContent: "center", alignItems: "center" },
-  typography: { color: "#FFFAF0", borderBottom: "1px solid #BF000C" },
+  outerContainer: { padding: "40px 10px 40px 10px", backgroundColor: "#161D3B", borderRadius: "12px", justifyContent: "center", alignItems: "center" },
+  innerContainer: { justifyContent: "center", alignItems: "center", gap: "2rem", minWidth: "360px" },
+  typography: { color: "#FFFFFF" },
   image: { margin: "1.5rem 0", transition: "background-color 300ms" },
 }));
 
@@ -65,18 +64,6 @@ const Login: React.FC = () => {
           {WALLETS_NAME.CASPER_WALLET}
         </Typography>
         <img className={classes.image} width={200} src={casperImage} />
-      </Grid>
-      <div
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          display: "flex",
-          flexDirection: "row",
-          width: "100%",
-          margin: "0 auto",
-          padding: "0 12px",
-        }}
-      >
         <CustomButton
           onClick={(event: any) => {
             event.preventDefault();
@@ -85,7 +72,7 @@ const Login: React.FC = () => {
           label="SIGN IN"
           disabled={false}
         />
-      </div>
+      </Grid>
     </Grid>
   );
 };
