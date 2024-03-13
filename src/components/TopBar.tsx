@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
 import { APP_NAME, MARKETPLACE_PAGE, NFT_PAGE, PAGES_NAME, RAFFLE_PAGE, STAKE_PAGE, TOKEN_PAGE, TOKENOMICS_PAGE } from "../utils/enum";
-import { AppBar, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
-import { useClickRef } from "@make-software/csprclick-ui";
+import { AppBar, Avatar, Box, Button, Container, Divider, Grid, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
+import { AccountMenuItem, CopyHashMenuItem, useClickRef, ViewAccountOnExplorerMenuItem } from "@make-software/csprclick-ui";
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -33,6 +33,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginRight: "0.5rem !important",
   },
   menuItem: {
+    display: "flex",
+    width: "100%",
     "&:hover": {
       color: "#FF0011 !important",
       backgroundColor: "#131933 !important",
@@ -71,6 +73,14 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
     // clickRef?.disconnect();
     clickRef?.signOut();
     navigate("/login");
+    window.location.reload();
+  };
+
+  const switch_account = async () => {
+    const activeAccount = clickRef?.getActiveAccount();
+    if (activeAccount?.provider) {
+      await clickRef?.switchAccount(activeAccount?.provider);
+    }
     window.location.reload();
   };
 
@@ -368,9 +378,10 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                 }}
                 transformOrigin={{
                   vertical: "top",
-                  horizontal: "left",
+                  horizontal: "center",
                 }}
                 sx={{
+                  marginTop: "1rem",
                   "& .MuiPaper-root": {
                     background: "#0F1429",
                     color: "#FFFFFF",
@@ -378,20 +389,31 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
                   },
                 }}
               >
-                <Tooltip title="Copy Key">
-                  <MenuItem
-                    className={classes.menuItem}
+                <Grid sx={{ padding: "0.5rem 1rem 0.5rem 1rem" }}>
+                  <Typography>Account: {publicKey.slice(0, 5) + "..." + publicKey.slice(-6)}</Typography>
+                </Grid>
+                <Divider sx={{ backgroundColor: "white !important", marginLeft: "0.75rem", marginRight: "0.75rem" }} />
+                <Grid sx={{ marginTop: "0.5rem", padding: "0.25rem" }}>
+                  <ViewAccountOnExplorerMenuItem />
+                  <CopyHashMenuItem
+                    sx={{ width: "100% !important" }}
                     onClick={(event: React.MouseEvent) => {
                       event.stopPropagation();
                       navigator.clipboard.writeText(publicKey);
                     }}
-                  >
-                    <Typography>{publicKey.slice(0, 10) + "..." + publicKey.slice(-6)} </Typography>
-                  </MenuItem>
-                </Tooltip>
-                <MenuItem onClick={logout} className={classes.menuItem}>
-                  <Typography>Logout</Typography>
-                </MenuItem>
+                  />
+                  <AccountMenuItem
+                    onClick={switch_account}
+                    icon={`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M403.8 34.4c12-5 25.7-2.2 34.9 6.9l64 64c6 6 9.4 14.1 9.4 22.6s-3.4 16.6-9.4 22.6l-64 64c-9.2 9.2-22.9 11.9-34.9 6.9s-19.8-16.6-19.8-29.6V160H352c-10.1 0-19.6 4.7-25.6 12.8L284 229.3 244 176l31.2-41.6C293.3 110.2 321.8 96 352 96h32V64c0-12.9 7.8-24.6 19.8-29.6zM164 282.7L204 336l-31.2 41.6C154.7 401.8 126.2 416 96 416H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H96c10.1 0 19.6-4.7 25.6-12.8L164 282.7zm274.6 188c-9.2 9.2-22.9 11.9-34.9 6.9s-19.8-16.6-19.8-29.6V416H352c-30.2 0-58.7-14.2-76.8-38.4L121.6 172.8c-6-8.1-15.5-12.8-25.6-12.8H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H96c30.2 0 58.7 14.2 76.8 38.4L326.4 339.2c6 8.1 15.5 12.8 25.6 12.8h32V320c0-12.9 7.8-24.6 19.8-29.6s25.7-2.2 34.9 6.9l64 64c6 6 9.4 14.1 9.4 22.6s-3.4 16.6-9.4 22.6l-64 64z"/></svg>`}
+                    label={"Switch Account"}
+                  />
+                  <AccountMenuItem
+                    onClick={logout}
+                    icon={`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/></svg>`}
+                    label={"Logout"}
+                    // badge={{ title: "new", variation: "green" }}
+                  />
+                </Grid>
               </Menu>
             </Box>
           </Toolbar>
