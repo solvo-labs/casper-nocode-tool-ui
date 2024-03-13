@@ -24,7 +24,7 @@ const Login: React.FC = () => {
   useEffect(() => {
     if (clickRef) {
       const activeAccount = clickRef.getActiveAccount();
-
+      console.log(activeAccount);
       if (activeAccount) {
         navigate("/");
       }
@@ -34,7 +34,7 @@ const Login: React.FC = () => {
   }, [clickRef]);
 
   useEffect(() => {
-    clickRef?.on("csprclick:signed_in", async (evt: any) => {
+    clickRef?.on("csprclick:signed_in", async () => {
       navigate("/");
     });
   }, [clickRef?.on]);
@@ -58,7 +58,7 @@ const Login: React.FC = () => {
   return (
     <Grid container className={classes.outerContainer}>
       <div style={{ display: "flex", flexDirection: "row", width: "100%", margin: "0 auto", padding: "0 12px" }}>
-        <ClickUI themeMode={ThemeModeType.dark} />
+        <ClickUI themeMode={ThemeModeType.dark} show1ClickModal={false} />
       </div>
       <Grid container direction="column" className={classes.innerContainer}>
         <Typography variant="h6" className={classes.typography}>

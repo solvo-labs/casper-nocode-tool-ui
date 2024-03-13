@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
 import { APP_NAME, MARKETPLACE_PAGE, NFT_PAGE, PAGES_NAME, RAFFLE_PAGE, STAKE_PAGE, TOKEN_PAGE, TOKENOMICS_PAGE } from "../utils/enum";
@@ -140,6 +140,12 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
     setAnchorElForRaffle(null);
     setAnchorElStake(null);
   };
+
+  useEffect(() => {
+    clickRef?.on("csprclick:disconnected", async () => {
+      navigate("/login");
+    });
+  }, []);
 
   const listMenuItem = (pages: object) => {
     const value = Object.values(pages);
