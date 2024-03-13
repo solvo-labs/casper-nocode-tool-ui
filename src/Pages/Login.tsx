@@ -23,7 +23,7 @@ const Login: React.FC = () => {
   useEffect(() => {
     if (clickRef) {
       const activeAccount = clickRef.getActiveAccount();
-      console.log(activeAccount);
+      console.log("active", activeAccount);
       if (activeAccount) {
         navigate("/");
       }

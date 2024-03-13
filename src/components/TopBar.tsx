@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { APP_NAME, MARKETPLACE_PAGE, NFT_PAGE, PAGES_NAME, RAFFLE_PAGE, STAKE_PAGE, TOKEN_PAGE, TOKENOMICS_PAGE } from "../utils/enum";
 import { AppBar, Avatar, Box, Button, Container, Divider, Grid, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
 import { AccountMenuItem, CopyHashMenuItem, useClickRef, ViewAccountOnExplorerMenuItem } from "@make-software/csprclick-ui";
+import { CSPRClickSDK } from "@make-software/csprclick-core-client";
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -44,9 +45,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type Props = {
   publicKey: string;
+  clickRef: CSPRClickSDK | undefined;
 };
 
-const TopBar: React.FC<Props> = ({ publicKey }) => {
+const TopBar: React.FC<Props> = ({ publicKey, clickRef }) => {
   const [stakeAnchorEl, setAnchorElStake] = React.useState<null | HTMLElement>(null);
   const openStake = Boolean(stakeAnchorEl);
   const [nftAnchorEl, setAnchorElForNFT] = React.useState<null | HTMLElement>(null);
@@ -63,7 +65,6 @@ const TopBar: React.FC<Props> = ({ publicKey }) => {
   const openForProfile = Boolean(anchorElForProfile);
   const classes = useStyles();
   const navigate = useNavigate();
-  const clickRef = useClickRef();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>, setState: any) => {
     setState(event.currentTarget);

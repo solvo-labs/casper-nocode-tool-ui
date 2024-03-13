@@ -3,7 +3,7 @@ import { Grid, Theme, LinearProgress } from "@mui/material";
 import { Outlet, Navigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import TopBar from "../components/TopBar";
-import { delay, fetchContract } from "../utils";
+import { fetchContract } from "../utils";
 import { useClickRef } from "@make-software/csprclick-ui";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -102,7 +102,7 @@ const ProtectedRoute: React.FC = () => {
   return connected ? (
     <div className={classes.main}>
       <Grid container spacing={0} className={classes.container} alignContent={"start"}>
-        <TopBar publicKey={publicKey} />
+        <TopBar publicKey={publicKey} clickRef={clickRef} />
         <Grid item lg={12} md={12} xs={12} height={"100vh"} paddingTop={{ xl: "12rem", lg: "12rem", md: "10rem", sm: "8rem", xs: "8rem" }}>
           <Grid container direction={"column"} spacing={0}>
             {/* <Grid item><DrawerAppBar /></Grid> */}
