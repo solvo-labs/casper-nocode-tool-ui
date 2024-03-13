@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
 import { APP_NAME, MARKETPLACE_PAGE, NFT_PAGE, PAGES_NAME, RAFFLE_PAGE, STAKE_PAGE, TOKEN_PAGE, TOKENOMICS_PAGE } from "../utils/enum";
 import { AppBar, Avatar, Box, Button, Container, Divider, Grid, IconButton, Menu, MenuItem, Theme, Toolbar, Tooltip, Typography } from "@mui/material";
-import { AccountMenuItem, CopyHashMenuItem, useClickRef, ViewAccountOnExplorerMenuItem } from "@make-software/csprclick-ui";
+import { AccountMenuItem, CopyHashMenuItem, ViewAccountOnExplorerMenuItem } from "@make-software/csprclick-ui";
 import { CSPRClickSDK } from "@make-software/csprclick-core-client";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -390,11 +390,17 @@ const TopBar: React.FC<Props> = ({ publicKey, clickRef }) => {
                   },
                 }}
               >
-                <Grid sx={{ padding: "0.5rem 1rem 0.5rem 1rem" }}>
-                  <Typography>Account: {publicKey.slice(0, 5) + "..." + publicKey.slice(-6)}</Typography>
+                <Grid sx={{ display: "flex", padding: "12px 24px", alignItems: "center" }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" height={"14px"} width={"14px"} viewBox="0 0 512 512" style={{ marginRight: "8px" }}>
+                    <path
+                      fill="#8FA6FF"
+                      d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64H80c-8.8 0-16-7.2-16-16s7.2-16 16-16H448c17.7 0 32-14.3 32-32s-14.3-32-32-32H64zM416 272a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                    />
+                  </svg>
+                  <Typography style={{ fontSize: "14px", color: "#D2DCE5" }}>{publicKey.slice(0, 5) + "..." + publicKey.slice(-6)}</Typography>
                 </Grid>
-                <Divider sx={{ backgroundColor: "white !important", marginLeft: "0.75rem", marginRight: "0.75rem" }} />
-                <Grid sx={{ marginTop: "0.5rem", padding: "0.25rem" }}>
+                <Divider sx={{ backgroundColor: "#D2DCE5 !important", marginLeft: "0.75rem", marginRight: "0.75rem", marginBottom: "0.5rem" }} />
+                <Grid sx={{ padding: "0 0.5rem 0 0.5rem" }}>
                   <ViewAccountOnExplorerMenuItem />
                   <CopyHashMenuItem
                     sx={{ width: "100% !important" }}
