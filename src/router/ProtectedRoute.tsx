@@ -41,7 +41,9 @@ const ProtectedRoute: React.FC = () => {
     if (clickRef) {
       const init = async () => {
         try {
-          const activePublicKey = clickRef?.getActiveAccount()?.public_key || "";
+          const activeAccount = clickRef?.getActiveAccount();
+          const activePublicKey = activeAccount?.public_key || "";
+          const activeProvider = activeAccount?.provider;
 
           if (activePublicKey) {
             const cep18_contract = await fetchContract("/cep18.wasm");
@@ -68,7 +70,7 @@ const ProtectedRoute: React.FC = () => {
             setTimeableNftDepositWasm(timeable_nft_deposit_contract);
             setStakeWasm(stake_contract);
 
-            setProvider(provider);
+            setProvider(activeProvider);
             setPublicKey(activePublicKey);
             setConnected(true);
           }
@@ -83,6 +85,18 @@ const ProtectedRoute: React.FC = () => {
       init();
     }
   }, [clickRef]);
+
+  useEffect(() => {
+    clickRef?.on("csprclick:switched_account", async () => {
+      window.location.reload();
+    });
+    clickRef?.on("csprclick:signed_out", async () => {
+      window.location.reload();
+    });
+    clickRef?.on("csprclick:disconnected", async () => {
+      window.location.reload();
+    });
+  }, [clickRef?.on]);
 
   if (loading) {
     return (
@@ -102,7 +116,7 @@ const ProtectedRoute: React.FC = () => {
   return connected ? (
     <div className={classes.main}>
       <Grid container spacing={0} className={classes.container} alignContent={"start"}>
-        <TopBar publicKey={publicKey} clickRef={clickRef} />
+        <TopBar publicKey={publicKey} activeProvider={provider} clickRef={clickRef} />
         <Grid item lg={12} md={12} xs={12} height={"100vh"} paddingTop={{ xl: "12rem", lg: "12rem", md: "10rem", sm: "8rem", xs: "8rem" }}>
           <Grid container direction={"column"} spacing={0}>
             {/* <Grid item><DrawerAppBar /></Grid> */}
