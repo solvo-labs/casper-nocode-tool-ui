@@ -7,7 +7,7 @@ import { makeStyles } from "@mui/styles";
 import casperImage from "../assets/casper_wallet.png";
 import { ClickUI, ThemeModeType, useClickRef } from "@make-software/csprclick-ui";
 
-const useStyles = makeStyles((_theme: Theme) => ({
+const useStyles: any = makeStyles((_theme: Theme) => ({
   outerContainer: { padding: "40px 10px 40px 10px", backgroundColor: "#161D3B", borderRadius: "12px", justifyContent: "center", alignItems: "center" },
   innerContainer: { justifyContent: "center", alignItems: "center", gap: "2rem", minWidth: "360px" },
   typography: { color: "#FFFFFF" },
@@ -21,13 +21,11 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (clickRef) {
-      const activeAccount = clickRef.getActiveAccount();
-      console.log("active", activeAccount);
-      if (activeAccount) {
-        navigate("/");
-      }
-
+    if (clickRef?.getActiveAccount()) {
+      navigate("/");
+      setLoading(false);
+    } else {
+      navigate("/login");
       setLoading(false);
     }
   }, [clickRef]);
